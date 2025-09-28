@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+build
+storybook-static
+
+# Testing
+coverage
+*.lcov
+
+# Turbo
+.turbo
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local

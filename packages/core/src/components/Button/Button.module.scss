@@ -1,0 +1,117 @@
+.button {
+  // Base styles
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-weight: var(--font-medium);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast) ease-in-out;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  position: relative;
+  white-space: nowrap;
+
+  // States
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  // Variants
+  &.variantPrimary {
+    background-color: var(--color-primary-600);
+    color: var(--color-white);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-primary-700);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-primary-800);
+    }
+  }
+
+  &.variantSecondary {
+    background-color: var(--color-neutral-200);
+    color: var(--color-neutral-900);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-neutral-300);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-neutral-400);
+    }
+  }
+
+  &.variantOutline {
+    background-color: transparent;
+    color: var(--color-primary-600);
+    border: 1px solid var(--color-primary-600);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-primary-50);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-primary-100);
+    }
+  }
+
+  &.variantGhost {
+    background-color: transparent;
+    color: var(--color-primary-600);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-primary-50);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-primary-100);
+    }
+  }
+
+  &.variantDanger {
+    background-color: var(--color-error);
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-error-hover);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-error-active);
+    }
+  }
+
+  // Sizes
+  &.sizeSm {
+    height: 2rem;
+    padding: 0 var(--spacing-3);
+    font-size: var(--text-sm);
+  }
+
+  &.sizeMd {
+    height: 2.5rem;
+    padding: 0 var(--spacing-4);
+    font-size: var(--text-sm);
+  }
+
+  &.sizeLg {
+    height: 3rem;
+    padding: 0 var(--spacing-6);
+    font-size: var(--text-base);
+  }
+
+  &.fullWidth {
+    width: 100%;
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "finra-ui",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Professional React component library for finance applications",
+  "packageManager": "pnpm@10.17.1",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md,mdx,json,scss,css,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,mdx,json,scss,css,yml,yaml}\"",
+    "prepare": "husky",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "turbo build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "catalog:",
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
+    "@types/eslint-plugin-jsx-a11y": "catalog:",
+    "eslint": "catalog:",
+    "@eslint/js": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-jsx-a11y": "catalog:",
+    "eslint-plugin-react": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "globals": "catalog:",
+    "husky": "catalog:",
+    "lint-staged": "catalog:",
+    "prettier": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "@vitest/coverage-istanbul": "catalog:",
+    "sass": "catalog:"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@finra-ui/storybook",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "build": "storybook build",
+    "preview": "npx vite preview --outDir storybook-static",
+    "lint": "eslint stories .storybook --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "@utk09/finra-ui": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "catalog:",
+    "@storybook/addon-essentials": "catalog:",
+    "@storybook/addon-themes": "catalog:",
+    "@storybook/blocks": "catalog:",
+    "@storybook/react": "catalog:",
+    "@storybook/react-vite": "catalog:",
+    "@storybook/test": "catalog:",
+    "storybook": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}
