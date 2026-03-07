@@ -6,7 +6,9 @@
     "dev": "storybook dev -p 6006",
     "build": "storybook build",
     "preview": "npx vite preview --outDir storybook-static",
-    "lint": "eslint stories .storybook --ext .ts,.tsx"
+    "lint": "eslint stories .storybook",
+    "lint:fix": "eslint stories .storybook --fix",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@utk09/finra-ui": "workspace:*",
@@ -15,12 +17,14 @@
   },
   "devDependencies": {
     "@storybook/addon-a11y": "catalog:",
-    "@storybook/addon-essentials": "catalog:",
+    "@storybook/addon-docs": "catalog:",
     "@storybook/addon-themes": "catalog:",
-    "@storybook/blocks": "catalog:",
-    "@storybook/react": "catalog:",
+    "@storybook/addon-vitest": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
     "@storybook/react-vite": "catalog:",
-    "@storybook/test": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "eslint-plugin-storybook": "catalog:",
     "storybook": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"

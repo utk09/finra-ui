@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button } from "@utk09/finra-ui";
-import { fn } from "@storybook/test";
+import { fn, expect, userEvent, within } from "storybook/test";
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
@@ -37,6 +37,13 @@ export const Primary: Story = {
   args: {
     children: "Primary Button",
     variant: "primary",
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole("button", { name: "Primary Button" });
+    await expect(button).toBeVisible();
+    await userEvent.click(button);
+    await expect(args.onClick).toHaveBeenCalledOnce();
   },
 };
 
@@ -93,6 +100,11 @@ export const Disabled: Story = {
   args: {
     children: "Disabled Button",
     disabled: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole("button", { name: "Disabled Button" });
+    await expect(button).toBeDisabled();
   },
 };
 

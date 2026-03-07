@@ -1,5 +1,9 @@
 # Dependencies
 node_modules
+.serena
+.claude
+.github/copilot-instructions.md
+.github/agents
 
 # Build outputs
 dist

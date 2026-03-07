@@ -8,7 +8,8 @@ export default defineConfig({
     react(),
     dts({
       insertTypesEntry: true,
-      exclude: ["**/*.stories.tsx", "**/*.test.tsx"],
+      copyDtsFiles: true,
+      exclude: ["**/*.stories.tsx", "**/*.test.tsx", "test/**"],
     }),
   ],
   build: {
@@ -16,26 +17,13 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, "src/index.ts"),
         unstyled: resolve(__dirname, "src/unstyled.ts"),
-        styles: resolve(__dirname, "src/styles/global.scss"),
       },
-      name: "FinraUI",
-      formats: ["es", "cjs"],
-      fileName: (format, entryName) => {
-        if (entryName === "styles") {
-          return `${entryName}.css`;
-        }
-        const extension = format === "es" ? "mjs" : "js";
-        return `${entryName}.${extension}`;
-      },
+      formats: ["es"],
+      cssFileName: "styles",
+      fileName: (_format, entryName) => `${entryName}.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom", "react/jsx-runtime"],
-      output: {
-        globals: {
-          react: "React",
-          "react-dom": "ReactDOM",
-        },
-      },
     },
     sourcemap: true,
   },

@@ -1,6 +1,6 @@
 # Finra UI
 
-Professional React component library for finance applications.
+React component library for web applications.
 
 [![CI](https://github.com/utk09/finra-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/utk09/finra-ui/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@utk09/finra-ui.svg)](https://www.npmjs.com/package/@utk09/finra-ui)

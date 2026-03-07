@@ -7,8 +7,26 @@
       "inputs": ["$TURBO_DEFAULT$", "src/**", "stories/**"],
       "outputs": ["dist/**", "storybook-static/**"]
     },
-    "lint": {},
-    "test": {},
+    "lint": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "stories/**",
+        ".storybook/**",
+        "../../eslint.config.ts"
+      ]
+    },
+    "test": {
+      "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**"],
+      "outputs": ["coverage/**"]
+    },
+    "typecheck": {
+      "inputs": ["$TURBO_DEFAULT$", "src/**", "stories/**", ".storybook/**"],
+      "dependsOn": ["^build"]
+    },
+    "lint:fix": {
+      "cache": false
+    },
     "dev": {
       "cache": false,
       "persistent": true

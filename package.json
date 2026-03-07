@@ -2,21 +2,21 @@
   "name": "finra-ui",
   "private": true,
   "version": "0.0.0",
-  "description": "Professional React component library for finance applications",
+  "description": "React component library for web applications",
+  "license": "MIT",
+  "type": "module",
   "packageManager": "pnpm@10.17.1",
   "engines": {
-    "node": ">=20.0.0",
+    "node": ">=22.0.0",
     "pnpm": ">=10.0.0"
   },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
     "test": "turbo test",
     "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "typecheck": "turbo typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md,mdx,json,scss,css,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,mdx,json,scss,css,yml,yaml}\"",
     "prepare": "husky",
@@ -45,6 +45,9 @@
     "vite": "catalog:",
     "vitest": "catalog:",
     "@vitest/coverage-istanbul": "catalog:",
-    "sass": "catalog:"
+    "@vitest/browser-playwright": "catalog:",
+    "@storybook/addon-vitest": "catalog:",
+    "sass": "catalog:",
+    "eslint-plugin-storybook": "catalog:"
   }
 }
