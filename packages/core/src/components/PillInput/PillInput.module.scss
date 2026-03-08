@@ -1,0 +1,94 @@
+.pillInput {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--density-spacing) * 0.5);
+  min-block-size: var(--size-base);
+  padding-inline: var(--input-padding-x);
+  padding-block: calc(var(--density-spacing) * 0.25);
+  font-family: var(--font-sans);
+  font-size: var(--input-font-size);
+  line-height: var(--leading-normal);
+  background-color: var(--color-background);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: var(--cursor-text);
+  transition: border-color var(--transition-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:focus-within {
+    border-color: var(--color-primary-500);
+  }
+
+  &.disabled {
+    opacity: var(--opacity-disabled);
+    cursor: var(--cursor-disabled);
+    background-color: var(--color-neutral-50);
+  }
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  block-size: var(--size-compact);
+  padding-inline: var(--density-spacing);
+  background-color: var(--color-neutral-100);
+  border: var(--border-width-thin) solid var(--color-neutral-200);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: var(--color-foreground);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.pillText {
+  max-inline-size: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pillRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-neutral-400);
+  cursor: var(--cursor-pointer);
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--color-foreground);
+  }
+
+  > svg {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+}
+
+.input {
+  flex: 1;
+  min-inline-size: 4rem;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  color: var(--color-foreground);
+  padding: 0;
+
+  &::placeholder {
+    color: var(--color-neutral-400);
+  }
+
+  &:disabled {
+    cursor: var(--cursor-disabled);
+  }
+}

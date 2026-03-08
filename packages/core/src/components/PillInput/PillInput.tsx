@@ -1,0 +1,175 @@
+import {
+  forwardRef,
+  useState,
+  useRef,
+  useCallback,
+  type KeyboardEvent,
+  type HTMLAttributes,
+  type Ref,
+} from "react";
+import { clsx } from "clsx";
+import { FINRA_UI_ATTR, componentIds } from "../componentIds";
+import styles from "./PillInput.module.scss";
+
+function mergeRefs<T>(...refs: (Ref<T> | undefined)[]): (value: T | null) => void {
+  return (value: T | null) => {
+    for (const ref of refs) {
+      if (typeof ref === "function") {
+        ref(value);
+      } else if (ref && typeof ref === "object") {
+        (ref as React.RefObject<T | null>).current = value;
+      }
+    }
+  };
+}
+
+export interface PillInputProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
+  /** Current list of pills (controlled). */
+  values?: string[];
+  /** Called when the pill list changes. */
+  onChange?: (values: string[]) => void;
+  /** Placeholder shown when no pills and input is empty. */
+  placeholder?: string;
+  /** Disable the entire component. */
+  disabled?: boolean;
+  /** Maximum number of pills allowed. */
+  maxPills?: number;
+  /** Characters that trigger pill creation (default: Enter). */
+  delimiters?: string[];
+}
+
+export const PillInput = forwardRef<HTMLInputElement, PillInputProps>(
+  (
+    {
+      className,
+      values: controlledValues,
+      onChange,
+      placeholder,
+      disabled,
+      maxPills,
+      delimiters = [],
+      ...props
+    },
+    forwardedRef,
+  ) => {
+    const [internalValues, setInternalValues] = useState<string[]>([]);
+    const [inputValue, setInputValue] = useState("");
+    const internalRef = useRef<HTMLInputElement>(null);
+
+    const values = controlledValues ?? internalValues;
+
+    const updateValues = useCallback(
+      (next: string[]) => {
+        if (!controlledValues) {
+          setInternalValues(next);
+        }
+        onChange?.(next);
+      },
+      [controlledValues, onChange],
+    );
+
+    const addPill = useCallback(
+      (text: string) => {
+        const trimmed = text.trim();
+        if (!trimmed) return;
+        if (values.includes(trimmed)) return;
+        if (maxPills != null && values.length >= maxPills) return;
+        updateValues([...values, trimmed]);
+        setInputValue("");
+      },
+      [values, maxPills, updateValues],
+    );
+
+    const removePill = useCallback(
+      (index: number) => {
+        updateValues(values.filter((_, i) => i !== index));
+        internalRef.current?.focus();
+      },
+      [values, updateValues],
+    );
+
+    const handleKeyDown = useCallback(
+      (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          addPill(inputValue);
+          return;
+        }
+        if (e.key === "Backspace" && inputValue === "" && values.length > 0) {
+          removePill(values.length - 1);
+          return;
+        }
+        if (delimiters.includes(e.key)) {
+          e.preventDefault();
+          addPill(inputValue);
+        }
+      },
+      [inputValue, values, delimiters, addPill, removePill],
+    );
+
+    const handleContainerClick = useCallback(() => {
+      if (!disabled) {
+        internalRef.current?.focus();
+      }
+    }, [disabled]);
+
+    const handleContainerKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (!disabled && (e.key === "Enter" || e.key === " ")) {
+          internalRef.current?.focus();
+        }
+      },
+      [disabled],
+    );
+
+    return (
+      <div
+        {...{ [FINRA_UI_ATTR]: componentIds.pillInput }}
+        role="toolbar"
+        className={clsx(styles.pillInput, disabled && styles.disabled, className)}
+        onClick={handleContainerClick}
+        onKeyDown={handleContainerKeyDown}
+        {...props}>
+        {values.map((pill) => (
+          <span key={pill} className={styles.pill}>
+            <span className={styles.pillText}>{pill}</span>
+            {!disabled ? (
+              <button
+                type="button"
+                className={styles.pillRemove}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removePill(values.indexOf(pill));
+                }}
+                aria-label={`Remove ${pill}`}
+                tabIndex={-1}>
+                <svg
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round">
+                  <path d="M3 3l6 6M9 3l-6 6" />
+                </svg>
+              </button>
+            ) : null}
+          </span>
+        ))}
+        <input
+          ref={mergeRefs(forwardedRef, internalRef)}
+          className={styles.input}
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={values.length === 0 ? placeholder : undefined}
+          disabled={disabled}
+          aria-label={props["aria-label"]}
+          aria-labelledby={props["aria-labelledby"]}
+        />
+      </div>
+    );
+  },
+);
+
+PillInput.displayName = "PillInput";
