@@ -149,6 +149,11 @@
   --button-font-size: var(--text-sm);
   --input-padding-x: 0.75rem;
   --input-font-size: var(--text-sm);
+  // Checkbox / Switch
+  --checkbox-size: 1.125rem;
+  --switch-track-width: 2.5rem;
+  --switch-track-height: 1.375rem;
+  --switch-thumb-size: 1.125rem;
 }
 
 // ─── Density: high ───
@@ -161,6 +166,10 @@
   --button-font-size: var(--text-xs);
   --input-padding-x: 0.5rem;
   --input-font-size: var(--text-xs);
+  --checkbox-size: 0.875rem;
+  --switch-track-width: 2rem;
+  --switch-track-height: 1.125rem;
+  --switch-thumb-size: 0.875rem;
 }
 
 // ─── Density: low ───
@@ -173,6 +182,10 @@
   --button-font-size: var(--text-base);
   --input-padding-x: 1rem;
   --input-font-size: var(--text-base);
+  --checkbox-size: 1.375rem;
+  --switch-track-width: 3rem;
+  --switch-track-height: 1.625rem;
+  --switch-thumb-size: 1.375rem;
 }
 
 // ─── Dark theme ───

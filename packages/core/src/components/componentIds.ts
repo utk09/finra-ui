@@ -20,6 +20,24 @@ export const componentIds = {
   numberInputField: "number-input-field",
   numberInputIncrement: "number-input-increment",
   numberInputDecrement: "number-input-decrement",
+
+  // FormField
+  formField: "form-field",
+  formFieldLabel: "form-field-label",
+  formFieldHelper: "form-field-helper",
+  formFieldError: "form-field-error",
+
+  // Checkbox
+  checkbox: "checkbox",
+
+  // Switch
+  switch: "switch",
+
+  // Badge
+  badge: "badge",
+
+  // Divider
+  divider: "divider",
 } as const;
 
 export type ComponentId = (typeof componentIds)[keyof typeof componentIds];

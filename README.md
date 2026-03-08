@@ -6,66 +6,179 @@ React component library for web applications.
 [![npm version](https://img.shields.io/npm/v/@utk09/finra-ui.svg)](https://www.npmjs.com/package/@utk09/finra-ui)
 [![Storybook](https://img.shields.io/badge/Storybook-deployed-ff4785)](https://finra-ui.netlify.app)
 
+## Live Demo
+
+Browse all components with interactive examples: **[finra-ui.netlify.app](https://finra-ui.netlify.app)**
+
 ## Installation
 
 ```bash
 npm install @utk09/finra-ui
+# or
+pnpm add @utk09/finra-ui
 ```
 
-## Usage
+## Quick Start
 
-### Styled Components
+Import the global styles **once** at the root of your app, then use any component:
 
 ```tsx
-import { Button } from "@utk09/finra-ui";
 import "@utk09/finra-ui/styles";
+import { Button, Input, Badge } from "@utk09/finra-ui";
 
 function App() {
   return (
-    <Button variant="primary" size="md">
-      Click me
-    </Button>
+    <div>
+      <Button variant="primary">Click me</Button>
+      <Input placeholder="Enter text..." />
+      <Badge sentiment="success">Active</Badge>
+    </div>
   );
 }
 ```
 
+## Components
+
+### Styled Components
+
+| Component     | Description                                                                                  |
+| ------------- | -------------------------------------------------------------------------------------------- |
+| `Button`      | Button with variant (primary/secondary/tertiary) and sentiment (danger/success/warning/info) |
+| `IconButton`  | Icon-only button with `aria-label` requirement                                               |
+| `ButtonGroup` | Groups buttons with merged borders                                                           |
+| `Input`       | Text input with variants, validation states, adornments, and clearable support               |
+| `Textarea`    | Multi-line text input with character count and auto-resize                                   |
+| `NumberInput` | Numeric input with increment/decrement buttons                                               |
+| `FormField`   | Wrapper that wires label, helper text, and error message with a11y attributes                |
+| `Checkbox`    | Custom-styled checkbox with indeterminate support                                            |
+| `Switch`      | Toggle switch (on/off)                                                                       |
+| `Badge`       | Inline status/category label with variant and sentiment                                      |
+| `Divider`     | Horizontal or vertical separator                                                             |
+
 ### Unstyled Components
 
-```tsx
-import { ButtonBase } from "@utk09/finra-ui/unstyled";
+Every styled component has an unstyled base that provides only behavior and accessibility — no visual styles. Import from the `/unstyled` entry point:
 
-function App() {
-  return <ButtonBase className="my-custom-button">Click me</ButtonBase>;
+```tsx
+import { ButtonBase, CheckboxBase, SwitchBase } from "@utk09/finra-ui/unstyled";
+```
+
+Available: `ButtonBase`, `IconButtonBase`, `InputBase`, `TextareaBase`, `NumberInputBase`, `CheckboxBase`, `SwitchBase`.
+
+## Features
+
+### Variants & Sentiments
+
+Buttons and Badges support three **variants** and four **sentiments** that combine freely:
+
+```tsx
+<Button variant="primary" sentiment="danger">Delete</Button>
+<Button variant="secondary" sentiment="success">Approve</Button>
+<Badge variant="tertiary" sentiment="warning">Pending</Badge>
+```
+
+### Density System
+
+Control spacing globally via a `data-density` attribute on any ancestor element. All components respond automatically — no props needed:
+
+```tsx
+{
+  /* Compact UI for data-dense screens */
+}
+<div data-density="high">
+  <Button>Tight</Button>
+  <Input placeholder="Compact" />
+</div>;
+
+{
+  /* Spacious UI */
+}
+<div data-density="low">
+  <Button>Relaxed</Button>
+</div>;
+```
+
+Three levels: `high`, `medium` (default), `low`.
+
+### Theming
+
+Override design tokens via CSS custom properties. Every component uses `--color-*`, `--radius-*`, `--font-*` tokens defined in the global styles:
+
+```css
+:root {
+  --color-primary-600: #2563eb;
+  --color-error: #dc2626;
+  --radius-md: 0.375rem;
 }
 ```
 
+### CSS Override Selectors
+
+Every component renders a stable `data-finra-ui` attribute for targeted CSS overrides:
+
+```css
+[data-finra-ui="button"] {
+  text-transform: uppercase;
+}
+
+[data-finra-ui="input"] {
+  min-height: 3rem;
+}
+```
+
+### Form Field Composition
+
+`FormField` automatically wires `id`, `aria-describedby`, `aria-invalid`, and `disabled` onto its child input:
+
+```tsx
+<FormField
+  label="Email"
+  required
+  validationStatus="error"
+  errorMessage="Please enter a valid email."
+  helperText="We'll never share your email.">
+  <Input placeholder="you@example.com" />
+</FormField>
+```
+
+### Zero External Runtime Dependencies
+
+The only runtime dependencies are `clsx` and `class-variance-authority` — no Radix, no Emotion, no runtime CSS-in-JS.
+
 ## Development
 
-This project uses `pnpm` for package management.
+This is a pnpm monorepo with Turborepo.
 
 ```bash
 # Install dependencies
 pnpm install
 
-# Run development server for all packages
+# Run development (Storybook)
 pnpm run dev
 
-# Run tests for all packages
-pnpm run test
-
-# Run Storybook
-pnpm run dev --filter @finra-ui/storybook
-
-# Build all packages
+# Build the library
 pnpm run build
 
-# Create a new changeset for versioning
-pnpm run changeset
+# Run tests
+pnpm run test
 
-# Commit your changes following conventional commits
-git commit -m "feat: add new component"
+# Type check
+pnpm run typecheck
+
+# Lint
+pnpm run lint
+
+# All checks at once
+pnpm run typecheck && pnpm run lint && pnpm run test
+```
+
+### Project Structure
+
+```txt
+packages/core/     — Component library (@utk09/finra-ui)
+apps/storybook/    — Storybook documentation app
 ```
 
 ## License
 
-MIT
+[MIT](LICENSE)

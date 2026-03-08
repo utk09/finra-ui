@@ -5,6 +5,8 @@ import {
   InputBase,
   TextareaBase,
   NumberInputBase,
+  CheckboxBase,
+  SwitchBase,
 } from "@utk09/finra-ui/unstyled";
 import { expect, userEvent, within } from "storybook/test";
 import { SearchIcon, PlusIcon, CloseIcon, CheckIcon, EditIcon } from "./_icons";
@@ -137,6 +139,66 @@ export const NumberInputBaseDefault: Story = {
   },
 };
 
+// ─── CheckboxBase ───
+
+export const CheckboxBaseDefault: Story = {
+  name: "CheckboxBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+      <label htmlFor="cb-accept" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <CheckboxBase id="cb-accept" aria-label="Accept terms" /> Accept terms
+      </label>
+      <label htmlFor="cb-checked" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <CheckboxBase id="cb-checked" defaultChecked aria-label="Checked" /> Checked
+      </label>
+      <label htmlFor="cb-disabled" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <CheckboxBase id="cb-disabled" disabled aria-label="Disabled" /> Disabled
+      </label>
+      <label
+        htmlFor="cb-indeterminate"
+        style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <CheckboxBase id="cb-indeterminate" indeterminate aria-label="Indeterminate" />{" "}
+        Indeterminate
+      </label>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkbox = canvas.getByLabelText("Accept terms");
+    await expect(checkbox).toBeVisible();
+    await userEvent.click(checkbox);
+    await expect(checkbox).toBeChecked();
+  },
+};
+
+// ─── SwitchBase ───
+
+export const SwitchBaseDefault: Story = {
+  name: "SwitchBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+      <label
+        htmlFor="sw-notifications"
+        style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <SwitchBase id="sw-notifications" aria-label="Toggle notifications" /> Notifications
+      </label>
+      <label htmlFor="sw-active" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <SwitchBase id="sw-active" defaultChecked aria-label="Active switch" /> Active
+      </label>
+      <label htmlFor="sw-disabled" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <SwitchBase id="sw-disabled" disabled aria-label="Disabled switch" /> Disabled
+      </label>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const switchEl = canvas.getByLabelText("Toggle notifications");
+    await expect(switchEl).toBeVisible();
+    await userEvent.click(switchEl);
+    await expect(switchEl).toBeChecked();
+  },
+};
+
 // ─── Showcase ───
 
 export const AllUnstyled: Story = {
@@ -146,7 +208,7 @@ export const AllUnstyled: Story = {
       <div>
         <h3 style={{ marginBottom: "0.5rem" }}>ButtonBase</h3>
         <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
-          A plain button element with <code>asChild</code> support via Radix Slot.
+          A plain button element with <code>asChild</code> support via internal Slot utility.
         </p>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           <ButtonBase type="button">Click me</ButtonBase>
@@ -204,6 +266,50 @@ export const AllUnstyled: Story = {
           step buttons - those are in the styled <code>NumberInput</code>.
         </p>
         <NumberInputBase placeholder="0" aria-label="Demo number input" style={{ maxWidth: 300 }} />
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: "0.5rem" }}>CheckboxBase</h3>
+        <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
+          A native checkbox input with <code>indeterminate</code> support via a DOM property.
+        </p>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+          <label
+            htmlFor="demo-cb"
+            style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+            <CheckboxBase id="demo-cb" aria-label="Demo checkbox" /> Check me
+          </label>
+          <label
+            htmlFor="demo-cb-checked"
+            style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+            <CheckboxBase id="demo-cb-checked" defaultChecked aria-label="Demo checked" /> Checked
+          </label>
+          <label
+            htmlFor="demo-cb-indet"
+            style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+            <CheckboxBase id="demo-cb-indet" indeterminate aria-label="Demo indeterminate" />{" "}
+            Indeterminate
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: "0.5rem" }}>SwitchBase</h3>
+        <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
+          A checkbox input with <code>role=&quot;switch&quot;</code> for toggle behavior.
+        </p>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+          <label
+            htmlFor="demo-sw"
+            style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+            <SwitchBase id="demo-sw" aria-label="Demo switch" /> Toggle
+          </label>
+          <label
+            htmlFor="demo-sw-on"
+            style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+            <SwitchBase id="demo-sw-on" defaultChecked aria-label="Demo switch on" /> On
+          </label>
+        </div>
       </div>
     </div>
   ),

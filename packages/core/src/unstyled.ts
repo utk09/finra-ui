@@ -13,3 +13,9 @@ export type { TextareaBaseProps } from "./unstyled/Textarea/Textarea";
 
 export { NumberInputBase } from "./unstyled/NumberInput/NumberInput";
 export type { NumberInputBaseProps } from "./unstyled/NumberInput/NumberInput";
+
+export { CheckboxBase } from "./unstyled/Checkbox/Checkbox";
+export type { CheckboxBaseProps } from "./unstyled/Checkbox/Checkbox";
+
+export { SwitchBase } from "./unstyled/Switch/Switch";
+export type { SwitchBaseProps } from "./unstyled/Switch/Switch";

@@ -26,5 +26,25 @@ export type { TextareaProps } from "./components/Textarea/Textarea";
 export { NumberInput } from "./components/NumberInput/NumberInput";
 export type { NumberInputProps } from "./components/NumberInput/NumberInput";
 
+// FormField
+export { FormField } from "./components/FormField/FormField";
+export type { FormFieldProps } from "./components/FormField/FormField";
+
+// Checkbox
+export { Checkbox } from "./components/Checkbox/Checkbox";
+export type { CheckboxProps } from "./components/Checkbox/Checkbox";
+
+// Switch
+export { Switch } from "./components/Switch/Switch";
+export type { SwitchProps } from "./components/Switch/Switch";
+
+// Badge
+export { Badge } from "./components/Badge/Badge";
+export type { BadgeProps, BadgeSentiment } from "./components/Badge/Badge";
+
+// Divider
+export { Divider } from "./components/Divider/Divider";
+export type { DividerProps } from "./components/Divider/Divider";
+
 // Import styles
 import "./styles/global.scss";
