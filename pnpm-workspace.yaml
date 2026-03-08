@@ -7,7 +7,6 @@ catalog:
   "@commitlint/cli": 20.4.3
   "@commitlint/config-conventional": 20.4.3
   "@eslint/js": 9.39.4
-  "@radix-ui/react-slot": 1.2.4
   "@storybook/addon-a11y": 10.2.16
   "@storybook/addon-docs": 10.2.16
   "@storybook/addon-themes": 10.2.16

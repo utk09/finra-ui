@@ -1,5 +1,5 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
-import { Slot } from "@radix-ui/react-slot";
+import { Slot } from "../Slot";
 
 export interface IconButtonBaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   asChild?: boolean;
