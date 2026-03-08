@@ -3,7 +3,7 @@ import { withThemeByDataAttribute } from "@storybook/addon-themes";
 import "@utk09/finra-ui/styles";
 
 const preview: Preview = {
-  tags: ["autodocs"],
+  tags: ["autodocs", "a11y-test"],
   parameters: {
     controls: {
       matchers: {

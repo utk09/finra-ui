@@ -13,6 +13,7 @@ storybook-static
 # Testing
 coverage
 *.lcov
+PLAN.md
 
 # Turbo
 .turbo
