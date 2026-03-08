@@ -42,6 +42,18 @@ export type { SwitchProps } from "./components/Switch/Switch";
 export { RadioButton } from "./components/RadioButton/RadioButton";
 export type { RadioButtonProps } from "./components/RadioButton/RadioButton";
 
+// Slider
+export { Slider } from "./components/Slider/Slider";
+export type { SliderProps } from "./components/Slider/Slider";
+
+// PillInput
+export { PillInput } from "./components/PillInput/PillInput";
+export type { PillInputProps } from "./components/PillInput/PillInput";
+
+// FileDropZone
+export { FileDropZone } from "./components/FileDropZone/FileDropZone";
+export type { FileDropZoneProps } from "./components/FileDropZone/FileDropZone";
+
 // Badge
 export { Badge } from "./components/Badge/Badge";
 export type { BadgeProps, BadgeSentiment } from "./components/Badge/Badge";

@@ -22,3 +22,6 @@ export type { SwitchBaseProps } from "./unstyled/Switch/Switch";
 
 export { RadioButtonBase } from "./unstyled/RadioButton/RadioButton";
 export type { RadioButtonBaseProps } from "./unstyled/RadioButton/RadioButton";
+
+export { SliderBase } from "./unstyled/Slider/Slider";
+export type { SliderBaseProps } from "./unstyled/Slider/Slider";

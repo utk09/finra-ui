@@ -64,7 +64,6 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
         "aria-describedby": describedBy,
         "aria-invalid": validationStatus === "error" ? true : undefined,
         disabled: disabled || undefined,
-        validationStatus,
       });
     });
 

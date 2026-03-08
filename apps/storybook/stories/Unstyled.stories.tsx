@@ -8,6 +8,7 @@ import {
   CheckboxBase,
   SwitchBase,
   RadioButtonBase,
+  SliderBase,
 } from "@utk09/finra-ui/unstyled";
 import { expect, userEvent, within } from "storybook/test";
 import { SearchIcon, PlusIcon, CloseIcon, CheckIcon, EditIcon } from "./_icons";
@@ -228,6 +229,53 @@ export const SwitchBaseDefault: Story = {
   },
 };
 
+// ─── SliderBase ───
+
+export const SliderBaseDefault: Story = {
+  name: "SliderBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxWidth: 300 }}>
+      <label
+        htmlFor="sl-default"
+        style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+        Volume
+        <SliderBase id="sl-default" min={0} max={100} defaultValue={50} aria-label="Volume" />
+      </label>
+      <label
+        htmlFor="sl-stepped"
+        style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+        Stepped (10)
+        <SliderBase
+          id="sl-stepped"
+          min={0}
+          max={100}
+          step={10}
+          defaultValue={30}
+          aria-label="Stepped"
+        />
+      </label>
+      <label
+        htmlFor="sl-disabled"
+        style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+        Disabled
+        <SliderBase
+          id="sl-disabled"
+          min={0}
+          max={100}
+          defaultValue={70}
+          disabled
+          aria-label="Disabled"
+        />
+      </label>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const slider = canvas.getByLabelText("Volume");
+    await expect(slider).toBeVisible();
+  },
+};
+
 // ─── Showcase ───
 
 export const AllUnstyled: Story = {
@@ -369,6 +417,23 @@ export const AllUnstyled: Story = {
             style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
             <SwitchBase id="demo-sw-on" defaultChecked aria-label="Demo switch on" /> On
           </label>
+        </div>
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: "0.5rem" }}>SliderBase</h3>
+        <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
+          A native range input for slider/range selection.
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxWidth: 250 }}>
+          <SliderBase min={0} max={100} defaultValue={50} aria-label="Demo slider" />
+          <SliderBase
+            min={0}
+            max={100}
+            defaultValue={70}
+            disabled
+            aria-label="Demo slider disabled"
+          />
         </div>
       </div>
     </div>

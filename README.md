@@ -41,29 +41,39 @@ function App() {
 
 ### Styled Components
 
-| Component     | Description                                                                                  |
-| ------------- | -------------------------------------------------------------------------------------------- |
-| `Button`      | Button with variant (primary/secondary/tertiary) and sentiment (danger/success/warning/info) |
-| `IconButton`  | Icon-only button with `aria-label` requirement                                               |
-| `ButtonGroup` | Groups buttons with merged borders                                                           |
-| `Input`       | Text input with variants, validation states, adornments, and clearable support               |
-| `Textarea`    | Multi-line text input with character count and auto-resize                                   |
-| `NumberInput` | Numeric input with increment/decrement buttons                                               |
-| `FormField`   | Wrapper that wires label, helper text, and error message with a11y attributes                |
-| `Checkbox`    | Custom-styled checkbox with indeterminate support                                            |
-| `Switch`      | Toggle switch (on/off)                                                                       |
-| `Badge`       | Inline status/category label with variant and sentiment                                      |
-| `Divider`     | Horizontal or vertical separator                                                             |
+| Component      | Description                                                                                  |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| `Button`       | Button with variant (primary/secondary/tertiary) and sentiment (danger/success/warning/info) |
+| `IconButton`   | Icon-only button with `aria-label` requirement                                               |
+| `ButtonGroup`  | Groups buttons with merged borders                                                           |
+| `Input`        | Text input with variants, validation states, adornments, and clearable support               |
+| `Textarea`     | Multi-line text input with character count and auto-resize                                   |
+| `NumberInput`  | Numeric input with increment/decrement buttons                                               |
+| `FormField`    | Wrapper that wires label, helper text, and error message with a11y attributes                |
+| `Checkbox`     | Custom-styled checkbox with indeterminate support                                            |
+| `Switch`       | Toggle switch (on/off)                                                                       |
+| `RadioButton`  | Radio button for grouped exclusive selection                                                 |
+| `Slider`       | Range slider with optional label and value display                                           |
+| `PillInput`    | Tokenized tag/pill input with keyboard support                                               |
+| `FileDropZone` | Drag-and-drop file upload zone                                                               |
+| `Badge`        | Inline status/category label with variant and sentiment                                      |
+| `Divider`      | Horizontal or vertical separator                                                             |
 
 ### Unstyled Components
 
 Every styled component has an unstyled base that provides only behavior and accessibility - no visual styles. Import from the `/unstyled` entry point:
 
 ```tsx
-import { ButtonBase, CheckboxBase, SwitchBase } from "@utk09/finra-ui/unstyled";
+import {
+  ButtonBase,
+  CheckboxBase,
+  SwitchBase,
+  RadioButtonBase,
+  SliderBase,
+} from "@utk09/finra-ui/unstyled";
 ```
 
-Available: `ButtonBase`, `IconButtonBase`, `InputBase`, `TextareaBase`, `NumberInputBase`, `CheckboxBase`, `SwitchBase`.
+Available: `ButtonBase`, `IconButtonBase`, `InputBase`, `TextareaBase`, `NumberInputBase`, `CheckboxBase`, `SwitchBase`, `RadioButtonBase`, `SliderBase`.
 
 ## Features
 
