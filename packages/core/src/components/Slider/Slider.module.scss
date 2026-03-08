@@ -1,0 +1,119 @@
+.slider {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--density-spacing);
+  font-family: var(--font-sans);
+  font-size: var(--input-font-size);
+  line-height: var(--leading-normal);
+  color: var(--color-foreground);
+  cursor: var(--cursor-pointer);
+
+  &.disabled {
+    opacity: var(--opacity-disabled);
+    cursor: var(--cursor-disabled);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--density-spacing);
+}
+
+.label {
+  user-select: none;
+}
+
+.value {
+  font-variant-numeric: var(--font-tabular-nums);
+  color: var(--color-neutral-500);
+  font-size: var(--text-xs);
+}
+
+.input {
+  appearance: none;
+  inline-size: 100%;
+  block-size: 4px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-neutral-200);
+  outline: none;
+  cursor: inherit;
+  transition: background-color var(--transition-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  // ─── Thumb — WebKit ───
+  &::-webkit-slider-thumb {
+    appearance: none;
+    inline-size: var(--slider-thumb-size);
+    block-size: var(--slider-thumb-size);
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary-600);
+    border: var(--border-width-medium) solid var(--color-white);
+    box-shadow: var(--shadow-sm);
+    cursor: inherit;
+    transition: background-color var(--transition-fast) ease-in-out;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &::-webkit-slider-thumb:hover {
+    background-color: var(--color-primary-700);
+  }
+
+  // ─── Thumb — Firefox ───
+  &::-moz-range-thumb {
+    inline-size: var(--slider-thumb-size);
+    block-size: var(--slider-thumb-size);
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary-600);
+    border: var(--border-width-medium) solid var(--color-white);
+    box-shadow: var(--shadow-sm);
+    cursor: inherit;
+    transition: background-color var(--transition-fast) ease-in-out;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &::-moz-range-thumb:hover {
+    background-color: var(--color-primary-700);
+  }
+
+  // ─── Track — Firefox ───
+  &::-moz-range-track {
+    background-color: var(--color-neutral-200);
+    block-size: 4px;
+    border-radius: var(--radius-full);
+  }
+
+  // ─── Focus ───
+  &:focus-visible {
+    &::-webkit-slider-thumb {
+      outline: var(--focus-ring-width) solid var(--focus-ring-color);
+      outline-offset: var(--focus-ring-offset);
+    }
+
+    &::-moz-range-thumb {
+      outline: var(--focus-ring-width) solid var(--focus-ring-color);
+      outline-offset: var(--focus-ring-offset);
+    }
+  }
+
+  // ─── Disabled ───
+  &:disabled {
+    &::-webkit-slider-thumb {
+      background-color: var(--color-neutral-400);
+    }
+
+    &::-moz-range-thumb {
+      background-color: var(--color-neutral-400);
+    }
+  }
+}
