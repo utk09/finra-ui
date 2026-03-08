@@ -19,3 +19,6 @@ export type { CheckboxBaseProps } from "./unstyled/Checkbox/Checkbox";
 
 export { SwitchBase } from "./unstyled/Switch/Switch";
 export type { SwitchBaseProps } from "./unstyled/Switch/Switch";
+
+export { RadioButtonBase } from "./unstyled/RadioButton/RadioButton";
+export type { RadioButtonBaseProps } from "./unstyled/RadioButton/RadioButton";

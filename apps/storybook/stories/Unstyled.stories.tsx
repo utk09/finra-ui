@@ -7,13 +7,14 @@ import {
   NumberInputBase,
   CheckboxBase,
   SwitchBase,
+  RadioButtonBase,
 } from "@utk09/finra-ui/unstyled";
 import { expect, userEvent, within } from "storybook/test";
 import { SearchIcon, PlusIcon, CloseIcon, CheckIcon, EditIcon } from "./_icons";
 
 // Using ButtonBase as the meta component, but this file showcases all unstyled components
 const meta: Meta<typeof ButtonBase> = {
-  title: "Unstyled/Overview",
+  title: "Unstyled/Core",
   parameters: {
     layout: "padded",
   },
@@ -171,6 +172,34 @@ export const CheckboxBaseDefault: Story = {
   },
 };
 
+// ─── RadioButtonBase ───
+
+export const RadioButtonBaseDefault: Story = {
+  name: "RadioButtonBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+      <label htmlFor="rb-option-a" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <RadioButtonBase id="rb-option-a" name="rb-group" aria-label="Option A" /> Option A
+      </label>
+      <label htmlFor="rb-option-b" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <RadioButtonBase id="rb-option-b" name="rb-group" defaultChecked aria-label="Option B" />{" "}
+        Option B (checked)
+      </label>
+      <label htmlFor="rb-option-c" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <RadioButtonBase id="rb-option-c" name="rb-group" disabled aria-label="Option C" /> Option C
+        (disabled)
+      </label>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const radio = canvas.getByLabelText("Option A");
+    await expect(radio).toBeVisible();
+    await userEvent.click(radio);
+    await expect(radio).toBeChecked();
+  },
+};
+
 // ─── SwitchBase ───
 
 export const SwitchBaseDefault: Story = {
@@ -289,6 +318,37 @@ export const AllUnstyled: Story = {
             style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
             <CheckboxBase id="demo-cb-indet" indeterminate aria-label="Demo indeterminate" />{" "}
             Indeterminate
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: "0.5rem" }}>RadioButtonBase</h3>
+        <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
+          A native radio input for grouped exclusive selection.
+        </p>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+          <label
+            htmlFor="demo-rb-a"
+            style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+            <RadioButtonBase id="demo-rb-a" name="demo-rb" aria-label="Demo option A" /> Option A
+          </label>
+          <label
+            htmlFor="demo-rb-b"
+            style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+            <RadioButtonBase
+              id="demo-rb-b"
+              name="demo-rb"
+              defaultChecked
+              aria-label="Demo option B"
+            />{" "}
+            Option B
+          </label>
+          <label
+            htmlFor="demo-rb-c"
+            style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+            <RadioButtonBase id="demo-rb-c" name="demo-rb" disabled aria-label="Demo option C" />{" "}
+            Disabled
           </label>
         </div>
       </div>

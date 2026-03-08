@@ -38,6 +38,10 @@ export type { CheckboxProps } from "./components/Checkbox/Checkbox";
 export { Switch } from "./components/Switch/Switch";
 export type { SwitchProps } from "./components/Switch/Switch";
 
+// RadioButton
+export { RadioButton } from "./components/RadioButton/RadioButton";
+export type { RadioButtonProps } from "./components/RadioButton/RadioButton";
+
 // Badge
 export { Badge } from "./components/Badge/Badge";
 export type { BadgeProps, BadgeSentiment } from "./components/Badge/Badge";

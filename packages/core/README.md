@@ -57,7 +57,7 @@ function App() {
 
 ### Unstyled Components
 
-Every styled component has an unstyled base that provides only behavior and accessibility — no visual styles. Import from the `/unstyled` entry point:
+Every styled component has an unstyled base that provides only behavior and accessibility - no visual styles. Import from the `/unstyled` entry point:
 
 ```tsx
 import { ButtonBase, CheckboxBase, SwitchBase } from "@utk09/finra-ui/unstyled";
@@ -79,7 +79,7 @@ Buttons and Badges support three **variants** and four **sentiments** that combi
 
 ### Density System
 
-Control spacing globally via a `data-density` attribute on any ancestor element. All components respond automatically — no props needed:
+Control spacing globally via a `data-density` attribute on any ancestor element. All components respond automatically - no props needed:
 
 ```tsx
 {
@@ -143,7 +143,7 @@ Every component renders a stable `data-finra-ui` attribute for targeted CSS over
 
 ### Zero External Runtime Dependencies
 
-The only runtime dependencies are `clsx` and `class-variance-authority` — no Radix, no Emotion, no runtime CSS-in-JS.
+The only runtime dependencies are `clsx` and `class-variance-authority`.
 
 ## Development
 
@@ -175,8 +175,8 @@ pnpm run typecheck && pnpm run lint && pnpm run test
 ### Project Structure
 
 ```txt
-packages/core/     — Component library (@utk09/finra-ui)
-apps/storybook/    — Storybook documentation app
+packages/core/     - Component library (@utk09/finra-ui)
+apps/storybook/    - Storybook documentation app
 ```
 
 ## License

@@ -33,6 +33,9 @@ export const componentIds = {
   // Switch
   switch: "switch",
 
+  // RadioButton
+  radioButton: "radio-button",
+
   // Badge
   badge: "badge",
 
