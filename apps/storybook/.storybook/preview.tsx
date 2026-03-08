@@ -1,9 +1,39 @@
 import type { Preview } from "@storybook/react-vite";
-import { withThemeByDataAttribute } from "@storybook/addon-themes";
 import "@utk09/finra-ui/styles";
 
 const preview: Preview = {
   tags: ["autodocs", "a11y-test"],
+  globalTypes: {
+    theme: {
+      description: "Theme mode",
+      toolbar: {
+        title: "Theme",
+        icon: "paintbrush",
+        items: [
+          { value: "light", title: "Light", icon: "sun" },
+          { value: "dark", title: "Dark", icon: "moon" },
+        ],
+        dynamicTitle: true,
+      },
+    },
+    density: {
+      description: "Component density",
+      toolbar: {
+        title: "Density",
+        icon: "component",
+        items: [
+          { value: "high", title: "High" },
+          { value: "medium", title: "Medium" },
+          { value: "low", title: "Low" },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
+  initialGlobals: {
+    theme: "light",
+    density: "medium",
+  },
   parameters: {
     controls: {
       matchers: {
@@ -16,14 +46,24 @@ const preview: Preview = {
     },
   },
   decorators: [
-    withThemeByDataAttribute({
-      themes: {
-        light: "light",
-        dark: "dark",
-      },
-      defaultTheme: "light",
-      attributeName: "data-theme",
-    }),
+    (Story, context) => {
+      const theme = context.globals.theme || "light";
+      const density = context.globals.density || "medium";
+
+      return (
+        <div
+          data-density={density}
+          data-theme={theme === "dark" ? "dark" : undefined}
+          style={{
+            backgroundColor: "var(--color-background)",
+            color: "var(--color-foreground)",
+            padding: "1rem",
+            minHeight: "100%",
+          }}>
+          <Story />
+        </div>
+      );
+    },
   ],
 };
 
