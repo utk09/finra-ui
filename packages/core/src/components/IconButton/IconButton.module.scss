@@ -1,5 +1,5 @@
-.button {
-  // ─── Internal custom properties (set by variant + sentiment) ───
+.iconButton {
+  // ─── Internal custom properties ───
   --_btn-accent: var(--color-primary-600);
   --_btn-accent-hover: var(--color-primary-700);
   --_btn-accent-active: var(--color-primary-800);
@@ -9,25 +9,26 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--density-spacing);
   font-family: var(--font-sans);
-  font-weight: var(--font-medium);
-  font-size: var(--button-font-size);
-  line-height: var(--leading-tight);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast) ease-in-out;
+  cursor: var(--cursor-pointer);
+  border: var(--border-width-thin) solid var(--color-transparent);
+  outline: none;
+  padding: 0;
+  inline-size: var(--size-base);
+  block-size: var(--size-base);
+  flex-shrink: 0;
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
-  cursor: var(--cursor-pointer);
-  border: var(--border-width-thin) solid var(--color-transparent);
-  outline: none;
-  text-decoration: none;
-  position: relative;
-  white-space: nowrap;
-  height: var(--size-base);
-  padding: 0 var(--button-padding-x);
+
+  // ─── Icon sizing ───
+  > svg {
+    inline-size: var(--icon-size);
+    block-size: var(--icon-size);
+  }
 
   // ─── States ───
   &:disabled {
@@ -117,25 +118,5 @@
     --_btn-accent-hover: var(--color-info-hover);
     --_btn-accent-active: var(--color-info-active);
     --_btn-accent-subtle: var(--color-info-subtle);
-  }
-
-  // ─── Full width ───
-  &.fullWidth {
-    width: 100%;
-  }
-}
-
-// ─── Icon container ───
-.icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--icon-size);
-  block-size: var(--icon-size);
-  flex-shrink: 0;
-
-  > svg {
-    inline-size: 100%;
-    block-size: 100%;
   }
 }

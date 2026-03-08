@@ -1,0 +1,53 @@
+.buttonGroup {
+  display: inline-flex;
+  flex-direction: row;
+
+  // Connected borders: remove inner radii, collapse borders
+  > * {
+    border-radius: 0;
+
+    &:not(:first-child) {
+      margin-inline-start: calc(var(--border-width-thin) * -1);
+    }
+
+    &:first-child {
+      border-start-start-radius: var(--radius-md);
+      border-end-start-radius: var(--radius-md);
+    }
+
+    &:last-child {
+      border-start-end-radius: var(--radius-md);
+      border-end-end-radius: var(--radius-md);
+    }
+
+    // Ensure hovered/focused button appears above siblings
+    &:hover,
+    &:focus-visible {
+      z-index: 1;
+    }
+  }
+
+  // ─── Vertical orientation ───
+  &.vertical {
+    flex-direction: column;
+
+    > * {
+      &:not(:first-child) {
+        margin-inline-start: 0;
+        margin-block-start: calc(var(--border-width-thin) * -1);
+      }
+
+      &:first-child {
+        border-radius: 0;
+        border-start-start-radius: var(--radius-md);
+        border-start-end-radius: var(--radius-md);
+      }
+
+      &:last-child {
+        border-radius: 0;
+        border-end-start-radius: var(--radius-md);
+        border-end-end-radius: var(--radius-md);
+      }
+    }
+  }
+}
