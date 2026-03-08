@@ -1,24 +1,15 @@
 [build]
-  base = "/"
-  command = "pnpm install --frozen-lockfile && pnpm run build --filter=@finra-ui/storybook"
-  publish = "apps/storybook/storybook-static"
+base = "/"
+command = "pnpm install --frozen-lockfile && pnpm run build --filter=@finra-ui/storybook"
+publish = "apps/storybook/storybook-static"
 
 [build.environment]
-  NODE_VERSION = "22"
-  NPM_FLAGS = "--version"
-
-# Use pnpm for package management
-[[plugins]]
-  package = "@netlify/plugin-pnpm"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+NODE_VERSION = "22"
+NPM_FLAGS = "--version"
 
 [[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    X-XSS-Protection = "1; mode=block"
+for = "/*"
+[headers.values]
+X-Frame-Options = "SAMEORIGIN"
+X-Content-Type-Options = "nosniff"
+X-XSS-Protection = "1; mode=block"

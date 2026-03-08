@@ -21,16 +21,6 @@ const config: StorybookConfig = {
   },
 
   async viteFinal(config) {
-    // Add the package styles to external config to prevent Vite from trying to bundle it
-    if (config.build && config.build.rollupOptions) {
-      config.build.rollupOptions.external = [
-        ...(Array.isArray(config.build.rollupOptions.external)
-          ? config.build.rollupOptions.external
-          : []),
-        "@utk09/finra-ui/styles",
-      ];
-    }
-
     // Add aliases for direct imports from the core package source
     if (!config.resolve) config.resolve = {};
     const existing = Array.isArray(config.resolve.alias) ? config.resolve.alias : [];
