@@ -154,6 +154,8 @@
   --switch-track-width: 2.5rem;
   --switch-track-height: 1.375rem;
   --switch-thumb-size: 1.125rem;
+  // Slider
+  --slider-thumb-size: 1.125rem;
 }
 
 // ─── Density: high ───
@@ -170,6 +172,7 @@
   --switch-track-width: 2rem;
   --switch-track-height: 1.125rem;
   --switch-thumb-size: 0.875rem;
+  --slider-thumb-size: 0.875rem;
 }
 
 // ─── Density: low ───
@@ -186,6 +189,7 @@
   --switch-track-width: 3rem;
   --switch-track-height: 1.625rem;
   --switch-thumb-size: 1.375rem;
+  --slider-thumb-size: 1.375rem;
 }
 
 // ─── Dark theme ───

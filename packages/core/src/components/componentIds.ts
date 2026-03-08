@@ -36,6 +36,15 @@ export const componentIds = {
   // RadioButton
   radioButton: "radio-button",
 
+  // Slider
+  slider: "slider",
+
+  // PillInput
+  pillInput: "pill-input",
+
+  // FileDropZone
+  fileDropZone: "file-drop-zone",
+
   // Badge
   badge: "badge",
 
