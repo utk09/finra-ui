@@ -9,6 +9,9 @@ import {
   SwitchBase,
   RadioButtonBase,
   SliderBase,
+  FormFieldBase,
+  PillInputBase,
+  FileDropZoneBase,
 } from "@utk09/finra-ui/unstyled";
 import { expect, userEvent, within } from "storybook/test";
 import { SearchIcon, PlusIcon, CloseIcon, CheckIcon, EditIcon } from "./_icons";
@@ -278,6 +281,94 @@ export const SliderBaseDefault: Story = {
 
 // ─── Showcase ───
 
+// ─── FormFieldBase ───
+
+export const FormFieldBaseDefault: Story = {
+  name: "FormFieldBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 300 }}>
+      <FormFieldBase label="Email">
+        <input type="email" placeholder="you@example.com" />
+      </FormFieldBase>
+      <FormFieldBase label="Username" required helperText="Must be unique">
+        <input type="text" placeholder="Choose a username" />
+      </FormFieldBase>
+      <FormFieldBase label="Password" validationStatus="error" errorMessage="Password is too short">
+        <input type="password" />
+      </FormFieldBase>
+      <FormFieldBase label="Notes" disabled>
+        <textarea rows={2} placeholder="Disabled field" />
+      </FormFieldBase>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const emailInput = canvas.getByPlaceholderText("you@example.com");
+    await expect(emailInput).toBeVisible();
+    const errorMsg = canvas.getByRole("alert");
+    await expect(errorMsg).toHaveTextContent("Password is too short");
+  },
+};
+
+// ─── PillInputBase ───
+
+export const PillInputBaseDefault: Story = {
+  name: "PillInputBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 400 }}>
+      <PillInputBase placeholder="Type and press Enter" aria-label="Tags" />
+      <PillInputBase
+        values={["React", "TypeScript"]}
+        placeholder="Controlled"
+        aria-label="Controlled pills"
+      />
+      <PillInputBase placeholder="Disabled" disabled aria-label="Disabled pills" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText("Tags");
+    await expect(input).toBeVisible();
+    await userEvent.type(input, "hello{Enter}");
+  },
+};
+
+// ─── FileDropZoneBase ───
+
+export const FileDropZoneBaseDefault: Story = {
+  name: "FileDropZoneBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 400 }}>
+      <FileDropZoneBase
+        style={{ border: "2px dashed #ccc", padding: "2rem", textAlign: "center" }}
+        aria-label="Upload files"
+      />
+      <FileDropZoneBase
+        accept=".pdf,.csv"
+        style={{ border: "2px dashed #ccc", padding: "2rem", textAlign: "center" }}
+        aria-label="Upload documents">
+        <span>Drop PDFs or CSVs here</span>
+      </FileDropZoneBase>
+      <FileDropZoneBase
+        disabled
+        style={{
+          border: "2px dashed #ccc",
+          padding: "2rem",
+          textAlign: "center",
+          opacity: 0.5,
+        }}
+        aria-label="Disabled upload">
+        <span>Disabled</span>
+      </FileDropZoneBase>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const zone = canvas.getByLabelText("Upload files");
+    await expect(zone).toBeVisible();
+  },
+};
+
 export const AllUnstyled: Story = {
   name: "All Unstyled Components",
   render: () => (
@@ -435,6 +526,49 @@ export const AllUnstyled: Story = {
             aria-label="Demo slider disabled"
           />
         </div>
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: "0.5rem" }}>FormFieldBase</h3>
+        <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
+          Wires up label, error, and helper text with proper a11y attributes for any child input.
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxWidth: 300 }}>
+          <FormFieldBase label="Email" helperText="We'll never share your email">
+            <input type="email" placeholder="you@example.com" />
+          </FormFieldBase>
+          <FormFieldBase label="Password" validationStatus="error" errorMessage="Too short">
+            <input type="password" />
+          </FormFieldBase>
+        </div>
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: "0.5rem" }}>PillInputBase</h3>
+        <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
+          Keyboard-driven pill/tag input with add, remove, and deduplication logic.
+        </p>
+        <PillInputBase
+          placeholder="Type and press Enter"
+          aria-label="Demo pill input"
+          style={{ maxWidth: 300 }}
+        />
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: "0.5rem" }}>FileDropZoneBase</h3>
+        <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
+          Drag-and-drop file zone with click-to-browse and keyboard activation.
+        </p>
+        <FileDropZoneBase
+          aria-label="Demo file drop zone"
+          style={{
+            border: "2px dashed #ccc",
+            padding: "2rem",
+            textAlign: "center",
+            maxWidth: 300,
+          }}
+        />
       </div>
     </div>
   ),

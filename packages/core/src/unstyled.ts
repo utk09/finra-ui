@@ -25,3 +25,12 @@ export type { RadioButtonBaseProps } from "./unstyled/RadioButton/RadioButton";
 
 export { SliderBase } from "./unstyled/Slider/Slider";
 export type { SliderBaseProps } from "./unstyled/Slider/Slider";
+
+export { FormFieldBase } from "./unstyled/FormField/FormField";
+export type { FormFieldBaseProps } from "./unstyled/FormField/FormField";
+
+export { PillInputBase } from "./unstyled/PillInput/PillInput";
+export type { PillInputBaseProps } from "./unstyled/PillInput/PillInput";
+
+export { FileDropZoneBase } from "./unstyled/FileDropZone/FileDropZone";
+export type { FileDropZoneBaseProps } from "./unstyled/FileDropZone/FileDropZone";

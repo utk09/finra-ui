@@ -70,10 +70,13 @@ import {
   SwitchBase,
   RadioButtonBase,
   SliderBase,
+  FormFieldBase,
+  PillInputBase,
+  FileDropZoneBase,
 } from "@utk09/finra-ui/unstyled";
 ```
 
-Available: `ButtonBase`, `IconButtonBase`, `InputBase`, `TextareaBase`, `NumberInputBase`, `CheckboxBase`, `SwitchBase`, `RadioButtonBase`, `SliderBase`.
+Available: `ButtonBase`, `IconButtonBase`, `InputBase`, `TextareaBase`, `NumberInputBase`, `CheckboxBase`, `SwitchBase`, `RadioButtonBase`, `SliderBase`, `FormFieldBase`, `PillInputBase`, `FileDropZoneBase`.
 
 ## Features
 
