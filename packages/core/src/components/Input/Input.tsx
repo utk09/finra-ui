@@ -8,6 +8,7 @@ import {
 } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
+import { CloseIcon } from "../../assets/icons";
 import { FINRA_UI_ATTR, componentIds } from "../componentIds";
 import styles from "./Input.module.scss";
 
@@ -114,15 +115,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             onClick={handleClear}
             aria-label="Clear input"
             tabIndex={-1}>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
+            <CloseIcon />
           </button>
         ) : null}
         {endAdornment ? <span className={styles.adornment}>{endAdornment}</span> : null}

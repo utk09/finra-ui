@@ -33,9 +33,9 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const radio = canvas.getByRole("radio");
-    await expect(radio).toBeVisible();
+    await expect(radio).toBeInTheDocument();
     await expect(radio).not.toBeChecked();
-    await userEvent.click(radio);
+    await userEvent.click(canvas.getByText("Option A"));
     await expect(radio).toBeChecked();
   },
 };

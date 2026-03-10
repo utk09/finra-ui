@@ -12,6 +12,7 @@ import {
   FormFieldBase,
   PillInputBase,
   FileDropZoneBase,
+  ComboBoxBase,
 } from "@utk09/finra-ui/unstyled";
 import { expect, userEvent, within } from "storybook/test";
 import { SearchIcon, PlusIcon, CloseIcon, CheckIcon, EditIcon } from "./_icons";
@@ -327,7 +328,7 @@ export const PillInputBaseDefault: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const input = canvas.getByLabelText("Tags");
+    const input = canvas.getByRole("textbox", { name: "Tags" });
     await expect(input).toBeVisible();
     await userEvent.type(input, "hello{Enter}");
   },
@@ -366,6 +367,34 @@ export const FileDropZoneBaseDefault: Story = {
     const canvas = within(canvasElement);
     const zone = canvas.getByLabelText("Upload files");
     await expect(zone).toBeVisible();
+  },
+};
+
+// ─── ComboBoxBase ───
+
+export const ComboBoxBaseDefault: Story = {
+  name: "ComboBoxBase - Default",
+  render: () => {
+    const options = [
+      { value: "apple", label: "Apple" },
+      { value: "banana", label: "Banana" },
+      { value: "cherry", label: "Cherry" },
+    ];
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 300 }}>
+        <ComboBoxBase options={options} value={null} placeholder="Select a fruit..." />
+        <ComboBoxBase options={options} value="banana" placeholder="With value" />
+        <ComboBoxBase options={options} value={null} disabled placeholder="Disabled" />
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getAllByRole("searchbox")[0];
+    await expect(input).toBeVisible();
+    await userEvent.click(input);
+    await expect(canvas.getByRole("listbox")).toBeVisible();
   },
 };
 
@@ -568,6 +597,24 @@ export const AllUnstyled: Story = {
             textAlign: "center",
             maxWidth: 300,
           }}
+        />
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: "0.5rem" }}>ComboBoxBase</h3>
+        <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
+          Typeahead combobox with single/multi select, groups, favourites, async, and creatable.
+        </p>
+        <ComboBoxBase
+          options={[
+            { value: "apple", label: "Apple" },
+            { value: "banana", label: "Banana" },
+            { value: "cherry", label: "Cherry" },
+          ]}
+          value={null}
+          placeholder="Select a fruit..."
+          aria-label="Demo combo box"
+          style={{ maxWidth: 300 }}
         />
       </div>
     </div>

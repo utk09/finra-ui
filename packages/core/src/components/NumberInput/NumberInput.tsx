@@ -10,6 +10,7 @@ import {
 } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
+import { MinusIcon, PlusIcon } from "../../assets/icons";
 import { FINRA_UI_ATTR, componentIds } from "../componentIds";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./NumberInput.module.scss";
@@ -185,14 +186,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
           }
           aria-label="Decrement"
           tabIndex={-1}>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round">
-            <path d="M5 12h14" />
-          </svg>
+          <MinusIcon />
         </button>
         <input
           ref={inputRef}
@@ -225,14 +219,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
           }
           aria-label="Increment"
           tabIndex={-1}>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
+          <PlusIcon />
         </button>
       </div>
     );

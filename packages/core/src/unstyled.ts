@@ -34,3 +34,6 @@ export type { PillInputBaseProps } from "./unstyled/PillInput/PillInput";
 
 export { FileDropZoneBase } from "./unstyled/FileDropZone/FileDropZone";
 export type { FileDropZoneBaseProps } from "./unstyled/FileDropZone/FileDropZone";
+
+export { ComboBoxBase } from "./unstyled/ComboBox/ComboBox";
+export type { ComboBoxBaseProps } from "./unstyled/ComboBox/ComboBox";

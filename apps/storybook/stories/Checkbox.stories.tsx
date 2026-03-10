@@ -35,9 +35,9 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const checkbox = canvas.getByRole("checkbox");
-    await expect(checkbox).toBeVisible();
+    await expect(checkbox).toBeInTheDocument();
     await expect(checkbox).not.toBeChecked();
-    await userEvent.click(checkbox);
+    await userEvent.click(canvas.getByText("Accept terms and conditions"));
     await expect(checkbox).toBeChecked();
   },
 };

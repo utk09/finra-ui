@@ -7,20 +7,8 @@ import {
   type ChangeEvent,
   type HTMLAttributes,
   type ReactNode,
-  type Ref,
 } from "react";
-
-function mergeRefs<T>(...refs: (Ref<T> | undefined)[]): (value: T | null) => void {
-  return (value: T | null) => {
-    for (const ref of refs) {
-      if (typeof ref === "function") {
-        ref(value);
-      } else if (ref && typeof ref === "object") {
-        (ref as React.RefObject<T | null>).current = value;
-      }
-    }
-  };
-}
+import { mergeRefs } from "../../utils/mergeRefs";
 
 export interface FileDropZoneBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   /** Called with selected files. */
@@ -100,17 +88,7 @@ export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBasePro
     );
 
     return (
-      <div
-        role="button"
-        tabIndex={disabled ? -1 : 0}
-        aria-disabled={disabled || undefined}
-        data-drag-over={isDragOver || undefined}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        {...props}>
+      <>
         <input
           ref={mergeRefs(forwardedRef, internalRef)}
           type="file"
@@ -122,8 +100,20 @@ export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBasePro
           tabIndex={-1}
           aria-hidden="true"
         />
-        {children ?? <span>Drop files here or click to browse</span>}
-      </div>
+        <div
+          role="button"
+          tabIndex={disabled ? -1 : 0}
+          aria-disabled={disabled || undefined}
+          data-drag-over={isDragOver || undefined}
+          onClick={handleClick}
+          onKeyDown={handleKeyDown}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          {...props}>
+          {children ?? <span>Drop files here or click to browse</span>}
+        </div>
+      </>
     );
   },
 );

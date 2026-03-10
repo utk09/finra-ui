@@ -24,9 +24,10 @@
   }
 
   &.disabled {
-    opacity: var(--opacity-disabled);
     cursor: var(--cursor-disabled);
     background-color: var(--color-neutral-50);
+    color: var(--color-neutral-500);
+    border-color: var(--color-neutral-200);
   }
 }
 

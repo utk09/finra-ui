@@ -1,0 +1,9 @@
+export { CheckIcon } from "./CheckIcon";
+export { DashIcon } from "./DashIcon";
+export { CloseSmallIcon } from "./CloseSmallIcon";
+export { CloseIcon } from "./CloseIcon";
+export { ChevronDownIcon } from "./ChevronDownIcon";
+export { UploadIcon } from "./UploadIcon";
+export { SpinnerIcon } from "./SpinnerIcon";
+export { MinusIcon } from "./MinusIcon";
+export { PlusIcon } from "./PlusIcon";

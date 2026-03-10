@@ -7,23 +7,12 @@ import {
   type ChangeEvent,
   type HTMLAttributes,
   type ReactNode,
-  type Ref,
 } from "react";
 import { clsx } from "clsx";
+import { mergeRefs } from "../../utils/mergeRefs";
+import { UploadIcon } from "../../assets/icons";
 import { FINRA_UI_ATTR, componentIds } from "../componentIds";
 import styles from "./FileDropZone.module.scss";
-
-function mergeRefs<T>(...refs: (Ref<T> | undefined)[]): (value: T | null) => void {
-  return (value: T | null) => {
-    for (const ref of refs) {
-      if (typeof ref === "function") {
-        ref(value);
-      } else if (ref && typeof ref === "object") {
-        (ref as React.RefObject<T | null>).current = value;
-      }
-    }
-  };
-}
 
 export interface FileDropZoneProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   /** Called with selected files. */
@@ -103,23 +92,7 @@ export const FileDropZone = forwardRef<HTMLInputElement, FileDropZoneProps>(
     );
 
     return (
-      <div
-        {...{ [FINRA_UI_ATTR]: componentIds.fileDropZone }}
-        role="button"
-        tabIndex={disabled ? -1 : 0}
-        aria-disabled={disabled || undefined}
-        className={clsx(
-          styles.dropZone,
-          isDragOver && styles.dragOver,
-          disabled && styles.disabled,
-          className,
-        )}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        {...props}>
+      <>
         <input
           ref={mergeRefs(forwardedRef, internalRef)}
           type="file"
@@ -131,25 +104,31 @@ export const FileDropZone = forwardRef<HTMLInputElement, FileDropZoneProps>(
           tabIndex={-1}
           aria-hidden="true"
         />
-        {children ?? (
-          <div className={styles.content}>
-            <svg
-              className={styles.icon}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="17 8 12 3 7 8" />
-              <line x1="12" y1="3" x2="12" y2="15" />
-            </svg>
-            <span className={styles.text}>Drop files here or click to browse</span>
-          </div>
-        )}
-      </div>
+        <div
+          {...{ [FINRA_UI_ATTR]: componentIds.fileDropZone }}
+          role="button"
+          tabIndex={disabled ? -1 : 0}
+          aria-disabled={disabled || undefined}
+          className={clsx(
+            styles.dropZone,
+            isDragOver && styles.dragOver,
+            disabled && styles.disabled,
+            className,
+          )}
+          onClick={handleClick}
+          onKeyDown={handleKeyDown}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          {...props}>
+          {children ?? (
+            <div className={styles.content}>
+              <UploadIcon className={styles.icon} aria-hidden="true" />
+              <span className={styles.text}>Drop files here or click to browse</span>
+            </div>
+          )}
+        </div>
+      </>
     );
   },
 );

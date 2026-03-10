@@ -54,6 +54,15 @@ export type { PillInputProps } from "./components/PillInput/PillInput";
 export { FileDropZone } from "./components/FileDropZone/FileDropZone";
 export type { FileDropZoneProps } from "./components/FileDropZone/FileDropZone";
 
+// ComboBox
+export { ComboBox } from "./components/ComboBox/ComboBox";
+export type {
+  ComboBoxProps,
+  ComboBoxOption,
+  ComboBoxRenderOptionState,
+  ComboBoxGroup,
+} from "./components/ComboBox/ComboBox";
+
 // Badge
 export { Badge } from "./components/Badge/Badge";
 export type { BadgeProps, BadgeSentiment } from "./components/Badge/Badge";

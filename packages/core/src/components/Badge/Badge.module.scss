@@ -31,7 +31,7 @@
 
   &.variantTertiary {
     background-color: var(--_badge-accent-subtle);
-    color: var(--_badge-accent);
+    color: var(--_badge-accent-text, var(--_badge-accent));
     border-color: var(--color-transparent);
   }
 
@@ -40,6 +40,7 @@
   &.sentimentDanger {
     --_badge-accent: var(--color-error);
     --_badge-accent-subtle: var(--color-error-subtle);
+    --_badge-accent-text: var(--color-error-hover);
   }
 
   &.sentimentSuccess {

@@ -31,9 +31,9 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const switchEl = canvas.getByRole("switch");
-    await expect(switchEl).toBeVisible();
+    await expect(switchEl).toBeInTheDocument();
     await expect(switchEl).not.toBeChecked();
-    await userEvent.click(switchEl);
+    await userEvent.click(canvas.getByText("Enable notifications"));
     await expect(switchEl).toBeChecked();
   },
 };

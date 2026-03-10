@@ -50,7 +50,7 @@ describe("FileDropZone", () => {
     render(<FileDropZone aria-label="Upload" />);
 
     const zone = screen.getByRole("button");
-    const fileInput = zone.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     const clickSpy = vi.spyOn(fileInput, "click");
 
     await user.click(zone);
@@ -61,7 +61,7 @@ describe("FileDropZone", () => {
     render(<FileDropZone aria-label="Upload" />);
 
     const zone = screen.getByRole("button");
-    const fileInput = zone.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     const clickSpy = vi.spyOn(fileInput, "click");
 
     fireEvent.keyDown(zone, { key: "Enter" });
@@ -72,7 +72,7 @@ describe("FileDropZone", () => {
     render(<FileDropZone aria-label="Upload" />);
 
     const zone = screen.getByRole("button");
-    const fileInput = zone.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     const clickSpy = vi.spyOn(fileInput, "click");
 
     fireEvent.keyDown(zone, { key: " " });
@@ -83,8 +83,7 @@ describe("FileDropZone", () => {
     const handleChange = vi.fn();
     render(<FileDropZone aria-label="Upload" onChange={handleChange} />);
 
-    const zone = screen.getByRole("button");
-    const fileInput = zone.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     const file = createFile("test.pdf", "application/pdf");
 
     fireEvent.change(fileInput, { target: { files: [file] } });
@@ -149,15 +148,13 @@ describe("FileDropZone", () => {
 
   it("passes accept to file input", () => {
     render(<FileDropZone aria-label="Upload" accept=".pdf,.csv" />);
-    const zone = screen.getByRole("button");
-    const fileInput = zone.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     expect(fileInput).toHaveAttribute("accept", ".pdf,.csv");
   });
 
   it("passes multiple to file input", () => {
     render(<FileDropZone aria-label="Upload" multiple />);
-    const zone = screen.getByRole("button");
-    const fileInput = zone.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     expect(fileInput).toHaveAttribute("multiple");
   });
 

@@ -6,18 +6,7 @@ import {
   type HTMLAttributes,
   type Ref,
 } from "react";
-
-function mergeRefs<T>(...refs: (Ref<T> | undefined)[]): Ref<T> {
-  return (value: T | null) => {
-    for (const ref of refs) {
-      if (typeof ref === "function") {
-        ref(value);
-      } else if (ref && typeof ref === "object") {
-        (ref as React.RefObject<T | null>).current = value;
-      }
-    }
-  };
-}
+import { mergeRefs } from "../utils/mergeRefs";
 
 function mergeProps(
   slotProps: Record<string, unknown>,

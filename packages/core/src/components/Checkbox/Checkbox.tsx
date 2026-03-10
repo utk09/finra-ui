@@ -1,20 +1,10 @@
-import { forwardRef, useEffect, useRef, type Ref } from "react";
+import { forwardRef, useEffect, useRef } from "react";
 import { clsx } from "clsx";
 import { CheckboxBase, type CheckboxBaseProps } from "../../unstyled/Checkbox/Checkbox";
+import { mergeRefs } from "../../utils/mergeRefs";
+import { CheckIcon, DashIcon } from "../../assets/icons";
 import { FINRA_UI_ATTR, componentIds } from "../componentIds";
 import styles from "./Checkbox.module.scss";
-
-function mergeRefs<T>(...refs: (Ref<T> | undefined)[]): (value: T | null) => void {
-  return (value: T | null) => {
-    for (const ref of refs) {
-      if (typeof ref === "function") {
-        ref(value);
-      } else if (ref && typeof ref === "object") {
-        (ref as React.RefObject<T | null>).current = value;
-      }
-    }
-  };
-}
 
 export interface CheckboxProps extends Omit<CheckboxBaseProps, "className"> {
   label?: string;
@@ -43,26 +33,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           {...props}
         />
         <span className={styles.indicator} aria-hidden="true">
-          {indeterminate ? (
-            <svg
-              viewBox="0 0 12 12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round">
-              <path d="M2.5 6h7" />
-            </svg>
-          ) : (
-            <svg
-              viewBox="0 0 12 12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round">
-              <path d="M2.5 6l2.5 2.5 4.5-5" />
-            </svg>
-          )}
+          {indeterminate ? <DashIcon /> : <CheckIcon />}
         </span>
         {label ? <span className={styles.label}>{label}</span> : null}
       </label>

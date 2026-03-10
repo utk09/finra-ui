@@ -48,6 +48,9 @@ export const componentIds = {
   // Badge
   badge: "badge",
 
+  // ComboBox
+  comboBox: "combo-box",
+
   // Divider
   divider: "divider",
 } as const;

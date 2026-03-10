@@ -81,7 +81,7 @@ export const CustomContent: Story = {
       <div style={{ textAlign: "center" }}>
         <div style={{ fontSize: "2rem", marginBlockEnd: "0.5rem" }}>📷</div>
         <div style={{ fontWeight: 600 }}>Upload images</div>
-        <div style={{ fontSize: "0.75rem", color: "var(--color-neutral-400)" }}>
+        <div style={{ fontSize: "0.75rem", color: "var(--color-neutral-500)" }}>
           PNG, JPG, GIF up to 10MB
         </div>
       </div>
@@ -108,7 +108,7 @@ export const WithFileList: Story = {
             {files.map((file) => (
               <li key={file.name}>
                 {file.name}{" "}
-                <span style={{ color: "var(--color-neutral-400)" }}>
+                <span style={{ color: "var(--color-neutral-500)" }}>
                   ({(file.size / 1024).toFixed(1)} KB)
                 </span>
               </li>

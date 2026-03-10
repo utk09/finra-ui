@@ -5,23 +5,12 @@ import {
   useCallback,
   type KeyboardEvent,
   type HTMLAttributes,
-  type Ref,
 } from "react";
 import { clsx } from "clsx";
+import { mergeRefs } from "../../utils/mergeRefs";
+import { CloseSmallIcon } from "../../assets/icons";
 import { FINRA_UI_ATTR, componentIds } from "../componentIds";
 import styles from "./PillInput.module.scss";
-
-function mergeRefs<T>(...refs: (Ref<T> | undefined)[]): (value: T | null) => void {
-  return (value: T | null) => {
-    for (const ref of refs) {
-      if (typeof ref === "function") {
-        ref(value);
-      } else if (ref && typeof ref === "object") {
-        (ref as React.RefObject<T | null>).current = value;
-      }
-    }
-  };
-}
 
 export interface PillInputProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   /** Current list of pills (controlled). */
@@ -143,14 +132,7 @@ export const PillInput = forwardRef<HTMLInputElement, PillInputProps>(
                 }}
                 aria-label={`Remove ${pill}`}
                 tabIndex={-1}>
-                <svg
-                  viewBox="0 0 12 12"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round">
-                  <path d="M3 3l6 6M9 3l-6 6" />
-                </svg>
+                <CloseSmallIcon />
               </button>
             ) : null}
           </span>
