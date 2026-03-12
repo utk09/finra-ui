@@ -1,7 +1,7 @@
-import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { PillInput } from "@utk09/finra-ui";
-import { fn, expect, userEvent, within } from "storybook/test";
+import { useState } from "react";
+import { expect, fn, userEvent, within } from "storybook/test";
 
 const meta: Meta<typeof PillInput> = {
   title: "Components/PillInput",
@@ -33,7 +33,7 @@ const meta: Meta<typeof PillInput> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Basic stories ───
+//  Basic stories
 
 export const Default: Story = {
   args: {
@@ -78,7 +78,7 @@ export const Disabled: Story = {
   },
 };
 
-// ─── Interactive ───
+//  Interactive
 
 export const Controlled: Story = {
   render: () => {
@@ -116,7 +116,7 @@ export const CommaDelimiter: Story = {
   },
 };
 
-// ─── Showcase ───
+//  Showcase
 
 export const AllStates: Story = {
   parameters: {

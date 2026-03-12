@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
 import { ComboBox, type ComboBoxOption } from "./ComboBox";
 
 const options: ComboBoxOption[] = [
@@ -20,7 +21,7 @@ const currencyOptions: ComboBoxOption[] = [
 ];
 
 describe("ComboBox", () => {
-  // ─── Rendering ───
+  //  Rendering
 
   it("renders with placeholder", () => {
     render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select..." />);
@@ -28,10 +29,8 @@ describe("ComboBox", () => {
   });
 
   it('has data-finra-ui="combo-box" attribute', () => {
-    const { container } = render(
-      <ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />,
-    );
-    expect(container.querySelector('[data-finra-ui="combo-box"]')).toBeInTheDocument();
+    render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+    expect(screen.getByTestId("combo-box")).toBeInTheDocument();
   });
 
   it("forwards ref to input", () => {
@@ -47,7 +46,7 @@ describe("ComboBox", () => {
     expect(screen.getByRole("combobox")).toBeInTheDocument();
   });
 
-  // ─── Opening / closing ───
+  //  Opening / closing
 
   it("opens dropdown on focus", async () => {
     const user = userEvent.setup();
@@ -81,7 +80,7 @@ describe("ComboBox", () => {
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
   });
 
-  // ─── Selection ───
+  //  Selection
 
   it("selects option on click (single)", async () => {
     const handleChange = vi.fn();
@@ -116,7 +115,7 @@ describe("ComboBox", () => {
     expect(input).toHaveValue("Banana");
   });
 
-  // ─── Typeahead / filtering ───
+  //  Typeahead / filtering
 
   it("filters options as user types", async () => {
     const user = userEvent.setup();
@@ -149,7 +148,7 @@ describe("ComboBox", () => {
     expect(screen.getByText("Nothing found")).toBeInTheDocument();
   });
 
-  // ─── Multi-select ───
+  //  Multi-select
 
   it("selects multiple values", async () => {
     const handleChange = vi.fn();
@@ -221,7 +220,7 @@ describe("ComboBox", () => {
     expect(handleChange).toHaveBeenCalledWith(["apple"]);
   });
 
-  // ─── Groups & favourites ───
+  //  Groups & favourites
 
   it("renders favourites group", async () => {
     const user = userEvent.setup();
@@ -254,7 +253,7 @@ describe("ComboBox", () => {
     expect(screen.getByText("Minor")).toBeInTheDocument();
   });
 
-  // ─── Header / footer ───
+  //  Header / footer
 
   it("renders header and footer", async () => {
     const user = userEvent.setup();
@@ -274,7 +273,7 @@ describe("ComboBox", () => {
     expect(screen.getByText("Footer content")).toBeInTheDocument();
   });
 
-  // ─── Async / loading ───
+  //  Async / loading
 
   it("shows loading state", async () => {
     const user = userEvent.setup();
@@ -301,7 +300,7 @@ describe("ComboBox", () => {
     expect(handleLoad).toHaveBeenCalledWith("ban");
   });
 
-  // ─── Creatable ───
+  //  Creatable
 
   it("shows create option when creatable and no match", async () => {
     const user = userEvent.setup();
@@ -342,31 +341,30 @@ describe("ComboBox", () => {
     expect(screen.queryByText(/Create/)).not.toBeInTheDocument();
   });
 
-  // ─── Disabled ───
+  //  Disabled
 
   it("applies disabled state", () => {
-    const { container } = render(
+    render(
       <ComboBox options={options} value={null} onChange={vi.fn()} disabled placeholder="Select" />,
     );
     expect(screen.getByRole("searchbox")).toBeDisabled();
     const combobox = screen.getByRole("combobox");
     expect(combobox).toHaveAttribute("aria-disabled", "true");
-    const wrapper = container.querySelector('[data-finra-ui="combo-box"]');
-    expect(wrapper).toBeInTheDocument();
+    expect(screen.getByTestId("combo-box")).toBeInTheDocument();
   });
 
-  // ─── Variants / validation ───
+  //  Variants / validation
 
   it("applies fullWidth class", () => {
-    const { container } = render(
+    render(
       <ComboBox options={options} value={null} onChange={vi.fn()} fullWidth placeholder="Select" />,
     );
-    const wrapper = container.querySelector('[data-finra-ui="combo-box"]');
-    expect(wrapper?.className).toMatch(/fullWidth/);
+    const wrapper = screen.getByTestId("combo-box");
+    expect(wrapper.className).toMatch(/fullWidth/);
   });
 
   it("applies custom className", () => {
-    const { container } = render(
+    render(
       <ComboBox
         options={options}
         value={null}
@@ -375,11 +373,11 @@ describe("ComboBox", () => {
         placeholder="Select"
       />,
     );
-    const wrapper = container.querySelector('[data-finra-ui="combo-box"]');
-    expect(wrapper?.className).toContain("my-class");
+    const wrapper = screen.getByTestId("combo-box");
+    expect(wrapper.className).toContain("my-class");
   });
 
-  // ─── Keyboard navigation ───
+  //  Keyboard navigation
 
   it("navigates options with arrow keys", async () => {
     const user = userEvent.setup();
@@ -416,7 +414,7 @@ describe("ComboBox", () => {
     expect(firstOption).toHaveAttribute("data-highlighted", "true");
   });
 
-  // ─── Custom format create label ───
+  //  Custom format create label
 
   it("uses custom formatCreateLabel", async () => {
     const user = userEvent.setup();
@@ -433,5 +431,220 @@ describe("ComboBox", () => {
 
     await user.type(screen.getByRole("searchbox"), "Kiwi");
     expect(screen.getByText("Add new: Kiwi")).toBeInTheDocument();
+  });
+
+  //  Validation status
+
+  it("applies warning validation status class", () => {
+    render(
+      <ComboBox
+        options={options}
+        value={null}
+        onChange={vi.fn()}
+        validationStatus="warning"
+        placeholder="Select"
+      />,
+    );
+    const combobox = screen.getByRole("combobox");
+    expect(combobox.className).toMatch(/statusWarning/);
+  });
+
+  it("applies success validation status class", () => {
+    render(
+      <ComboBox
+        options={options}
+        value={null}
+        onChange={vi.fn()}
+        validationStatus="success"
+        placeholder="Select"
+      />,
+    );
+    const combobox = screen.getByRole("combobox");
+    expect(combobox.className).toMatch(/statusSuccess/);
+  });
+
+  it("applies error validation status class", () => {
+    render(
+      <ComboBox
+        options={options}
+        value={null}
+        onChange={vi.fn()}
+        validationStatus="error"
+        placeholder="Select"
+      />,
+    );
+    const combobox = screen.getByRole("combobox");
+    expect(combobox.className).toMatch(/statusError/);
+  });
+
+  //  Controlled open/input
+
+  it("supports controlled open state", () => {
+    render(
+      <ComboBox
+        options={options}
+        value={null}
+        onChange={vi.fn()}
+        open
+        onOpenChange={vi.fn()}
+        placeholder="Select"
+      />,
+    );
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+  });
+
+  it("supports controlled inputValue", () => {
+    render(
+      <ComboBox
+        options={options}
+        value={null}
+        onChange={vi.fn()}
+        inputValue="che"
+        onInputChange={vi.fn()}
+        open
+        placeholder="Select"
+      />,
+    );
+    expect(screen.getByRole("option", { name: "Cherry" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Apple" })).not.toBeInTheDocument();
+  });
+
+  //  Keyboard: ArrowUp, Home, End
+
+  it("opens and highlights last on ArrowUp when closed", async () => {
+    const user = userEvent.setup();
+    render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+    const input = screen.getByRole("searchbox");
+    await user.click(input);
+    await user.keyboard("{Escape}");
+    await user.keyboard("{ArrowUp}");
+
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+    const lastOption = screen.getByRole("option", { name: "Date" });
+    expect(lastOption).toHaveAttribute("data-highlighted", "true");
+  });
+
+  it("navigates to first option on Home key", async () => {
+    const user = userEvent.setup();
+    render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+    const input = screen.getByRole("searchbox");
+    await user.click(input);
+    await user.keyboard("{ArrowDown}{ArrowDown}{Home}");
+
+    const firstOption = screen.getByRole("option", { name: "Apple" });
+    expect(firstOption).toHaveAttribute("data-highlighted", "true");
+  });
+
+  it("navigates to last option on End key", async () => {
+    const user = userEvent.setup();
+    render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+    const input = screen.getByRole("searchbox");
+    await user.click(input);
+    await user.keyboard("{End}");
+
+    const lastOption = screen.getByRole("option", { name: "Date" });
+    expect(lastOption).toHaveAttribute("data-highlighted", "true");
+  });
+
+  //  Creates via keyboard Enter
+
+  it("creates option via Enter key on create item", async () => {
+    const handleCreate = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <ComboBox
+        options={options}
+        value={null}
+        onChange={vi.fn()}
+        creatable
+        onCreateOption={handleCreate}
+        placeholder="Select"
+      />,
+    );
+
+    const input = screen.getByRole("searchbox");
+    await user.type(input, "Mango");
+    // Navigate past all filtered options (none match) to the create option
+    await user.keyboard("{ArrowDown}{Enter}");
+
+    expect(handleCreate).toHaveBeenCalledWith("Mango");
+  });
+
+  //  Disabled option click
+
+  it("does not select disabled option on click", async () => {
+    const handleChange = vi.fn();
+    const user = userEvent.setup();
+    const optionsWithDisabled: ComboBoxOption[] = [
+      { value: "a", label: "Alpha" },
+      { value: "b", label: "Beta", disabled: true },
+    ];
+    render(
+      <ComboBox
+        options={optionsWithDisabled}
+        value={null}
+        onChange={handleChange}
+        placeholder="Select"
+      />,
+    );
+
+    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("option", { name: "Beta" }));
+
+    expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  //  renderValue in single mode
+
+  it("uses renderValue for single selection display", () => {
+    render(
+      <ComboBox
+        options={options}
+        value="apple"
+        onChange={vi.fn()}
+        renderValue={(opt) => <span data-finra-ui="custom-val">{opt.label.toUpperCase()}</span>}
+        placeholder="Select"
+      />,
+    );
+    expect(screen.getByTestId("custom-val")).toHaveTextContent("APPLE");
+  });
+
+  //  Multi-select deselect
+
+  it("deselects already selected option in multi mode", async () => {
+    const handleChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <ComboBox
+        options={options}
+        value={["apple", "banana"]}
+        onChange={handleChange}
+        multiple
+        placeholder="Select"
+      />,
+    );
+
+    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("option", { name: "Apple" }));
+
+    expect(handleChange).toHaveBeenCalledWith(["banana"]);
+  });
+
+  //  Open with Enter when closed
+
+  it("opens dropdown on Enter when closed", async () => {
+    const user = userEvent.setup();
+    render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+    const input = screen.getByRole("searchbox");
+    await user.click(input);
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
   });
 });

@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
 import { Input } from "./Input";
 
 describe("Input", () => {
@@ -10,9 +11,9 @@ describe("Input", () => {
   });
 
   it('has data-finra-ui="input" and data-finra-ui="input-field" attributes', () => {
-    const { container } = render(<Input />);
-    expect(container.querySelector('[data-finra-ui="input"]')).toBeInTheDocument();
-    expect(container.querySelector('[data-finra-ui="input-field"]')).toBeInTheDocument();
+    render(<Input />);
+    expect(screen.getByTestId("input")).toBeInTheDocument();
+    expect(screen.getByTestId("input-field")).toBeInTheDocument();
   });
 
   it("forwards ref to input element", () => {
@@ -22,48 +23,48 @@ describe("Input", () => {
   });
 
   it("applies primary variant by default", () => {
-    const { container } = render(<Input />);
-    const wrapper = container.querySelector('[data-finra-ui="input"]');
-    expect(wrapper?.className).toMatch(/variantPrimary/);
+    render(<Input />);
+    const wrapper = screen.getByTestId("input");
+    expect(wrapper.className).toMatch(/variantPrimary/);
   });
 
   it("applies secondary variant", () => {
-    const { container } = render(<Input variant="secondary" />);
-    const wrapper = container.querySelector('[data-finra-ui="input"]');
-    expect(wrapper?.className).toMatch(/variantSecondary/);
+    render(<Input variant="secondary" />);
+    const wrapper = screen.getByTestId("input");
+    expect(wrapper.className).toMatch(/variantSecondary/);
   });
 
   it("applies tertiary variant", () => {
-    const { container } = render(<Input variant="tertiary" />);
-    const wrapper = container.querySelector('[data-finra-ui="input"]');
-    expect(wrapper?.className).toMatch(/variantTertiary/);
+    render(<Input variant="tertiary" />);
+    const wrapper = screen.getByTestId("input");
+    expect(wrapper.className).toMatch(/variantTertiary/);
   });
 
   it("applies error validation status class", () => {
-    const { container } = render(<Input validationStatus="error" />);
-    const wrapper = container.querySelector('[data-finra-ui="input"]');
-    expect(wrapper?.className).toMatch(/statusError/);
+    render(<Input validationStatus="error" />);
+    const wrapper = screen.getByTestId("input");
+    expect(wrapper.className).toMatch(/statusError/);
   });
 
   it("applies warning validation status class", () => {
-    const { container } = render(<Input validationStatus="warning" />);
-    const wrapper = container.querySelector('[data-finra-ui="input"]');
-    expect(wrapper?.className).toMatch(/statusWarning/);
+    render(<Input validationStatus="warning" />);
+    const wrapper = screen.getByTestId("input");
+    expect(wrapper.className).toMatch(/statusWarning/);
   });
 
   it("applies success validation status class", () => {
-    const { container } = render(<Input validationStatus="success" />);
-    const wrapper = container.querySelector('[data-finra-ui="input"]');
-    expect(wrapper?.className).toMatch(/statusSuccess/);
+    render(<Input validationStatus="success" />);
+    const wrapper = screen.getByTestId("input");
+    expect(wrapper.className).toMatch(/statusSuccess/);
   });
 
   it("renders start adornment", () => {
-    render(<Input startAdornment={<span data-testid="start">$</span>} />);
+    render(<Input startAdornment={<span data-finra-ui="start">$</span>} />);
     expect(screen.getByTestId("start")).toBeInTheDocument();
   });
 
   it("renders end adornment", () => {
-    render(<Input endAdornment={<span data-testid="end">kg</span>} />);
+    render(<Input endAdornment={<span data-finra-ui="end">kg</span>} />);
     expect(screen.getByTestId("end")).toBeInTheDocument();
   });
 
@@ -93,15 +94,15 @@ describe("Input", () => {
   });
 
   it("applies disabled class to wrapper", () => {
-    const { container } = render(<Input disabled />);
-    const wrapper = container.querySelector('[data-finra-ui="input"]');
-    expect(wrapper?.className).toMatch(/disabled/);
+    render(<Input disabled />);
+    const wrapper = screen.getByTestId("input");
+    expect(wrapper.className).toMatch(/disabled/);
   });
 
   it("applies fullWidth class", () => {
-    const { container } = render(<Input fullWidth />);
-    const wrapper = container.querySelector('[data-finra-ui="input"]');
-    expect(wrapper?.className).toMatch(/fullWidth/);
+    render(<Input fullWidth />);
+    const wrapper = screen.getByTestId("input");
+    expect(wrapper.className).toMatch(/fullWidth/);
   });
 
   it("handles placeholder", () => {
@@ -117,5 +118,30 @@ describe("Input", () => {
     await user.type(screen.getByRole("textbox"), "a");
 
     expect(handleChange).toHaveBeenCalled();
+  });
+
+  it("clears input via native setter when no onClear provided", async () => {
+    const handleChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(<Input clearable defaultValue="hello" onChange={handleChange} />);
+    await user.click(screen.getByRole("button", { name: /clear input/i }));
+
+    expect(screen.getByRole("textbox")).toHaveValue("");
+  });
+
+  it("does not show clear button when readOnly", () => {
+    render(<Input clearable readOnly value="hello" onChange={vi.fn()} />);
+    expect(screen.queryByRole("button", { name: /clear input/i })).not.toBeInTheDocument();
+  });
+
+  it("does not show clear button when disabled", () => {
+    render(<Input clearable disabled value="hello" onChange={vi.fn()} />);
+    expect(screen.queryByRole("button", { name: /clear input/i })).not.toBeInTheDocument();
+  });
+
+  it("shows clear button when defaultValue is set", () => {
+    render(<Input clearable defaultValue="hello" />);
+    expect(screen.getByRole("button", { name: /clear input/i })).toBeInTheDocument();
   });
 });

@@ -1,7 +1,7 @@
-import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FileDropZone } from "@utk09/finra-ui";
-import { fn, expect, within } from "storybook/test";
+import { useState } from "react";
+import { expect, fn, within } from "storybook/test";
 
 const meta: Meta<typeof FileDropZone> = {
   title: "Components/FileDropZone",
@@ -36,7 +36,7 @@ const meta: Meta<typeof FileDropZone> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Basic stories ───
+//  Basic stories
 
 export const Default: Story = {
   args: {
@@ -89,7 +89,7 @@ export const CustomContent: Story = {
   },
 };
 
-// ─── Interactive ───
+//  Interactive
 
 export const WithFileList: Story = {
   render: () => {
@@ -120,7 +120,7 @@ export const WithFileList: Story = {
   },
 };
 
-// ─── Showcase ───
+//  Showcase
 
 export const AllStates: Story = {
   parameters: {

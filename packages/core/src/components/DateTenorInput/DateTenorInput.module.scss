@@ -1,0 +1,287 @@
+//  Root container
+.root {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+
+  &.fullWidth {
+    inline-size: 100%;
+  }
+}
+
+//  Trigger (single input-like bar)
+.trigger {
+  --_input-border-color: var(--color-border);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--density-spacing);
+  block-size: var(--size-base);
+  padding-inline: var(--input-padding-x);
+  font-family: var(--font-sans);
+  font-size: var(--input-font-size);
+  line-height: var(--leading-normal);
+  background-color: var(--color-background);
+  border: var(--border-width-thin) solid var(--_input-border-color);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast) ease-in-out;
+  cursor: var(--cursor-text);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:focus-within {
+    --_input-border-color: var(--color-primary-500);
+  }
+
+  //  Variants
+  &.variantPrimary {
+    border-width: var(--border-width-thin);
+  }
+
+  &.variantSecondary {
+    border-width: var(--border-width-thin);
+    background-color: var(--color-neutral-50);
+  }
+
+  &.variantTertiary {
+    border-color: var(--color-transparent);
+    border-block-end-color: var(--_input-border-color);
+    border-radius: 0;
+
+    &:focus-within {
+      border-block-end-color: var(--color-primary-500);
+    }
+  }
+
+  //  Validation
+  &.statusError {
+    --_input-border-color: var(--color-error);
+  }
+
+  &.statusWarning {
+    --_input-border-color: var(--color-warning);
+  }
+
+  &.statusSuccess {
+    --_input-border-color: var(--color-success);
+  }
+
+  //  Open
+  &.open {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+}
+
+//  Disabled
+// Use explicit colors instead of opacity to maintain WCAG contrast
+.disabled {
+  cursor: var(--cursor-disabled);
+  color: var(--color-neutral-300);
+
+  .trigger {
+    background-color: var(--color-neutral-50);
+    border-color: var(--color-neutral-200);
+    cursor: var(--cursor-disabled);
+  }
+
+  .dateInput {
+    color: var(--color-neutral-300);
+  }
+
+  .tenorBadge {
+    background-color: var(--color-neutral-100);
+    border-color: var(--color-neutral-200);
+    color: var(--color-neutral-600);
+  }
+
+  .calendarButton,
+  .indicator {
+    color: var(--color-neutral-200);
+  }
+}
+
+//  Date input field
+.dateInput {
+  flex: 1;
+  min-inline-size: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  color: var(--color-foreground);
+  padding: 0;
+
+  &::placeholder {
+    color: var(--color-neutral-400);
+  }
+
+  &:disabled {
+    cursor: var(--cursor-disabled);
+  }
+}
+
+//  Tenor badge
+.tenorBadge {
+  display: inline-flex;
+  align-items: center;
+  block-size: var(--size-compact);
+  padding-inline: calc(var(--density-spacing) * 0.75);
+  background-color: var(--color-primary-50);
+  border: var(--border-width-thin) solid var(--color-primary-200);
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--color-primary-700);
+  white-space: nowrap;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+//  Calendar icon button
+.calendarButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-neutral-500);
+  cursor: var(--cursor-pointer);
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover:not(:disabled) {
+    color: var(--color-foreground);
+  }
+
+  &:disabled {
+    cursor: var(--cursor-disabled);
+  }
+
+  > svg {
+    inline-size: var(--icon-size);
+    block-size: var(--icon-size);
+  }
+}
+
+//  Dropdown indicator
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-neutral-400);
+  flex-shrink: 0;
+  transition: transform var(--transition-fast) ease-in-out;
+  cursor: var(--cursor-pointer);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  > svg {
+    inline-size: var(--icon-size);
+    block-size: var(--icon-size);
+  }
+
+  &.indicatorOpen {
+    transform: rotate(180deg);
+  }
+}
+
+//  Popup (calendar + tenor side by side)
+.popup {
+  position: absolute;
+  z-index: 50;
+  inset-inline-start: 0;
+  inset-block-start: 100%;
+  display: flex;
+  min-inline-size: max(100%, 26rem);
+  background-color: var(--color-background);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-block-start: none;
+  border-end-start-radius: var(--radius-md);
+  border-end-end-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+//  Calendar section (left)
+.calendarSection {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+//  Tenor section (right)
+.tenorSection {
+  display: flex;
+  flex-direction: column;
+  border-inline-start: var(--border-width-thin) solid var(--color-neutral-100);
+  min-inline-size: 6rem;
+  max-block-size: 20rem;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.tenorTitle {
+  position: sticky;
+  inset-block-start: 0;
+  padding-inline: var(--density-spacing);
+  padding-block: calc(var(--density-spacing) * 0.5);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--color-neutral-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: var(--color-background);
+  border-block-end: var(--border-width-thin) solid var(--color-neutral-100);
+  user-select: none;
+}
+
+.tenorGrid {
+  display: flex;
+  flex-direction: column;
+}
+
+.tenor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--density-spacing);
+  padding-block: calc(var(--density-spacing) * 0.5);
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-foreground);
+  cursor: var(--cursor-pointer);
+  user-select: none;
+  transition: background-color var(--transition-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    background-color: var(--color-primary-50);
+  }
+
+  &.tenorSelected {
+    background-color: var(--color-primary-500);
+    color: var(--color-neutral-0);
+    font-weight: var(--font-semibold);
+
+    &:hover {
+      background-color: var(--color-primary-600);
+    }
+  }
+}

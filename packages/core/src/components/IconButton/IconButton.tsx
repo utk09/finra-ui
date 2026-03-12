@@ -1,8 +1,9 @@
-import { forwardRef } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
+import { forwardRef } from "react";
+
 import { IconButtonBase, type IconButtonBaseProps } from "../../unstyled/IconButton/IconButton";
-import { FINRA_UI_ATTR, componentIds } from "../componentIds";
+import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./IconButton.module.scss";
 
 export type IconButtonSentiment = "danger" | "success" | "warning" | "info";

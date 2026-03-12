@@ -1,6 +1,7 @@
-import { forwardRef, type HTMLAttributes } from "react";
 import { clsx } from "clsx";
-import { FINRA_UI_ATTR, componentIds } from "../componentIds";
+import { forwardRef, type HTMLAttributes } from "react";
+
+import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Divider.module.scss";
 
 export interface DividerProps extends HTMLAttributes<HTMLHRElement> {

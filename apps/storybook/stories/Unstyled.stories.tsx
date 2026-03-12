@@ -1,21 +1,26 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { DateTenorInputBase, TenorInputBase } from "@utk09/finra-ui/finance";
 import {
   ButtonBase,
+  CalendarBase,
+  CheckboxBase,
+  ComboBoxBase,
+  DateInputBase,
+  FileDropZoneBase,
+  FormFieldBase,
   IconButtonBase,
   InputBase,
-  TextareaBase,
   NumberInputBase,
-  CheckboxBase,
-  SwitchBase,
+  PillInputBase,
   RadioButtonBase,
   SliderBase,
-  FormFieldBase,
-  PillInputBase,
-  FileDropZoneBase,
-  ComboBoxBase,
+  SwitchBase,
+  TextareaBase,
 } from "@utk09/finra-ui/unstyled";
+import { useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
-import { SearchIcon, PlusIcon, CloseIcon, CheckIcon, EditIcon } from "./_icons";
+
+import { CheckIcon, CloseIcon, EditIcon, PlusIcon, SearchIcon } from "./_icons";
 
 // Using ButtonBase as the meta component, but this file showcases all unstyled components
 const meta: Meta<typeof ButtonBase> = {
@@ -29,7 +34,7 @@ const meta: Meta<typeof ButtonBase> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── ButtonBase ───
+//  ButtonBase
 
 export const ButtonBaseDefault: Story = {
   name: "ButtonBase - Default",
@@ -65,7 +70,7 @@ export const ButtonBaseAsChild: Story = {
   },
 };
 
-// ─── IconButtonBase ───
+//  IconButtonBase
 
 export const IconButtonBaseDefault: Story = {
   name: "IconButtonBase - Default",
@@ -84,7 +89,7 @@ export const IconButtonBaseDefault: Story = {
   },
 };
 
-// ─── InputBase ───
+//  InputBase
 
 export const InputBaseDefault: Story = {
   name: "InputBase - Default",
@@ -105,7 +110,7 @@ export const InputBaseDefault: Story = {
   },
 };
 
-// ─── TextareaBase ───
+//  TextareaBase
 
 export const TextareaBaseDefault: Story = {
   name: "TextareaBase - Default",
@@ -125,7 +130,7 @@ export const TextareaBaseDefault: Story = {
   },
 };
 
-// ─── NumberInputBase ───
+//  NumberInputBase
 
 export const NumberInputBaseDefault: Story = {
   name: "NumberInputBase - Default",
@@ -145,7 +150,7 @@ export const NumberInputBaseDefault: Story = {
   },
 };
 
-// ─── CheckboxBase ───
+//  CheckboxBase
 
 export const CheckboxBaseDefault: Story = {
   name: "CheckboxBase - Default",
@@ -177,7 +182,7 @@ export const CheckboxBaseDefault: Story = {
   },
 };
 
-// ─── RadioButtonBase ───
+//  RadioButtonBase
 
 export const RadioButtonBaseDefault: Story = {
   name: "RadioButtonBase - Default",
@@ -205,7 +210,7 @@ export const RadioButtonBaseDefault: Story = {
   },
 };
 
-// ─── SwitchBase ───
+//  SwitchBase
 
 export const SwitchBaseDefault: Story = {
   name: "SwitchBase - Default",
@@ -233,7 +238,7 @@ export const SwitchBaseDefault: Story = {
   },
 };
 
-// ─── SliderBase ───
+//  SliderBase
 
 export const SliderBaseDefault: Story = {
   name: "SliderBase - Default",
@@ -280,9 +285,9 @@ export const SliderBaseDefault: Story = {
   },
 };
 
-// ─── Showcase ───
+//  Showcase
 
-// ─── FormFieldBase ───
+//  FormFieldBase
 
 export const FormFieldBaseDefault: Story = {
   name: "FormFieldBase - Default",
@@ -311,7 +316,7 @@ export const FormFieldBaseDefault: Story = {
   },
 };
 
-// ─── PillInputBase ───
+//  PillInputBase
 
 export const PillInputBaseDefault: Story = {
   name: "PillInputBase - Default",
@@ -334,7 +339,7 @@ export const PillInputBaseDefault: Story = {
   },
 };
 
-// ─── FileDropZoneBase ───
+//  FileDropZoneBase
 
 export const FileDropZoneBaseDefault: Story = {
   name: "FileDropZoneBase - Default",
@@ -370,7 +375,7 @@ export const FileDropZoneBaseDefault: Story = {
   },
 };
 
-// ─── ComboBoxBase ───
+//  ComboBoxBase
 
 export const ComboBoxBaseDefault: Story = {
   name: "ComboBoxBase - Default",
@@ -395,6 +400,145 @@ export const ComboBoxBaseDefault: Story = {
     await expect(input).toBeVisible();
     await userEvent.click(input);
     await expect(canvas.getByRole("listbox")).toBeVisible();
+  },
+};
+
+//  CalendarBase
+
+export const CalendarBaseDefault: Story = {
+  name: "CalendarBase - Default",
+  render: () => {
+    const [selected, setSelected] = useState<Date | null>(null);
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 280 }}>
+        <CalendarBase
+          value={selected}
+          onSelect={(d) => setSelected(d)}
+          today={new Date(2026, 2, 18)}
+        />
+        <div style={{ fontSize: "0.75rem", fontFamily: "monospace" }}>
+          Selected: {selected ? selected.toISOString().split("T")[0] : "null"}
+        </div>
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("March 2026")).toBeVisible();
+  },
+};
+
+export const CalendarBaseWithConstraints: Story = {
+  name: "CalendarBase - With Constraints",
+  render: () => {
+    const [selected, setSelected] = useState<Date | null>(null);
+    const min = new Date(2026, 2, 10);
+    const max = new Date(2026, 2, 25);
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 280 }}>
+        <div style={{ fontSize: "0.75rem", color: "#666" }}>Only March 10–25, 2026 selectable</div>
+        <CalendarBase
+          value={selected}
+          onSelect={(d) => setSelected(d)}
+          min={min}
+          max={max}
+          today={new Date(2026, 2, 18)}
+        />
+        <div style={{ fontSize: "0.75rem", fontFamily: "monospace" }}>
+          Selected: {selected ? selected.toISOString().split("T")[0] : "null"}
+        </div>
+      </div>
+    );
+  },
+};
+
+export const CalendarBaseSundayStart: Story = {
+  name: "CalendarBase - Sunday Start",
+  render: () => {
+    const [selected, setSelected] = useState<Date | null>(null);
+
+    return (
+      <div style={{ maxWidth: 280 }}>
+        <CalendarBase
+          value={selected}
+          onSelect={(d) => setSelected(d)}
+          weekStartsOn={0}
+          today={new Date(2026, 2, 18)}
+        />
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // First weekday abbreviation should be "Su" for Sunday start
+    const abbrs = canvas.getAllByText(/^(Su|Mo|Tu|We|Th|Fr|Sa)$/);
+    await expect(abbrs[0]).toHaveTextContent("Su");
+  },
+};
+
+//  DateInputBase
+
+export const DateInputBaseDefault: Story = {
+  name: "DateInputBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 300 }}>
+      <DateInputBase aria-label="Default date" />
+      <DateInputBase
+        format="MM/DD/YYYY"
+        value={new Date(2024, 2, 15)}
+        aria-label="US format date"
+      />
+      <DateInputBase disabled value={new Date(2024, 0, 1)} aria-label="Disabled date" />
+      <DateInputBase readOnly value={new Date(2024, 5, 20)} aria-label="Read-only date" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText("Default date");
+    await expect(input).toBeVisible();
+  },
+};
+
+//  TenorInputBase
+
+export const TenorInputBaseDefault: Story = {
+  name: "TenorInputBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 300 }}>
+      <TenorInputBase aria-label="Default tenor" placeholder="Select tenor..." />
+      <TenorInputBase aria-label="With value" value="3M" />
+      <TenorInputBase aria-label="Disabled tenor" disabled />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText("Default tenor");
+    await expect(input).toBeVisible();
+  },
+};
+
+//  DateTenorInputBase
+
+export const DateTenorInputBaseDefault: Story = {
+  name: "DateTenorInputBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 400 }}>
+      <DateTenorInputBase dateAriaLabel="Date" tenorAriaLabel="Tenor" />
+      <DateTenorInputBase
+        dateAriaLabel="With values date"
+        tenorAriaLabel="With values tenor"
+        dateValue={new Date(2026, 5, 11)}
+        tenorValue="3M"
+      />
+      <DateTenorInputBase dateAriaLabel="Disabled date" tenorAriaLabel="Disabled tenor" disabled />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText("Date");
+    await expect(input).toBeVisible();
   },
 };
 
@@ -615,6 +759,49 @@ export const AllUnstyled: Story = {
           placeholder="Select a fruit..."
           aria-label="Demo combo box"
           style={{ maxWidth: 300 }}
+        />
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: "0.5rem" }}>CalendarBase</h3>
+        <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
+          Month-view calendar grid with keyboard navigation, min/max constraints, disabled dates,
+          and configurable week start day. Used internally by DateInput and DateTenorInput.
+        </p>
+        <CalendarBase today={new Date(2026, 2, 18)} />
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: "0.5rem" }}>DateInputBase</h3>
+        <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
+          Date input with auto-separator insertion and calendar popup. Configurable format, min/max
+          constraints, and disabled-date support.
+        </p>
+        <DateInputBase aria-label="Demo date input" style={{ maxWidth: 300 }} />
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: "0.5rem" }}>TenorInputBase</h3>
+        <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
+          ComboBox-style dropdown with predefined financial tenors (ON, 1M, 3M, 1Y, etc.).
+        </p>
+        <TenorInputBase
+          aria-label="Demo tenor input"
+          placeholder="Select tenor..."
+          style={{ maxWidth: 300 }}
+        />
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: "0.5rem" }}>DateTenorInputBase</h3>
+        <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
+          Unified date-tenor picker with calendar popup and tenor grid. Selecting a tenor resolves
+          to a date; entering a date reverse-looks up the matching tenor.
+        </p>
+        <DateTenorInputBase
+          dateAriaLabel="Demo date"
+          tenorAriaLabel="Demo tenor"
+          style={{ maxWidth: 400 }}
         />
       </div>
     </div>

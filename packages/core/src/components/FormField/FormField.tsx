@@ -1,14 +1,15 @@
-import {
-  forwardRef,
-  useId,
-  Children,
-  isValidElement,
-  cloneElement,
-  type ReactNode,
-  type HTMLAttributes,
-} from "react";
 import { clsx } from "clsx";
-import { FINRA_UI_ATTR, componentIds } from "../componentIds";
+import {
+  Children,
+  cloneElement,
+  forwardRef,
+  type HTMLAttributes,
+  isValidElement,
+  type ReactNode,
+  useId,
+} from "react";
+
+import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./FormField.module.scss";
 

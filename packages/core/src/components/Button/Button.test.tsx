@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
 import { Button } from "./Button";
 
 describe("Button", () => {
@@ -71,60 +72,60 @@ describe("Button", () => {
   });
 
   it("renders primary variant by default", () => {
-    const { container } = render(<Button>Primary</Button>);
-    const button = container.querySelector("button");
-    expect(button?.className).toMatch(/variantPrimary/);
+    render(<Button>Primary</Button>);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/variantPrimary/);
   });
 
   it("renders secondary variant", () => {
-    const { container } = render(<Button variant="secondary">Secondary</Button>);
-    const button = container.querySelector("button");
-    expect(button?.className).toMatch(/variantSecondary/);
+    render(<Button variant="secondary">Secondary</Button>);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/variantSecondary/);
   });
 
   it("renders tertiary variant", () => {
-    const { container } = render(<Button variant="tertiary">Tertiary</Button>);
-    const button = container.querySelector("button");
-    expect(button?.className).toMatch(/variantTertiary/);
+    render(<Button variant="tertiary">Tertiary</Button>);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/variantTertiary/);
   });
 
   it("applies sentiment class for danger", () => {
-    const { container } = render(<Button sentiment="danger">Delete</Button>);
-    const button = container.querySelector("button");
-    expect(button?.className).toMatch(/sentimentDanger/);
+    render(<Button sentiment="danger">Delete</Button>);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/sentimentDanger/);
   });
 
   it("applies sentiment class for success", () => {
-    const { container } = render(<Button sentiment="success">Approve</Button>);
-    const button = container.querySelector("button");
-    expect(button?.className).toMatch(/sentimentSuccess/);
+    render(<Button sentiment="success">Approve</Button>);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/sentimentSuccess/);
   });
 
   it("combines variant and sentiment", () => {
-    const { container } = render(
+    render(
       <Button variant="secondary" sentiment="danger">
         Remove
       </Button>,
     );
-    const button = container.querySelector("button");
-    expect(button?.className).toMatch(/variantSecondary/);
-    expect(button?.className).toMatch(/sentimentDanger/);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/variantSecondary/);
+    expect(button.className).toMatch(/sentimentDanger/);
   });
 
   it("applies fullWidth class", () => {
-    const { container } = render(<Button fullWidth>Full Width</Button>);
-    const button = container.querySelector("button");
-    expect(button?.className).toMatch(/fullWidth/);
+    render(<Button fullWidth>Full Width</Button>);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/fullWidth/);
   });
 
   it("merges custom className", () => {
-    const { container } = render(<Button className="custom">Button</Button>);
-    const button = container.querySelector("button");
-    expect(button?.className).toContain("custom");
+    render(<Button className="custom">Button</Button>);
+    const button = screen.getByRole("button");
+    expect(button.className).toContain("custom");
   });
 
   describe("startIcon and endIcon", () => {
-    const TestIcon = () => <svg data-testid="test-icon" />;
+    const TestIcon = () => <svg data-finra-ui="test-icon" />;
 
     it("renders startIcon", () => {
       render(<Button startIcon={<TestIcon />}>With Icon</Button>);
@@ -139,8 +140,8 @@ describe("Button", () => {
     });
 
     it("renders both startIcon and endIcon", () => {
-      const StartIcon = () => <svg data-testid="start-icon" />;
-      const EndIcon = () => <svg data-testid="end-icon" />;
+      const StartIcon = () => <svg data-finra-ui="start-icon" />;
+      const EndIcon = () => <svg data-finra-ui="end-icon" />;
       render(
         <Button startIcon={<StartIcon />} endIcon={<EndIcon />}>
           Both Icons

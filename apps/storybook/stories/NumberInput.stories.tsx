@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { NumberInput } from "@utk09/finra-ui";
-import { fn, expect, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 
 const meta: Meta<typeof NumberInput> = {
   title: "Components/NumberInput",
@@ -48,7 +48,7 @@ const meta: Meta<typeof NumberInput> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Basic stories ───
+//  Basic stories
 
 export const Default: Story = {
   args: {
@@ -89,7 +89,7 @@ export const TertiaryVariant: Story = {
   },
 };
 
-// ─── Constraint stories ───
+//  Constraint stories
 
 export const WithMinMax: Story = {
   args: {
@@ -140,7 +140,7 @@ export const WithDefaultValue: Story = {
   },
 };
 
-// ─── Validation stories ───
+//  Validation stories
 
 export const ValidationStates: Story = {
   render: () => (
@@ -152,7 +152,7 @@ export const ValidationStates: Story = {
   ),
 };
 
-// ─── State stories ───
+//  State stories
 
 export const Disabled: Story = {
   args: {
@@ -195,7 +195,7 @@ export const FullWidth: Story = {
   },
 };
 
-// ─── Practical example stories ───
+//  Practical example stories
 
 export const CurrencyExample: Story = {
   args: {
@@ -224,7 +224,7 @@ export const PercentExample: Story = {
   },
 };
 
-// ─── Showcase stories ───
+//  Showcase stories
 
 export const AllVariations: Story = {
   parameters: {

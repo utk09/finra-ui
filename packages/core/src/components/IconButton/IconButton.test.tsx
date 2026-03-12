@@ -1,9 +1,10 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
 import { IconButton } from "./IconButton";
 
-const TestIcon = () => <svg data-testid="test-icon" />;
+const TestIcon = () => <svg data-finra-ui="test-icon" />;
 
 describe("IconButton", () => {
   it("renders with icon and aria-label", () => {
@@ -38,41 +39,33 @@ describe("IconButton", () => {
   });
 
   it("renders primary variant by default", () => {
-    const { container } = render(<IconButton icon={<TestIcon />} aria-label="Close" />);
-    const button = container.querySelector("button");
-    expect(button?.className).toMatch(/variantPrimary/);
+    render(<IconButton icon={<TestIcon />} aria-label="Close" />);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/variantPrimary/);
   });
 
   it("renders secondary variant", () => {
-    const { container } = render(
-      <IconButton icon={<TestIcon />} aria-label="Close" variant="secondary" />,
-    );
-    const button = container.querySelector("button");
-    expect(button?.className).toMatch(/variantSecondary/);
+    render(<IconButton icon={<TestIcon />} aria-label="Close" variant="secondary" />);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/variantSecondary/);
   });
 
   it("renders tertiary variant", () => {
-    const { container } = render(
-      <IconButton icon={<TestIcon />} aria-label="Close" variant="tertiary" />,
-    );
-    const button = container.querySelector("button");
-    expect(button?.className).toMatch(/variantTertiary/);
+    render(<IconButton icon={<TestIcon />} aria-label="Close" variant="tertiary" />);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/variantTertiary/);
   });
 
   it("applies sentiment class for danger", () => {
-    const { container } = render(
-      <IconButton icon={<TestIcon />} aria-label="Delete" sentiment="danger" />,
-    );
-    const button = container.querySelector("button");
-    expect(button?.className).toMatch(/sentimentDanger/);
+    render(<IconButton icon={<TestIcon />} aria-label="Delete" sentiment="danger" />);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/sentimentDanger/);
   });
 
   it("applies sentiment class for success", () => {
-    const { container } = render(
-      <IconButton icon={<TestIcon />} aria-label="Approve" sentiment="success" />,
-    );
-    const button = container.querySelector("button");
-    expect(button?.className).toMatch(/sentimentSuccess/);
+    render(<IconButton icon={<TestIcon />} aria-label="Approve" sentiment="success" />);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/sentimentSuccess/);
   });
 
   it("forwards ref", () => {

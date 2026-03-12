@@ -1,8 +1,8 @@
-import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { copyFileSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
+import { join, resolve } from "path";
+import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
-import { resolve, join } from "path";
-import { readFileSync, readdirSync, writeFileSync, mkdirSync, copyFileSync } from "fs";
 
 export default defineConfig({
   plugins: [
@@ -10,7 +10,14 @@ export default defineConfig({
     dts({
       insertTypesEntry: true,
       copyDtsFiles: true,
-      exclude: ["**/*.stories.tsx", "**/*.test.tsx", "test/**"],
+      exclude: [
+        "**/*.stories.tsx",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx",
+        "test/**",
+      ],
     }),
     {
       name: "extract-font-assets",
@@ -48,6 +55,8 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, "src/index.ts"),
         unstyled: resolve(__dirname, "src/unstyled.ts"),
+        utils: resolve(__dirname, "src/utils.ts"),
+        finance: resolve(__dirname, "src/finance.ts"),
       },
       formats: ["es"],
       cssFileName: "styles",

@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
 import { RadioButton } from "./RadioButton";
 
 describe("RadioButton", () => {
@@ -10,8 +11,8 @@ describe("RadioButton", () => {
   });
 
   it('has data-finra-ui="radio-button" attribute', () => {
-    const { container } = render(<RadioButton aria-label="Option A" name="group" />);
-    expect(container.querySelector('[data-finra-ui="radio-button"]')).toBeInTheDocument();
+    render(<RadioButton aria-label="Option A" name="group" />);
+    expect(screen.getByTestId("radio-button")).toBeInTheDocument();
   });
 
   it("forwards ref", () => {
@@ -26,12 +27,9 @@ describe("RadioButton", () => {
   });
 
   it("does not render label span when label is not provided", () => {
-    const { container } = render(<RadioButton aria-label="Option A" name="group" />);
-    const outerLabel = container.querySelector('[data-finra-ui="radio-button"]');
-    const directSpans = outerLabel?.querySelectorAll(":scope > span") ?? [];
-    // Only the indicator span (with aria-hidden), no label text span
-    expect(directSpans).toHaveLength(1);
-    expect(directSpans[0]).toHaveAttribute("aria-hidden", "true");
+    render(<RadioButton aria-label="Option A" name="group" />);
+    expect(screen.getByTestId("radio-button-indicator")).toBeInTheDocument();
+    expect(screen.queryByTestId("radio-button-label")).not.toBeInTheDocument();
   });
 
   it("fires onChange on click", async () => {
@@ -54,18 +52,16 @@ describe("RadioButton", () => {
   });
 
   it("applies disabled state", () => {
-    const { container } = render(<RadioButton aria-label="Option A" name="group" disabled />);
+    render(<RadioButton aria-label="Option A" name="group" disabled />);
     expect(screen.getByRole("radio")).toBeDisabled();
-    const wrapper = container.querySelector('[data-finra-ui="radio-button"]');
-    expect(wrapper?.className).toMatch(/disabled/);
+    const wrapper = screen.getByTestId("radio-button");
+    expect(wrapper.className).toMatch(/disabled/);
   });
 
   it("applies custom className", () => {
-    const { container } = render(
-      <RadioButton aria-label="Option A" name="group" className="my-class" />,
-    );
-    const wrapper = container.querySelector('[data-finra-ui="radio-button"]');
-    expect(wrapper?.className).toContain("my-class");
+    render(<RadioButton aria-label="Option A" name="group" className="my-class" />);
+    const wrapper = screen.getByTestId("radio-button");
+    expect(wrapper.className).toContain("my-class");
   });
 
   it("supports grouped exclusive selection", async () => {
@@ -95,9 +91,9 @@ describe("RadioButton", () => {
   });
 
   it("renders indicator with dot", () => {
-    const { container } = render(<RadioButton aria-label="Option A" name="group" />);
-    const ariaHiddenSpan = container.querySelector('[aria-hidden="true"]');
-    expect(ariaHiddenSpan).toBeInTheDocument();
-    expect(ariaHiddenSpan?.querySelector("span")).toBeInTheDocument();
+    render(<RadioButton aria-label="Option A" name="group" />);
+    const indicator = screen.getByTestId("radio-button-indicator");
+    expect(indicator).toBeInTheDocument();
+    expect(indicator).toHaveAttribute("aria-hidden", "true");
   });
 });

@@ -1,13 +1,14 @@
 import {
-  forwardRef,
-  useState,
-  useRef,
-  useCallback,
-  type DragEvent,
   type ChangeEvent,
+  type DragEvent,
+  forwardRef,
   type HTMLAttributes,
   type ReactNode,
+  useCallback,
+  useRef,
+  useState,
 } from "react";
+
 import { mergeRefs } from "../../utils/mergeRefs";
 
 export interface FileDropZoneBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {

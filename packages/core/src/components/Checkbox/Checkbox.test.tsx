@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
 import { Checkbox } from "./Checkbox";
 
 describe("Checkbox", () => {
@@ -10,8 +11,8 @@ describe("Checkbox", () => {
   });
 
   it('has data-finra-ui="checkbox" attribute', () => {
-    const { container } = render(<Checkbox aria-label="Accept" />);
-    expect(container.querySelector('[data-finra-ui="checkbox"]')).toBeInTheDocument();
+    render(<Checkbox aria-label="Accept" />);
+    expect(screen.getByTestId("checkbox")).toBeInTheDocument();
   });
 
   it("forwards ref", () => {
@@ -26,12 +27,8 @@ describe("Checkbox", () => {
   });
 
   it("does not render label span when label is not provided", () => {
-    const { container } = render(<Checkbox aria-label="Accept" />);
-    // The outer label element is always rendered, but there should be no inner label span
-    const spans = container.querySelectorAll("span");
-    // Only the indicator span, no label span
-    const labelSpans = Array.from(spans).filter((s) => !s.getAttribute("aria-hidden"));
-    expect(labelSpans).toHaveLength(0);
+    render(<Checkbox aria-label="Accept" />);
+    expect(screen.queryByTestId("checkbox-label")).not.toBeInTheDocument();
   });
 
   it("toggles checked state on click", async () => {
@@ -56,10 +53,10 @@ describe("Checkbox", () => {
   });
 
   it("applies disabled state", () => {
-    const { container } = render(<Checkbox aria-label="Accept" disabled />);
+    render(<Checkbox aria-label="Accept" disabled />);
     expect(screen.getByRole("checkbox")).toBeDisabled();
-    const wrapper = container.querySelector('[data-finra-ui="checkbox"]');
-    expect(wrapper?.className).toMatch(/disabled/);
+    const wrapper = screen.getByTestId("checkbox");
+    expect(wrapper.className).toMatch(/disabled/);
   });
 
   it("sets indeterminate DOM property", () => {
@@ -84,8 +81,8 @@ describe("Checkbox", () => {
   });
 
   it("applies custom className", () => {
-    const { container } = render(<Checkbox aria-label="Accept" className="my-class" />);
-    const wrapper = container.querySelector('[data-finra-ui="checkbox"]');
-    expect(wrapper?.className).toContain("my-class");
+    render(<Checkbox aria-label="Accept" className="my-class" />);
+    const wrapper = screen.getByTestId("checkbox");
+    expect(wrapper.className).toContain("my-class");
   });
 });

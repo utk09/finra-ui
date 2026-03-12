@@ -1,11 +1,12 @@
 import {
   forwardRef,
-  useState,
-  useRef,
-  useCallback,
-  type KeyboardEvent,
   type HTMLAttributes,
+  type KeyboardEvent,
+  useCallback,
+  useRef,
+  useState,
 } from "react";
+
 import { mergeRefs } from "../../utils/mergeRefs";
 
 export interface PillInputBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {

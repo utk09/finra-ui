@@ -1,15 +1,16 @@
+import { cva, type VariantProps } from "class-variance-authority";
+import { clsx } from "clsx";
 import {
+  type ChangeEvent,
   forwardRef,
-  useState,
+  type TextareaHTMLAttributes,
   useCallback,
   useEffect,
   useRef,
-  type TextareaHTMLAttributes,
-  type ChangeEvent,
+  useState,
 } from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { clsx } from "clsx";
-import { FINRA_UI_ATTR, componentIds } from "../componentIds";
+
+import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./Textarea.module.scss";
 

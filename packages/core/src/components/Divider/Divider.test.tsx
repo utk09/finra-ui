@@ -1,16 +1,17 @@
-import { describe, it, expect, vi } from "vitest";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+
 import { Divider } from "./Divider";
 
 describe("Divider", () => {
   it("renders an hr element", () => {
-    const { container } = render(<Divider />);
-    expect(container.querySelector("hr")).toBeInTheDocument();
+    render(<Divider />);
+    expect(screen.getByRole("separator")).toBeInTheDocument();
   });
 
   it('has data-finra-ui="divider" attribute', () => {
-    const { container } = render(<Divider />);
-    expect(container.querySelector('[data-finra-ui="divider"]')).toBeInTheDocument();
+    render(<Divider />);
+    expect(screen.getByTestId("divider")).toBeInTheDocument();
   });
 
   it("forwards ref", () => {
@@ -20,47 +21,47 @@ describe("Divider", () => {
   });
 
   it("defaults to horizontal orientation", () => {
-    const { container } = render(<Divider />);
-    const hr = container.querySelector("hr");
-    expect(hr?.className).toMatch(/horizontal/);
+    render(<Divider />);
+    const hr = screen.getByRole("separator");
+    expect(hr.className).toMatch(/horizontal/);
   });
 
   it("applies vertical orientation", () => {
-    const { container } = render(<Divider orientation="vertical" />);
-    const hr = container.querySelector("hr");
-    expect(hr?.className).toMatch(/vertical/);
+    render(<Divider orientation="vertical" />);
+    const hr = screen.getByRole("separator");
+    expect(hr.className).toMatch(/vertical/);
   });
 
   it("has role=separator and aria-orientation when not decorative", () => {
-    const { container } = render(<Divider />);
-    const hr = container.querySelector("hr");
+    render(<Divider />);
+    const hr = screen.getByRole("separator");
     expect(hr).toHaveAttribute("role", "separator");
     expect(hr).toHaveAttribute("aria-orientation", "horizontal");
   });
 
   it("has aria-orientation=vertical when vertical", () => {
-    const { container } = render(<Divider orientation="vertical" />);
-    const hr = container.querySelector("hr");
+    render(<Divider orientation="vertical" />);
+    const hr = screen.getByRole("separator");
     expect(hr).toHaveAttribute("role", "separator");
     expect(hr).toHaveAttribute("aria-orientation", "vertical");
   });
 
   it("has aria-hidden when decorative", () => {
-    const { container } = render(<Divider decorative />);
-    const hr = container.querySelector("hr");
+    render(<Divider decorative />);
+    const hr = screen.getByTestId("divider");
     expect(hr).toHaveAttribute("aria-hidden", "true");
     expect(hr).not.toHaveAttribute("role");
   });
 
   it("does not have aria-hidden when not decorative", () => {
-    const { container } = render(<Divider />);
-    const hr = container.querySelector("hr");
+    render(<Divider />);
+    const hr = screen.getByRole("separator");
     expect(hr).not.toHaveAttribute("aria-hidden");
   });
 
   it("applies custom className", () => {
-    const { container } = render(<Divider className="my-class" />);
-    const hr = container.querySelector("hr");
-    expect(hr?.className).toContain("my-class");
+    render(<Divider className="my-class" />);
+    const hr = screen.getByRole("separator");
+    expect(hr.className).toContain("my-class");
   });
 });

@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
 import { Switch } from "./Switch";
 
 describe("Switch", () => {
@@ -10,8 +11,8 @@ describe("Switch", () => {
   });
 
   it('has data-finra-ui="switch" attribute', () => {
-    const { container } = render(<Switch aria-label="Toggle" />);
-    expect(container.querySelector('[data-finra-ui="switch"]')).toBeInTheDocument();
+    render(<Switch aria-label="Toggle" />);
+    expect(screen.getByTestId("switch")).toBeInTheDocument();
   });
 
   it("forwards ref", () => {
@@ -26,13 +27,9 @@ describe("Switch", () => {
   });
 
   it("does not render label span when label is not provided", () => {
-    const { container } = render(<Switch aria-label="Toggle" />);
-    // The outer label element's direct children: input, track span (aria-hidden), no label span
-    const outerLabel = container.querySelector('[data-finra-ui="switch"]');
-    const directSpans = outerLabel?.querySelectorAll(":scope > span") ?? [];
-    // Only the track span (with aria-hidden), no label text span
-    expect(directSpans).toHaveLength(1);
-    expect(directSpans[0]).toHaveAttribute("aria-hidden", "true");
+    render(<Switch aria-label="Toggle" />);
+    expect(screen.getByTestId("switch-track")).toBeInTheDocument();
+    expect(screen.queryByTestId("switch-label")).not.toBeInTheDocument();
   });
 
   it("toggles checked state on click", async () => {
@@ -55,10 +52,10 @@ describe("Switch", () => {
   });
 
   it("applies disabled state", () => {
-    const { container } = render(<Switch aria-label="Toggle" disabled />);
+    render(<Switch aria-label="Toggle" disabled />);
     expect(screen.getByRole("switch")).toBeDisabled();
-    const wrapper = container.querySelector('[data-finra-ui="switch"]');
-    expect(wrapper?.className).toMatch(/disabled/);
+    const wrapper = screen.getByTestId("switch");
+    expect(wrapper.className).toMatch(/disabled/);
   });
 
   it("uses checkbox type with switch role", () => {
@@ -68,17 +65,17 @@ describe("Switch", () => {
   });
 
   it("renders track and thumb elements", () => {
-    const { container } = render(<Switch aria-label="Toggle" />);
-    // track is the span with aria-hidden
-    const ariaHiddenSpan = container.querySelector('[aria-hidden="true"]');
-    expect(ariaHiddenSpan).toBeInTheDocument();
-    // thumb is nested inside track
-    expect(ariaHiddenSpan?.querySelector("span")).toBeInTheDocument();
+    render(<Switch aria-label="Toggle" />);
+    const track = screen.getByTestId("switch-track");
+    expect(track).toBeInTheDocument();
+    expect(track).toHaveAttribute("aria-hidden", "true");
+    const thumb = screen.getByTestId("switch-thumb");
+    expect(thumb).toBeInTheDocument();
   });
 
   it("applies custom className", () => {
-    const { container } = render(<Switch aria-label="Toggle" className="my-class" />);
-    const wrapper = container.querySelector('[data-finra-ui="switch"]');
-    expect(wrapper?.className).toContain("my-class");
+    render(<Switch aria-label="Toggle" className="my-class" />);
+    const wrapper = screen.getByTestId("switch");
+    expect(wrapper.className).toContain("my-class");
   });
 });

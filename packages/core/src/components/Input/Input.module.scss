@@ -23,19 +23,19 @@
     --_input-border-color: var(--color-primary-500);
   }
 
-  // ─── Disabled ───
+  //  Disabled
   &.disabled {
     opacity: var(--opacity-disabled);
     cursor: var(--cursor-disabled);
     background-color: var(--color-neutral-50);
   }
 
-  // ─── Full width ───
+  //  Full width
   &.fullWidth {
     inline-size: 100%;
   }
 
-  // ─── Variants ───
+  //  Variants
   &.variantPrimary {
     border-width: var(--border-width-thin);
   }
@@ -56,7 +56,7 @@
     }
   }
 
-  // ─── Validation status ───
+  //  Validation status
   &.statusError {
     --_input-border-color: var(--color-error);
   }
@@ -70,7 +70,7 @@
   }
 }
 
-// ─── Input field ───
+//  Input field
 .field {
   flex: 1;
   min-inline-size: 0;
@@ -90,7 +90,7 @@
   }
 }
 
-// ─── Adornments ───
+//  Adornments
 .adornment {
   display: inline-flex;
   align-items: center;
@@ -104,7 +104,7 @@
   }
 }
 
-// ─── Clear button ───
+//  Clear button
 .clearButton {
   display: inline-flex;
   align-items: center;

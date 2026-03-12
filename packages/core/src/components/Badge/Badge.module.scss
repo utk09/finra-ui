@@ -15,7 +15,7 @@
   padding-block: calc(var(--density-spacing) * 0.25);
   border: var(--border-width-thin) solid var(--color-transparent);
 
-  // ─── Variants ───
+  //  Variants
 
   &.variantPrimary {
     background-color: var(--_badge-accent);
@@ -35,7 +35,7 @@
     border-color: var(--color-transparent);
   }
 
-  // ─── Sentiments ───
+  //  Sentiments
 
   &.sentimentDanger {
     --_badge-accent: var(--color-error);

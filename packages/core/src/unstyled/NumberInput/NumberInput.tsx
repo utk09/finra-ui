@@ -1,4 +1,5 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
+
 import { Slot } from "../Slot";
 
 export interface NumberInputBaseProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {

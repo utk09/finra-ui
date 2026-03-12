@@ -1,7 +1,8 @@
 // This file has been automatically migrated to valid ESM format by Storybook.
 import { fileURLToPath } from "node:url";
+
 import type { StorybookConfig } from "@storybook/react-vite";
-import { resolve, dirname } from "path";
+import { dirname, resolve } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -29,6 +30,18 @@ const config: StorybookConfig = {
       {
         find: "@utk09/finra-ui/styles",
         replacement: resolve(__dirname, "../../../packages/core/src/styles/global.scss"),
+      },
+      {
+        find: "@utk09/finra-ui/unstyled",
+        replacement: resolve(__dirname, "../../../packages/core/src/unstyled.ts"),
+      },
+      {
+        find: "@utk09/finra-ui/utils",
+        replacement: resolve(__dirname, "../../../packages/core/src/utils.ts"),
+      },
+      {
+        find: "@utk09/finra-ui/finance",
+        replacement: resolve(__dirname, "../../../packages/core/src/finance.ts"),
       },
       { find: "@utk09/finra-ui", replacement: resolve(__dirname, "../../../packages/core/src") },
     ];

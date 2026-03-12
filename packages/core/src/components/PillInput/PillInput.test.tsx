@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
 import { PillInput } from "./PillInput";
 
 describe("PillInput", () => {
@@ -10,8 +11,8 @@ describe("PillInput", () => {
   });
 
   it('has data-finra-ui="pill-input" attribute', () => {
-    const { container } = render(<PillInput aria-label="Tags" />);
-    expect(container.querySelector('[data-finra-ui="pill-input"]')).toBeInTheDocument();
+    render(<PillInput aria-label="Tags" />);
+    expect(screen.getByTestId("pill-input")).toBeInTheDocument();
   });
 
   it("forwards ref to input", () => {
@@ -123,10 +124,10 @@ describe("PillInput", () => {
   });
 
   it("applies disabled state", () => {
-    const { container } = render(<PillInput aria-label="Tags" disabled />);
+    render(<PillInput aria-label="Tags" disabled />);
     expect(screen.getByRole("textbox")).toBeDisabled();
-    const wrapper = container.querySelector('[data-finra-ui="pill-input"]');
-    expect(wrapper?.className).toMatch(/disabled/);
+    const wrapper = screen.getByTestId("pill-input");
+    expect(wrapper.className).toMatch(/disabled/);
   });
 
   it("hides remove buttons when disabled", () => {
@@ -140,8 +141,8 @@ describe("PillInput", () => {
   });
 
   it("applies custom className", () => {
-    const { container } = render(<PillInput aria-label="Tags" className="my-class" />);
-    const wrapper = container.querySelector('[data-finra-ui="pill-input"]');
-    expect(wrapper?.className).toContain("my-class");
+    render(<PillInput aria-label="Tags" className="my-class" />);
+    const wrapper = screen.getByTestId("pill-input");
+    expect(wrapper.className).toContain("my-class");
   });
 });

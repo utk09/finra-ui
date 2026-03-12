@@ -1,12 +1,15 @@
 import js from "@eslint/js";
-import globals from "globals";
-import tseslint from "typescript-eslint";
+import vitest from "@vitest/eslint-plugin";
+import { defineConfig, globalIgnores } from "eslint/config";
+import prettier from "eslint-config-prettier";
+import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
-import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 import storybook from "eslint-plugin-storybook";
-import prettier from "eslint-config-prettier";
-import { defineConfig, globalIgnores } from "eslint/config";
+import testingLibrary from "eslint-plugin-testing-library";
+import globals from "globals";
+import tseslint from "typescript-eslint";
 
 export default defineConfig([
   // ── Global ignores ──
@@ -99,6 +102,17 @@ export default defineConfig([
     extends: [jsxA11yPlugin.flatConfigs.recommended],
   },
 
+  // ── Import sorting ──
+  {
+    name: "finra-ui/import-sort",
+    files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    plugins: { "simple-import-sort": simpleImportSort },
+    rules: {
+      "simple-import-sort/imports": "warn",
+      "simple-import-sort/exports": "warn",
+    },
+  },
+
   // ── Library source hardening ──
   {
     name: "finra-ui/library-source",
@@ -106,6 +120,22 @@ export default defineConfig([
     ignores: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
     rules: {
       "no-console": "warn",
+      "no-debugger": "error",
+      "no-alert": "error",
+      "no-eval": "error",
+      "no-implied-eval": "error",
+      "no-new-func": "error",
+      "prefer-const": "warn",
+      "no-var": "error",
+      "object-shorthand": "warn",
+      "prefer-template": "warn",
+      eqeqeq: ["error", "always", { null: "ignore" }],
+      "no-restricted-globals": [
+        "error",
+        { name: "event", message: "Use local event parameter instead." },
+        { name: "fdescribe", message: "Do not commit focused tests." },
+        { name: "fit", message: "Do not commit focused tests." },
+      ],
     },
   },
 
@@ -119,6 +149,36 @@ export default defineConfig([
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
+    },
+  },
+
+  // ── Vitest: best practices for test files ──
+  {
+    name: "finra-ui/vitest",
+    files: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+    plugins: { vitest },
+    rules: {
+      ...vitest.configs.recommended.rules,
+      "vitest/consistent-test-it": ["warn", { fn: "it" }],
+      "vitest/no-conditional-expect": "warn",
+      "vitest/no-disabled-tests": "warn",
+      "vitest/no-duplicate-hooks": "warn",
+      "vitest/no-focused-tests": "error",
+      "vitest/no-standalone-expect": "error",
+      "vitest/prefer-to-be": "warn",
+      "vitest/prefer-to-have-length": "warn",
+      "vitest/prefer-equality-matcher": "warn",
+      "vitest/no-test-return-statement": "warn",
+    },
+  },
+
+  // ── Testing Library: correct usage of @testing-library ──
+  {
+    name: "finra-ui/testing-library",
+    files: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+    plugins: { "testing-library": testingLibrary },
+    rules: {
+      ...testingLibrary.configs["flat/react"].rules,
     },
   },
 

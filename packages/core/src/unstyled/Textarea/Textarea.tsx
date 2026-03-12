@@ -1,4 +1,5 @@
 import { forwardRef, type TextareaHTMLAttributes } from "react";
+
 import { Slot } from "../Slot";
 
 export interface TextareaBaseProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {

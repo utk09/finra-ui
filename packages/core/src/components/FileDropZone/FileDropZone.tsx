@@ -1,17 +1,18 @@
+import { clsx } from "clsx";
 import {
-  forwardRef,
-  useState,
-  useRef,
-  useCallback,
-  type DragEvent,
   type ChangeEvent,
+  type DragEvent,
+  forwardRef,
   type HTMLAttributes,
   type ReactNode,
+  useCallback,
+  useRef,
+  useState,
 } from "react";
-import { clsx } from "clsx";
-import { mergeRefs } from "../../utils/mergeRefs";
+
 import { UploadIcon } from "../../assets/icons";
-import { FINRA_UI_ATTR, componentIds } from "../componentIds";
+import { mergeRefs } from "../../utils/mergeRefs";
+import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./FileDropZone.module.scss";
 
 export interface FileDropZoneProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
@@ -103,6 +104,7 @@ export const FileDropZone = forwardRef<HTMLInputElement, FileDropZoneProps>(
           onChange={handleInputChange}
           tabIndex={-1}
           aria-hidden="true"
+          {...{ [FINRA_UI_ATTR]: componentIds.fileDropZoneInput }}
         />
         <div
           {...{ [FINRA_UI_ATTR]: componentIds.fileDropZone }}

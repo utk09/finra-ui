@@ -1,9 +1,10 @@
-import { forwardRef, useEffect, useRef } from "react";
 import { clsx } from "clsx";
+import { forwardRef, useEffect, useRef } from "react";
+
+import { CheckIcon, DashIcon } from "../../assets/icons";
 import { CheckboxBase, type CheckboxBaseProps } from "../../unstyled/Checkbox/Checkbox";
 import { mergeRefs } from "../../utils/mergeRefs";
-import { CheckIcon, DashIcon } from "../../assets/icons";
-import { FINRA_UI_ATTR, componentIds } from "../componentIds";
+import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Checkbox.module.scss";
 
 export interface CheckboxProps extends Omit<CheckboxBaseProps, "className"> {
@@ -32,10 +33,17 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           data-indeterminate={indeterminate || undefined}
           {...props}
         />
-        <span className={styles.indicator} aria-hidden="true">
+        <span
+          className={styles.indicator}
+          aria-hidden="true"
+          {...{ [FINRA_UI_ATTR]: componentIds.checkboxIndicator }}>
           {indeterminate ? <DashIcon /> : <CheckIcon />}
         </span>
-        {label ? <span className={styles.label}>{label}</span> : null}
+        {label ? (
+          <span className={styles.label} {...{ [FINRA_UI_ATTR]: componentIds.checkboxLabel }}>
+            {label}
+          </span>
+        ) : null}
       </label>
     );
   },

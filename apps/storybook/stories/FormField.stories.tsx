@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { FormField, Input, Textarea, Checkbox, Switch } from "@utk09/finra-ui";
+import { Checkbox, FormField, Input, Switch, Textarea } from "@utk09/finra-ui";
 import { expect, within } from "storybook/test";
 
 const meta: Meta<typeof FormField> = {
@@ -29,7 +29,7 @@ const meta: Meta<typeof FormField> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Basic stories ───
+//  Basic stories
 
 export const Default: Story = {
   args: {
@@ -112,7 +112,7 @@ export const FullWidth: Story = {
   },
 };
 
-// ─── With different input types ───
+//  With different input types
 
 export const WithTextarea: Story = {
   args: {
@@ -138,7 +138,7 @@ export const WithSwitch: Story = {
   },
 };
 
-// ─── Showcase ───
+//  Showcase
 
 export const AllStates: Story = {
   parameters: {

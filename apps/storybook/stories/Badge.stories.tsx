@@ -24,7 +24,7 @@ const meta: Meta<typeof Badge> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Variant stories ───
+//  Variant stories
 
 export const Primary: Story = {
   args: {
@@ -51,7 +51,7 @@ export const Tertiary: Story = {
   },
 };
 
-// ─── Sentiment stories ───
+//  Sentiment stories
 
 export const Danger: Story = {
   args: {
@@ -81,7 +81,7 @@ export const Info: Story = {
   },
 };
 
-// ─── Showcase ───
+//  Showcase
 
 export const AllVariants: Story = {
   render: () => (

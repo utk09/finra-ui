@@ -29,21 +29,30 @@ export const componentIds = {
 
   // Checkbox
   checkbox: "checkbox",
+  checkboxIndicator: "checkbox-indicator",
+  checkboxLabel: "checkbox-label",
 
   // Switch
   switch: "switch",
+  switchTrack: "switch-track",
+  switchThumb: "switch-thumb",
+  switchLabel: "switch-label",
 
   // RadioButton
   radioButton: "radio-button",
+  radioButtonIndicator: "radio-button-indicator",
+  radioButtonLabel: "radio-button-label",
 
   // Slider
   slider: "slider",
+  sliderHeader: "slider-header",
 
   // PillInput
   pillInput: "pill-input",
 
   // FileDropZone
   fileDropZone: "file-drop-zone",
+  fileDropZoneInput: "file-drop-zone-input",
 
   // Badge
   badge: "badge",
@@ -53,6 +62,17 @@ export const componentIds = {
 
   // Divider
   divider: "divider",
+
+  // DateInput
+  dateInput: "date-input",
+  dateInputField: "date-input-field",
+  calendarIcon: "calendar-icon",
+
+  // TenorInput
+  tenorInput: "tenor-input",
+
+  // DateTenorInput
+  dateTenorInput: "date-tenor-input",
 } as const;
 
 export type ComponentId = (typeof componentIds)[keyof typeof componentIds];

@@ -1,20 +1,21 @@
 import {
-  useState,
-  useRef,
+  type ForwardedRef,
+  forwardRef,
+  type HTMLAttributes,
+  type KeyboardEvent,
+  type ReactNode,
+  type Ref,
   useCallback,
   useEffect,
-  useMemo,
   useId,
-  forwardRef,
-  type KeyboardEvent,
-  type HTMLAttributes,
-  type ReactNode,
-  type ForwardedRef,
-  type Ref,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
+
 import { mergeRefs } from "../../utils/mergeRefs";
 
-// ─── Public Types ───
+//  Public Types
 
 export interface ComboBoxOption<T = string> {
   value: T;
@@ -77,7 +78,7 @@ export interface ComboBoxBaseProps<T = string> extends Omit<
   /** Available options. */
   options: ComboBoxOption<T>[];
 
-  // ─── Value ───
+  //  Value
   /** Selected value(s). Single value or array for multiple. */
   value?: T | T[] | null;
   /** Called when selection changes. */
@@ -85,7 +86,7 @@ export interface ComboBoxBaseProps<T = string> extends Omit<
   /** Enable multi-select mode. */
   multiple?: boolean;
 
-  // ─── Typeahead ───
+  //  Typeahead
   /** Controlled input text. */
   inputValue?: string;
   /** Called when input text changes. */
@@ -93,13 +94,13 @@ export interface ComboBoxBaseProps<T = string> extends Omit<
   /** Custom filter function. Return true to keep option. */
   filterFn?: (option: ComboBoxOption<T>, inputValue: string) => boolean;
 
-  // ─── Async ───
+  //  Async
   /** Show loading indicator. */
   loading?: boolean;
   /** Called when input changes to trigger async loading. */
   onLoadOptions?: (inputValue: string) => void;
 
-  // ─── Creatable ───
+  //  Creatable
   /** Allow creating new options from input. */
   creatable?: boolean;
   /** Called when user creates a new option. */
@@ -107,19 +108,19 @@ export interface ComboBoxBaseProps<T = string> extends Omit<
   /** Custom label for the create option. */
   formatCreateLabel?: (inputValue: string) => string;
 
-  // ─── Sections ───
+  //  Sections
   /** Content rendered above the options list. */
   header?: ReactNode;
   /** Content rendered below the options list. */
   footer?: ReactNode;
 
-  // ─── Display ───
+  //  Display
   placeholder?: string;
   disabled?: boolean;
   /** Message shown when no options match. */
   noOptionsMessage?: string | ReactNode;
 
-  // ─── Rendering ───
+  //  Rendering
   /** Custom option renderer. */
   renderOption?: (option: ComboBoxOption<T>, state: ComboBoxRenderOptionState) => ReactNode;
   /** Custom selected value renderer (single mode). */
@@ -133,27 +134,27 @@ export interface ComboBoxBaseProps<T = string> extends Omit<
   /** Render the loading spinner content. */
   renderLoading?: () => ReactNode;
 
-  // ─── Open state ───
+  //  Open state
   /** Controlled open state. */
   open?: boolean;
   /** Called when open state changes. */
   onOpenChange?: (open: boolean) => void;
 
-  // ─── Style injection ───
+  //  Style injection
   /** CSS class overrides injected by the styled layer. */
   classNames?: ComboBoxClassNames;
   /** Root element data attributes. */
   dataAttributes?: Record<string, string>;
 }
 
-// ─── Default filter ───
+//  Default filter
 
 function defaultFilter<T>(option: ComboBoxOption<T>, input: string): boolean {
   if (!input) return true;
   return option.label.toLowerCase().includes(input.toLowerCase());
 }
 
-// ─── Group options ───
+//  Group options
 
 function groupOptions<T>(options: ComboBoxOption<T>[]): {
   favourites: ComboBoxOption<T>[];
@@ -185,14 +186,14 @@ function groupOptions<T>(options: ComboBoxOption<T>[]): {
   return { favourites, groups, ungrouped };
 }
 
-// ─── Utility: join class names (truthy only) ───
+//  Utility: join class names (truthy only)
 
 function cx(...classes: (string | false | undefined | null)[]): string | undefined {
   const result = classes.filter(Boolean).join(" ");
   return result || undefined;
 }
 
-// ─── Component ───
+//  Component
 
 function ComboBoxBaseRender<T = string>(
   {
@@ -235,7 +236,7 @@ function ComboBoxBaseRender<T = string>(
   const listRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // ─── Internal state ───
+  //  Internal state
   const [internalInputValue, setInternalInputValue] = useState("");
   const [internalOpen, setInternalOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -263,7 +264,7 @@ function ComboBoxBaseRender<T = string>(
     [controlledInputValue, onInputChange],
   );
 
-  // ─── Selected values as array ───
+  //  Selected values as array
   const selectedValues = useMemo<T[]>(() => {
     if (value == null) return [];
     return Array.isArray(value) ? value : [value];
@@ -274,14 +275,14 @@ function ComboBoxBaseRender<T = string>(
     [selectedValues],
   );
 
-  // ─── Filtered options ───
+  //  Filtered options
   const filter = filterFn ?? defaultFilter;
   const filteredOptions = useMemo(
     () => options.filter((opt) => filter(opt, currentInputValue)),
     [options, filter, currentInputValue],
   );
 
-  // ─── Flat list for keyboard navigation ───
+  //  Flat list for keyboard navigation
   const flatOptions = useMemo(() => {
     const { favourites, groups, ungrouped } = groupOptions(filteredOptions);
     const flat: ComboBoxOption<T>[] = [];
@@ -309,7 +310,7 @@ function ComboBoxBaseRender<T = string>(
 
   const totalNavigable = flatOptions.length + (showCreateOption ? 1 : 0);
 
-  // ─── Selection logic ───
+  //  Selection logic
   const selectOption = useCallback(
     (opt: ComboBoxOption<T>) => {
       if (opt.disabled) return;
@@ -341,7 +342,7 @@ function ComboBoxBaseRender<T = string>(
     [multiple, selectedValues, onChange],
   );
 
-  // ─── Keyboard ───
+  //  Keyboard
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (disabled) return;
@@ -429,7 +430,7 @@ function ComboBoxBaseRender<T = string>(
     ],
   );
 
-  // ─── Input change ───
+  //  Input change
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const val = e.target.value;
@@ -441,7 +442,7 @@ function ComboBoxBaseRender<T = string>(
     [setInputValue, isOpen, setOpen, onLoadOptions],
   );
 
-  // ─── Focus ───
+  //  Focus
   const handleFocus = useCallback(() => {
     if (!disabled && !isOpen) {
       setOpen(true);
@@ -470,16 +471,16 @@ function ComboBoxBaseRender<T = string>(
     }
   }, [highlightedIndex]);
 
-  // ─── Grouped rendering data ───
+  //  Grouped rendering data
   const { favourites, groups, ungrouped } = useMemo(
     () => groupOptions(filteredOptions),
     [filteredOptions],
   );
 
-  // ─── Helper: get option id ───
+  //  Helper: get option id
   const getOptionId = (index: number) => `${id}-option-${index}`;
 
-  // ─── Helper: render a single option ───
+  //  Helper: render a single option
   const renderSingleOption = (opt: ComboBoxOption<T>, flatIdx: number) => {
     const state: ComboBoxRenderOptionState = {
       isSelected: isSelected(opt.value),
@@ -523,7 +524,7 @@ function ComboBoxBaseRender<T = string>(
     );
   };
 
-  // ─── Render selected values (multi mode) ───
+  //  Render selected values (multi mode)
   const renderSelectedPills = () => {
     if (!multiple) return null;
     return selectedValues.map((val) => {
@@ -551,7 +552,7 @@ function ComboBoxBaseRender<T = string>(
     });
   };
 
-  // ─── Display value for single mode ───
+  //  Display value for single mode
   const singleDisplayValue = useMemo(() => {
     if (multiple) return currentInputValue;
     if (isOpen) return currentInputValue;
@@ -570,7 +571,7 @@ function ComboBoxBaseRender<T = string>(
     return <span className={cn?.singleValue}>{renderValue(opt)}</span>;
   }, [multiple, isOpen, value, options, renderValue, cn?.singleValue]);
 
-  // ─── Build option list sections ───
+  //  Build option list sections
   const optionSections: ReactNode[] = [];
   let runningIndex = 0;
 
@@ -678,7 +679,7 @@ function ComboBoxBaseRender<T = string>(
 
   const hasOptions = flatOptions.length > 0 || showCreateOption;
 
-  // ─── Shared input props ───
+  //  Shared input props
   const inputProps = {
     type: "text" as const,
     role: "searchbox" as const,

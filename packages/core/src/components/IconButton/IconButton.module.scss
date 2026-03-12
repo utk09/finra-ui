@@ -1,11 +1,11 @@
 .iconButton {
-  // ─── Internal custom properties ───
+  //  Internal custom properties
   --_btn-accent: var(--color-primary-600);
   --_btn-accent-hover: var(--color-primary-700);
   --_btn-accent-active: var(--color-primary-800);
   --_btn-accent-subtle: var(--color-primary-50);
 
-  // ─── Base styles ───
+  //  Base styles
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -24,13 +24,13 @@
     transition: none;
   }
 
-  // ─── Icon sizing ───
+  //  Icon sizing
   > svg {
     inline-size: var(--icon-size);
     block-size: var(--icon-size);
   }
 
-  // ─── States ───
+  //  States
   &:disabled {
     opacity: var(--opacity-disabled);
     cursor: var(--cursor-disabled);
@@ -41,7 +41,7 @@
     outline-offset: var(--focus-ring-offset);
   }
 
-  // ─── Variant: primary (filled) ───
+  //  Variant: primary (filled)
   &.variantPrimary {
     background-color: var(--_btn-accent);
     color: var(--color-white);
@@ -58,7 +58,7 @@
     }
   }
 
-  // ─── Variant: secondary (bordered) ───
+  //  Variant: secondary (bordered)
   &.variantSecondary {
     background-color: var(--color-transparent);
     color: var(--_btn-accent);
@@ -75,7 +75,7 @@
     }
   }
 
-  // ─── Variant: tertiary (minimal) ───
+  //  Variant: tertiary (minimal)
   &.variantTertiary {
     background-color: var(--color-transparent);
     color: var(--_btn-accent);
@@ -91,7 +91,7 @@
     }
   }
 
-  // ─── Sentiment overrides ───
+  //  Sentiment overrides
   &.sentimentDanger {
     --_btn-accent: var(--color-error);
     --_btn-accent-hover: var(--color-error-hover);

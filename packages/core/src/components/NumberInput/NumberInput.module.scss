@@ -30,7 +30,7 @@
     inline-size: 100%;
   }
 
-  // ─── Variants ───
+  //  Variants
   &.variantPrimary {
     border-width: var(--border-width-thin);
   }
@@ -51,7 +51,7 @@
     }
   }
 
-  // ─── Validation status ───
+  //  Validation status
   &.statusError {
     --_input-border-color: var(--color-error);
   }

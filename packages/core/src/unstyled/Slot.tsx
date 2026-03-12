@@ -1,11 +1,12 @@
 import {
-  forwardRef,
-  isValidElement,
   cloneElement,
-  type ReactNode,
+  forwardRef,
   type HTMLAttributes,
+  isValidElement,
+  type ReactNode,
   type Ref,
 } from "react";
+
 import { mergeRefs } from "../utils/mergeRefs";
 
 function mergeProps(

@@ -23,7 +23,7 @@ const meta: Meta<typeof Divider> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Basic stories ───
+//  Basic stories
 
 export const Horizontal: Story = {
   args: {
@@ -65,7 +65,7 @@ export const Decorative: Story = {
   },
 };
 
-// ─── Showcase ───
+//  Showcase
 
 export const InContent: Story = {
   render: () => (

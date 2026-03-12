@@ -1,12 +1,13 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
 import { NumberInput } from "./NumberInput";
 
 describe("NumberInput", () => {
   it('renders with data-finra-ui="number-input"', () => {
-    const { container } = render(<NumberInput aria-label="Quantity" />);
-    expect(container.querySelector('[data-finra-ui="number-input"]')).toBeInTheDocument();
+    render(<NumberInput aria-label="Quantity" />);
+    expect(screen.getByTestId("number-input")).toBeInTheDocument();
   });
 
   it("renders increment and decrement buttons", () => {
@@ -92,27 +93,27 @@ describe("NumberInput", () => {
   });
 
   it("applies primary variant by default", () => {
-    const { container } = render(<NumberInput aria-label="Quantity" />);
-    const wrapper = container.querySelector('[data-finra-ui="number-input"]');
-    expect(wrapper?.className).toMatch(/variantPrimary/);
+    render(<NumberInput aria-label="Quantity" />);
+    const wrapper = screen.getByTestId("number-input");
+    expect(wrapper.className).toMatch(/variantPrimary/);
   });
 
   it("applies secondary variant", () => {
-    const { container } = render(<NumberInput aria-label="Quantity" variant="secondary" />);
-    const wrapper = container.querySelector('[data-finra-ui="number-input"]');
-    expect(wrapper?.className).toMatch(/variantSecondary/);
+    render(<NumberInput aria-label="Quantity" variant="secondary" />);
+    const wrapper = screen.getByTestId("number-input");
+    expect(wrapper.className).toMatch(/variantSecondary/);
   });
 
   it("applies error validation status class", () => {
-    const { container } = render(<NumberInput aria-label="Quantity" validationStatus="error" />);
-    const wrapper = container.querySelector('[data-finra-ui="number-input"]');
-    expect(wrapper?.className).toMatch(/statusError/);
+    render(<NumberInput aria-label="Quantity" validationStatus="error" />);
+    const wrapper = screen.getByTestId("number-input");
+    expect(wrapper.className).toMatch(/statusError/);
   });
 
   it("applies success validation status class", () => {
-    const { container } = render(<NumberInput aria-label="Quantity" validationStatus="success" />);
-    const wrapper = container.querySelector('[data-finra-ui="number-input"]');
-    expect(wrapper?.className).toMatch(/statusSuccess/);
+    render(<NumberInput aria-label="Quantity" validationStatus="success" />);
+    const wrapper = screen.getByTestId("number-input");
+    expect(wrapper.className).toMatch(/statusSuccess/);
   });
 
   it("is disabled when disabled", () => {
@@ -132,5 +133,102 @@ describe("NumberInput", () => {
     await user.type(input, "42");
 
     expect(handleChange).toHaveBeenCalledWith(42);
+  });
+
+  it("applies custom step", async () => {
+    const handleChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <NumberInput aria-label="Quantity" defaultValue={10} step={5} onChange={handleChange} />,
+    );
+    await user.click(screen.getByRole("button", { name: /increment/i }));
+    expect(handleChange).toHaveBeenCalledWith(15);
+  });
+
+  it("clamps value on blur", async () => {
+    const handleChange = vi.fn();
+    render(<NumberInput aria-label="Quantity" min={0} max={100} onChange={handleChange} />);
+    const input = screen.getByRole("spinbutton");
+    fireEvent.change(input, { target: { value: "200" } });
+    fireEvent.blur(input);
+    expect(handleChange).toHaveBeenCalledWith(100);
+  });
+
+  it("calls onChange with undefined for empty input on blur", () => {
+    const handleChange = vi.fn();
+    render(<NumberInput aria-label="Quantity" onChange={handleChange} />);
+    const input = screen.getByRole("spinbutton");
+    fireEvent.change(input, { target: { value: "" } });
+    fireEvent.blur(input);
+    expect(handleChange).toHaveBeenCalledWith(undefined);
+  });
+
+  it("allows typing minus sign as partial input", () => {
+    const handleChange = vi.fn();
+    render(<NumberInput aria-label="Quantity" onChange={handleChange} />);
+    const input = screen.getByRole("spinbutton");
+    fireEvent.change(input, { target: { value: "-" } });
+    // Should not fire onChange with a number for partial input
+    expect(handleChange).not.toHaveBeenCalledWith(expect.any(Number));
+  });
+
+  it("allows typing dot as partial input", () => {
+    const handleChange = vi.fn();
+    render(<NumberInput aria-label="Quantity" onChange={handleChange} />);
+    const input = screen.getByRole("spinbutton");
+    fireEvent.change(input, { target: { value: "." } });
+    expect(handleChange).not.toHaveBeenCalledWith(expect.any(Number));
+  });
+
+  it("applies readOnly state", () => {
+    render(<NumberInput aria-label="Quantity" defaultValue={5} readOnly />);
+    const input = screen.getByRole("spinbutton");
+    expect(input).toHaveAttribute("readonly");
+    expect(screen.getByRole("button", { name: /increment/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /decrement/i })).toBeDisabled();
+  });
+
+  it("applies fullWidth class", () => {
+    render(<NumberInput aria-label="Quantity" fullWidth />);
+    const wrapper = screen.getByTestId("number-input");
+    expect(wrapper.className).toMatch(/fullWidth/);
+  });
+
+  it("applies warning validation status class", () => {
+    render(<NumberInput aria-label="Quantity" validationStatus="warning" />);
+    const wrapper = screen.getByTestId("number-input");
+    expect(wrapper.className).toMatch(/statusWarning/);
+  });
+
+  it("applies tertiary variant", () => {
+    render(<NumberInput aria-label="Quantity" variant="tertiary" />);
+    const wrapper = screen.getByTestId("number-input");
+    expect(wrapper.className).toMatch(/variantTertiary/);
+  });
+
+  it("uses controlled value", () => {
+    render(<NumberInput aria-label="Quantity" value={42} onChange={vi.fn()} />);
+    expect(screen.getByRole("spinbutton")).toHaveValue("42");
+  });
+
+  it("displays empty string for controlled empty value", () => {
+    render(<NumberInput aria-label="Quantity" value="" onChange={vi.fn()} />);
+    expect(screen.getByRole("spinbutton")).toHaveValue("");
+  });
+
+  it("sets aria-valuemin and aria-valuemax", () => {
+    render(<NumberInput aria-label="Quantity" min={1} max={99} />);
+    const input = screen.getByRole("spinbutton");
+    expect(input).toHaveAttribute("aria-valuemin", "1");
+    expect(input).toHaveAttribute("aria-valuemax", "99");
+  });
+
+  it("ignores non-numeric input", () => {
+    const handleChange = vi.fn();
+    render(<NumberInput aria-label="Quantity" onChange={handleChange} />);
+    const input = screen.getByRole("spinbutton");
+    fireEvent.change(input, { target: { value: "abc" } });
+    expect(handleChange).not.toHaveBeenCalled();
   });
 });

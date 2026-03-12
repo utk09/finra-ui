@@ -1,13 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { ButtonGroup, Button, IconButton } from "@utk09/finra-ui";
-import { fn, expect, within } from "storybook/test";
+import { Button, ButtonGroup, IconButton } from "@utk09/finra-ui";
+import { expect, fn, within } from "storybook/test";
+
 import {
+  CheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  EditIcon,
   PlusIcon,
   TrashIcon,
-  CheckIcon,
-  EditIcon,
 } from "./_icons";
 
 const meta: Meta<typeof ButtonGroup> = {
@@ -28,7 +29,7 @@ const meta: Meta<typeof ButtonGroup> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Basic stories ───
+//  Basic stories
 
 export const Default: Story = {
   render: (args) => (
@@ -77,7 +78,7 @@ export const Vertical: Story = {
   },
 };
 
-// ─── Composition stories ───
+//  Composition stories
 
 export const WithIconButtons: Story = {
   render: (args) => (

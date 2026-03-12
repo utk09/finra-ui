@@ -45,7 +45,7 @@
     transition: none;
   }
 
-  // ─── Thumb — WebKit ───
+  //  Thumb — WebKit
   &::-webkit-slider-thumb {
     appearance: none;
     inline-size: var(--slider-thumb-size);
@@ -66,7 +66,7 @@
     background-color: var(--color-primary-700);
   }
 
-  // ─── Thumb — Firefox ───
+  //  Thumb — Firefox
   &::-moz-range-thumb {
     inline-size: var(--slider-thumb-size);
     block-size: var(--slider-thumb-size);
@@ -86,14 +86,14 @@
     background-color: var(--color-primary-700);
   }
 
-  // ─── Track — Firefox ───
+  //  Track — Firefox
   &::-moz-range-track {
     background-color: var(--color-neutral-200);
     block-size: 4px;
     border-radius: var(--radius-full);
   }
 
-  // ─── Focus ───
+  //  Focus
   &:focus-visible {
     &::-webkit-slider-thumb {
       outline: var(--focus-ring-width) solid var(--focus-ring-color);
@@ -106,7 +106,7 @@
     }
   }
 
-  // ─── Disabled ───
+  //  Disabled
   &:disabled {
     &::-webkit-slider-thumb {
       background-color: var(--color-neutral-400);

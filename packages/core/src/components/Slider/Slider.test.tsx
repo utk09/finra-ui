@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+
 import { Slider } from "./Slider";
 
 describe("Slider", () => {
@@ -9,8 +10,8 @@ describe("Slider", () => {
   });
 
   it('has data-finra-ui="slider" attribute', () => {
-    const { container } = render(<Slider aria-label="Volume" />);
-    expect(container.querySelector('[data-finra-ui="slider"]')).toBeInTheDocument();
+    render(<Slider aria-label="Volume" />);
+    expect(screen.getByTestId("slider")).toBeInTheDocument();
   });
 
   it("forwards ref", () => {
@@ -25,12 +26,8 @@ describe("Slider", () => {
   });
 
   it("does not render header when no label or showValue", () => {
-    const { container } = render(<Slider aria-label="Volume" />);
-    const wrapper = container.querySelector('[data-finra-ui="slider"]');
-    // Only the input, no header span
-    const directChildren = wrapper?.querySelectorAll(":scope > *") ?? [];
-    expect(directChildren).toHaveLength(1);
-    expect(directChildren[0].tagName).toBe("INPUT");
+    render(<Slider aria-label="Volume" />);
+    expect(screen.queryByTestId("slider-header")).not.toBeInTheDocument();
   });
 
   it("displays value when showValue is true", () => {
@@ -39,10 +36,10 @@ describe("Slider", () => {
   });
 
   it("applies disabled state", () => {
-    const { container } = render(<Slider aria-label="Volume" disabled />);
+    render(<Slider aria-label="Volume" disabled />);
     expect(screen.getByRole("slider")).toBeDisabled();
-    const wrapper = container.querySelector('[data-finra-ui="slider"]');
-    expect(wrapper?.className).toMatch(/disabled/);
+    const wrapper = screen.getByTestId("slider");
+    expect(wrapper.className).toMatch(/disabled/);
   });
 
   it("accepts min, max, step props", () => {
@@ -67,9 +64,9 @@ describe("Slider", () => {
   });
 
   it("applies custom className", () => {
-    const { container } = render(<Slider aria-label="Volume" className="my-class" />);
-    const wrapper = container.querySelector('[data-finra-ui="slider"]');
-    expect(wrapper?.className).toContain("my-class");
+    render(<Slider aria-label="Volume" className="my-class" />);
+    const wrapper = screen.getByTestId("slider");
+    expect(wrapper.className).toContain("my-class");
   });
 
   it("uses native range type", () => {

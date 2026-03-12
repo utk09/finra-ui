@@ -1,15 +1,16 @@
-import {
-  forwardRef,
-  useRef,
-  useCallback,
-  type ReactNode,
-  type InputHTMLAttributes,
-  type MouseEvent,
-} from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
+import {
+  forwardRef,
+  type InputHTMLAttributes,
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useRef,
+} from "react";
+
 import { CloseIcon } from "../../assets/icons";
-import { FINRA_UI_ATTR, componentIds } from "../componentIds";
+import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Input.module.scss";
 
 export type ValidationStatus = "error" | "warning" | "success";

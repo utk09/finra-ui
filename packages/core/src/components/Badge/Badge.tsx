@@ -1,7 +1,8 @@
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
-import { FINRA_UI_ATTR, componentIds } from "../componentIds";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+
+import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Badge.module.scss";
 
 export type BadgeSentiment = "danger" | "success" | "warning" | "info";

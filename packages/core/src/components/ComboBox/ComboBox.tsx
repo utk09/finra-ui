@@ -1,32 +1,33 @@
+import { cva, type VariantProps } from "class-variance-authority";
+import { clsx } from "clsx";
 import {
-  useMemo,
+  type ForwardedRef,
   forwardRef,
   type HTMLAttributes,
   type ReactNode,
-  type ForwardedRef,
   type Ref,
+  useMemo,
 } from "react";
-import { clsx } from "clsx";
-import { cva, type VariantProps } from "class-variance-authority";
+
 import { CheckIcon, ChevronDownIcon, CloseSmallIcon, SpinnerIcon } from "../../assets/icons";
-import { FINRA_UI_ATTR, componentIds } from "../componentIds";
-import type { ValidationStatus } from "../Input/Input";
 import {
   ComboBoxBase,
   type ComboBoxClassNames,
   type ComboBoxOption,
   type ComboBoxRenderOptionState,
 } from "../../unstyled/ComboBox/ComboBox";
+import { componentIds, FINRA_UI_ATTR } from "../componentIds";
+import type { ValidationStatus } from "../Input/Input";
 import styles from "./ComboBox.module.scss";
 
-// ─── Re-export types from unstyled ───
+//  Re-export types from unstyled
 export type {
+  ComboBoxGroup,
   ComboBoxOption,
   ComboBoxRenderOptionState,
-  ComboBoxGroup,
 } from "../../unstyled/ComboBox/ComboBox";
 
-// ─── Variants ───
+//  Variants
 
 const wrapperVariants = cva(styles.wrapper, {
   variants: {
@@ -47,7 +48,7 @@ const validationClasses: Record<string, string> = {
   success: styles.statusSuccess,
 };
 
-// ─── Props ───
+//  Props
 
 export interface ComboBoxProps<T = string>
   extends
@@ -85,7 +86,7 @@ export interface ComboBoxProps<T = string>
   onOpenChange?: (open: boolean) => void;
 }
 
-// ─── Module-level stable render callbacks ───
+//  Module-level stable render callbacks
 
 function styledRenderCheckIcon(): ReactNode {
   return <CheckIcon className={styles.checkIcon} aria-hidden="true" />;
@@ -114,11 +115,11 @@ function styledRenderLoading(): ReactNode {
   );
 }
 
-// ─── Static data attribute for the root element ───
+//  Static data attribute for the root element
 
 const comboBoxDataAttributes = { [FINRA_UI_ATTR]: componentIds.comboBox } as const;
 
-// ─── Component ───
+//  Component
 
 function ComboBoxRender<T = string>(
   {

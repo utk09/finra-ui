@@ -1,5 +1,6 @@
-import type { Preview } from "@storybook/react-vite";
 import "@utk09/finra-ui/styles";
+
+import type { Preview } from "@storybook/react-vite";
 
 const preview: Preview = {
   tags: ["autodocs", "a11y-test"],

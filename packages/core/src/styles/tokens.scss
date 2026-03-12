@@ -1,5 +1,5 @@
 :root {
-  // ─── Primary colours ───
+  //  Primary colours
   --color-primary-50: #eff6ff;
   --color-primary-100: #dbeafe;
   --color-primary-200: #bfdbfe;
@@ -11,7 +11,7 @@
   --color-primary-800: #1e40af;
   --color-primary-900: #1e3a8a;
 
-  // ─── Neutral colours ───
+  //  Neutral colours
   --color-neutral-50: #f9fafb;
   --color-neutral-100: #f3f4f6;
   --color-neutral-200: #e5e7eb;
@@ -23,7 +23,7 @@
   --color-neutral-800: #1f2937;
   --color-neutral-900: #111827;
 
-  // ─── Semantic colours (WCAG AA 4.5:1+ on white) ───
+  //  Semantic colours (WCAG AA 4.5:1+ on white)
   --color-success: #047857;
   --color-warning: #b45309;
   --color-error: #dc2626;
@@ -53,17 +53,17 @@
   --color-error-subtle: #fef2f2;
   --color-info-subtle: #eff6ff;
 
-  // ─── Base colours ───
+  //  Base colours
   --color-background: #ffffff;
   --color-foreground: #111827;
   --color-border: #e5e7eb;
 
-  // ─── Constants ───
+  //  Constants
   --color-white: #ffffff;
   --color-black: #000000;
   --color-transparent: transparent;
 
-  // ─── Spacing (static - unaffected by density) ───
+  //  Spacing (static - unaffected by density)
   --spacing-0: 0;
   --spacing-1: 0.25rem;
   --spacing-2: 0.5rem;
@@ -75,7 +75,7 @@
   --spacing-10: 2.5rem;
   --spacing-12: 3rem;
 
-  // ─── Typography ───
+  //  Typography
   --font-sans: "Inclusive Sans";
   --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", monospace;
   --font-tabular-nums: tabular-nums;
@@ -99,44 +99,44 @@
   --leading-normal: 1.5;
   --leading-relaxed: 1.625;
 
-  // ─── Border radius ───
+  //  Border radius
   --radius-sm: 0.025rem;
   --radius-md: 0.075rem;
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
   --radius-full: 9999px;
 
-  // ─── Shadows ───
+  //  Shadows
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
 
-  // ─── Transitions ───
+  //  Transitions
   --transition-fast: 150ms;
   --transition-base: 250ms;
   --transition-slow: 350ms;
 
-  // ─── Focus ring ───
+  //  Focus ring
   --focus-ring-width: 2px;
   --focus-ring-color: var(--color-primary-500);
   --focus-ring-offset: 2px;
 
-  // ─── Cursors ───
+  //  Cursors
   --cursor-pointer: pointer;
   --cursor-disabled: not-allowed;
   --cursor-text: text;
 
-  // ─── Opacity ───
+  //  Opacity
   --opacity-disabled: 0.5;
   --opacity-hover: 0.8;
 
-  // ─── Border ───
+  //  Border
   --border-width-thin: 1px;
   --border-width-medium: 2px;
   --border-width-thick: 3px;
 
-  // ─── Density: medium (default) ───
+  //  Density: medium (default)
   // Interactive element heights
   --size-base: 2.25rem;
   --size-compact: 1.75rem;
@@ -158,7 +158,7 @@
   --slider-thumb-size: 1.125rem;
 }
 
-// ─── Density: high ───
+//  Density: high
 [data-density="high"] {
   --size-base: 1.75rem;
   --size-compact: 1.25rem;
@@ -175,7 +175,7 @@
   --slider-thumb-size: 0.875rem;
 }
 
-// ─── Density: low ───
+//  Density: low
 [data-density="low"] {
   --size-base: 2.75rem;
   --size-compact: 2.25rem;
@@ -192,7 +192,7 @@
   --slider-thumb-size: 1.375rem;
 }
 
-// ─── Dark theme ───
+//  Dark theme
 [data-theme="dark"] {
   --color-background: #111827;
   --color-foreground: #f9fafb;

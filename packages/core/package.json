@@ -15,6 +15,14 @@
       "types": "./dist/unstyled.d.ts",
       "import": "./dist/unstyled.js"
     },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.js"
+    },
+    "./finance": {
+      "types": "./dist/finance.d.ts",
+      "import": "./dist/finance.js"
+    },
     "./styles": {
       "types": "./dist/styles.d.ts",
       "default": "./dist/styles.css"
@@ -32,7 +40,9 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
+    "preview:coverage": "vite preview --outDir coverage",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

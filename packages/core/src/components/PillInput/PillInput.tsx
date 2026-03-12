@@ -1,15 +1,16 @@
+import { clsx } from "clsx";
 import {
   forwardRef,
-  useState,
-  useRef,
-  useCallback,
-  type KeyboardEvent,
   type HTMLAttributes,
+  type KeyboardEvent,
+  useCallback,
+  useRef,
+  useState,
 } from "react";
-import { clsx } from "clsx";
-import { mergeRefs } from "../../utils/mergeRefs";
+
 import { CloseSmallIcon } from "../../assets/icons";
-import { FINRA_UI_ATTR, componentIds } from "../componentIds";
+import { mergeRefs } from "../../utils/mergeRefs";
+import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./PillInput.module.scss";
 
 export interface PillInputProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {

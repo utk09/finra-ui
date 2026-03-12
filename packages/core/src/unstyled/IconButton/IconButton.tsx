@@ -1,4 +1,5 @@
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { type ButtonHTMLAttributes, forwardRef, type ReactNode } from "react";
+
 import { Slot } from "../Slot";
 
 export interface IconButtonBaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {

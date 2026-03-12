@@ -1,7 +1,8 @@
-import { forwardRef } from "react";
 import { clsx } from "clsx";
+import { forwardRef } from "react";
+
 import { RadioButtonBase, type RadioButtonBaseProps } from "../../unstyled/RadioButton/RadioButton";
-import { FINRA_UI_ATTR, componentIds } from "../componentIds";
+import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./RadioButton.module.scss";
 
 export interface RadioButtonProps extends Omit<RadioButtonBaseProps, "className"> {
@@ -16,10 +17,17 @@ export const RadioButton = forwardRef<HTMLInputElement, RadioButtonProps>(
         {...{ [FINRA_UI_ATTR]: componentIds.radioButton }}
         className={clsx(styles.radio, disabled && styles.disabled, className)}>
         <RadioButtonBase ref={ref} className={styles.input} disabled={disabled} {...props} />
-        <span className={styles.indicator} aria-hidden="true">
+        <span
+          className={styles.indicator}
+          aria-hidden="true"
+          {...{ [FINRA_UI_ATTR]: componentIds.radioButtonIndicator }}>
           <span className={styles.dot} />
         </span>
-        {label ? <span className={styles.label}>{label}</span> : null}
+        {label ? (
+          <span className={styles.label} {...{ [FINRA_UI_ATTR]: componentIds.radioButtonLabel }}>
+            {label}
+          </span>
+        ) : null}
       </label>
     );
   },

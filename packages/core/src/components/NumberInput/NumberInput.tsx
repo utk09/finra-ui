@@ -1,17 +1,18 @@
-import {
-  forwardRef,
-  useState,
-  useCallback,
-  useRef,
-  useEffect,
-  type KeyboardEvent,
-  type ChangeEvent,
-  type InputHTMLAttributes,
-} from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
+import {
+  type ChangeEvent,
+  forwardRef,
+  type InputHTMLAttributes,
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
 import { MinusIcon, PlusIcon } from "../../assets/icons";
-import { FINRA_UI_ATTR, componentIds } from "../componentIds";
+import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./NumberInput.module.scss";
 

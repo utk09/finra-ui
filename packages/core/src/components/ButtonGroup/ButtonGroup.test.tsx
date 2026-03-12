@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+
 import { ButtonGroup } from "./ButtonGroup";
 
 describe("ButtonGroup", () => {
@@ -33,34 +34,34 @@ describe("ButtonGroup", () => {
   });
 
   it("applies horizontal class by default", () => {
-    const { container } = render(
+    render(
       <ButtonGroup>
         <button type="button">One</button>
       </ButtonGroup>,
     );
-    const group = container.firstElementChild;
-    expect(group?.className).toMatch(/buttonGroup/);
+    const group = screen.getByRole("group");
+    expect(group.className).toMatch(/buttonGroup/);
     // Should NOT have vertical class by default
-    expect(group?.className).not.toMatch(/vertical/);
+    expect(group.className).not.toMatch(/vertical/);
   });
 
   it("applies vertical class", () => {
-    const { container } = render(
+    render(
       <ButtonGroup orientation="vertical">
         <button type="button">One</button>
       </ButtonGroup>,
     );
-    const group = container.firstElementChild;
-    expect(group?.className).toMatch(/vertical/);
+    const group = screen.getByRole("group");
+    expect(group.className).toMatch(/vertical/);
   });
 
   it("merges custom className", () => {
-    const { container } = render(
+    render(
       <ButtonGroup className="custom">
         <button type="button">One</button>
       </ButtonGroup>,
     );
-    const group = container.firstElementChild;
-    expect(group?.className).toContain("custom");
+    const group = screen.getByRole("group");
+    expect(group.className).toContain("custom");
   });
 });

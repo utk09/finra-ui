@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
 import { FileDropZone } from "./FileDropZone";
 
 function createFile(name: string, type: string): File {
@@ -14,8 +15,8 @@ describe("FileDropZone", () => {
   });
 
   it('has data-finra-ui="file-drop-zone" attribute', () => {
-    const { container } = render(<FileDropZone aria-label="Upload" />);
-    expect(container.querySelector('[data-finra-ui="file-drop-zone"]')).toBeInTheDocument();
+    render(<FileDropZone aria-label="Upload" />);
+    expect(screen.getByTestId("file-drop-zone")).toBeInTheDocument();
   });
 
   it("forwards ref to file input", () => {
@@ -50,7 +51,7 @@ describe("FileDropZone", () => {
     render(<FileDropZone aria-label="Upload" />);
 
     const zone = screen.getByRole("button");
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = screen.getByTestId("file-drop-zone-input") as HTMLInputElement;
     const clickSpy = vi.spyOn(fileInput, "click");
 
     await user.click(zone);
@@ -61,7 +62,7 @@ describe("FileDropZone", () => {
     render(<FileDropZone aria-label="Upload" />);
 
     const zone = screen.getByRole("button");
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = screen.getByTestId("file-drop-zone-input") as HTMLInputElement;
     const clickSpy = vi.spyOn(fileInput, "click");
 
     fireEvent.keyDown(zone, { key: "Enter" });
@@ -72,7 +73,7 @@ describe("FileDropZone", () => {
     render(<FileDropZone aria-label="Upload" />);
 
     const zone = screen.getByRole("button");
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = screen.getByTestId("file-drop-zone-input") as HTMLInputElement;
     const clickSpy = vi.spyOn(fileInput, "click");
 
     fireEvent.keyDown(zone, { key: " " });
@@ -83,7 +84,7 @@ describe("FileDropZone", () => {
     const handleChange = vi.fn();
     render(<FileDropZone aria-label="Upload" onChange={handleChange} />);
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = screen.getByTestId("file-drop-zone-input") as HTMLInputElement;
     const file = createFile("test.pdf", "application/pdf");
 
     fireEvent.change(fileInput, { target: { files: [file] } });
@@ -104,33 +105,33 @@ describe("FileDropZone", () => {
   });
 
   it("adds dragOver class on drag over", () => {
-    const { container } = render(<FileDropZone aria-label="Upload" />);
+    render(<FileDropZone aria-label="Upload" />);
     const zone = screen.getByRole("button");
 
     fireEvent.dragOver(zone, { dataTransfer: { files: [] } });
 
-    const wrapper = container.querySelector('[data-finra-ui="file-drop-zone"]');
-    expect(wrapper?.className).toMatch(/dragOver/);
+    const wrapper = screen.getByTestId("file-drop-zone");
+    expect(wrapper.className).toMatch(/dragOver/);
   });
 
   it("removes dragOver class on drag leave", () => {
-    const { container } = render(<FileDropZone aria-label="Upload" />);
+    render(<FileDropZone aria-label="Upload" />);
     const zone = screen.getByRole("button");
 
     fireEvent.dragOver(zone, { dataTransfer: { files: [] } });
     fireEvent.dragLeave(zone, { dataTransfer: { files: [] } });
 
-    const wrapper = container.querySelector('[data-finra-ui="file-drop-zone"]');
-    expect(wrapper?.className).not.toMatch(/dragOver/);
+    const wrapper = screen.getByTestId("file-drop-zone");
+    expect(wrapper.className).not.toMatch(/dragOver/);
   });
 
   it("applies disabled state", () => {
-    const { container } = render(<FileDropZone aria-label="Upload" disabled />);
+    render(<FileDropZone aria-label="Upload" disabled />);
     const zone = screen.getByRole("button");
     expect(zone).toHaveAttribute("aria-disabled", "true");
     expect(zone).toHaveAttribute("tabindex", "-1");
-    const wrapper = container.querySelector('[data-finra-ui="file-drop-zone"]');
-    expect(wrapper?.className).toMatch(/disabled/);
+    const wrapper = screen.getByTestId("file-drop-zone");
+    expect(wrapper.className).toMatch(/disabled/);
   });
 
   it("does not call onChange when disabled and files are dropped", () => {
@@ -148,19 +149,59 @@ describe("FileDropZone", () => {
 
   it("passes accept to file input", () => {
     render(<FileDropZone aria-label="Upload" accept=".pdf,.csv" />);
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = screen.getByTestId("file-drop-zone-input") as HTMLInputElement;
     expect(fileInput).toHaveAttribute("accept", ".pdf,.csv");
   });
 
   it("passes multiple to file input", () => {
     render(<FileDropZone aria-label="Upload" multiple />);
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = screen.getByTestId("file-drop-zone-input") as HTMLInputElement;
     expect(fileInput).toHaveAttribute("multiple");
   });
 
   it("applies custom className", () => {
-    const { container } = render(<FileDropZone aria-label="Upload" className="my-class" />);
-    const wrapper = container.querySelector('[data-finra-ui="file-drop-zone"]');
-    expect(wrapper?.className).toContain("my-class");
+    render(<FileDropZone aria-label="Upload" className="my-class" />);
+    const wrapper = screen.getByTestId("file-drop-zone");
+    expect(wrapper.className).toContain("my-class");
+  });
+
+  it("does not open file dialog when disabled and clicked", async () => {
+    const user = userEvent.setup();
+    render(<FileDropZone aria-label="Upload" disabled />);
+
+    const zone = screen.getByRole("button");
+    const fileInput = screen.getByTestId("file-drop-zone-input") as HTMLInputElement;
+    const clickSpy = vi.spyOn(fileInput, "click");
+
+    await user.click(zone);
+    expect(clickSpy).not.toHaveBeenCalled();
+  });
+
+  it("does not set dragOver when disabled", () => {
+    render(<FileDropZone aria-label="Upload" disabled />);
+    const zone = screen.getByRole("button");
+
+    fireEvent.dragOver(zone, { dataTransfer: { files: [] } });
+
+    const wrapper = screen.getByTestId("file-drop-zone");
+    expect(wrapper.className).not.toMatch(/dragOver/);
+  });
+
+  it("resets input value after file selection", () => {
+    render(<FileDropZone aria-label="Upload" onChange={vi.fn()} />);
+    const fileInput = screen.getByTestId("file-drop-zone-input") as HTMLInputElement;
+    const file = createFile("test.txt", "text/plain");
+
+    fireEvent.change(fileInput, { target: { files: [file] } });
+    expect(fileInput.value).toBe("");
+  });
+
+  it("does not call onChange when no files in drop", () => {
+    const handleChange = vi.fn();
+    render(<FileDropZone aria-label="Upload" onChange={handleChange} />);
+    const zone = screen.getByRole("button");
+
+    fireEvent.drop(zone, { dataTransfer: { files: [] } });
+    expect(handleChange).not.toHaveBeenCalled();
   });
 });

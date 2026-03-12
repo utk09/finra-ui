@@ -1,4 +1,5 @@
-import { forwardRef, useEffect, useRef, type InputHTMLAttributes } from "react";
+import { forwardRef, type InputHTMLAttributes, useCallback } from "react";
+
 import { mergeRefs } from "../../utils/mergeRefs";
 
 export interface CheckboxBaseProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
@@ -7,15 +8,16 @@ export interface CheckboxBaseProps extends Omit<InputHTMLAttributes<HTMLInputEle
 
 export const CheckboxBase = forwardRef<HTMLInputElement, CheckboxBaseProps>(
   ({ indeterminate, ...props }, forwardedRef) => {
-    const internalRef = useRef<HTMLInputElement>(null);
+    const setIndeterminate = useCallback(
+      (node: HTMLInputElement | null) => {
+        if (node) {
+          node.indeterminate = indeterminate ?? false;
+        }
+      },
+      [indeterminate],
+    );
 
-    useEffect(() => {
-      if (internalRef.current) {
-        internalRef.current.indeterminate = indeterminate ?? false;
-      }
-    }, [indeterminate]);
-
-    return <input ref={mergeRefs(forwardedRef, internalRef)} type="checkbox" {...props} />;
+    return <input ref={mergeRefs(forwardedRef, setIndeterminate)} type="checkbox" {...props} />;
   },
 );
 

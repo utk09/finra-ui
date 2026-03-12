@@ -51,7 +51,7 @@ const meta: Meta<typeof Textarea> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Basic stories ───
+//  Basic stories
 
 export const Default: Story = {
   args: {
@@ -87,7 +87,7 @@ export const TertiaryVariant: Story = {
   },
 };
 
-// ─── Character count stories ───
+//  Character count stories
 
 export const WithCharCount: Story = {
   args: {
@@ -125,7 +125,7 @@ export const AtCharLimit: Story = {
   },
 };
 
-// ─── Auto resize stories ───
+//  Auto resize stories
 
 export const AutoResize: Story = {
   args: {
@@ -149,7 +149,7 @@ export const WithMinMaxRows: Story = {
   },
 };
 
-// ─── Validation stories ───
+//  Validation stories
 
 export const ValidationStates: Story = {
   render: () => (
@@ -169,7 +169,7 @@ export const ValidationStates: Story = {
   ),
 };
 
-// ─── State stories ───
+//  State stories
 
 export const Disabled: Story = {
   args: {
@@ -207,7 +207,7 @@ export const FullWidth: Story = {
   },
 };
 
-// ─── Showcase stories ───
+//  Showcase stories
 
 export const AllVariations: Story = {
   parameters: {

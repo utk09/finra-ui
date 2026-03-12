@@ -1,4 +1,4 @@
-// ─── Root container ───
+//  Root container
 .comboBox {
   position: relative;
   display: inline-flex;
@@ -9,7 +9,7 @@
   }
 }
 
-// ─── Trigger wrapper ───
+//  Trigger wrapper
 .wrapper {
   --_input-border-color: var(--color-border);
 
@@ -46,7 +46,7 @@
     border-end-end-radius: 0;
   }
 
-  // ─── Variants ───
+  //  Variants
   &.variantPrimary {
     border-width: var(--border-width-thin);
   }
@@ -66,7 +66,7 @@
     }
   }
 
-  // ─── Validation ───
+  //  Validation
   &.statusError {
     --_input-border-color: var(--color-error);
   }
@@ -80,7 +80,7 @@
   }
 }
 
-// ─── Input field ───
+//  Input field
 .input {
   flex: 1;
   min-inline-size: 4rem;
@@ -107,7 +107,7 @@
   }
 }
 
-// ─── Single value display ───
+//  Single value display
 .singleValue {
   flex: 1;
   min-inline-size: 0;
@@ -117,7 +117,7 @@
   color: var(--color-foreground);
 }
 
-// ─── Multi-value container ───
+//  Multi-value container
 .multiValueContainer {
   display: flex;
   flex-wrap: wrap;
@@ -127,7 +127,7 @@
   padding-block: calc(var(--density-spacing) * 0.25);
 }
 
-// ─── Pills (multi select) ───
+//  Pills (multi select)
 .pill {
   display: inline-flex;
   align-items: center;
@@ -172,7 +172,7 @@
   }
 }
 
-// ─── Chevron indicator ───
+//  Chevron indicator
 .indicator {
   display: inline-flex;
   align-items: center;
@@ -195,7 +195,7 @@
   }
 }
 
-// ─── Dropdown listbox ───
+//  Dropdown listbox
 .listbox {
   position: absolute;
   z-index: 50;
@@ -213,14 +213,14 @@
   overflow: hidden;
 }
 
-// ─── Options scroll container ───
+//  Options scroll container
 .options {
   max-block-size: 16rem;
   overflow-y: auto;
   scrollbar-gutter: stable;
 }
 
-// ─── Option item ───
+//  Option item
 .option {
   display: flex;
   align-items: center;
@@ -274,7 +274,7 @@
   color: var(--color-primary-600);
 }
 
-// ─── Groups ───
+//  Groups
 .group {
   &:not(:first-child) {
     border-block-start: var(--border-width-thin) solid var(--color-neutral-100);
@@ -293,7 +293,7 @@
   user-select: none;
 }
 
-// ─── Header / Footer ───
+//  Header / Footer
 .header,
 .footer {
   padding-inline: var(--input-padding-x);
@@ -309,7 +309,7 @@
   border-block-end: none;
 }
 
-// ─── Loading ───
+//  Loading
 .loading {
   display: flex;
   align-items: center;
@@ -341,7 +341,7 @@
   }
 }
 
-// ─── Empty ───
+//  Empty
 .empty {
   padding-inline: var(--input-padding-x);
   padding-block: var(--density-spacing);

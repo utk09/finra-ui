@@ -1,0 +1,154 @@
+.wrapper {
+  --_input-border-color: var(--color-border);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--density-spacing);
+  block-size: var(--size-base);
+  padding-inline: var(--input-padding-x);
+  font-family: var(--font-sans);
+  font-size: var(--input-font-size);
+  line-height: var(--leading-normal);
+  background-color: var(--color-background);
+  border: var(--border-width-thin) solid var(--_input-border-color);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast) ease-in-out;
+  cursor: var(--cursor-text);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:focus-within {
+    --_input-border-color: var(--color-primary-500);
+  }
+
+  //  Disabled
+  &.disabled {
+    opacity: var(--opacity-disabled);
+    cursor: var(--cursor-disabled);
+    background-color: var(--color-neutral-50);
+  }
+
+  //  Full width
+  &.fullWidth {
+    inline-size: 100%;
+  }
+
+  //  Calendar open
+  &.calendarOpen {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  //  Variants
+  &.variantPrimary {
+    border-width: var(--border-width-thin);
+  }
+
+  &.variantSecondary {
+    border-width: var(--border-width-thin);
+    background-color: var(--color-neutral-50);
+  }
+
+  &.variantTertiary {
+    border-color: var(--color-transparent);
+    border-block-end-color: var(--_input-border-color);
+    border-radius: 0;
+
+    &:focus-within {
+      border-block-end-color: var(--color-primary-500);
+      box-shadow: none;
+    }
+  }
+
+  //  Validation status
+  &.statusError {
+    --_input-border-color: var(--color-error);
+  }
+
+  &.statusWarning {
+    --_input-border-color: var(--color-warning);
+  }
+
+  &.statusSuccess {
+    --_input-border-color: var(--color-success);
+  }
+}
+
+//  Input field
+.field {
+  flex: 1;
+  min-inline-size: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  color: var(--color-foreground);
+  padding: 0;
+
+  &::placeholder {
+    color: var(--color-neutral-400);
+  }
+
+  &:disabled {
+    cursor: var(--cursor-disabled);
+  }
+}
+
+//  Adornment (calendar icon button)
+.adornment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-neutral-500);
+  cursor: var(--cursor-pointer);
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover:not(:disabled) {
+    color: var(--color-foreground);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: -2px;
+  }
+
+  &:disabled {
+    cursor: var(--cursor-disabled);
+  }
+
+  > svg {
+    inline-size: var(--icon-size);
+    block-size: var(--icon-size);
+  }
+}
+
+//  Calendar popup
+// The popup is at least as wide as the trigger (`100%`) but grows to
+// fit the calendar grid (`18rem`).  Consumers who want the popup
+// clamped to exactly the input width can override via:
+//   [data-finra-ui="date-input"] .popup { inline-size: 100%; min-inline-size: 0; }
+.popup {
+  position: absolute;
+  z-index: 50;
+  inset-inline-start: 0;
+  inset-block-start: 100%;
+  min-inline-size: max(100%, 18rem);
+  background-color: var(--color-background);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-block-start: none;
+  border-end-start-radius: var(--radius-md);
+  border-end-end-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}

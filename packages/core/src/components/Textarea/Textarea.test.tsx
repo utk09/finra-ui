@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
 import { Textarea } from "./Textarea";
 
 describe("Textarea", () => {
@@ -11,8 +12,8 @@ describe("Textarea", () => {
   });
 
   it('has data-finra-ui="textarea" attribute', () => {
-    const { container } = render(<Textarea />);
-    expect(container.querySelector('[data-finra-ui="textarea"]')).toBeInTheDocument();
+    render(<Textarea />);
+    expect(screen.getByTestId("textarea")).toBeInTheDocument();
   });
 
   it("forwards ref", () => {
@@ -22,39 +23,39 @@ describe("Textarea", () => {
   });
 
   it("applies primary variant by default", () => {
-    const { container } = render(<Textarea />);
-    const wrapper = container.querySelector('[data-finra-ui="textarea"]');
-    expect(wrapper?.className).toMatch(/variantPrimary/);
+    render(<Textarea />);
+    const wrapper = screen.getByTestId("textarea");
+    expect(wrapper.className).toMatch(/variantPrimary/);
   });
 
   it("applies secondary variant", () => {
-    const { container } = render(<Textarea variant="secondary" />);
-    const wrapper = container.querySelector('[data-finra-ui="textarea"]');
-    expect(wrapper?.className).toMatch(/variantSecondary/);
+    render(<Textarea variant="secondary" />);
+    const wrapper = screen.getByTestId("textarea");
+    expect(wrapper.className).toMatch(/variantSecondary/);
   });
 
   it("applies tertiary variant", () => {
-    const { container } = render(<Textarea variant="tertiary" />);
-    const wrapper = container.querySelector('[data-finra-ui="textarea"]');
-    expect(wrapper?.className).toMatch(/variantTertiary/);
+    render(<Textarea variant="tertiary" />);
+    const wrapper = screen.getByTestId("textarea");
+    expect(wrapper.className).toMatch(/variantTertiary/);
   });
 
   it("applies error validation status class", () => {
-    const { container } = render(<Textarea validationStatus="error" />);
-    const wrapper = container.querySelector('[data-finra-ui="textarea"]');
-    expect(wrapper?.className).toMatch(/statusError/);
+    render(<Textarea validationStatus="error" />);
+    const wrapper = screen.getByTestId("textarea");
+    expect(wrapper.className).toMatch(/statusError/);
   });
 
   it("applies warning validation status class", () => {
-    const { container } = render(<Textarea validationStatus="warning" />);
-    const wrapper = container.querySelector('[data-finra-ui="textarea"]');
-    expect(wrapper?.className).toMatch(/statusWarning/);
+    render(<Textarea validationStatus="warning" />);
+    const wrapper = screen.getByTestId("textarea");
+    expect(wrapper.className).toMatch(/statusWarning/);
   });
 
   it("applies success validation status class", () => {
-    const { container } = render(<Textarea validationStatus="success" />);
-    const wrapper = container.querySelector('[data-finra-ui="textarea"]');
-    expect(wrapper?.className).toMatch(/statusSuccess/);
+    render(<Textarea validationStatus="success" />);
+    const wrapper = screen.getByTestId("textarea");
+    expect(wrapper.className).toMatch(/statusSuccess/);
   });
 
   it("shows character count when showCharCount and maxLength set", () => {
@@ -77,22 +78,22 @@ describe("Textarea", () => {
 
   it("shows warning color when approaching threshold", async () => {
     const user = userEvent.setup();
-    const { container } = render(<Textarea showCharCount maxLength={10} warningThreshold={8} />);
+    render(<Textarea showCharCount maxLength={10} warningThreshold={8} />);
 
     await user.type(screen.getByRole("textbox"), "12345678");
 
-    const countEl = container.querySelector('[data-finra-ui="textarea-count"]');
-    expect(countEl?.className).toMatch(/charCountWarning/);
+    const countEl = screen.getByTestId("textarea-count");
+    expect(countEl.className).toMatch(/charCountWarning/);
   });
 
   it("shows error color when at limit", async () => {
     const user = userEvent.setup();
-    const { container } = render(<Textarea showCharCount maxLength={5} warningThreshold={3} />);
+    render(<Textarea showCharCount maxLength={5} warningThreshold={3} />);
 
     await user.type(screen.getByRole("textbox"), "12345");
 
-    const countEl = container.querySelector('[data-finra-ui="textarea-count"]');
-    expect(countEl?.className).toMatch(/charCountError/);
+    const countEl = screen.getByTestId("textarea-count");
+    expect(countEl.className).toMatch(/charCountError/);
   });
 
   it("is disabled when disabled", () => {
@@ -101,14 +102,61 @@ describe("Textarea", () => {
   });
 
   it("applies disabled class to wrapper", () => {
-    const { container } = render(<Textarea disabled />);
-    const wrapper = container.querySelector('[data-finra-ui="textarea"]');
-    expect(wrapper?.className).toMatch(/disabled/);
+    render(<Textarea disabled />);
+    const wrapper = screen.getByTestId("textarea");
+    expect(wrapper.className).toMatch(/disabled/);
   });
 
   it("applies fullWidth class", () => {
-    const { container } = render(<Textarea fullWidth />);
-    const wrapper = container.querySelector('[data-finra-ui="textarea"]');
-    expect(wrapper?.className).toMatch(/fullWidth/);
+    render(<Textarea fullWidth />);
+    const wrapper = screen.getByTestId("textarea");
+    expect(wrapper.className).toMatch(/fullWidth/);
+  });
+
+  it("auto-resizes when autoResize is set", async () => {
+    const user = userEvent.setup();
+    render(<Textarea autoResize minRows={2} />);
+    const textarea = screen.getByRole("textbox");
+
+    await user.type(textarea, "Line 1\nLine 2\nLine 3\nLine 4\nLine 5");
+    // The textarea height should be adjusted (style.height is set)
+    expect(textarea.style.height).toBeTruthy();
+  });
+
+  it("respects maxRows when autoResize is set", async () => {
+    const user = userEvent.setup();
+    render(<Textarea autoResize minRows={1} maxRows={3} />);
+    const textarea = screen.getByRole("textbox");
+
+    await user.type(textarea, "a\nb\nc\nd\ne\nf");
+    expect(textarea.style.height).toBeTruthy();
+  });
+
+  it("syncs charCount when controlled value changes", () => {
+    const { rerender } = render(
+      <Textarea showCharCount maxLength={100} value="hi" onChange={vi.fn()} />,
+    );
+    expect(screen.getByText("2/100")).toBeInTheDocument();
+
+    rerender(<Textarea showCharCount maxLength={100} value="hello" onChange={vi.fn()} />);
+    expect(screen.getByText("5/100")).toBeInTheDocument();
+  });
+
+  it("applies readOnly attribute", () => {
+    render(<Textarea readOnly />);
+    expect(screen.getByRole("textbox")).toHaveAttribute("readonly");
+  });
+
+  it("does not show char count when showCharCount is false", () => {
+    render(<Textarea maxLength={100} />);
+    expect(screen.queryByTestId("textarea-count")).not.toBeInTheDocument();
+  });
+
+  it("applies error validation status to wrapper when at limit", async () => {
+    const user = userEvent.setup();
+    render(<Textarea showCharCount maxLength={3} warningThreshold={2} />);
+    await user.type(screen.getByRole("textbox"), "abc");
+    const wrapper = screen.getByTestId("textarea");
+    expect(wrapper.className).toMatch(/statusError/);
   });
 });

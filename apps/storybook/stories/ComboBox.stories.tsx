@@ -1,7 +1,7 @@
-import { useState, useCallback } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ComboBox, type ComboBoxOption } from "@utk09/finra-ui";
-import { fn, expect, userEvent, within } from "storybook/test";
+import { useCallback, useState } from "react";
+import { expect, fn, userEvent, within } from "storybook/test";
 
 const fruitOptions: ComboBoxOption[] = [
   { value: "apple", label: "Apple" },
@@ -56,7 +56,7 @@ const meta: Meta<typeof ComboBox> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Basic ───
+//  Basic
 
 export const Default: Story = {
   args: {
@@ -99,7 +99,7 @@ export const Disabled: Story = {
   },
 };
 
-// ─── Typeahead ───
+//  Typeahead
 
 export const Typeahead: Story = {
   name: "Typeahead / Filtering",
@@ -122,7 +122,7 @@ export const Typeahead: Story = {
   },
 };
 
-// ─── Multi-select ───
+//  Multi-select
 
 export const MultiSelect: Story = {
   render: () => {
@@ -145,7 +145,7 @@ export const MultiSelect: Story = {
   },
 };
 
-// ─── Groups & Favourites ───
+//  Groups & Favourites
 
 export const GroupsAndFavourites: Story = {
   name: "Groups & Favourites",
@@ -163,7 +163,7 @@ export const GroupsAndFavourites: Story = {
   },
 };
 
-// ─── Creatable ───
+//  Creatable
 
 export const Creatable: Story = {
   render: () => {
@@ -192,7 +192,7 @@ export const Creatable: Story = {
   },
 };
 
-// ─── Loading / Async ───
+//  Loading / Async
 
 export const Loading: Story = {
   args: {
@@ -249,7 +249,7 @@ export const AsyncSearch: Story = {
   },
 };
 
-// ─── Header & Footer ───
+//  Header & Footer
 
 export const HeaderAndFooter: Story = {
   name: "Header & Footer",
@@ -277,7 +277,7 @@ export const HeaderAndFooter: Story = {
   },
 };
 
-// ─── Currency Selection (full example) ───
+//  Currency Selection (full example)
 
 export const CurrencySelection: Story = {
   name: "Currency Selection (Full Example)",
@@ -345,7 +345,7 @@ export const CurrencySelection: Story = {
   },
 };
 
-// ─── Custom Create Label ───
+//  Custom Create Label
 
 export const CustomCreateLabel: Story = {
   render: () => {
@@ -370,7 +370,7 @@ export const CustomCreateLabel: Story = {
   },
 };
 
-// ─── FullWidth ───
+//  FullWidth
 
 export const FullWidth: Story = {
   decorators: [
@@ -388,7 +388,7 @@ export const FullWidth: Story = {
   },
 };
 
-// ─── Showcase ───
+//  Showcase
 
 export const AllStates: Story = {
   parameters: {

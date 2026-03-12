@@ -1,9 +1,12 @@
+export { CalendarIcon } from "./CalendarIcon";
 export { CheckIcon } from "./CheckIcon";
-export { DashIcon } from "./DashIcon";
-export { CloseSmallIcon } from "./CloseSmallIcon";
-export { CloseIcon } from "./CloseIcon";
 export { ChevronDownIcon } from "./ChevronDownIcon";
-export { UploadIcon } from "./UploadIcon";
-export { SpinnerIcon } from "./SpinnerIcon";
+export { ChevronLeftIcon } from "./ChevronLeftIcon";
+export { ChevronRightIcon } from "./ChevronRightIcon";
+export { CloseIcon } from "./CloseIcon";
+export { CloseSmallIcon } from "./CloseSmallIcon";
+export { DashIcon } from "./DashIcon";
 export { MinusIcon } from "./MinusIcon";
 export { PlusIcon } from "./PlusIcon";
+export { SpinnerIcon } from "./SpinnerIcon";
+export { UploadIcon } from "./UploadIcon";

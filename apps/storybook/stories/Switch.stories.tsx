@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Switch } from "@utk09/finra-ui";
-import { fn, expect, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 
 const meta: Meta<typeof Switch> = {
   title: "Components/Switch",
@@ -22,7 +22,7 @@ const meta: Meta<typeof Switch> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Basic stories ───
+//  Basic stories
 
 export const Default: Story = {
   args: {
@@ -74,7 +74,7 @@ export const WithoutLabel: Story = {
   },
 };
 
-// ─── Showcase ───
+//  Showcase
 
 export const AllStates: Story = {
   parameters: {

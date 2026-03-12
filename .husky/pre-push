@@ -1,0 +1,1 @@
+cd packages/core && pnpm test:coverage

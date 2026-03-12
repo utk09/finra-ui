@@ -1,16 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button } from "@utk09/finra-ui";
-import { fn, expect, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
+
 import {
-  SearchIcon,
-  CloseIcon,
+  CheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  PlusIcon,
-  TrashIcon,
-  CheckIcon,
+  CloseIcon,
   EditIcon,
   MailIcon,
+  PlusIcon,
+  SearchIcon,
+  TrashIcon,
 } from "./_icons";
 
 const meta: Meta<typeof Button> = {
@@ -44,7 +45,7 @@ const meta: Meta<typeof Button> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Variant stories ───
+//  Variant stories
 
 export const Primary: Story = {
   args: {
@@ -89,7 +90,7 @@ export const Tertiary: Story = {
   },
 };
 
-// ─── Sentiment stories ───
+//  Sentiment stories
 
 export const Danger: Story = {
   args: {
@@ -112,7 +113,7 @@ export const Warning: Story = {
   },
 };
 
-// ─── State stories ───
+//  State stories
 
 export const Disabled: Story = {
   args: {
@@ -133,7 +134,7 @@ export const FullWidth: Story = {
   },
 };
 
-// ─── Icon stories ───
+//  Icon stories
 
 export const WithStartIcon: Story = {
   args: {
@@ -241,7 +242,7 @@ export const IconVariations: Story = {
   ),
 };
 
-// ─── Showcase stories ───
+//  Showcase stories
 
 export const AllVariants: Story = {
   render: () => (

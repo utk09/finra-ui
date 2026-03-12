@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Input } from "@utk09/finra-ui";
-import { fn, expect, userEvent, within } from "storybook/test";
-import { SearchIcon, LockIcon, MailIcon, CloseIcon } from "./_icons";
+import { expect, fn, userEvent, within } from "storybook/test";
+
+import { CloseIcon, LockIcon, MailIcon, SearchIcon } from "./_icons";
 
 const meta: Meta<typeof Input> = {
   title: "Components/Input",
@@ -37,7 +38,7 @@ const meta: Meta<typeof Input> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Basic stories ───
+//  Basic stories
 
 export const Default: Story = {
   args: {
@@ -73,7 +74,7 @@ export const TertiaryVariant: Story = {
   },
 };
 
-// ─── Adornment stories ───
+//  Adornment stories
 
 export const WithStartAdornment: Story = {
   args: {
@@ -105,7 +106,7 @@ export const WithBothAdornments: Story = {
   },
 };
 
-// ─── Clearable stories ───
+//  Clearable stories
 
 export const Clearable: Story = {
   args: {
@@ -121,7 +122,7 @@ export const Clearable: Story = {
   },
 };
 
-// ─── Validation stories ───
+//  Validation stories
 
 export const ValidationError: Story = {
   args: {
@@ -147,7 +148,7 @@ export const ValidationSuccess: Story = {
   },
 };
 
-// ─── State stories ───
+//  State stories
 
 export const Disabled: Story = {
   args: {
@@ -191,7 +192,7 @@ export const Placeholder: Story = {
   },
 };
 
-// ─── Showcase stories ───
+//  Showcase stories
 
 export const AllStates: Story = {
   parameters: {
