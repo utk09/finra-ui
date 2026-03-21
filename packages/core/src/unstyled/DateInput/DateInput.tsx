@@ -10,6 +10,8 @@ import {
   useState,
 } from "react";
 
+import { useClickOutside } from "../../hooks/useClickOutside";
+import { autoInsertSeparators, getMaxLength } from "../../logic/dateInput";
 import type { DateFormat, DateParseResult } from "../../utils/dateFormat";
 import {
   formatDate,
@@ -84,27 +86,6 @@ export interface DateInputBaseProps extends Omit<
   "aria-label"?: string;
 }
 
-//  Helpers
-
-function autoInsertSeparators(raw: string, segmentLengths: readonly number[], sep: string): string {
-  const digitsOnly = raw.replace(/\D/g, "");
-  let result = "";
-  let digitIndex = 0;
-  for (let i = 0; i < segmentLengths.length && digitIndex < digitsOnly.length; i++) {
-    if (i > 0) result += sep;
-    const segLen = segmentLengths[i];
-    result += digitsOnly.slice(digitIndex, digitIndex + segLen);
-    digitIndex += segLen;
-  }
-  return result;
-}
-
-function getMaxLength(segmentLengths: readonly number[], sep: string): number {
-  const digitCount = segmentLengths.reduce((sum, len) => sum + len, 0);
-  const separatorCount = segmentLengths.length - 1;
-  return digitCount + separatorCount * sep.length;
-}
-
 //  Component
 
 export const DateInputBase = forwardRef<HTMLInputElement, DateInputBaseProps>(
@@ -164,16 +145,8 @@ export const DateInputBase = forwardRef<HTMLInputElement, DateInputBaseProps>(
     }, [value, format, isControlled]);
 
     // Close calendar on outside click
-    useEffect(() => {
-      if (!isCalendarOpen) return;
-      const handler = (e: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-          setIsCalendarOpen(false);
-        }
-      };
-      document.addEventListener("mousedown", handler);
-      return () => document.removeEventListener("mousedown", handler);
-    }, [isCalendarOpen]);
+    const closeCalendar = useCallback(() => setIsCalendarOpen(false), []);
+    useClickOutside(containerRef, closeCalendar, isCalendarOpen);
 
     const toggleCalendar = useCallback(() => {
       if (disabled || readOnly) return;

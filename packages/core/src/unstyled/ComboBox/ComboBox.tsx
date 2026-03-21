@@ -13,6 +13,10 @@ import {
   useState,
 } from "react";
 
+import { useClickOutside } from "../../hooks/useClickOutside";
+import { useControlledValue } from "../../hooks/useControlledValue";
+import { defaultFilter, groupOptions } from "../../logic/combobox";
+import { cx } from "../../logic/cx";
 import { mergeRefs } from "../../utils/mergeRefs";
 
 //  Public Types
@@ -39,7 +43,7 @@ export interface ComboBoxGroup<T = string> {
 
 /**
  * CSS class overrides that the styled layer injects into the unstyled base.
- * Every key is optional — when absent, no className is applied.
+ * Every key is optional - when absent, no className is applied.
  */
 export interface ComboBoxClassNames {
   root?: string;
@@ -147,52 +151,6 @@ export interface ComboBoxBaseProps<T = string> extends Omit<
   dataAttributes?: Record<string, string>;
 }
 
-//  Default filter
-
-function defaultFilter<T>(option: ComboBoxOption<T>, input: string): boolean {
-  if (!input) return true;
-  return option.label.toLowerCase().includes(input.toLowerCase());
-}
-
-//  Group options
-
-function groupOptions<T>(options: ComboBoxOption<T>[]): {
-  favourites: ComboBoxOption<T>[];
-  groups: ComboBoxGroup<T>[];
-  ungrouped: ComboBoxOption<T>[];
-} {
-  const favourites: ComboBoxOption<T>[] = [];
-  const groupMap = new Map<string, ComboBoxOption<T>[]>();
-  const ungrouped: ComboBoxOption<T>[] = [];
-
-  for (const opt of options) {
-    if (opt.favourite) {
-      favourites.push(opt);
-    }
-    if (opt.group) {
-      const list = groupMap.get(opt.group) ?? [];
-      list.push(opt);
-      groupMap.set(opt.group, list);
-    } else {
-      ungrouped.push(opt);
-    }
-  }
-
-  const groups: ComboBoxGroup<T>[] = [];
-  for (const [label, opts] of groupMap) {
-    groups.push({ label, options: opts });
-  }
-
-  return { favourites, groups, ungrouped };
-}
-
-//  Utility: join class names (truthy only)
-
-function cx(...classes: (string | false | undefined | null)[]): string | undefined {
-  const result = classes.filter(Boolean).join(" ");
-  return result || undefined;
-}
-
 //  Component
 
 function ComboBoxBaseRender<T = string>(
@@ -237,32 +195,13 @@ function ComboBoxBaseRender<T = string>(
   const containerRef = useRef<HTMLDivElement>(null);
 
   //  Internal state
-  const [internalInputValue, setInternalInputValue] = useState("");
-  const [internalOpen, setInternalOpen] = useState(false);
+  const [isOpen, setOpen] = useControlledValue(controlledOpen, false, onOpenChange);
+  const [currentInputValue, setInputValue] = useControlledValue(
+    controlledInputValue,
+    "",
+    onInputChange,
+  );
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
-
-  const isOpen = controlledOpen ?? internalOpen;
-  const currentInputValue = controlledInputValue ?? internalInputValue;
-
-  const setOpen = useCallback(
-    (next: boolean) => {
-      if (controlledOpen === undefined) {
-        setInternalOpen(next);
-      }
-      onOpenChange?.(next);
-    },
-    [controlledOpen, onOpenChange],
-  );
-
-  const setInputValue = useCallback(
-    (next: string) => {
-      if (controlledInputValue === undefined) {
-        setInternalInputValue(next);
-      }
-      onInputChange?.(next);
-    },
-    [controlledInputValue, onInputChange],
-  );
 
   //  Selected values as array
   const selectedValues = useMemo<T[]>(() => {
@@ -450,17 +389,11 @@ function ComboBoxBaseRender<T = string>(
   }, [disabled, isOpen, setOpen]);
 
   // Close on outside click
-  useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-        setHighlightedIndex(-1);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [isOpen, setOpen]);
+  const handleClickOutside = useCallback(() => {
+    setOpen(false);
+    setHighlightedIndex(-1);
+  }, [setOpen]);
+  useClickOutside(containerRef, handleClickOutside, isOpen);
 
   // Scroll highlighted into view
   useEffect(() => {

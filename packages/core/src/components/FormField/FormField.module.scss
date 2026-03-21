@@ -1,7 +1,7 @@
 .formField {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--density-spacing) * 0.5);
+  gap: calc(var(--finra-density-gap) * 0.5);
 
   &.fullWidth {
     inline-size: 100%;
@@ -13,36 +13,36 @@
   }
 
   &.disabled {
-    opacity: var(--opacity-disabled);
-    cursor: var(--cursor-disabled);
+    opacity: var(--finra-opacity-disabled);
+    cursor: var(--finra-cursor-disabled);
   }
 }
 
 .label {
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--color-foreground);
-  line-height: var(--leading-normal);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-sm);
+  font-weight: var(--finra-font-medium);
+  color: var(--finra-color-foreground);
+  line-height: var(--finra-leading-normal);
 
   &.required::after {
     content: " *";
-    color: var(--color-error);
+    color: var(--finra-color-error);
   }
 }
 
 .helperText {
-  font-family: var(--font-sans);
-  font-size: var(--text-xs);
-  color: var(--color-neutral-500);
-  line-height: var(--leading-normal);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-xs);
+  color: var(--finra-color-neutral-500);
+  line-height: var(--finra-leading-normal);
   margin: 0;
 }
 
 .errorMessage {
-  font-family: var(--font-sans);
-  font-size: var(--text-xs);
-  color: var(--color-error);
-  line-height: var(--leading-normal);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-xs);
+  color: var(--finra-color-error);
+  line-height: var(--finra-leading-normal);
   margin: 0;
 }

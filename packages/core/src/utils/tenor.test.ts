@@ -130,7 +130,7 @@ describe("resolveTenor", () => {
   });
 
   it("handles month-end edge case", () => {
-    // Jan 31 + 1M — Feb doesn't have 31 days
+    // Jan 31 + 1M - Feb doesn't have 31 days
     const jan31 = new Date(2026, 0, 31);
     const result = resolveTenor("1M", jan31);
     // JS Date wraps to March 3 (28 + 3 = 31), which is the native behavior

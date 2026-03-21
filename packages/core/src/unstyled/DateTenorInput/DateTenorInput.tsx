@@ -11,6 +11,9 @@ import {
   useState,
 } from "react";
 
+import { useClickOutside } from "../../hooks/useClickOutside";
+import { cx } from "../../logic/cx";
+import { autoInsertSeparators, getMaxLength } from "../../logic/dateInput";
 import type { DateFormat } from "../../utils/dateFormat";
 import {
   formatDate,
@@ -103,32 +106,6 @@ export interface DateTenorInputBaseProps extends Omit<
   tenorAriaLabel?: string;
 }
 
-//  Helpers
-
-function autoInsertSeparators(raw: string, segmentLengths: readonly number[], sep: string): string {
-  const digitsOnly = raw.replace(/\D/g, "");
-  let result = "";
-  let digitIndex = 0;
-  for (let i = 0; i < segmentLengths.length && digitIndex < digitsOnly.length; i++) {
-    if (i > 0) result += sep;
-    const segLen = segmentLengths[i];
-    result += digitsOnly.slice(digitIndex, digitIndex + segLen);
-    digitIndex += segLen;
-  }
-  return result;
-}
-
-function getMaxLength(segmentLengths: readonly number[], sep: string): number {
-  const digitCount = segmentLengths.reduce((sum, len) => sum + len, 0);
-  const separatorCount = segmentLengths.length - 1;
-  return digitCount + separatorCount * sep.length;
-}
-
-function cx(...classes: (string | false | undefined | null)[]): string | undefined {
-  const result = classes.filter(Boolean).join(" ");
-  return result || undefined;
-}
-
 //  Component
 
 export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseProps>(
@@ -209,16 +186,8 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
     );
 
     // Close on outside click
-    useEffect(() => {
-      if (!isOpen) return;
-      const handler = (e: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-          setIsOpen(false);
-        }
-      };
-      document.addEventListener("mousedown", handler);
-      return () => document.removeEventListener("mousedown", handler);
-    }, [isOpen]);
+    const closePopup = useCallback(() => setIsOpen(false), []);
+    useClickOutside(containerRef, closePopup, isOpen);
 
     const togglePopup = useCallback(() => {
       if (disabled || readOnly) return;

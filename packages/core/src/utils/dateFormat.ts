@@ -1,3 +1,5 @@
+import { isSameDay } from "../logic/calendar";
+
 export type DateFormat =
   | "YYYY-MM-DD"
   | "MM/DD/YYYY"
@@ -43,18 +45,10 @@ function pad(n: number, len: number): string {
   return String(n).padStart(len, "0");
 }
 
-function isSameDay(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
-}
-
 function isValidCalendarDate(year: number, month: number, day: number): boolean {
   if (month < 1 || month > 12) return false;
   if (day < 1) return false;
-  // Use Date constructor to check — it wraps invalid dates (e.g. Feb 30 → Mar 2)
+  // Use Date constructor to check - it wraps invalid dates (e.g. Feb 30 → Mar 2)
   const d = new Date(year, month - 1, day);
   return d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day;
 }

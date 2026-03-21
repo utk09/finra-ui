@@ -63,6 +63,10 @@ export type {
 } from "./components/ComboBox/ComboBox";
 export { ComboBox } from "./components/ComboBox/ComboBox";
 
+// Calendar
+export type { CalendarProps } from "./components/Calendar/Calendar";
+export { Calendar } from "./components/Calendar/Calendar";
+
 // DateInput
 export type { DateInputProps } from "./components/DateInput/DateInput";
 export { DateInput } from "./components/DateInput/DateInput";

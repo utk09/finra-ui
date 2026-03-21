@@ -1,16 +1,16 @@
 .switch {
   display: inline-flex;
   align-items: center;
-  gap: var(--density-spacing);
-  cursor: var(--cursor-pointer);
-  font-family: var(--font-sans);
-  font-size: var(--input-font-size);
-  line-height: var(--leading-normal);
-  color: var(--color-foreground);
+  gap: var(--finra-density-gap);
+  cursor: var(--finra-cursor-pointer);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-density-input-font-size);
+  line-height: var(--finra-leading-normal);
+  color: var(--finra-color-foreground);
 
   &.disabled {
-    opacity: var(--opacity-disabled);
-    cursor: var(--cursor-disabled);
+    opacity: var(--finra-opacity-disabled);
+    cursor: var(--finra-cursor-disabled);
   }
 }
 
@@ -24,17 +24,19 @@
   pointer-events: none;
 
   &:checked + .track {
-    background-color: var(--color-primary-600);
-    border-color: var(--color-primary-600);
+    background-color: var(--finra-color-primary-600);
+    border-color: var(--finra-color-primary-600);
 
     > .thumb {
-      inset-inline-start: calc(var(--switch-track-width) - var(--switch-thumb-size) - 2px);
+      inset-inline-start: calc(
+        var(--finra-density-switch-track-width) - var(--finra-density-switch-thumb-size) - 2px
+      );
     }
   }
 
   &:focus-visible + .track {
-    outline: var(--focus-ring-width) solid var(--focus-ring-color);
-    outline-offset: var(--focus-ring-offset);
+    outline: var(--finra-focus-width) solid var(--finra-focus-color);
+    outline-offset: var(--finra-focus-offset);
   }
 }
 
@@ -42,15 +44,15 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  inline-size: var(--switch-track-width);
-  block-size: var(--switch-track-height);
-  border-radius: var(--radius-full);
-  background-color: var(--color-neutral-300);
-  border: var(--border-width-thin) solid var(--color-border);
+  inline-size: var(--finra-density-switch-track-width);
+  block-size: var(--finra-density-switch-track-height);
+  border-radius: var(--finra-radius-full);
+  background-color: var(--finra-color-neutral-300);
+  border: var(--finra-border-thin) solid var(--finra-color-border);
   flex-shrink: 0;
   transition:
-    background-color var(--transition-fast) ease-in-out,
-    border-color var(--transition-fast) ease-in-out;
+    background-color var(--finra-duration-fast) ease-in-out,
+    border-color var(--finra-duration-fast) ease-in-out;
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
@@ -60,12 +62,12 @@
 .thumb {
   position: absolute;
   inset-inline-start: 2px;
-  inline-size: var(--switch-thumb-size);
-  block-size: var(--switch-thumb-size);
-  border-radius: var(--radius-full);
-  background-color: var(--color-white);
-  box-shadow: var(--shadow-sm);
-  transition: inset-inline-start var(--transition-fast) ease-in-out;
+  inline-size: var(--finra-density-switch-thumb-size);
+  block-size: var(--finra-density-switch-thumb-size);
+  border-radius: var(--finra-radius-full);
+  background-color: var(--finra-color-white);
+  box-shadow: var(--finra-shadow-sm);
+  transition: inset-inline-start var(--finra-duration-fast) ease-in-out;
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;

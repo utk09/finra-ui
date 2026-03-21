@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 
+import { useControlledValue } from "../../hooks/useControlledValue";
 import { mergeRefs } from "../../utils/mergeRefs";
 
 export interface PillInputBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
@@ -37,21 +38,9 @@ export const PillInputBase = forwardRef<HTMLInputElement, PillInputBaseProps>(
     },
     forwardedRef,
   ) => {
-    const [internalValues, setInternalValues] = useState<string[]>([]);
+    const [values, updateValues] = useControlledValue(controlledValues, [] as string[], onChange);
     const [inputValue, setInputValue] = useState("");
     const internalRef = useRef<HTMLInputElement>(null);
-
-    const values = controlledValues ?? internalValues;
-
-    const updateValues = useCallback(
-      (next: string[]) => {
-        if (!controlledValues) {
-          setInternalValues(next);
-        }
-        onChange?.(next);
-      },
-      [controlledValues, onChange],
-    );
 
     const addPill = useCallback(
       (text: string) => {

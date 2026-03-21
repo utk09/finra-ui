@@ -9,6 +9,20 @@ import {
   useState,
 } from "react";
 
+import { useControlledValue } from "../../hooks/useControlledValue";
+import {
+  type CalendarDay,
+  formatDayLabel,
+  formatMonthYear,
+  getCalendarDays,
+  getInitialFocusIndex,
+  WEEKDAY_LONG_MON,
+  WEEKDAY_LONG_SUN,
+  WEEKDAY_SHORT_MON,
+  WEEKDAY_SHORT_SUN,
+} from "../../logic/calendar";
+import { cx } from "../../logic/cx";
+
 //  Types
 
 export interface CalendarClassNames {
@@ -47,6 +61,8 @@ export interface CalendarBaseProps {
   weekStartsOn?: 0 | 1;
   /** CSS class overrides. */
   classNames?: CalendarClassNames;
+  /** data-* attributes injected by the styled layer. */
+  dataAttributes?: Record<string, string>;
   /** Icon for previous month navigation. */
   renderNavPrev?: () => ReactNode;
   /** Icon for next month navigation. */
@@ -55,130 +71,6 @@ export interface CalendarBaseProps {
   footer?: ReactNode;
   /** Override "today" for testing. */
   today?: Date;
-}
-
-//  Helpers
-
-function isSameDay(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
-}
-
-function startOfDay(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-const MONTH_NAMES = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-const WEEKDAY_SHORT_MON = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-const WEEKDAY_SHORT_SUN = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-const WEEKDAY_LONG_MON = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
-const WEEKDAY_LONG_SUN = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-
-function dayOfWeekIndex(date: Date, weekStartsOn: 0 | 1): number {
-  return (date.getDay() - weekStartsOn + 7) % 7;
-}
-
-export interface CalendarDay {
-  date: Date;
-  isCurrentMonth: boolean;
-  isToday: boolean;
-  isSelected: boolean;
-  isDisabled: boolean;
-}
-
-export function getCalendarDays(
-  year: number,
-  month: number,
-  weekStartsOn: 0 | 1,
-  value: Date | null | undefined,
-  today: Date,
-  min?: Date,
-  max?: Date,
-  disabledDates?: Date[] | ((date: Date) => boolean),
-): CalendarDay[] {
-  const firstDayOfMonth = new Date(year, month, 1);
-  const startOffset = dayOfWeekIndex(firstDayOfMonth, weekStartsOn);
-  const startDate = new Date(year, month, 1 - startOffset);
-
-  const days: CalendarDay[] = [];
-  const minDay = min ? startOfDay(min) : null;
-  const maxDay = max ? startOfDay(max) : null;
-  const todayDay = startOfDay(today);
-
-  for (let i = 0; i < 42; i++) {
-    const d = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
-    const dayStart = startOfDay(d);
-    const isCurrentMonth = d.getMonth() === month && d.getFullYear() === year;
-
-    let isDisabled = !isCurrentMonth;
-    if (isCurrentMonth) {
-      if (minDay && dayStart < minDay) isDisabled = true;
-      if (maxDay && dayStart > maxDay) isDisabled = true;
-      if (!isDisabled && disabledDates) {
-        if (typeof disabledDates === "function") {
-          isDisabled = disabledDates(d);
-        } else {
-          isDisabled = disabledDates.some((dd) => isSameDay(dd, d));
-        }
-      }
-    }
-
-    days.push({
-      date: d,
-      isCurrentMonth,
-      isToday: isSameDay(d, todayDay),
-      isSelected: value != null && isSameDay(d, value),
-      isDisabled,
-    });
-  }
-
-  return days;
-}
-
-function cx(...classes: (string | false | undefined | null)[]): string | undefined {
-  const result = classes.filter(Boolean).join(" ");
-  return result || undefined;
-}
-
-function formatMonthYear(year: number, month: number): string {
-  return `${MONTH_NAMES[month]} ${year}`;
-}
-
-function formatDayLabel(date: Date): string {
-  return `${MONTH_NAMES[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 }
 
 //  Component
@@ -195,6 +87,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
       disabledDates,
       weekStartsOn = 1,
       classNames: cn,
+      dataAttributes,
       renderNavPrev,
       renderNavNext,
       footer,
@@ -205,27 +98,19 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
     const today = useMemo(() => todayOverride ?? new Date(), [todayOverride]);
     const gridRef = useRef<HTMLDivElement>(null);
 
-    const [internalMonth, setInternalMonth] = useState(() => {
-      if (controlledMonth) return controlledMonth;
-      if (value) return new Date(value.getFullYear(), value.getMonth(), 1);
-      return new Date(today.getFullYear(), today.getMonth(), 1);
-    });
-
-    const displayMonth = controlledMonth ?? internalMonth;
-    const displayYear = displayMonth.getFullYear();
-    const displayMonthIndex = displayMonth.getMonth();
-
-    const setMonth = useCallback(
-      (m: Date) => {
-        if (!controlledMonth) setInternalMonth(m);
-        onMonthChange?.(m);
-      },
-      [controlledMonth, onMonthChange],
+    const defaultMonthRef = useRef(
+      value
+        ? new Date(value.getFullYear(), value.getMonth(), 1)
+        : new Date(today.getFullYear(), today.getMonth(), 1),
     );
 
-    useEffect(() => {
-      if (controlledMonth) setInternalMonth(controlledMonth);
-    }, [controlledMonth]);
+    const [displayMonth, setMonth] = useControlledValue(
+      controlledMonth,
+      defaultMonthRef.current,
+      onMonthChange,
+    );
+    const displayYear = displayMonth.getFullYear();
+    const displayMonthIndex = displayMonth.getMonth();
 
     const goToPrevMonth = useCallback(() => {
       setMonth(new Date(displayYear, displayMonthIndex - 1, 1));
@@ -251,26 +136,10 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
     );
 
     // Focused day for keyboard navigation
-    const [focusedIndex, setFocusedIndex] = useState<number>(() => {
-      const sel = days.findIndex((d) => d.isSelected && d.isCurrentMonth);
-      if (sel >= 0) return sel;
-      const tod = days.findIndex((d) => d.isToday && d.isCurrentMonth);
-      if (tod >= 0) return tod;
-      return days.findIndex((d) => d.isCurrentMonth);
-    });
+    const [focusedIndex, setFocusedIndex] = useState<number>(() => getInitialFocusIndex(days));
 
     useEffect(() => {
-      const sel = days.findIndex((d) => d.isSelected && d.isCurrentMonth);
-      if (sel >= 0) {
-        setFocusedIndex(sel);
-        return;
-      }
-      const tod = days.findIndex((d) => d.isToday && d.isCurrentMonth);
-      if (tod >= 0) {
-        setFocusedIndex(tod);
-        return;
-      }
-      setFocusedIndex(days.findIndex((d) => d.isCurrentMonth));
+      setFocusedIndex(getInitialFocusIndex(days));
     }, [days]);
 
     // Move focus to the button when focusedIndex changes (only if grid already has focus)
@@ -362,7 +231,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
     const weekdayLong = weekStartsOn === 1 ? WEEKDAY_LONG_MON : WEEKDAY_LONG_SUN;
 
     return (
-      <div ref={ref} className={cn?.root}>
+      <div ref={ref} {...dataAttributes} className={cn?.root}>
         {/* Header: nav + month/year */}
         <div className={cn?.header}>
           <button
@@ -384,7 +253,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
           </button>
         </div>
 
-        {/* Day grid — focus is managed via roving tabindex on day buttons */}
+        {/* Day grid - focus is managed via roving tabindex on day buttons */}
         <div
           ref={gridRef}
           className={cn?.grid}
@@ -405,7 +274,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
             ))}
           </div>
 
-          {/* Day rows — 6 rows of 7 days */}
+          {/* Day rows - 6 rows of 7 days */}
           {Array.from({ length: 6 }, (_, rowIdx) => (
             <div key={rowIdx} className={cn?.row} role="row">
               {days.slice(rowIdx * 7, rowIdx * 7 + 7).map((day, colIdx) => {

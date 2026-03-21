@@ -2,10 +2,11 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
+import type { Sentiment } from "../../types/variants";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Badge.module.scss";
 
-export type BadgeSentiment = "danger" | "success" | "warning" | "info";
+export type BadgeSentiment = Sentiment;
 
 const sentimentClasses: Record<BadgeSentiment, string> = {
   danger: styles.sentimentDanger,

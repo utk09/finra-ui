@@ -1,50 +1,56 @@
 .button {
   //  Internal custom properties (set by variant + sentiment)
-  --_btn-accent: var(--color-primary-600);
-  --_btn-accent-hover: var(--color-primary-700);
-  --_btn-accent-active: var(--color-primary-800);
-  --_btn-accent-subtle: var(--color-primary-50);
+  --_btn-accent: var(--finra-color-primary-600);
+  --_btn-accent-hover: var(--finra-color-primary-700);
+  --_btn-accent-active: var(--finra-color-primary-800);
+  --_btn-accent-subtle: var(--finra-color-primary-50);
+  --_btn-on-accent: var(--finra-color-white);
+
+  //  Dark mode: inverted primary scale is too light for white text
+  :where([data-theme="dark"]) & {
+    --_btn-on-accent: var(--finra-color-neutral-900);
+  }
 
   //  Base styles
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--density-spacing);
-  font-family: var(--font-sans);
-  font-weight: var(--font-medium);
-  font-size: var(--button-font-size);
-  line-height: var(--leading-tight);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast) ease-in-out;
+  gap: var(--finra-density-gap);
+  font-family: var(--finra-font-sans);
+  font-weight: var(--finra-font-medium);
+  font-size: var(--finra-density-button-font-size);
+  line-height: var(--finra-leading-tight);
+  border-radius: var(--finra-radius-md);
+  transition: all var(--finra-duration-fast) ease-in-out;
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
 
-  cursor: var(--cursor-pointer);
-  border: var(--border-width-thin) solid var(--color-transparent);
+  cursor: var(--finra-cursor-pointer);
+  border: var(--finra-border-thin) solid var(--finra-color-transparent);
   outline: none;
   text-decoration: none;
   position: relative;
   white-space: nowrap;
-  height: var(--size-base);
-  padding: 0 var(--button-padding-x);
+  height: var(--finra-density-size-base);
+  padding: 0 var(--finra-density-button-padding-x);
 
   //  States
   &:disabled {
-    opacity: var(--opacity-disabled);
-    cursor: var(--cursor-disabled);
+    opacity: var(--finra-opacity-disabled);
+    cursor: var(--finra-cursor-disabled);
   }
 
   &:focus-visible {
-    outline: var(--focus-ring-width) solid var(--focus-ring-color);
-    outline-offset: var(--focus-ring-offset);
+    outline: var(--finra-focus-width) solid var(--finra-focus-color);
+    outline-offset: var(--finra-focus-offset);
   }
 
   //  Variant: primary (filled)
   &.variantPrimary {
     background-color: var(--_btn-accent);
-    color: var(--color-white);
+    color: var(--_btn-on-accent);
     border-color: var(--_btn-accent);
 
     &:hover:not(:disabled) {
@@ -60,7 +66,7 @@
 
   //  Variant: secondary (bordered)
   &.variantSecondary {
-    background-color: var(--color-transparent);
+    background-color: var(--finra-color-transparent);
     color: var(--_btn-accent);
     border-color: var(--_btn-accent);
 
@@ -77,9 +83,9 @@
 
   //  Variant: tertiary (minimal)
   &.variantTertiary {
-    background-color: var(--color-transparent);
+    background-color: var(--finra-color-transparent);
     color: var(--_btn-accent);
-    border-color: var(--color-transparent);
+    border-color: var(--finra-color-transparent);
 
     &:hover:not(:disabled) {
       background-color: var(--_btn-accent-subtle);
@@ -93,31 +99,35 @@
 
   //  Sentiment overrides
   &.sentimentDanger {
-    --_btn-accent: var(--color-error);
-    --_btn-accent-hover: var(--color-error-hover);
-    --_btn-accent-active: var(--color-error-active);
-    --_btn-accent-subtle: var(--color-error-subtle);
+    --_btn-accent: var(--finra-color-error);
+    --_btn-accent-hover: var(--finra-color-error-hover);
+    --_btn-accent-active: var(--finra-color-error-active);
+    --_btn-accent-subtle: var(--finra-color-error-subtle);
+    --_btn-on-accent: var(--finra-color-white);
   }
 
   &.sentimentSuccess {
-    --_btn-accent: var(--color-success);
-    --_btn-accent-hover: var(--color-success-hover);
-    --_btn-accent-active: var(--color-success-active);
-    --_btn-accent-subtle: var(--color-success-subtle);
+    --_btn-accent: var(--finra-color-success);
+    --_btn-accent-hover: var(--finra-color-success-hover);
+    --_btn-accent-active: var(--finra-color-success-active);
+    --_btn-accent-subtle: var(--finra-color-success-subtle);
+    --_btn-on-accent: var(--finra-color-white);
   }
 
   &.sentimentWarning {
-    --_btn-accent: var(--color-warning);
-    --_btn-accent-hover: var(--color-warning-hover);
-    --_btn-accent-active: var(--color-warning-active);
-    --_btn-accent-subtle: var(--color-warning-subtle);
+    --_btn-accent: var(--finra-color-warning);
+    --_btn-accent-hover: var(--finra-color-warning-hover);
+    --_btn-accent-active: var(--finra-color-warning-active);
+    --_btn-accent-subtle: var(--finra-color-warning-subtle);
+    --_btn-on-accent: var(--finra-color-white);
   }
 
   &.sentimentInfo {
-    --_btn-accent: var(--color-info);
-    --_btn-accent-hover: var(--color-info-hover);
-    --_btn-accent-active: var(--color-info-active);
-    --_btn-accent-subtle: var(--color-info-subtle);
+    --_btn-accent: var(--finra-color-info);
+    --_btn-accent-hover: var(--finra-color-info-hover);
+    --_btn-accent-active: var(--finra-color-info-active);
+    --_btn-accent-subtle: var(--finra-color-info-subtle);
+    --_btn-on-accent: var(--finra-color-white);
   }
 
   //  Full width
@@ -131,8 +141,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--icon-size);
-  block-size: var(--icon-size);
+  inline-size: var(--finra-density-icon-size);
+  block-size: var(--finra-density-icon-size);
   flex-shrink: 0;
 
   > svg {

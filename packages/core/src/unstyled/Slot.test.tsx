@@ -61,7 +61,7 @@ describe("Slot", () => {
   });
 
   describe("prop merging", () => {
-    it("merges event handlers — child called first, then slot", async () => {
+    it("merges event handlers - child called first, then slot", async () => {
       const order: string[] = [];
       const slotHandler = vi.fn(() => order.push("slot"));
       const childHandler = vi.fn(() => order.push("child"));

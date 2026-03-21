@@ -40,6 +40,7 @@ catalog:
   prettier: 3.8.1
   react: 19.2.4
   react-dom: 19.2.4
+  react-router: 7.13.1
   sass: 1.98.0
   storybook: 10.3.1
   turbo: 2.8.20

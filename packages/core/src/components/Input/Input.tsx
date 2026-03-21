@@ -10,10 +10,11 @@ import {
 } from "react";
 
 import { CloseIcon } from "../../assets/icons";
+import type { ValidationStatus as _ValidationStatus } from "../../types/variants";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Input.module.scss";
 
-export type ValidationStatus = "error" | "warning" | "success";
+export type ValidationStatus = _ValidationStatus;
 
 const inputVariants = cva(styles.wrapper, {
   variants: {

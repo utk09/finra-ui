@@ -2,7 +2,8 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { CalendarBase, getCalendarDays } from "./Calendar";
+import { getCalendarDays } from "../../logic/calendar";
+import { CalendarBase } from "./Calendar";
 
 // Fixed "today" to avoid flaky tests
 const TODAY = new Date(2026, 2, 15); // March 15, 2026 (Sunday)
@@ -414,7 +415,7 @@ describe("CalendarBase", () => {
     render(<CalendarBase value={value} today={TODAY} />);
     const grid = screen.getByRole("grid");
 
-    // Focus the grid — the selected day button should receive focus
+    // Focus the grid - the selected day button should receive focus
     grid.focus();
     const selectedBtn = screen.getByLabelText("March 20, 2026");
     // The button with the selected day should have tabindex=0

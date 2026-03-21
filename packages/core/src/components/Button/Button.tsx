@@ -2,11 +2,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
 import { forwardRef, type ReactNode } from "react";
 
+import type { Sentiment } from "../../types/variants";
 import { ButtonBase, type ButtonBaseProps } from "../../unstyled/Button/Button";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Button.module.scss";
 
-export type ButtonSentiment = "danger" | "success" | "warning" | "info";
+export type ButtonSentiment = Sentiment;
 
 const sentimentClasses: Record<ButtonSentiment, string> = {
   danger: styles.sentimentDanger,

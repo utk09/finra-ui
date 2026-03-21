@@ -1,0 +1,56 @@
+:root {
+  //  Density: medium (default)
+  // Interactive element heights
+  --finra-density-size-base: 2.25rem;
+  --finra-density-size-compact: 1.75rem;
+  // Density-relative spacing
+  --finra-density-gap: 0.5rem;
+  // Icon size
+  --finra-density-icon-size: 1rem;
+  // Component-specific density tokens
+  --finra-density-button-padding-x: 1rem;
+  --finra-density-button-font-size: var(--finra-text-sm);
+  --finra-density-input-padding-x: 0.75rem;
+  --finra-density-input-font-size: var(--finra-text-sm);
+  // Checkbox / Switch
+  --finra-density-checkbox-size: 1.125rem;
+  --finra-density-switch-track-width: 2.5rem;
+  --finra-density-switch-track-height: 1.375rem;
+  --finra-density-switch-thumb-size: 1.125rem;
+  // Slider
+  --finra-density-slider-thumb-size: 1.125rem;
+}
+
+//  Density: high
+[data-density="high"] {
+  --finra-density-size-base: 1.75rem;
+  --finra-density-size-compact: 1.25rem;
+  --finra-density-gap: 0.25rem;
+  --finra-density-icon-size: 0.875rem;
+  --finra-density-button-padding-x: 0.75rem;
+  --finra-density-button-font-size: var(--finra-text-xs);
+  --finra-density-input-padding-x: 0.5rem;
+  --finra-density-input-font-size: var(--finra-text-xs);
+  --finra-density-checkbox-size: 0.875rem;
+  --finra-density-switch-track-width: 2rem;
+  --finra-density-switch-track-height: 1.125rem;
+  --finra-density-switch-thumb-size: 0.875rem;
+  --finra-density-slider-thumb-size: 0.875rem;
+}
+
+//  Density: low
+[data-density="low"] {
+  --finra-density-size-base: 2.75rem;
+  --finra-density-size-compact: 2.25rem;
+  --finra-density-gap: 0.75rem;
+  --finra-density-icon-size: 1.25rem;
+  --finra-density-button-padding-x: 1.5rem;
+  --finra-density-button-font-size: var(--finra-text-base);
+  --finra-density-input-padding-x: 1rem;
+  --finra-density-input-font-size: var(--finra-text-base);
+  --finra-density-checkbox-size: 1.375rem;
+  --finra-density-switch-track-width: 3rem;
+  --finra-density-switch-track-height: 1.625rem;
+  --finra-density-switch-thumb-size: 1.375rem;
+  --finra-density-slider-thumb-size: 1.375rem;
+}

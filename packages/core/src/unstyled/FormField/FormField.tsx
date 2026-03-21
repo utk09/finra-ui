@@ -8,7 +8,9 @@ import {
   useId,
 } from "react";
 
-export type ValidationStatus = "error" | "warning" | "success";
+import type { ValidationStatus as _ValidationStatus } from "../../types/variants";
+
+export type ValidationStatus = _ValidationStatus;
 
 export interface FormFieldBaseProps extends HTMLAttributes<HTMLDivElement> {
   label: string;

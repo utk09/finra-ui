@@ -1,16 +1,16 @@
 .radio {
   display: inline-flex;
   align-items: center;
-  gap: var(--density-spacing);
-  cursor: var(--cursor-pointer);
-  font-family: var(--font-sans);
-  font-size: var(--input-font-size);
-  line-height: var(--leading-normal);
-  color: var(--color-foreground);
+  gap: var(--finra-density-gap);
+  cursor: var(--finra-cursor-pointer);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-density-input-font-size);
+  line-height: var(--finra-leading-normal);
+  color: var(--finra-color-foreground);
 
   &.disabled {
-    opacity: var(--opacity-disabled);
-    cursor: var(--cursor-disabled);
+    opacity: var(--finra-opacity-disabled);
+    cursor: var(--finra-cursor-disabled);
   }
 }
 
@@ -24,7 +24,7 @@
   pointer-events: none;
 
   &:checked + .indicator {
-    border-color: var(--color-primary-600);
+    border-color: var(--finra-color-primary-600);
 
     > .dot {
       transform: scale(1);
@@ -32,8 +32,8 @@
   }
 
   &:focus-visible + .indicator {
-    outline: var(--focus-ring-width) solid var(--focus-ring-color);
-    outline-offset: var(--focus-ring-offset);
+    outline: var(--finra-focus-width) solid var(--finra-focus-color);
+    outline-offset: var(--finra-focus-offset);
   }
 }
 
@@ -41,13 +41,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--checkbox-size);
-  block-size: var(--checkbox-size);
-  border: var(--border-width-thin) solid var(--color-border);
-  border-radius: var(--radius-full);
-  background-color: var(--color-background);
+  inline-size: var(--finra-density-checkbox-size);
+  block-size: var(--finra-density-checkbox-size);
+  border: var(--finra-border-thin) solid var(--finra-color-border);
+  border-radius: var(--finra-radius-full);
+  background-color: var(--finra-color-background);
   flex-shrink: 0;
-  transition: border-color var(--transition-fast) ease-in-out;
+  transition: border-color var(--finra-duration-fast) ease-in-out;
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
@@ -57,10 +57,10 @@
 .dot {
   inline-size: 50%;
   block-size: 50%;
-  border-radius: var(--radius-full);
-  background-color: var(--color-primary-600);
+  border-radius: var(--finra-radius-full);
+  background-color: var(--finra-color-primary-600);
   transform: scale(0);
-  transition: transform var(--transition-fast) ease-in-out;
+  transition: transform var(--finra-duration-fast) ease-in-out;
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;

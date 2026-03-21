@@ -3,18 +3,18 @@
   align-items: center;
   justify-content: center;
   min-block-size: 8rem;
-  padding: var(--spacing-6);
-  font-family: var(--font-sans);
-  font-size: var(--input-font-size);
-  line-height: var(--leading-normal);
-  color: var(--color-neutral-500);
-  background-color: var(--color-background);
-  border: var(--border-width-medium) dashed var(--color-border);
-  border-radius: var(--radius-lg);
-  cursor: var(--cursor-pointer);
+  padding: var(--finra-spacing-6);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-density-input-font-size);
+  line-height: var(--finra-leading-normal);
+  color: var(--finra-color-neutral-500);
+  background-color: var(--finra-color-background);
+  border: var(--finra-border-medium) dashed var(--finra-color-border);
+  border-radius: var(--finra-radius-lg);
+  cursor: var(--finra-cursor-pointer);
   transition:
-    border-color var(--transition-fast) ease-in-out,
-    background-color var(--transition-fast) ease-in-out;
+    border-color var(--finra-duration-fast) ease-in-out,
+    background-color var(--finra-duration-fast) ease-in-out;
   user-select: none;
 
   @media (prefers-reduced-motion: reduce) {
@@ -22,27 +22,27 @@
   }
 
   &:hover {
-    border-color: var(--color-primary-400);
-    background-color: var(--color-primary-50);
+    border-color: var(--finra-color-primary-400);
+    background-color: var(--finra-color-primary-50);
   }
 
   &:focus-visible {
-    outline: var(--focus-ring-width) solid var(--focus-ring-color);
-    outline-offset: var(--focus-ring-offset);
+    outline: var(--finra-focus-width) solid var(--finra-focus-color);
+    outline-offset: var(--finra-focus-offset);
   }
 
   &.dragOver {
-    border-color: var(--color-primary-500);
-    background-color: var(--color-primary-50);
+    border-color: var(--finra-color-primary-500);
+    background-color: var(--finra-color-primary-50);
   }
 
   &.disabled {
-    opacity: var(--opacity-disabled);
-    cursor: var(--cursor-disabled);
+    opacity: var(--finra-opacity-disabled);
+    cursor: var(--finra-cursor-disabled);
 
     &:hover {
-      border-color: var(--color-border);
-      background-color: var(--color-background);
+      border-color: var(--finra-color-border);
+      background-color: var(--finra-color-background);
     }
   }
 }
@@ -60,16 +60,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--density-spacing);
+  gap: var(--finra-density-gap);
   text-align: center;
 }
 
 .icon {
   inline-size: 2rem;
   block-size: 2rem;
-  color: var(--color-neutral-400);
+  color: var(--finra-color-neutral-400);
 }
 
 .text {
-  color: var(--color-neutral-500);
+  color: var(--finra-color-neutral-500);
 }

@@ -1,4 +1,4 @@
-@use "./tokens.scss" as *;
+@use "../tokens" as *;
 @use "./fonts.scss";
 
 *,
@@ -9,18 +9,18 @@
 
 body {
   margin: 0;
-  font-family: var(--font-sans);
-  font-size: var(--text-base);
-  line-height: var(--leading-normal);
-  color: var(--color-foreground);
-  background-color: var(--color-background);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-base);
+  line-height: var(--finra-leading-normal);
+  color: var(--finra-color-foreground);
+  background-color: var(--finra-color-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 :focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring-color);
-  outline-offset: var(--focus-ring-offset);
+  outline: var(--finra-focus-width) solid var(--finra-focus-color);
+  outline-offset: var(--finra-focus-offset);
 }
 
 :focus:not(:focus-visible) {

@@ -2,16 +2,16 @@
   border: none;
   margin: 0;
   flex-shrink: 0;
-  background-color: var(--color-border);
+  background-color: var(--finra-color-border);
 
   &.horizontal {
     inline-size: 100%;
-    block-size: var(--border-width-thin);
+    block-size: var(--finra-border-thin);
   }
 
   &.vertical {
     block-size: 100%;
-    inline-size: var(--border-width-thin);
+    inline-size: var(--finra-border-thin);
     align-self: stretch;
   }
 }

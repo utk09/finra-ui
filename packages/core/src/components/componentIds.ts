@@ -63,6 +63,9 @@ export const componentIds = {
   // Divider
   divider: "divider",
 
+  // Calendar
+  calendar: "calendar",
+
   // DateInput
   dateInput: "date-input",
   dateInputField: "date-input-field",

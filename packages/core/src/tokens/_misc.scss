@@ -1,0 +1,25 @@
+:root {
+  //  Transitions
+  --finra-duration-fast: 150ms;
+  --finra-duration-normal: 250ms;
+  --finra-duration-slow: 350ms;
+
+  //  Focus ring
+  --finra-focus-width: 2px;
+  --finra-focus-color: var(--finra-color-primary-500);
+  --finra-focus-offset: 2px;
+
+  //  Cursors
+  --finra-cursor-pointer: pointer;
+  --finra-cursor-disabled: not-allowed;
+  --finra-cursor-text: text;
+
+  //  Opacity
+  --finra-opacity-disabled: 0.5;
+  --finra-opacity-hover: 0.8;
+
+  //  Border
+  --finra-border-thin: 1px;
+  --finra-border-medium: 2px;
+  --finra-border-thick: 3px;
+}

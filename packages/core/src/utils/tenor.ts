@@ -1,3 +1,5 @@
+import { isSameDay } from "../logic/calendar";
+
 export const STANDARD_TENORS = [
   "ON",
   "TN",
@@ -110,14 +112,6 @@ export function resolveTenor(tenor: string, referenceDate: Date): Date | null {
     default:
       return null;
   }
-}
-
-function isSameDay(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
 }
 
 export function dateToTenor(date: Date, referenceDate: Date): StandardTenor | null {

@@ -219,7 +219,7 @@ describe("DateInput", () => {
     );
     const input = screen.getByRole("textbox");
 
-    await user.type(input, "20240101"); // Jan 1, 2024 — before min
+    await user.type(input, "20240101"); // Jan 1, 2024 - before min
     await user.tab();
 
     expect(handleChange).not.toHaveBeenCalled();
@@ -242,7 +242,7 @@ describe("DateInput", () => {
     );
     const input = screen.getByRole("textbox");
 
-    await user.type(input, "20250101"); // Jan 1, 2025 — after max
+    await user.type(input, "20250101"); // Jan 1, 2025 - after max
     await user.tab();
 
     expect(handleChange).not.toHaveBeenCalled();
@@ -535,7 +535,7 @@ describe("DateInput", () => {
       render(<DateInput aria-label="Date" value={null} />);
 
       await user.click(screen.getByLabelText("Toggle calendar"));
-      // Calendar should render — no day should be selected
+      // Calendar should render - no day should be selected
       expect(screen.getByRole("grid")).toBeInTheDocument();
       const selectedDays = screen
         .getAllByRole("gridcell")
@@ -600,7 +600,7 @@ describe("DateInput", () => {
       const user = userEvent.setup();
       render(<DateInput aria-label="Date" readOnly />);
 
-      // Click the toggle button — calendar should not open
+      // Click the toggle button - calendar should not open
       await user.click(screen.getByLabelText("Toggle calendar"));
       expect(screen.queryByRole("grid")).not.toBeInTheDocument();
     });
@@ -635,7 +635,7 @@ describe("DateInput", () => {
         </div>,
       );
 
-      // Calendar not open — clicking outside should not throw or break
+      // Calendar not open - clicking outside should not throw or break
       fireEvent.mouseDown(screen.getByText("Outside"));
       expect(screen.queryByRole("grid")).not.toBeInTheDocument();
     });

@@ -1,0 +1,90 @@
+:root {
+  //  Primary colours
+  --finra-color-primary-50: #eff6ff;
+  --finra-color-primary-100: #dbeafe;
+  --finra-color-primary-200: #bfdbfe;
+  --finra-color-primary-300: #93c5fd;
+  --finra-color-primary-400: #60a5fa;
+  --finra-color-primary-500: #3b82f6;
+  --finra-color-primary-600: #2563eb;
+  --finra-color-primary-700: #1d4ed8;
+  --finra-color-primary-800: #1e40af;
+  --finra-color-primary-900: #1e3a8a;
+
+  //  Neutral colours
+  --finra-color-neutral-50: #f9fafb;
+  --finra-color-neutral-100: #f3f4f6;
+  --finra-color-neutral-200: #e5e7eb;
+  --finra-color-neutral-300: #d1d5db;
+  --finra-color-neutral-400: #9ca3af;
+  --finra-color-neutral-500: #6b7280;
+  --finra-color-neutral-600: #4b5563;
+  --finra-color-neutral-700: #374151;
+  --finra-color-neutral-800: #1f2937;
+  --finra-color-neutral-900: #111827;
+
+  //  Semantic colours (WCAG AA 4.5:1+ on white)
+  --finra-color-success: #047857;
+  --finra-color-warning: #b45309;
+  --finra-color-error: #dc2626;
+  --finra-color-info: #1d4ed8;
+
+  // Semantic colours - hover
+  --finra-color-success-hover: #065f46;
+  --finra-color-warning-hover: #92400e;
+  --finra-color-error-hover: #b91c1c;
+  --finra-color-info-hover: #1e40af;
+
+  // Semantic colours - active
+  --finra-color-success-active: #064e3b;
+  --finra-color-warning-active: #78350f;
+  --finra-color-error-active: #991b1b;
+  --finra-color-info-active: #1e3a8a;
+
+  // Semantic colours - disabled
+  --finra-color-success-disabled: #6ee7b7;
+  --finra-color-warning-disabled: #fcd34d;
+  --finra-color-error-disabled: #fca5a5;
+  --finra-color-info-disabled: #93c5fd;
+
+  // Semantic colours - subtle backgrounds (for secondary/tertiary hover states)
+  --finra-color-success-subtle: #f0fdf4;
+  --finra-color-warning-subtle: #fffbeb;
+  --finra-color-error-subtle: #fef2f2;
+  --finra-color-info-subtle: #eff6ff;
+
+  //  Base colours
+  --finra-color-background: #ffffff;
+  --finra-color-foreground: #111827;
+  --finra-color-border: #e5e7eb;
+
+  //  Constants
+  --finra-color-white: #ffffff;
+  --finra-color-black: #000000;
+  --finra-color-transparent: transparent;
+}
+
+//  Dark theme
+[data-theme="dark"] {
+  --finra-color-background: #111827;
+  --finra-color-foreground: #f9fafb;
+  --finra-color-border: #374151;
+
+  // Invert primary scale
+  --finra-color-primary-50: #1e3a8a;
+  --finra-color-primary-100: #1e40af;
+  --finra-color-primary-200: #1d4ed8;
+  --finra-color-primary-300: #2563eb;
+  --finra-color-primary-400: #3b82f6;
+  --finra-color-primary-500: #60a5fa;
+  --finra-color-primary-600: #93c5fd;
+  --finra-color-primary-700: #bfdbfe;
+  --finra-color-primary-800: #dbeafe;
+  --finra-color-primary-900: #eff6ff;
+
+  // Dark subtle backgrounds
+  --finra-color-success-subtle: #052e16;
+  --finra-color-warning-subtle: #451a03;
+  --finra-color-error-subtle: #450a0a;
+  --finra-color-info-subtle: #1e3a8a;
+}

@@ -7,17 +7,17 @@
     border-radius: 0;
 
     &:not(:first-child) {
-      margin-inline-start: calc(var(--border-width-thin) * -1);
+      margin-inline-start: calc(var(--finra-border-thin) * -1);
     }
 
     &:first-child {
-      border-start-start-radius: var(--radius-md);
-      border-end-start-radius: var(--radius-md);
+      border-start-start-radius: var(--finra-radius-md);
+      border-end-start-radius: var(--finra-radius-md);
     }
 
     &:last-child {
-      border-start-end-radius: var(--radius-md);
-      border-end-end-radius: var(--radius-md);
+      border-start-end-radius: var(--finra-radius-md);
+      border-end-end-radius: var(--finra-radius-md);
     }
 
     // Ensure hovered/focused button appears above siblings
@@ -34,19 +34,19 @@
     > * {
       &:not(:first-child) {
         margin-inline-start: 0;
-        margin-block-start: calc(var(--border-width-thin) * -1);
+        margin-block-start: calc(var(--finra-border-thin) * -1);
       }
 
       &:first-child {
         border-radius: 0;
-        border-start-start-radius: var(--radius-md);
-        border-start-end-radius: var(--radius-md);
+        border-start-start-radius: var(--finra-radius-md);
+        border-start-end-radius: var(--finra-radius-md);
       }
 
       &:last-child {
         border-radius: 0;
-        border-end-start-radius: var(--radius-md);
-        border-end-end-radius: var(--radius-md);
+        border-end-start-radius: var(--finra-radius-md);
+        border-end-end-radius: var(--finra-radius-md);
       }
     }
   }
