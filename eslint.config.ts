@@ -1,9 +1,9 @@
 import js from "@eslint/js";
 import vitest from "@vitest/eslint-plugin";
+import type { ESLint } from "eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
 import prettier from "eslint-config-prettier";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
-import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import storybook from "eslint-plugin-storybook";
@@ -12,7 +12,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
-  // ── Global ignores ──
+  // Global ignores
   globalIgnores([
     "**/build/",
     "**/dist/",
@@ -26,15 +26,14 @@ export default defineConfig([
     "pnpm-lock.yaml",
   ]),
 
-  // ── Base: ESLint recommended ──
+  // Base: ESLint recommended
   {
     name: "finra-ui/js-recommended",
     files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-    plugins: { js },
-    extends: ["js/recommended"],
+    ...js.configs.recommended,
   },
 
-  // ── TypeScript: strict + stylistic ──
+  // TypeScript: strict + stylistic
   {
     name: "finra-ui/typescript",
     files: ["**/*.{ts,tsx,mts,cts}"],
@@ -53,56 +52,25 @@ export default defineConfig([
     },
   },
 
-  // ── React: recommended + JSX runtime (React 19) ──
-  {
-    name: "finra-ui/react",
-    files: ["**/*.{jsx,tsx}"],
-    extends: [reactPlugin.configs.flat.recommended, reactPlugin.configs.flat["jsx-runtime"]],
-    languageOptions: {
-      globals: { ...globals.browser },
-    },
-    settings: {
-      react: { version: "detect" },
-    },
-    rules: {
-      "react/prop-types": "off",
-      "react/self-closing-comp": "warn",
-      "react/jsx-no-useless-fragment": "warn",
-      "react/jsx-curly-brace-presence": ["warn", { props: "never", children: "never" }],
-      "react/jsx-boolean-value": ["warn", "never"],
-      "react/jsx-no-leaked-render": "warn",
-      "react/jsx-pascal-case": "warn",
-      "react/hook-use-state": "warn",
-      "react/jsx-no-constructed-context-values": "warn",
-      "react/no-unstable-nested-components": "warn",
-      "react/no-array-index-key": "warn",
-      "react/no-danger": "error",
-      "react/no-object-type-as-default-prop": "warn",
-      "react/button-has-type": "warn",
-      "react/iframe-missing-sandbox": "warn",
-      "react/jsx-no-script-url": "error",
-    },
-  },
-
-  // ── React Hooks ──
+  // React Hooks
   {
     name: "finra-ui/react-hooks",
     files: ["**/*.{jsx,tsx}"],
-    plugins: { "react-hooks": reactHooksPlugin },
+    plugins: { "react-hooks": reactHooksPlugin as ESLint.Plugin },
     rules: {
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
     },
   },
 
-  // ── Accessibility ──
+  // Accessibility
   {
     name: "finra-ui/a11y",
     files: ["**/*.{jsx,tsx}"],
     extends: [jsxA11yPlugin.flatConfigs.recommended],
   },
 
-  // ── Import sorting ──
+  // Import sorting
   {
     name: "finra-ui/import-sort",
     files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
@@ -113,7 +81,7 @@ export default defineConfig([
     },
   },
 
-  // ── Library source hardening ──
+  // Library source hardening
   {
     name: "finra-ui/library-source",
     files: ["packages/*/src/**/*.{ts,tsx}"],
@@ -139,7 +107,7 @@ export default defineConfig([
     },
   },
 
-  // ── Test files ──
+  // Test files
   {
     name: "finra-ui/tests",
     files: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "**/test/**"],
@@ -152,7 +120,7 @@ export default defineConfig([
     },
   },
 
-  // ── Vitest: best practices for test files ──
+  // Vitest: best practices for test files
   {
     name: "finra-ui/vitest",
     files: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
@@ -172,20 +140,20 @@ export default defineConfig([
     },
   },
 
-  // ── Testing Library: correct usage of @testing-library ──
+  // Testing Library: basic rules (avoiding the .flat["react"] config as it requires eslint-plugin-react)
   {
     name: "finra-ui/testing-library",
     files: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
     plugins: { "testing-library": testingLibrary },
     rules: {
-      ...testingLibrary.configs["flat/react"].rules,
+      ...testingLibrary.configs["flat/dom"].rules,
     },
   },
 
-  // ── Storybook ──
+  // Storybook
   ...(storybook.configs["flat/recommended"] as ReturnType<typeof defineConfig>),
 
-  // ── Storybook stories (relaxed rules) ──
+  // Storybook stories
   {
     name: "finra-ui/stories",
     files: ["**/*.stories.{ts,tsx}"],
@@ -194,7 +162,7 @@ export default defineConfig([
     },
   },
 
-  // ── Config files (vite, vitest, eslint, etc.) ──
+  // Config files (vite, vitest, eslint, etc.)
   {
     name: "finra-ui/config-files",
     files: ["**/*.config.{ts,mts,js,mjs}"],
@@ -203,7 +171,7 @@ export default defineConfig([
     },
   },
 
-  // ── Prettier (must be last to disable conflicting rules) ──
+  // Prettier (must be last to disable conflicting rules)
   {
     name: "finra-ui/prettier",
     ...prettier,

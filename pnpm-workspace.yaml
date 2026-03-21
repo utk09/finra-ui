@@ -4,71 +4,53 @@ packages:
 
 catalog:
   "@changesets/cli": 2.30.0
-  "@commitlint/cli": 20.4.3
-  "@commitlint/config-conventional": 20.4.3
-  "@eslint/js": 9.39.4
-  "@storybook/addon-a11y": 10.2.16
-  "@storybook/addon-docs": 10.2.16
-  "@storybook/addon-themes": 10.2.16
-  "@storybook/addon-vitest": 10.2.16
-  "@storybook/react": 10.2.16
-  "@storybook/react-vite": 10.2.16
+  "@commitlint/cli": 20.5.0
+  "@commitlint/config-conventional": 20.5.0
+  "@eslint/js": 10.0.1
+  "@storybook/addon-a11y": 10.3.1
+  "@storybook/addon-docs": 10.3.1
+  "@storybook/addon-themes": 10.3.1
+  "@storybook/addon-vitest": 10.3.1
+  "@storybook/react": 10.3.1
+  "@storybook/react-vite": 10.3.1
   "@testing-library/jest-dom": 6.9.1
   "@testing-library/react": 16.3.2
   "@testing-library/user-event": 14.6.1
   "@types/eslint-plugin-jsx-a11y": 6.10.1
-  "@types/node": 25.3.5
+  "@types/node": 25.5.0
   "@types/react": 19.2.14
   "@types/react-dom": 19.2.3
-  "@vitejs/plugin-react": 5.1.4
-  "@vitest/browser-playwright": 4.0.18
-  "@vitest/coverage-istanbul": 4.0.18
-  "@vitest/eslint-plugin": 1.6.10
+  "@vitejs/plugin-react": 6.0.1
+  "@vitest/browser-playwright": 4.1.0
+  "@vitest/coverage-istanbul": 4.1.0
+  "@vitest/eslint-plugin": 1.6.12
   class-variance-authority: 0.7.1
   clsx: 2.1.1
-  eslint: 9.39.4
+  eslint: 10.1.0
   eslint-config-prettier: 10.1.8
   eslint-plugin-jsx-a11y: 6.10.2
-  eslint-plugin-react: 7.37.5
-  eslint-plugin-react-hooks: 5.2.0
+  eslint-plugin-react-hooks: 7.0.1
   eslint-plugin-simple-import-sort: 12.1.1
-  eslint-plugin-storybook: 10.2.16
-  eslint-plugin-testing-library: 7.16.0
-  globals: 16.5.0
+  eslint-plugin-storybook: 10.3.1
+  eslint-plugin-testing-library: 7.16.1
+  globals: 17.4.0
   husky: 9.1.7
-  jsdom: 28.1.0
-  lint-staged: 16.3.2
+  jsdom: 29.0.1
+  lint-staged: 16.4.0
   prettier: 3.8.1
   react: 19.2.4
   react-dom: 19.2.4
-  sass: 1.97.3
-  storybook: 10.2.16
-  turbo: 2.8.14
+  sass: 1.98.0
+  storybook: 10.3.1
+  turbo: 2.8.20
   typescript: 5.9.3
-  typescript-eslint: 8.56.1
-  vite: 7.3.1
+  typescript-eslint: 8.57.1
+  vite: 8.0.1
   vite-plugin-dts: 4.5.4
-  vitest: 4.0.18
-
-hoist-pattern:
-  - "@types/*"
-  - eslint*
-  - prettier*
-  - typescript
-  - vitest*
-  - "@vitest/*"
-  - "@testing-library/*"
-  - vite*
-  - sass
+  vitest: 4.1.0
 
 ignoredBuiltDependencies:
   - "@parcel/watcher"
   - esbuild
 
 prefer-workspace-packages: true
-
-public-hoist-pattern:
-  - "*eslint*"
-  - "*prettier*"
-  - "*typescript*"
-  - "*react*"

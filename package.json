@@ -5,7 +5,7 @@
   "description": "React component library for web applications",
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@10.17.1",
+  "packageManager": "pnpm@10.32.1",
   "engines": {
     "node": ">=22.0.0",
     "pnpm": ">=10.0.0"
@@ -37,7 +37,6 @@
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-jsx-a11y": "catalog:",
-    "eslint-plugin-react": "catalog:",
     "eslint-plugin-react-hooks": "catalog:",
     "eslint-plugin-simple-import-sort": "catalog:",
     "eslint-plugin-storybook": "catalog:",

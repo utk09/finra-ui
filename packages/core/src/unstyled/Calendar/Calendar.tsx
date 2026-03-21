@@ -293,25 +293,51 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
 
     const handleKeyDown = useCallback(
       (e: KeyboardEvent<HTMLDivElement>) => {
-        let nextIndex = focusedIndex;
-
         switch (e.key) {
           case "ArrowRight":
             e.preventDefault();
-            nextIndex = focusedIndex + 1;
-            break;
+            {
+              const nextIndex = focusedIndex + 1;
+              if (nextIndex >= 42) {
+                goToNextMonth();
+              } else {
+                setFocusedIndex(nextIndex);
+              }
+            }
+            return;
           case "ArrowLeft":
             e.preventDefault();
-            nextIndex = focusedIndex - 1;
-            break;
+            {
+              const nextIndex = focusedIndex - 1;
+              if (nextIndex < 0) {
+                goToPrevMonth();
+              } else {
+                setFocusedIndex(nextIndex);
+              }
+            }
+            return;
           case "ArrowDown":
             e.preventDefault();
-            nextIndex = focusedIndex + 7;
-            break;
+            {
+              const nextIndex = focusedIndex + 7;
+              if (nextIndex >= 42) {
+                goToNextMonth();
+              } else {
+                setFocusedIndex(nextIndex);
+              }
+            }
+            return;
           case "ArrowUp":
             e.preventDefault();
-            nextIndex = focusedIndex - 7;
-            break;
+            {
+              const nextIndex = focusedIndex - 7;
+              if (nextIndex < 0) {
+                goToPrevMonth();
+              } else {
+                setFocusedIndex(nextIndex);
+              }
+            }
+            return;
           case "Enter":
           case " ":
             e.preventDefault();
@@ -327,19 +353,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
             e.preventDefault();
             goToPrevMonth();
             return;
-          default:
-            return;
         }
-
-        if (nextIndex < 0) {
-          goToPrevMonth();
-          return;
-        }
-        if (nextIndex >= 42) {
-          goToNextMonth();
-          return;
-        }
-        setFocusedIndex(nextIndex);
       },
       [focusedIndex, days, handleDayClick, goToNextMonth, goToPrevMonth],
     );
