@@ -91,6 +91,11 @@
   color: var(--finra-color-foreground);
   padding: 0;
 
+  // Override global :focus-visible - wrapper handles focus indication
+  &:focus-visible {
+    outline: none;
+  }
+
   &::placeholder {
     color: var(--finra-color-neutral-400);
   }
@@ -138,7 +143,7 @@
   border: var(--finra-border-thin) solid var(--finra-color-neutral-200);
   border-radius: var(--finra-radius-full);
   font-size: var(--finra-text-xs);
-  color: var(--finra-color-foreground);
+  color: var(--finra-color-neutral-900);
   user-select: none;
   flex-shrink: 0;
 }

@@ -75,6 +75,10 @@
   padding: var(--finra-density-input-padding-x);
   resize: vertical;
 
+  &:focus-visible {
+    outline: none;
+  }
+
   &::placeholder {
     color: var(--finra-color-neutral-400);
   }

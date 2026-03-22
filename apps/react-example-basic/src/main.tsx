@@ -1,5 +1,8 @@
+import "@utk09/finra-ui/styles";
+
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
 
 import { App } from "./App";
 
@@ -11,6 +14,8 @@ if (!root) {
 
 root.render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </StrictMode>,
 );

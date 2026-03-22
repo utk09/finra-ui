@@ -81,6 +81,11 @@
   color: var(--finra-color-foreground);
   padding: 0;
 
+  // Override global :focus-visible - wrapper handles focus indication
+  &:focus-visible {
+    outline: none;
+  }
+
   &::placeholder {
     color: var(--finra-color-neutral-400);
   }

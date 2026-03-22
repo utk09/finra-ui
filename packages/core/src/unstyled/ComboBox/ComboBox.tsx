@@ -377,8 +377,12 @@ function ComboBoxBaseRender<T = string>(
       if (!isOpen) setOpen(true);
       setHighlightedIndex(0);
       onLoadOptions?.(val);
+      // Single mode: clear selection when user edits input text
+      if (!multiple && value != null) {
+        onChange?.(null);
+      }
     },
-    [setInputValue, isOpen, setOpen, onLoadOptions],
+    [setInputValue, isOpen, setOpen, onLoadOptions, multiple, value, onChange],
   );
 
   //  Focus

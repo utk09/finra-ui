@@ -88,6 +88,10 @@
   color: var(--finra-color-foreground);
   padding: 0;
 
+  &:focus-visible {
+    outline: none;
+  }
+
   &::placeholder {
     color: var(--finra-color-neutral-400);
   }
