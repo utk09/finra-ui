@@ -1,6 +1,6 @@
 {
   "name": "@utk09/finra-ui",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Component library for web applications. Core UI components and styles.",
   "displayName": "Finra UI",
   "type": "module",
