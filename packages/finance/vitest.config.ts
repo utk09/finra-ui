@@ -1,8 +1,33 @@
 import react from "@vitejs/plugin-react";
+import { resolve } from "path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: [
+      {
+        find: "@utk09/finra-ui/unstyled",
+        replacement: resolve(import.meta.dirname, "../core/src/unstyled.ts"),
+      },
+      {
+        find: "@utk09/finra-ui/utils",
+        replacement: resolve(import.meta.dirname, "../core/src/utils.ts"),
+      },
+      {
+        find: "@utk09/finra-ui",
+        replacement: resolve(import.meta.dirname, "../core/src/index.ts"),
+      },
+      {
+        find: "@utk09/finra-ui-icons/react",
+        replacement: resolve(import.meta.dirname, "../icons/src/react.ts"),
+      },
+      {
+        find: "@utk09/finra-ui-icons",
+        replacement: resolve(import.meta.dirname, "../icons/src/index.ts"),
+      },
+    ],
+  },
   test: {
     globals: true,
     environment: "jsdom",
