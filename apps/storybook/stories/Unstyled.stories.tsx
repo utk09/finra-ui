@@ -1,11 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { DateTenorInputBase, TenorInputBase } from "@utk09/finra-ui/finance";
 import {
   ButtonBase,
-  CalendarBase,
   CheckboxBase,
   ComboBoxBase,
-  DateInputBase,
   FileDropZoneBase,
   FormFieldBase,
   IconButtonBase,
@@ -17,6 +14,12 @@ import {
   SwitchBase,
   TextareaBase,
 } from "@utk09/finra-ui/unstyled";
+import {
+  CalendarBase,
+  DateInputBase,
+  DateTenorInputBase,
+  TenorInputBase,
+} from "@utk09/finra-ui-finance/unstyled";
 import { useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
 

@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@utk09/finra-ui": "workspace:*",
+    "@utk09/finra-ui-finance": "workspace:*",
+    "@utk09/finra-ui-icons": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:"
   },

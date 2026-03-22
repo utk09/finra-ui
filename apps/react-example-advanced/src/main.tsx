@@ -1,4 +1,5 @@
 import "@utk09/finra-ui/styles";
+import "@utk09/finra-ui-finance/styles";
 
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";

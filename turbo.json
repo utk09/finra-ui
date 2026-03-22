@@ -20,6 +20,10 @@
       "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**"],
       "outputs": ["coverage/**"]
     },
+    "test:coverage": {
+      "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**"],
+      "outputs": ["coverage/**"]
+    },
     "typecheck": {
       "inputs": ["$TURBO_DEFAULT$", "src/**", "stories/**", ".storybook/**"],
       "dependsOn": ["^build"]

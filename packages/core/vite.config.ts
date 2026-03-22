@@ -56,14 +56,19 @@ export default defineConfig({
         index: resolve(__dirname, "src/index.ts"),
         unstyled: resolve(__dirname, "src/unstyled.ts"),
         utils: resolve(__dirname, "src/utils.ts"),
-        finance: resolve(__dirname, "src/finance.ts"),
       },
       formats: ["es"],
       cssFileName: "styles",
       fileName: (_format, entryName) => `${entryName}.js`,
     },
-    rollupOptions: {
-      external: ["react", "react-dom", "react/jsx-runtime"],
+    rolldownOptions: {
+      external: [
+        "react",
+        "react-dom",
+        "react/jsx-runtime",
+        "@utk09/finra-ui-icons",
+        "@utk09/finra-ui-icons/react",
+      ],
     },
     sourcemap: true,
   },

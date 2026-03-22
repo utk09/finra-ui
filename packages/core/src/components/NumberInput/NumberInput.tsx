@@ -1,3 +1,4 @@
+import { MinusIcon, PlusIcon } from "@utk09/finra-ui-icons/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
 import {
@@ -11,7 +12,6 @@ import {
   useState,
 } from "react";
 
-import { MinusIcon, PlusIcon } from "../../assets/icons";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./NumberInput.module.scss";

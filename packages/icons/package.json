@@ -1,0 +1,62 @@
+{
+  "name": "@utk09/finra-ui-icons",
+  "version": "0.0.1",
+  "description": "Icon library for Finra UI. Framework-agnostic SVG data with React wrappers.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js"
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-jsx-a11y": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "globals": "catalog:",
+    "prettier": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-dts": "catalog:"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "author": {
+    "name": "@utk09"
+  },
+  "repository": {
+    "url": "https://github.com/utk09/finra-ui"
+  },
+  "license": "MIT",
+  "keywords": [
+    "icons",
+    "svg",
+    "react",
+    "finra-ui"
+  ]
+}

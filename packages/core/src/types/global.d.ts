@@ -12,3 +12,4 @@ declare module "*.module.css" {
 }
 
 declare module "@utk09/finra-ui/styles";
+declare module "@utk09/finra-ui-finance/styles";

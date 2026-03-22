@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { DateTenorInput } from "@utk09/finra-ui/finance";
-import { formatDate } from "@utk09/finra-ui/utils";
+import { DateTenorInput } from "@utk09/finra-ui-finance";
+import { formatDate } from "@utk09/finra-ui-finance/utils";
 import { useState } from "react";
 import { expect, fn, within } from "storybook/test";
 

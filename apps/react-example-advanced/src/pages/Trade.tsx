@@ -1,7 +1,6 @@
 import {
   Badge,
   Button,
-  Calendar,
   Checkbox,
   ComboBox,
   type ComboBoxOption,
@@ -14,7 +13,7 @@ import {
   Switch,
   Textarea,
 } from "@utk09/finra-ui";
-import { DateTenorInput, TenorInput } from "@utk09/finra-ui/finance";
+import { Calendar, DateTenorInput, TenorInput } from "@utk09/finra-ui-finance";
 import { type ChangeEvent, useCallback, useState } from "react";
 
 import { instruments } from "../data/instruments";

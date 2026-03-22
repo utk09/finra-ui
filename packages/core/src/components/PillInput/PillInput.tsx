@@ -1,3 +1,4 @@
+import { CloseSmallIcon } from "@utk09/finra-ui-icons/react";
 import { clsx } from "clsx";
 import {
   forwardRef,
@@ -8,7 +9,6 @@ import {
   useState,
 } from "react";
 
-import { CloseSmallIcon } from "../../assets/icons";
 import { mergeRefs } from "../../utils/mergeRefs";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./PillInput.module.scss";

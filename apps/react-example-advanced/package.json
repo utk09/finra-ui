@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@utk09/finra-ui": "workspace:*",
+    "@utk09/finra-ui-finance": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-router": "catalog:"

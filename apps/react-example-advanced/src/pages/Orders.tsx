@@ -4,11 +4,11 @@ import {
   ButtonGroup,
   ComboBox,
   type ComboBoxOption,
-  DateInput,
   Divider,
   Input,
   RadioButton,
 } from "@utk09/finra-ui";
+import { DateInput } from "@utk09/finra-ui-finance";
 import { useMemo, useState, useSyncExternalStore } from "react";
 
 import { instruments } from "../data/instruments";

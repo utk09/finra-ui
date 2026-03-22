@@ -62,20 +62,6 @@ export const componentIds = {
 
   // Divider
   divider: "divider",
-
-  // Calendar
-  calendar: "calendar",
-
-  // DateInput
-  dateInput: "date-input",
-  dateInputField: "date-input-field",
-  calendarIcon: "calendar-icon",
-
-  // TenorInput
-  tenorInput: "tenor-input",
-
-  // DateTenorInput
-  dateTenorInput: "date-tenor-input",
 } as const;
 
 export type ComponentId = (typeof componentIds)[keyof typeof componentIds];

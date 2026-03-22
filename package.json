@@ -16,6 +16,7 @@
     "test": "turbo test",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
+    "test:coverage": "turbo test:coverage",
     "typecheck": "turbo typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md,mdx,json,scss,css,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,mdx,json,scss,css,yml,yaml}\"",

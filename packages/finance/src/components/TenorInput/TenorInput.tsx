@@ -1,9 +1,9 @@
+import { ComboBox, type ComboBoxOption, type ComboBoxProps, FINRA_UI_ATTR } from "@utk09/finra-ui";
 import { clsx } from "clsx";
 import { forwardRef, useCallback, useMemo } from "react";
 
 import { parseTenor, STANDARD_TENORS } from "../../utils/tenor";
-import { ComboBox, type ComboBoxOption, type ComboBoxProps } from "../ComboBox/ComboBox";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
+import { componentIds } from "../componentIds";
 
 export interface TenorInputProps extends Omit<
   ComboBoxProps<string>,

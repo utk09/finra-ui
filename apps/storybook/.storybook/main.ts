@@ -27,6 +27,7 @@ const config: StorybookConfig = {
     const existing = Array.isArray(config.resolve.alias) ? config.resolve.alias : [];
     config.resolve.alias = [
       ...existing,
+      // Core aliases
       {
         find: "@utk09/finra-ui/styles",
         replacement: resolve(__dirname, "../../../packages/core/src/styles/global.scss"),
@@ -39,11 +40,29 @@ const config: StorybookConfig = {
         find: "@utk09/finra-ui/utils",
         replacement: resolve(__dirname, "../../../packages/core/src/utils.ts"),
       },
-      {
-        find: "@utk09/finra-ui/finance",
-        replacement: resolve(__dirname, "../../../packages/core/src/finance.ts"),
-      },
       { find: "@utk09/finra-ui", replacement: resolve(__dirname, "../../../packages/core/src") },
+      // Finance aliases
+      {
+        find: "@utk09/finra-ui-finance/unstyled",
+        replacement: resolve(__dirname, "../../../packages/finance/src/unstyled.ts"),
+      },
+      {
+        find: "@utk09/finra-ui-finance/utils",
+        replacement: resolve(__dirname, "../../../packages/finance/src/utils.ts"),
+      },
+      {
+        find: "@utk09/finra-ui-finance",
+        replacement: resolve(__dirname, "../../../packages/finance/src"),
+      },
+      // Icons aliases
+      {
+        find: "@utk09/finra-ui-icons/react",
+        replacement: resolve(__dirname, "../../../packages/icons/src/react.ts"),
+      },
+      {
+        find: "@utk09/finra-ui-icons",
+        replacement: resolve(__dirname, "../../../packages/icons/src"),
+      },
     ];
 
     return config;

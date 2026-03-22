@@ -1,4 +1,4 @@
-# Finra UI
+# Finra UI - Core
 
 React component library for web applications.
 
@@ -156,7 +156,7 @@ Every component renders a stable `data-finra-ui` attribute for targeted CSS over
 
 ### Zero External Runtime Dependencies
 
-The only runtime dependencies are `clsx` and `class-variance-authority`.
+The only runtime dependencies are `clsx`, `class-variance-authority`, and `@utk09/finra-ui-icons`.
 
 ## Development
 
@@ -188,8 +188,12 @@ pnpm run typecheck && pnpm run lint && pnpm run test
 ### Project Structure
 
 ```txt
-packages/core/     - Component library (@utk09/finra-ui)
-apps/storybook/    - Storybook documentation app
+packages/core/       - Core component library (@utk09/finra-ui)
+packages/finance/    - Financial domain components (@utk09/finra-ui-finance)
+packages/icons/      - Icon library (@utk09/finra-ui-icons)
+apps/storybook/      - Storybook documentation app
+apps/react-example-basic/    - E-commerce store demo
+apps/react-example-advanced/ - Financial dashboard demo
 ```
 
 ## License

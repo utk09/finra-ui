@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { DateInput } from "@utk09/finra-ui";
-import type { CalendarClassNames } from "@utk09/finra-ui/unstyled";
-import { CalendarBase } from "@utk09/finra-ui/unstyled";
+import { DateInput } from "@utk09/finra-ui-finance";
+import type { CalendarClassNames } from "@utk09/finra-ui-finance/unstyled";
+import { CalendarBase } from "@utk09/finra-ui-finance/unstyled";
 import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
 import { expect, userEvent, within } from "storybook/test";

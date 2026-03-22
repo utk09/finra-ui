@@ -1,7 +1,7 @@
+import { CheckIcon, DashIcon } from "@utk09/finra-ui-icons/react";
 import { clsx } from "clsx";
 import { forwardRef, useEffect, useRef } from "react";
 
-import { CheckIcon, DashIcon } from "../../assets/icons";
 import { CheckboxBase, type CheckboxBaseProps } from "../../unstyled/Checkbox/Checkbox";
 import { mergeRefs } from "../../utils/mergeRefs";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";

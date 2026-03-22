@@ -1,0 +1,95 @@
+{
+  "name": "@utk09/finra-ui-finance",
+  "version": "0.0.1",
+  "description": "Financial domain components for Finra UI. Date inputs, tenor pickers, and calendar.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./unstyled": {
+      "types": "./dist/unstyled.d.ts",
+      "import": "./dist/unstyled.js"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.js"
+    },
+    "./styles": {
+      "types": "./dist/styles.d.ts",
+      "default": "./dist/styles.css"
+    }
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@utk09/finra-ui": "workspace:*",
+    "@utk09/finra-ui-icons": "workspace:*",
+    "class-variance-authority": "catalog:",
+    "clsx": "catalog:"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "@vitest/coverage-istanbul": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-jsx-a11y": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "globals": "catalog:",
+    "jsdom": "catalog:",
+    "prettier": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sass": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-dts": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "@utk09/finra-ui": "workspace:*",
+    "@utk09/finra-ui-icons": "workspace:*",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "author": {
+    "name": "@utk09"
+  },
+  "repository": {
+    "url": "https://github.com/utk09/finra-ui"
+  },
+  "license": "MIT",
+  "keywords": [
+    "finance",
+    "tenor",
+    "date-input",
+    "calendar",
+    "react",
+    "components"
+  ]
+}

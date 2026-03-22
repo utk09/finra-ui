@@ -1,7 +1,11 @@
+import {
+  ComboBoxBase,
+  type ComboBoxClassNames,
+  type ComboBoxOption,
+} from "@utk09/finra-ui/unstyled";
 import { forwardRef, type HTMLAttributes, type ReactNode, useCallback, useMemo } from "react";
 
 import { parseTenor, STANDARD_TENORS } from "../../utils/tenor";
-import { ComboBoxBase, type ComboBoxClassNames, type ComboBoxOption } from "../ComboBox/ComboBox";
 
 export interface TenorInputClassNames extends ComboBoxClassNames {}
 

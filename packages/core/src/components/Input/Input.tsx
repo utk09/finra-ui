@@ -1,3 +1,4 @@
+import { CloseIcon } from "@utk09/finra-ui-icons/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
 import {
@@ -9,7 +10,6 @@ import {
   useRef,
 } from "react";
 
-import { CloseIcon } from "../../assets/icons";
 import type { ValidationStatus as _ValidationStatus } from "../../types/variants";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Input.module.scss";

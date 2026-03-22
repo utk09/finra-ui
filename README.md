@@ -48,8 +48,12 @@ pnpm run typecheck && pnpm run lint && pnpm run test
 ### Project Structure
 
 ```txt
-packages/core/     - Component library (@utk09/finra-ui)
-apps/storybook/    - Storybook documentation app
+packages/core/       - Core component library (@utk09/finra-ui)
+packages/finance/    - Financial domain components (@utk09/finra-ui-finance)
+packages/icons/      - Icon library (@utk09/finra-ui-icons)
+apps/storybook/      - Storybook documentation app
+apps/react-example-basic/    - E-commerce store demo
+apps/react-example-advanced/ - Financial dashboard demo
 ```
 
 ## License

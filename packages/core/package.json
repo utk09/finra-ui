@@ -19,10 +19,6 @@
       "types": "./dist/utils.d.ts",
       "import": "./dist/utils.js"
     },
-    "./finance": {
-      "types": "./dist/finance.d.ts",
-      "import": "./dist/finance.js"
-    },
     "./styles": {
       "types": "./dist/styles.d.ts",
       "default": "./dist/styles.css"
@@ -46,6 +42,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@utk09/finra-ui-icons": "workspace:*",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:"
   },

@@ -1,3 +1,4 @@
+import { UploadIcon } from "@utk09/finra-ui-icons/react";
 import { clsx } from "clsx";
 import {
   type ChangeEvent,
@@ -10,7 +11,6 @@ import {
   useState,
 } from "react";
 
-import { UploadIcon } from "../../assets/icons";
 import { mergeRefs } from "../../utils/mergeRefs";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./FileDropZone.module.scss";

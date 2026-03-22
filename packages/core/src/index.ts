@@ -2,6 +2,10 @@
 export type { ComponentId } from "./components/componentIds";
 export { componentIds, FINRA_UI_ATTR } from "./components/componentIds";
 
+// Hooks (public API for sister packages)
+export { useClickOutside } from "./hooks/useClickOutside";
+export { useControlledValue } from "./hooks/useControlledValue";
+
 // Button
 export type { ButtonProps, ButtonSentiment } from "./components/Button/Button";
 export { Button } from "./components/Button/Button";
@@ -62,14 +66,6 @@ export type {
   ComboBoxRenderOptionState,
 } from "./components/ComboBox/ComboBox";
 export { ComboBox } from "./components/ComboBox/ComboBox";
-
-// Calendar
-export type { CalendarProps } from "./components/Calendar/Calendar";
-export { Calendar } from "./components/Calendar/Calendar";
-
-// DateInput
-export type { DateInputProps } from "./components/DateInput/DateInput";
-export { DateInput } from "./components/DateInput/DateInput";
 
 // Badge
 export type { BadgeProps, BadgeSentiment } from "./components/Badge/Badge";

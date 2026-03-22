@@ -1,26 +1,16 @@
+import { FINRA_UI_ATTR, type ValidationStatus } from "@utk09/finra-ui";
+import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from "@utk09/finra-ui-icons/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
 import { forwardRef, useMemo } from "react";
 
-import {
-  CalendarIcon,
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "../../assets/icons";
-import type {
-  DateTenorInputBaseProps,
-  DateTenorInputClassNames,
-} from "../../unstyled/DateTenorInput/DateTenorInput";
-import { DateTenorInputBase } from "../../unstyled/DateTenorInput/DateTenorInput";
+import type { DateInputBaseProps, DateInputClassNames } from "../../unstyled/DateInput/DateInput";
+import { DateInputBase } from "../../unstyled/DateInput/DateInput";
 import calendarStyles from "../Calendar/Calendar.module.scss";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
-import type { ValidationStatus } from "../Input/Input";
-import styles from "./DateTenorInput.module.scss";
+import { componentIds } from "../componentIds";
+import styles from "./DateInput.module.scss";
 
-//  Variant CVA (for the trigger)
-
-const triggerVariants = cva(styles.trigger, {
+const dateInputVariants = cva(styles.wrapper, {
   variants: {
     variant: {
       primary: styles.variantPrimary,
@@ -33,48 +23,33 @@ const triggerVariants = cva(styles.trigger, {
   },
 });
 
-//  Validation classes
-
 const validationClasses: Record<ValidationStatus, string> = {
   error: styles.statusError,
   warning: styles.statusWarning,
   success: styles.statusSuccess,
 };
 
-//  Props
-
-export interface DateTenorInputProps
+export interface DateInputProps
   extends
     Omit<
-      DateTenorInputBaseProps,
+      DateInputBaseProps,
       | "classNames"
       | "dataAttributes"
       | "renderCalendarIcon"
-      | "renderIndicator"
       | "renderCalendarNavPrev"
       | "renderCalendarNavNext"
     >,
-    VariantProps<typeof triggerVariants> {
+    VariantProps<typeof dateInputVariants> {
   /** Visual validation status. */
   validationStatus?: ValidationStatus;
   /** Stretch to fill container width. */
   fullWidth?: boolean;
-  /** Additional CSS class for the root wrapper. */
+  /** Additional CSS class for the wrapper. */
   className?: string;
 }
 
-//  Static data attributes
-
-const dateTenorDataAttributes = { [FINRA_UI_ATTR]: componentIds.dateTenorInput } as const;
-
-//  Styled render callbacks
-
 function styledCalendarIcon() {
   return <CalendarIcon aria-hidden="true" {...{ [FINRA_UI_ATTR]: componentIds.calendarIcon }} />;
-}
-
-function styledIndicator(_isOpen: boolean) {
-  return <ChevronDownIcon />;
 }
 
 function styledNavPrev() {
@@ -85,35 +60,21 @@ function styledNavNext() {
   return <ChevronRightIcon aria-hidden="true" />;
 }
 
-//  Component
-
-export const DateTenorInput = forwardRef<HTMLDivElement, DateTenorInputProps>(
+export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
   ({ className, variant, validationStatus, fullWidth, disabled, ...props }, ref) => {
-    const classNames = useMemo<DateTenorInputClassNames>(
+    const classNames = useMemo<DateInputClassNames>(
       () => ({
         root: clsx(
-          styles.root,
-          fullWidth && styles.fullWidth,
+          dateInputVariants({ variant }),
+          validationStatus && validationClasses[validationStatus],
           disabled && styles.disabled,
+          fullWidth && styles.fullWidth,
           className,
         ),
-        trigger: clsx(
-          triggerVariants({ variant }),
-          validationStatus && validationClasses[validationStatus],
-        ),
-        triggerOpen: styles.open,
-        dateInput: styles.dateInput,
-        tenorBadge: styles.tenorBadge,
-        calendarButton: styles.calendarButton,
-        indicator: styles.indicator,
-        indicatorOpen: styles.indicatorOpen,
+        calendarOpen: styles.calendarOpen,
+        input: styles.field,
+        adornment: styles.adornment,
         popup: styles.popup,
-        calendarSection: styles.calendarSection,
-        tenorSection: styles.tenorSection,
-        tenorTitle: styles.tenorTitle,
-        tenorGrid: styles.tenorGrid,
-        tenor: styles.tenor,
-        tenorSelected: styles.tenorSelected,
         calendar: {
           root: calendarStyles.root,
           header: calendarStyles.header,
@@ -135,13 +96,14 @@ export const DateTenorInput = forwardRef<HTMLDivElement, DateTenorInputProps>(
     );
 
     return (
-      <DateTenorInputBase
+      <DateInputBase
         ref={ref}
         disabled={disabled}
         classNames={classNames}
-        dataAttributes={dateTenorDataAttributes}
+        dataAttributes={{
+          [FINRA_UI_ATTR]: componentIds.dateInput,
+        }}
         renderCalendarIcon={styledCalendarIcon}
-        renderIndicator={styledIndicator}
         renderCalendarNavPrev={styledNavPrev}
         renderCalendarNavNext={styledNavNext}
         {...props}
@@ -150,4 +112,4 @@ export const DateTenorInput = forwardRef<HTMLDivElement, DateTenorInputProps>(
   },
 );
 
-DateTenorInput.displayName = "DateTenorInput";
+DateInput.displayName = "DateInput";

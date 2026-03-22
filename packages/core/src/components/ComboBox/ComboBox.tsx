@@ -1,3 +1,9 @@
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  CloseSmallIcon,
+  SpinnerIcon,
+} from "@utk09/finra-ui-icons/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
 import {
@@ -9,7 +15,6 @@ import {
   useMemo,
 } from "react";
 
-import { CheckIcon, ChevronDownIcon, CloseSmallIcon, SpinnerIcon } from "../../assets/icons";
 import {
   ComboBoxBase,
   type ComboBoxClassNames,

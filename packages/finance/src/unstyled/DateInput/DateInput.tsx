@@ -1,3 +1,5 @@
+import { useClickOutside } from "@utk09/finra-ui";
+import { mergeRefs } from "@utk09/finra-ui/utils";
 import {
   type ChangeEvent,
   forwardRef,
@@ -10,7 +12,6 @@ import {
   useState,
 } from "react";
 
-import { useClickOutside } from "../../hooks/useClickOutside";
 import { autoInsertSeparators, getMaxLength } from "../../logic/dateInput";
 import type { DateFormat, DateParseResult } from "../../utils/dateFormat";
 import {
@@ -21,7 +22,6 @@ import {
   parseDate,
   validateDate,
 } from "../../utils/dateFormat";
-import { mergeRefs } from "../../utils/mergeRefs";
 import type { CalendarClassNames } from "../Calendar/Calendar";
 import { CalendarBase } from "../Calendar/Calendar";
 

@@ -230,6 +230,9 @@ importers:
       '@utk09/finra-ui':
         specifier: workspace:*
         version: link:../../packages/core
+      '@utk09/finra-ui-finance':
+        specifier: workspace:*
+        version: link:../../packages/finance
       react:
         specifier: 'catalog:'
         version: 19.2.4
@@ -292,6 +295,12 @@ importers:
       '@utk09/finra-ui':
         specifier: workspace:*
         version: link:../../packages/core
+      '@utk09/finra-ui-finance':
+        specifier: workspace:*
+        version: link:../../packages/finance
+      '@utk09/finra-ui-icons':
+        specifier: workspace:*
+        version: link:../../packages/icons
       react:
         specifier: 'catalog:'
         version: 19.2.4
@@ -338,6 +347,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@utk09/finra-ui-icons':
+        specifier: workspace:*
+        version: link:../icons
       class-variance-authority:
         specifier: 'catalog:'
         version: 0.7.1
@@ -417,6 +429,142 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.1.0(@types/node@25.5.0)(@vitest/browser-playwright@4.1.0)(jsdom@29.0.1)(vite@8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.2))
+
+  packages/finance:
+    dependencies:
+      '@utk09/finra-ui':
+        specifier: workspace:*
+        version: link:../core
+      '@utk09/finra-ui-icons':
+        specifier: workspace:*
+        version: link:../icons
+      class-variance-authority:
+        specifier: 'catalog:'
+        version: 0.7.1
+      clsx:
+        specifier: 'catalog:'
+        version: 2.1.1
+    devDependencies:
+      '@eslint/js':
+        specifier: 'catalog:'
+        version: 10.0.1(eslint@10.1.0(jiti@2.6.1))
+      '@testing-library/jest-dom':
+        specifier: 'catalog:'
+        version: 6.9.1
+      '@testing-library/react':
+        specifier: 'catalog:'
+        version: 16.3.2(@testing-library/dom@10.4.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@testing-library/user-event':
+        specifier: 'catalog:'
+        version: 14.6.1(@testing-library/dom@10.4.0)
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.5.0
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.2.3(@types/react@19.2.14)
+      '@vitejs/plugin-react':
+        specifier: 'catalog:'
+        version: 6.0.1(vite@8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.2))
+      '@vitest/coverage-istanbul':
+        specifier: 'catalog:'
+        version: 4.1.0(vitest@4.1.0)
+      eslint:
+        specifier: 'catalog:'
+        version: 10.1.0(jiti@2.6.1)
+      eslint-config-prettier:
+        specifier: 'catalog:'
+        version: 10.1.8(eslint@10.1.0(jiti@2.6.1))
+      eslint-plugin-jsx-a11y:
+        specifier: 'catalog:'
+        version: 6.10.2(eslint@10.1.0(jiti@2.6.1))
+      eslint-plugin-react-hooks:
+        specifier: 'catalog:'
+        version: 7.0.1(eslint@10.1.0(jiti@2.6.1))
+      globals:
+        specifier: 'catalog:'
+        version: 17.4.0
+      jsdom:
+        specifier: 'catalog:'
+        version: 29.0.1
+      prettier:
+        specifier: 'catalog:'
+        version: 3.8.1
+      react:
+        specifier: 'catalog:'
+        version: 19.2.4
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.4(react@19.2.4)
+      sass:
+        specifier: 'catalog:'
+        version: 1.98.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      typescript-eslint:
+        specifier: 'catalog:'
+        version: 8.57.1(eslint@10.1.0(jiti@2.6.1))(typescript@5.9.3)
+      vite:
+        specifier: 'catalog:'
+        version: 8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.2)
+      vite-plugin-dts:
+        specifier: 'catalog:'
+        version: 4.5.4(@types/node@25.5.0)(rollup@4.59.0)(typescript@5.9.3)(vite@8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.2))
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.0(@types/node@25.5.0)(@vitest/browser-playwright@4.1.0)(jsdom@29.0.1)(vite@8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.2))
+
+  packages/icons:
+    devDependencies:
+      '@eslint/js':
+        specifier: 'catalog:'
+        version: 10.0.1(eslint@10.1.0(jiti@2.6.1))
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.5.0
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.14
+      '@vitejs/plugin-react':
+        specifier: 'catalog:'
+        version: 6.0.1(vite@8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.2))
+      eslint:
+        specifier: 'catalog:'
+        version: 10.1.0(jiti@2.6.1)
+      eslint-config-prettier:
+        specifier: 'catalog:'
+        version: 10.1.8(eslint@10.1.0(jiti@2.6.1))
+      eslint-plugin-jsx-a11y:
+        specifier: 'catalog:'
+        version: 6.10.2(eslint@10.1.0(jiti@2.6.1))
+      eslint-plugin-react-hooks:
+        specifier: 'catalog:'
+        version: 7.0.1(eslint@10.1.0(jiti@2.6.1))
+      globals:
+        specifier: 'catalog:'
+        version: 17.4.0
+      prettier:
+        specifier: 'catalog:'
+        version: 3.8.1
+      react:
+        specifier: 'catalog:'
+        version: 19.2.4
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      typescript-eslint:
+        specifier: 'catalog:'
+        version: 8.57.1(eslint@10.1.0(jiti@2.6.1))(typescript@5.9.3)
+      vite:
+        specifier: 'catalog:'
+        version: 8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.2)
+      vite-plugin-dts:
+        specifier: 'catalog:'
+        version: 4.5.4(@types/node@25.5.0)(rollup@4.59.0)(typescript@5.9.3)(vite@8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.98.0)(yaml@2.8.2))
 
 packages:
 

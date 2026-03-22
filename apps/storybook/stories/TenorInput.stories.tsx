@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { TenorInput } from "@utk09/finra-ui/finance";
+import { TenorInput } from "@utk09/finra-ui-finance";
 import { useState } from "react";
 import { fn } from "storybook/test";
 
