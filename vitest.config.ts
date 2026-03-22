@@ -1,8 +1,8 @@
-import { defineConfig } from "vitest/config";
-import { playwright } from "@vitest/browser-playwright";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
+import { playwright } from "@vitest/browser-playwright";
 import path from "path";
 import { fileURLToPath } from "url";
+import { defineConfig } from "vitest/config";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -13,6 +13,7 @@ export default defineConfig({
     },
     projects: [
       "packages/core/vitest.config.ts",
+      "packages/finance/vitest.config.ts",
       {
         extends: true,
         plugins: [

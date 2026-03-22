@@ -1,6 +1,6 @@
 # Finra UI - Finance
 
-Financial domain components for the Finra UI component system. Date inputs, tenor pickers, and calendar.
+Financial domain components for the Finra UI component system.
 
 [![npm version](https://img.shields.io/npm/v/@utk09/finra-ui-finance.svg)](https://www.npmjs.com/package/@utk09/finra-ui-finance)
 [![Storybook](https://img.shields.io/badge/Storybook-deployed-ff4785)](https://finra-ui.netlify.app)
@@ -13,7 +13,7 @@ npm install @utk09/finra-ui-finance @utk09/finra-ui @utk09/finra-ui-icons
 pnpm add @utk09/finra-ui-finance @utk09/finra-ui @utk09/finra-ui-icons
 ```
 
-`@utk09/finra-ui` and `@utk09/finra-ui-icons` are peer dependencies — they provide shared tokens, base components, and icons.
+`@utk09/finra-ui` and `@utk09/finra-ui-icons` are peer dependencies - they provide shared tokens, base components, and icons.
 
 ## Quick Start
 

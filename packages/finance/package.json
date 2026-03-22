@@ -40,12 +40,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@utk09/finra-ui": "workspace:*",
-    "@utk09/finra-ui-icons": "workspace:*",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:"
   },
   "devDependencies": {
+    "@utk09/finra-ui": "workspace:*",
+    "@utk09/finra-ui-icons": "workspace:*",
     "@eslint/js": "catalog:",
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",

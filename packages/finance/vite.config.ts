@@ -1,5 +1,6 @@
+import { resolve } from "node:path";
+
 import react from "@vitejs/plugin-react";
-import { resolve } from "path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 
@@ -30,7 +31,7 @@ export default defineConfig({
       cssFileName: "styles",
       fileName: (_format, entryName) => `${entryName}.js`,
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: [
         "react",
         "react-dom",

@@ -17,16 +17,17 @@
       ]
     },
     "test": {
-      "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**"],
-      "outputs": ["coverage/**"]
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**"]
     },
     "test:coverage": {
+      "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**"],
       "outputs": ["coverage/**"]
     },
     "typecheck": {
-      "inputs": ["$TURBO_DEFAULT$", "src/**", "stories/**", ".storybook/**"],
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "src/**", "stories/**", ".storybook/**"]
     },
     "lint:fix": {
       "cache": false

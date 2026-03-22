@@ -30,7 +30,7 @@ function App() {
 }
 ```
 
-All React icon components accept standard `SVGProps<SVGSVGElement>` — pass any SVG attribute as a prop.
+All React icon components accept standard `SVGProps<SVGSVGElement>` - pass any SVG attribute as a prop.
 
 ### Framework-Agnostic SVG Data
 
@@ -70,7 +70,7 @@ Use the SVG data objects to render icons in any framework (Lit, vanilla DOM, etc
 
 ## Design
 
-All icons use `stroke="currentColor"` so they inherit the parent's text color. No fill colors are hardcoded — icons adapt to any theme automatically.
+All icons use `stroke="currentColor"` so they inherit the parent's text color. No fill colors are hardcoded - icons adapt to any theme automatically.
 
 ## License
 
