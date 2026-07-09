@@ -32,7 +32,7 @@
   }
 
   &:focus-within {
-    --_input-border-color: var(--finra-color-primary-500);
+    --_input-border-color: var(--finra-actionable-emphasis);
   }
 
   &.disabled {
@@ -62,21 +62,21 @@
     border-radius: 0;
 
     &:focus-within {
-      border-block-end-color: var(--finra-color-primary-500);
+      border-block-end-color: var(--finra-actionable-emphasis);
     }
   }
 
   //  Validation
   &.statusError {
-    --_input-border-color: var(--finra-color-error);
+    --_input-border-color: var(--finra-status-danger-accent);
   }
 
   &.statusWarning {
-    --_input-border-color: var(--finra-color-warning);
+    --_input-border-color: var(--finra-status-warning-accent);
   }
 
   &.statusSuccess {
-    --_input-border-color: var(--finra-color-success);
+    --_input-border-color: var(--finra-status-success-accent);
   }
 }
 
@@ -246,7 +246,7 @@
   }
 
   &.optionHighlighted {
-    background-color: var(--finra-color-primary-50);
+    background-color: var(--finra-actionable-accent-subtle);
   }
 
   &.optionSelected {
@@ -259,7 +259,7 @@
   }
 
   &.optionCreate {
-    color: var(--finra-color-primary-600);
+    color: var(--finra-actionable-accent);
     font-style: italic;
   }
 }
@@ -276,7 +276,7 @@
   inline-size: var(--finra-density-icon-size);
   block-size: var(--finra-density-icon-size);
   flex-shrink: 0;
-  color: var(--finra-color-primary-600);
+  color: var(--finra-actionable-accent);
 }
 
 //  Groups

@@ -16,7 +16,7 @@
   }
 
   &:focus-within {
-    --_input-border-color: var(--finra-color-primary-500);
+    --_input-border-color: var(--finra-actionable-emphasis);
   }
 
   &.disabled {
@@ -45,22 +45,22 @@
     border-radius: 0;
 
     &:focus-within {
-      border-block-end-color: var(--finra-color-primary-500);
+      border-block-end-color: var(--finra-actionable-emphasis);
       box-shadow: none;
     }
   }
 
   //  Validation status
   &.statusError {
-    --_input-border-color: var(--finra-color-error);
+    --_input-border-color: var(--finra-status-danger-accent);
   }
 
   &.statusWarning {
-    --_input-border-color: var(--finra-color-warning);
+    --_input-border-color: var(--finra-status-warning-accent);
   }
 
   &.statusSuccess {
-    --_input-border-color: var(--finra-color-success);
+    --_input-border-color: var(--finra-status-success-accent);
   }
 }
 
@@ -100,9 +100,9 @@
 }
 
 .charCountWarning {
-  color: var(--finra-color-warning);
+  color: var(--finra-status-warning-accent);
 }
 
 .charCountError {
-  color: var(--finra-color-error);
+  color: var(--finra-status-danger-accent);
 }

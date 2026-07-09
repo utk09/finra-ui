@@ -5,6 +5,7 @@ export { componentIds, FINRA_UI_ATTR } from "./components/componentIds";
 // Hooks (public API for sister packages)
 export { useClickOutside } from "./hooks/useClickOutside";
 export { useControlledValue } from "./hooks/useControlledValue";
+export { useStore } from "./hooks/useStore";
 
 // Button
 export type { ButtonProps, ButtonSentiment } from "./components/Button/Button";

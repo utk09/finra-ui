@@ -22,8 +22,8 @@
   }
 
   &:hover {
-    border-color: var(--finra-color-primary-400);
-    background-color: var(--finra-color-primary-50);
+    border-color: var(--finra-actionable-emphasis-subtle);
+    background-color: var(--finra-actionable-accent-subtle);
   }
 
   &:focus-visible {
@@ -32,8 +32,8 @@
   }
 
   &.dragOver {
-    border-color: var(--finra-color-primary-500);
-    background-color: var(--finra-color-primary-50);
+    border-color: var(--finra-actionable-emphasis);
+    background-color: var(--finra-actionable-accent-subtle);
   }
 
   &.disabled {

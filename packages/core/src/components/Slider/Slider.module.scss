@@ -51,7 +51,7 @@
     inline-size: var(--finra-density-slider-thumb-size);
     block-size: var(--finra-density-slider-thumb-size);
     border-radius: var(--finra-radius-full);
-    background-color: var(--finra-color-primary-600);
+    background-color: var(--finra-actionable-accent);
     border: var(--finra-border-medium) solid var(--finra-color-white);
     box-shadow: var(--finra-shadow-sm);
     cursor: inherit;
@@ -63,7 +63,7 @@
   }
 
   &::-webkit-slider-thumb:hover {
-    background-color: var(--finra-color-primary-700);
+    background-color: var(--finra-actionable-accent-hover);
   }
 
   //  Thumb - Firefox
@@ -71,7 +71,7 @@
     inline-size: var(--finra-density-slider-thumb-size);
     block-size: var(--finra-density-slider-thumb-size);
     border-radius: var(--finra-radius-full);
-    background-color: var(--finra-color-primary-600);
+    background-color: var(--finra-actionable-accent);
     border: var(--finra-border-medium) solid var(--finra-color-white);
     box-shadow: var(--finra-shadow-sm);
     cursor: inherit;
@@ -83,7 +83,7 @@
   }
 
   &::-moz-range-thumb:hover {
-    background-color: var(--finra-color-primary-700);
+    background-color: var(--finra-actionable-accent-hover);
   }
 
   //  Track - Firefox

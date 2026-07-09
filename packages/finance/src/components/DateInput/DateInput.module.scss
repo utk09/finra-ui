@@ -21,7 +21,7 @@
   }
 
   &:focus-within {
-    --_input-border-color: var(--finra-color-primary-500);
+    --_input-border-color: var(--finra-actionable-emphasis);
   }
 
   //  Disabled
@@ -58,22 +58,22 @@
     border-radius: 0;
 
     &:focus-within {
-      border-block-end-color: var(--finra-color-primary-500);
+      border-block-end-color: var(--finra-actionable-emphasis);
       box-shadow: none;
     }
   }
 
   //  Validation status
   &.statusError {
-    --_input-border-color: var(--finra-color-error);
+    --_input-border-color: var(--finra-status-danger-accent);
   }
 
   &.statusWarning {
-    --_input-border-color: var(--finra-color-warning);
+    --_input-border-color: var(--finra-status-warning-accent);
   }
 
   &.statusSuccess {
-    --_input-border-color: var(--finra-color-success);
+    --_input-border-color: var(--finra-status-success-accent);
   }
 }
 
@@ -124,7 +124,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--finra-color-primary-500);
+    outline: 2px solid var(--finra-actionable-emphasis);
     outline-offset: -2px;
   }
 

@@ -10,6 +10,13 @@
     "node": ">=22.0.0",
     "pnpm": ">=10.0.0"
   },
+  "browserslist": [
+    "Chrome >= 111",
+    "Edge >= 111",
+    "Firefox >= 121",
+    "Safari >= 16.5",
+    "iOS >= 16.5"
+  ],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",

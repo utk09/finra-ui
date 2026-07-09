@@ -42,7 +42,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--finra-color-primary-500);
+    outline: 2px solid var(--finra-actionable-emphasis);
     outline-offset: -2px;
   }
 
@@ -118,7 +118,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--finra-color-primary-500);
+    outline: 2px solid var(--finra-actionable-emphasis);
     outline-offset: -2px;
   }
 
@@ -126,15 +126,15 @@
 
   &.dayToday {
     font-weight: var(--finra-font-bold);
-    color: var(--finra-color-primary-600);
+    color: var(--finra-actionable-accent);
   }
 
   &.daySelected {
-    background-color: var(--finra-color-primary-500);
+    background-color: var(--finra-actionable-emphasis);
     color: var(--finra-color-neutral-0);
 
     &:hover:not(:disabled) {
-      background-color: var(--finra-color-primary-600);
+      background-color: var(--finra-actionable-accent);
     }
 
     &.dayToday {

@@ -1,0 +1,78 @@
+// Semantic (characteristic) token tier.
+//
+// Components reference these — never the raw palette scale steps directly.
+// Grammar: --finra-{characteristic}-{property}[-{state}].
+//
+// Themes remap this tier; the raw palette (_color.scss) stays mode-invariant.
+// This is why dark mode no longer inverts the primary scale: instead of
+// mutating what `primary-600` means, dark mode points `actionable-accent` at a
+// lighter scale step that reads correctly on a dark surface.
+
+:root {
+  // actionable — interactive accent (buttons, focus, selected states)
+  --finra-actionable-accent: var(--finra-color-primary-600);
+  --finra-actionable-accent-hover: var(--finra-color-primary-700);
+  --finra-actionable-accent-active: var(--finra-color-primary-800);
+  --finra-actionable-accent-subtle: var(--finra-color-primary-50);
+  // emphasis — focus rings, field focus borders, checked indicators
+  --finra-actionable-emphasis: var(--finra-color-primary-500);
+  // emphasis-subtle — lower-contrast interactive border (e.g. drag hover)
+  --finra-actionable-emphasis-subtle: var(--finra-color-primary-400);
+  // accent-subtle-strong — border/outline on a subtle accent surface
+  // (e.g. selected chip: subtle background + this border + accent text)
+  --finra-actionable-accent-subtle-strong: var(--finra-color-primary-200);
+  // foreground — text/icon on a filled actionable surface
+  --finra-actionable-foreground: var(--finra-color-white);
+
+  // container — surfaces, foreground text, borders (already theme-aware)
+  --finra-container-background: var(--finra-color-background);
+  --finra-container-foreground: var(--finra-color-foreground);
+  --finra-container-border: var(--finra-color-border);
+
+  // status — danger / success / warning / info.
+  // accent scale is mode-invariant; only the subtle background flips.
+  --finra-status-danger-accent: var(--finra-color-error);
+  --finra-status-danger-accent-hover: var(--finra-color-error-hover);
+  --finra-status-danger-accent-active: var(--finra-color-error-active);
+  --finra-status-danger-subtle: var(--finra-color-error-subtle);
+  --finra-status-danger-foreground: var(--finra-color-white);
+
+  --finra-status-success-accent: var(--finra-color-success);
+  --finra-status-success-accent-hover: var(--finra-color-success-hover);
+  --finra-status-success-accent-active: var(--finra-color-success-active);
+  --finra-status-success-subtle: var(--finra-color-success-subtle);
+  --finra-status-success-foreground: var(--finra-color-white);
+
+  --finra-status-warning-accent: var(--finra-color-warning);
+  --finra-status-warning-accent-hover: var(--finra-color-warning-hover);
+  --finra-status-warning-accent-active: var(--finra-color-warning-active);
+  --finra-status-warning-subtle: var(--finra-color-warning-subtle);
+  --finra-status-warning-foreground: var(--finra-color-white);
+
+  --finra-status-info-accent: var(--finra-color-info);
+  --finra-status-info-accent-hover: var(--finra-color-info-hover);
+  --finra-status-info-accent-active: var(--finra-color-info-active);
+  --finra-status-info-subtle: var(--finra-color-info-subtle);
+  --finra-status-info-foreground: var(--finra-color-white);
+}
+
+// Dark theme: remap the semantic tier only.
+// Actionable steps point lower on the (now fixed) scale so filled surfaces stay
+// light-on-dark; foreground flips to a dark ink. Values reproduce the colours
+// the old primary-scale inversion produced, so this is a visual no-op.
+[data-theme="dark"] {
+  --finra-actionable-accent: var(--finra-color-primary-300);
+  --finra-actionable-accent-hover: var(--finra-color-primary-200);
+  --finra-actionable-accent-active: var(--finra-color-primary-100);
+  --finra-actionable-accent-subtle: var(--finra-color-primary-900);
+  --finra-actionable-emphasis: var(--finra-color-primary-400);
+  --finra-actionable-emphasis-subtle: var(--finra-color-primary-500);
+  --finra-actionable-accent-subtle-strong: var(--finra-color-primary-700);
+  --finra-actionable-foreground: var(--finra-color-neutral-900);
+
+  // status subtle backgrounds — the only status tokens that flip
+  --finra-status-danger-subtle: #450a0a;
+  --finra-status-success-subtle: #052e16;
+  --finra-status-warning-subtle: #451a03;
+  --finra-status-info-subtle: #1e3a8a;
+}
