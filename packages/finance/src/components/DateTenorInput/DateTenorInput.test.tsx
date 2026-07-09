@@ -53,7 +53,7 @@ describe("DateTenorInput", () => {
 
   it("opens popup when clicking the input", async () => {
     const user = userEvent.setup();
-    render(<DateTenorInput dateAriaLabel="Date" referenceDate={REF_DATE} />);
+    render(<DateTenorInput dateAriaLabel="Date" referenceDate={REF_DATE} dateValue={REF_DATE} />);
 
     await user.click(screen.getByLabelText("Date"));
 
@@ -193,6 +193,7 @@ describe("DateTenorInput", () => {
       <DateTenorInput
         dateAriaLabel="Date"
         referenceDate={REF_DATE}
+        dateValue={REF_DATE}
         dateFormat="YYYY-MM-DD"
         onChange={handleChange}
       />,

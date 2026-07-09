@@ -6,8 +6,10 @@
     "dev": "storybook dev -p 6006",
     "build": "storybook build",
     "preview": "npx vite preview --outDir storybook-static",
-    "lint": "eslint stories .storybook",
-    "lint:fix": "eslint stories .storybook --fix",
+    "format": "prettier --write . --ignore-path ../../.prettierignore",
+    "format:check": "prettier --check . --ignore-path ../../.prettierignore",
+    "lint": "eslint stories .storybook && pnpm format:check",
+    "lint:fix": "eslint stories .storybook --fix && pnpm format",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

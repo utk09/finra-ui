@@ -1,1 +1,16 @@
-<script> (function () { var PREFIX = "Finra UI | "; function applyPrefix() { if (!document.title.startsWith(PREFIX)) { document.title = PREFIX + document.title; } } var titleEl = document.querySelector("title"); if (titleEl) { new MutationObserver(applyPrefix).observe(titleEl, { childList: true }); } applyPrefix(); window.addEventListener("DOMContentLoaded", applyPrefix); })(); </script>
+<script>
+  (function () {
+    var PREFIX = "Finra UI | ";
+    function applyPrefix() {
+      if (!document.title.startsWith(PREFIX)) {
+        document.title = PREFIX + document.title;
+      }
+    }
+    var titleEl = document.querySelector("title");
+    if (titleEl) {
+      new MutationObserver(applyPrefix).observe(titleEl, { childList: true });
+    }
+    applyPrefix();
+    window.addEventListener("DOMContentLoaded", applyPrefix);
+  })();
+</script>

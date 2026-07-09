@@ -4,6 +4,14 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "paths": {
+      "@utk09/finra-ui": ["./packages/core/src/index.ts"],
+      "@utk09/finra-ui/*": ["./packages/core/src/*"],
+      "@utk09/finra-ui-finance": ["./packages/finance/src/index.ts"],
+      "@utk09/finra-ui-finance/*": ["./packages/finance/src/*"],
+      "@utk09/finra-ui-icons": ["./packages/icons/src/index.ts"],
+      "@utk09/finra-ui-icons/*": ["./packages/icons/src/*"]
+    },
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,

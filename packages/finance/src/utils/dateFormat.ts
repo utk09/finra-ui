@@ -1,12 +1,7 @@
 import { isSameDay } from "../logic/calendar";
 
 export type DateFormat =
-  | "YYYY-MM-DD"
-  | "MM/DD/YYYY"
-  | "DD/MM/YYYY"
-  | "DD-MM-YYYY"
-  | "MM-DD-YYYY"
-  | "YYYY/MM/DD";
+  "YYYY-MM-DD" | "MM/DD/YYYY" | "DD/MM/YYYY" | "DD-MM-YYYY" | "MM-DD-YYYY" | "YYYY/MM/DD";
 
 export interface DateConstraints {
   min?: Date;

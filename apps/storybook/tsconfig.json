@@ -3,6 +3,11 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["stories", ".storybook"],
+  "include": [
+    "stories",
+    ".storybook",
+    "../../packages/core/src/types/global.d.ts",
+    "../../packages/finance/src/types/global.d.ts"
+  ],
   "exclude": ["node_modules", "storybook-static"]
 }
