@@ -1,5 +1,11 @@
 import { useCallback, useRef, useState } from "react";
 
+// Module-scoped ambient so the dev-only NODE_ENV guard type-checks wherever this
+// source is compiled — including consumers that resolve `@utk09/finra-ui` to
+// source via tsconfig paths and don't have @types/node. Shadows any global
+// `process`; bundlers replace `process.env.NODE_ENV` at build.
+declare const process: { env: { NODE_ENV?: string } };
+
 /**
  * Manages the controlled/uncontrolled value pattern.
  *
