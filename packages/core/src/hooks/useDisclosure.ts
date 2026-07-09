@@ -1,6 +1,11 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 
-import { useControlledValue } from "./useControlledValue";
+import {
+  createDisclosureStore,
+  type DisclosureState,
+  type DisclosureStore,
+} from "../logic/disclosure";
+import { useStore } from "./useStore";
 
 export interface UseDisclosureOptions {
   /** Controlled open state. When undefined, disclosure manages its own state. */
@@ -18,13 +23,33 @@ export interface UseDisclosureReturn {
   close: () => void;
 }
 
+const selectOpen = (state: DisclosureState) => state.open;
+
 /**
  * Manages open/close state with controlled/uncontrolled support.
+ *
+ * The behaviour lives in the framework-agnostic disclosure machine
+ * ({@link createDisclosureStore}); this hook is the React adapter and layers
+ * the controlled-prop override on top of the uncontrolled store.
  */
 export function useDisclosure(options: UseDisclosureOptions = {}): UseDisclosureReturn {
   const { open, onOpenChange, defaultOpen = false } = options;
 
-  const [isOpen, setOpen] = useControlledValue(open, defaultOpen, onOpenChange);
+  const storeRef = useRef<DisclosureStore | null>(null);
+  storeRef.current ??= createDisclosureStore(defaultOpen);
+  const store = storeRef.current;
+
+  const isControlled = open !== undefined;
+  const uncontrolledOpen = useStore(store, selectOpen);
+  const isOpen = isControlled ? open : uncontrolledOpen;
+
+  const setOpen = useCallback(
+    (next: boolean) => {
+      if (!isControlled) store.send({ type: "set", open: next });
+      onOpenChange?.(next);
+    },
+    [isControlled, store, onOpenChange],
+  );
 
   const toggle = useCallback(() => {
     setOpen(!isOpen);

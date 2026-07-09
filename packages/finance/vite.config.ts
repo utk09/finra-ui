@@ -10,6 +10,7 @@ export default defineConfig({
     dts({
       insertTypesEntry: true,
       copyDtsFiles: true,
+      entryRoot: resolve(import.meta.dirname, "src"),
       exclude: [
         "**/*.stories.tsx",
         "**/*.test.ts",
@@ -42,6 +43,11 @@ export default defineConfig({
         "@utk09/finra-ui-icons",
         "@utk09/finra-ui-icons/react",
       ],
+      output: {
+        // RSC boundary: components use hooks/state/refs, so every emitted
+        // chunk must be a client module (Next.js App Router).
+        banner: '"use client";',
+      },
     },
     sourcemap: true,
   },

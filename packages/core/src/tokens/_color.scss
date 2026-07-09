@@ -64,27 +64,11 @@
   --finra-color-transparent: transparent;
 }
 
-//  Dark theme
+//  Dark theme — only the base surface tokens flip here. The primary scale and
+//  the semantic status subtles are handled in the semantic tier (_semantic.scss);
+//  the raw palette stays mode-invariant.
 [data-theme="dark"] {
   --finra-color-background: #111827;
   --finra-color-foreground: #f9fafb;
   --finra-color-border: #374151;
-
-  // Invert primary scale
-  --finra-color-primary-50: #1e3a8a;
-  --finra-color-primary-100: #1e40af;
-  --finra-color-primary-200: #1d4ed8;
-  --finra-color-primary-300: #2563eb;
-  --finra-color-primary-400: #3b82f6;
-  --finra-color-primary-500: #60a5fa;
-  --finra-color-primary-600: #93c5fd;
-  --finra-color-primary-700: #bfdbfe;
-  --finra-color-primary-800: #dbeafe;
-  --finra-color-primary-900: #eff6ff;
-
-  // Dark subtle backgrounds
-  --finra-color-success-subtle: #052e16;
-  --finra-color-warning-subtle: #451a03;
-  --finra-color-error-subtle: #450a0a;
-  --finra-color-info-subtle: #1e3a8a;
 }

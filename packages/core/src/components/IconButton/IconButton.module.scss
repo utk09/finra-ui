@@ -1,15 +1,10 @@
 .iconButton {
   //  Internal custom properties
-  --_btn-accent: var(--finra-color-primary-600);
-  --_btn-accent-hover: var(--finra-color-primary-700);
-  --_btn-accent-active: var(--finra-color-primary-800);
-  --_btn-accent-subtle: var(--finra-color-primary-50);
-  --_btn-on-accent: var(--finra-color-white);
-
-  //  Dark mode: inverted primary scale is too light for white text
-  :where([data-theme="dark"]) & {
-    --_btn-on-accent: var(--finra-color-neutral-900);
-  }
+  --_btn-accent: var(--finra-actionable-accent);
+  --_btn-accent-hover: var(--finra-actionable-accent-hover);
+  --_btn-accent-active: var(--finra-actionable-accent-active);
+  --_btn-accent-subtle: var(--finra-actionable-accent-subtle);
+  --_btn-on-accent: var(--finra-actionable-foreground);
 
   //  Base styles
   display: inline-flex;
@@ -99,34 +94,34 @@
 
   //  Sentiment overrides
   &.sentimentDanger {
-    --_btn-accent: var(--finra-color-error);
-    --_btn-accent-hover: var(--finra-color-error-hover);
-    --_btn-accent-active: var(--finra-color-error-active);
-    --_btn-accent-subtle: var(--finra-color-error-subtle);
+    --_btn-accent: var(--finra-status-danger-accent);
+    --_btn-accent-hover: var(--finra-status-danger-accent-hover);
+    --_btn-accent-active: var(--finra-status-danger-accent-active);
+    --_btn-accent-subtle: var(--finra-status-danger-subtle);
     --_btn-on-accent: var(--finra-color-white);
   }
 
   &.sentimentSuccess {
-    --_btn-accent: var(--finra-color-success);
-    --_btn-accent-hover: var(--finra-color-success-hover);
-    --_btn-accent-active: var(--finra-color-success-active);
-    --_btn-accent-subtle: var(--finra-color-success-subtle);
+    --_btn-accent: var(--finra-status-success-accent);
+    --_btn-accent-hover: var(--finra-status-success-accent-hover);
+    --_btn-accent-active: var(--finra-status-success-accent-active);
+    --_btn-accent-subtle: var(--finra-status-success-subtle);
     --_btn-on-accent: var(--finra-color-white);
   }
 
   &.sentimentWarning {
-    --_btn-accent: var(--finra-color-warning);
-    --_btn-accent-hover: var(--finra-color-warning-hover);
-    --_btn-accent-active: var(--finra-color-warning-active);
-    --_btn-accent-subtle: var(--finra-color-warning-subtle);
+    --_btn-accent: var(--finra-status-warning-accent);
+    --_btn-accent-hover: var(--finra-status-warning-accent-hover);
+    --_btn-accent-active: var(--finra-status-warning-accent-active);
+    --_btn-accent-subtle: var(--finra-status-warning-subtle);
     --_btn-on-accent: var(--finra-color-white);
   }
 
   &.sentimentInfo {
-    --_btn-accent: var(--finra-color-info);
-    --_btn-accent-hover: var(--finra-color-info-hover);
-    --_btn-accent-active: var(--finra-color-info-active);
-    --_btn-accent-subtle: var(--finra-color-info-subtle);
+    --_btn-accent: var(--finra-status-info-accent);
+    --_btn-accent-hover: var(--finra-status-info-accent-hover);
+    --_btn-accent-active: var(--finra-status-info-accent-active);
+    --_btn-accent-subtle: var(--finra-status-info-subtle);
     --_btn-on-accent: var(--finra-color-white);
   }
 }

@@ -24,8 +24,8 @@
   pointer-events: none;
 
   &:checked + .track {
-    background-color: var(--finra-color-primary-600);
-    border-color: var(--finra-color-primary-600);
+    background-color: var(--finra-actionable-accent);
+    border-color: var(--finra-actionable-accent);
 
     > .thumb {
       inset-inline-start: calc(

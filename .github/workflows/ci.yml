@@ -106,6 +106,18 @@ jobs:
       - name: Build packages
         run: pnpm run build
 
+      - name: Verify "use client" banner on React entries
+        run: |
+          for f in packages/core/dist/index.js packages/finance/dist/index.js; do
+            head -1 "$f" | grep -q '"use client"' || { echo "Missing \"use client\" banner in $f"; exit 1; }
+          done
+
+      - name: Verify no stray declaration tree
+        run: |
+          for d in packages/core/dist/core packages/finance/dist/finance; do
+            if [ -d "$d" ]; then echo "Stray declaration tree found: $d"; exit 1; fi
+          done
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:

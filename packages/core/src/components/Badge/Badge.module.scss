@@ -1,12 +1,7 @@
 .badge {
-  --_badge-accent: var(--finra-color-primary-600);
-  --_badge-accent-subtle: var(--finra-color-primary-50);
-  --_badge-on-accent: var(--finra-color-white);
-
-  //  Dark mode: inverted primary scale is too light for white text
-  :where([data-theme="dark"]) & {
-    --_badge-on-accent: var(--finra-color-neutral-900);
-  }
+  --_badge-accent: var(--finra-actionable-accent);
+  --_badge-accent-subtle: var(--finra-actionable-accent-subtle);
+  --_badge-on-accent: var(--finra-actionable-foreground);
 
   display: inline-flex;
   align-items: center;
@@ -44,27 +39,27 @@
   //  Sentiments
 
   &.sentimentDanger {
-    --_badge-accent: var(--finra-color-error);
-    --_badge-accent-subtle: var(--finra-color-error-subtle);
-    --_badge-accent-text: var(--finra-color-error-hover);
+    --_badge-accent: var(--finra-status-danger-accent);
+    --_badge-accent-subtle: var(--finra-status-danger-subtle);
+    --_badge-accent-text: var(--finra-status-danger-accent-hover);
     --_badge-on-accent: var(--finra-color-white);
   }
 
   &.sentimentSuccess {
-    --_badge-accent: var(--finra-color-success);
-    --_badge-accent-subtle: var(--finra-color-success-subtle);
+    --_badge-accent: var(--finra-status-success-accent);
+    --_badge-accent-subtle: var(--finra-status-success-subtle);
     --_badge-on-accent: var(--finra-color-white);
   }
 
   &.sentimentWarning {
-    --_badge-accent: var(--finra-color-warning);
-    --_badge-accent-subtle: var(--finra-color-warning-subtle);
+    --_badge-accent: var(--finra-status-warning-accent);
+    --_badge-accent-subtle: var(--finra-status-warning-subtle);
     --_badge-on-accent: var(--finra-color-white);
   }
 
   &.sentimentInfo {
-    --_badge-accent: var(--finra-color-info);
-    --_badge-accent-subtle: var(--finra-color-info-subtle);
+    --_badge-accent: var(--finra-status-info-accent);
+    --_badge-accent-subtle: var(--finra-status-info-subtle);
     --_badge-on-accent: var(--finra-color-white);
   }
 }

@@ -27,7 +27,7 @@
 
   &.required::after {
     content: " *";
-    color: var(--finra-color-error);
+    color: var(--finra-status-danger-accent);
   }
 }
 
@@ -42,7 +42,7 @@
 .errorMessage {
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-xs);
-  color: var(--finra-color-error);
+  color: var(--finra-status-danger-accent);
   line-height: var(--finra-leading-normal);
   margin: 0;
 }

@@ -24,8 +24,8 @@
   pointer-events: none;
 
   &:checked + .indicator {
-    background-color: var(--finra-color-primary-600);
-    border-color: var(--finra-color-primary-600);
+    background-color: var(--finra-actionable-accent);
+    border-color: var(--finra-actionable-accent);
     color: var(--finra-color-white);
 
     > svg {
@@ -39,8 +39,8 @@
   }
 
   &[data-indeterminate] + .indicator {
-    background-color: var(--finra-color-primary-600);
-    border-color: var(--finra-color-primary-600);
+    background-color: var(--finra-actionable-accent);
+    border-color: var(--finra-actionable-accent);
     color: var(--finra-color-white);
 
     > svg {

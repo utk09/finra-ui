@@ -82,7 +82,9 @@
     "name": "@utk09"
   },
   "repository": {
-    "url": "https://github.com/utk09/finra-ui"
+    "type": "git",
+    "url": "https://github.com/utk09/finra-ui",
+    "directory": "packages/core"
   },
   "homepage": "https://finra-ui.netlify.app/",
   "license": "MIT",

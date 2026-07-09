@@ -24,7 +24,7 @@
   pointer-events: none;
 
   &:checked + .indicator {
-    border-color: var(--finra-color-primary-600);
+    border-color: var(--finra-actionable-accent);
 
     > .dot {
       transform: scale(1);
@@ -58,7 +58,7 @@
   inline-size: 50%;
   block-size: 50%;
   border-radius: var(--finra-radius-full);
-  background-color: var(--finra-color-primary-600);
+  background-color: var(--finra-actionable-accent);
   transform: scale(0);
   transition: transform var(--finra-duration-fast) ease-in-out;
 
