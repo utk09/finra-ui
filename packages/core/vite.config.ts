@@ -70,6 +70,7 @@ export default defineConfig({
         "react/jsx-runtime",
         "@utk09/finra-ui-icons",
         "@utk09/finra-ui-icons/react",
+        "@floating-ui/dom",
       ],
       output: {
         // RSC boundary: components use hooks/state/refs, so every emitted

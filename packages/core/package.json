@@ -44,6 +44,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@floating-ui/dom": "catalog:",
     "@utk09/finra-ui-icons": "workspace:*",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:"
