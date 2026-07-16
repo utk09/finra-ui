@@ -17,6 +17,7 @@ import {
   formatMonthYear,
   getCalendarDays,
   getInitialFocusIndex,
+  resolveCalendarKey,
   WEEKDAY_LONG_MON,
   WEEKDAY_LONG_SUN,
   WEEKDAY_SHORT_MON,
@@ -160,68 +161,32 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
       [onSelect],
     );
 
+    //  Keyboard - decision logic lives in the pure `resolveCalendarKey` machine;
+    //  this adapter only executes the effects it returns against local setters.
     const handleKeyDown = useCallback(
       (e: KeyboardEvent<HTMLDivElement>) => {
-        switch (e.key) {
-          case "ArrowRight":
-            e.preventDefault();
-            {
-              const nextIndex = focusedIndex + 1;
-              if (nextIndex >= 42) {
-                goToNextMonth();
-              } else {
-                setFocusedIndex(nextIndex);
-              }
-            }
-            return;
-          case "ArrowLeft":
-            e.preventDefault();
-            {
-              const nextIndex = focusedIndex - 1;
-              if (nextIndex < 0) {
-                goToPrevMonth();
-              } else {
-                setFocusedIndex(nextIndex);
-              }
-            }
-            return;
-          case "ArrowDown":
-            e.preventDefault();
-            {
-              const nextIndex = focusedIndex + 7;
-              if (nextIndex >= 42) {
-                goToNextMonth();
-              } else {
-                setFocusedIndex(nextIndex);
-              }
-            }
-            return;
-          case "ArrowUp":
-            e.preventDefault();
-            {
-              const nextIndex = focusedIndex - 7;
-              if (nextIndex < 0) {
-                goToPrevMonth();
-              } else {
-                setFocusedIndex(nextIndex);
-              }
-            }
-            return;
-          case "Enter":
-          case " ":
-            e.preventDefault();
-            if (focusedIndex >= 0 && focusedIndex < days.length) {
+        const { preventDefault, effects } = resolveCalendarKey(e.key, {
+          focusedIndex,
+          dayCount: days.length,
+        });
+
+        if (preventDefault) e.preventDefault();
+
+        for (const effect of effects) {
+          switch (effect.kind) {
+            case "setFocus":
+              setFocusedIndex(effect.index);
+              break;
+            case "goToNextMonth":
+              goToNextMonth();
+              break;
+            case "goToPrevMonth":
+              goToPrevMonth();
+              break;
+            case "selectFocused":
               handleDayClick(days[focusedIndex]);
-            }
-            return;
-          case "PageDown":
-            e.preventDefault();
-            goToNextMonth();
-            return;
-          case "PageUp":
-            e.preventDefault();
-            goToPrevMonth();
-            return;
+              break;
+          }
         }
       },
       [focusedIndex, days, handleDayClick, goToNextMonth, goToPrevMonth],

@@ -10,6 +10,7 @@ import {
   useRef,
 } from "react";
 
+import { useFormField } from "../../hooks/useFormField";
 import type { ValidationStatus as _ValidationStatus } from "../../types/variants";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Input.module.scss";
@@ -68,6 +69,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const internalRef = useRef<HTMLInputElement>(null);
     const inputRef = (ref as React.RefObject<HTMLInputElement>) || internalRef;
 
+    // Wire into an enclosing FormField (id, aria-describedby, aria-invalid,
+    // aria-required, disabled). Works at any depth; no-op when standalone.
+    const fieldProps = useFormField({ ...props, disabled });
+    const isDisabled = fieldProps.disabled;
+
     const handleClear = useCallback(
       (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -86,7 +92,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       [onClear, inputRef],
     );
 
-    const showClear = clearable && !disabled && !readOnly && (value ?? defaultValue ?? "") !== "";
+    const showClear = clearable && !isDisabled && !readOnly && (value ?? defaultValue ?? "") !== "";
 
     return (
       <div
@@ -94,7 +100,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         className={clsx(
           inputVariants({ variant }),
           validationStatus && validationClasses[validationStatus],
-          disabled && styles.disabled,
+          isDisabled && styles.disabled,
           fullWidth && styles.fullWidth,
           className,
         )}>
@@ -103,12 +109,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={inputRef}
           {...{ [FINRA_UI_ATTR]: componentIds.inputField }}
           className={styles.field}
-          disabled={disabled}
           readOnly={readOnly}
           value={value}
           defaultValue={defaultValue}
           onChange={onChange}
-          {...props}
+          {...fieldProps}
         />
         {showClear ? (
           <button

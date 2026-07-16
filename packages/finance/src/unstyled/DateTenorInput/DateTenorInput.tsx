@@ -1,4 +1,4 @@
-import { useClickOutside } from "@utk09/finra-ui";
+import { useClickOutside, useFormField } from "@utk09/finra-ui";
 import { cx } from "@utk09/finra-ui/utils";
 import { mergeRefs } from "@utk09/finra-ui/utils";
 import {
@@ -136,12 +136,24 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
       dateId,
       dateAriaLabel,
       tenorAriaLabel,
+      id,
+      "aria-describedby": ariaDescribedBy,
+      "aria-invalid": ariaInvalid,
       ...props
     },
     ref,
   ) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    // Wire the date text input into an enclosing FormField (id, aria-describedby,
+    // aria-invalid, aria-required). Works at any depth; no-op when standalone.
+    const field = useFormField({
+      id,
+      "aria-describedby": ariaDescribedBy,
+      "aria-invalid": ariaInvalid,
+      disabled,
+    });
 
     // Format helpers
     const separator = getFormatSeparator(dateFormat);
@@ -318,13 +330,16 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
             className={cn?.dateInput}
             type="text"
             inputMode="numeric"
-            id={dateId}
+            id={field.id ?? dateId}
             value={inputText}
             placeholder={datePlaceholder ?? getFormatPlaceholder(dateFormat)}
             disabled={disabled}
             readOnly={readOnly}
             maxLength={maxLen}
             aria-label={dateAriaLabel}
+            aria-describedby={field["aria-describedby"]}
+            aria-invalid={field["aria-invalid"]}
+            aria-required={field["aria-required"]}
             onChange={handleInputChange}
             onBlur={handleInputBlur}
             onKeyDown={handleInputKeyDown}

@@ -9,6 +9,8 @@ import {
   useState,
 } from "react";
 
+import { useFormField } from "../../hooks/useFormField";
+import type { AriaInvalid } from "../../logic/formField";
 import { mergeRefs } from "../../utils/mergeRefs";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./PillInput.module.scss";
@@ -38,6 +40,9 @@ export const PillInput = forwardRef<HTMLInputElement, PillInputProps>(
       disabled,
       maxPills,
       delimiters = [],
+      id,
+      "aria-describedby": ariaDescribedBy,
+      "aria-invalid": ariaInvalid,
       ...props
     },
     forwardedRef,
@@ -45,6 +50,16 @@ export const PillInput = forwardRef<HTMLInputElement, PillInputProps>(
     const [internalValues, setInternalValues] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState("");
     const internalRef = useRef<HTMLInputElement>(null);
+
+    // Wire the typing input into an enclosing FormField (the input is the
+    // labelable element). Works at any depth; no-op when standalone.
+    const field = useFormField({
+      id,
+      "aria-describedby": ariaDescribedBy,
+      "aria-invalid": ariaInvalid as AriaInvalid | undefined,
+      disabled,
+    });
+    const isDisabled = field.disabled;
 
     const values = controlledValues ?? internalValues;
 
@@ -98,32 +113,32 @@ export const PillInput = forwardRef<HTMLInputElement, PillInputProps>(
     );
 
     const handleContainerClick = useCallback(() => {
-      if (!disabled) {
+      if (!isDisabled) {
         internalRef.current?.focus();
       }
-    }, [disabled]);
+    }, [isDisabled]);
 
     const handleContainerKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (!disabled && (e.key === "Enter" || e.key === " ")) {
+        if (!isDisabled && (e.key === "Enter" || e.key === " ")) {
           internalRef.current?.focus();
         }
       },
-      [disabled],
+      [isDisabled],
     );
 
     return (
       <div
         {...{ [FINRA_UI_ATTR]: componentIds.pillInput }}
         role="toolbar"
-        className={clsx(styles.pillInput, disabled && styles.disabled, className)}
+        className={clsx(styles.pillInput, isDisabled && styles.disabled, className)}
         onClick={handleContainerClick}
         onKeyDown={handleContainerKeyDown}
         {...props}>
         {values.map((pill) => (
           <span key={pill} className={styles.pill}>
             <span className={styles.pillText}>{pill}</span>
-            {!disabled ? (
+            {!isDisabled ? (
               <button
                 type="button"
                 className={styles.pillRemove}
@@ -146,9 +161,13 @@ export const PillInput = forwardRef<HTMLInputElement, PillInputProps>(
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={values.length === 0 ? placeholder : undefined}
-          disabled={disabled}
+          id={field.id}
           aria-label={props["aria-label"]}
           aria-labelledby={props["aria-labelledby"]}
+          aria-describedby={field["aria-describedby"]}
+          aria-invalid={field["aria-invalid"]}
+          aria-required={field["aria-required"]}
+          disabled={isDisabled}
         />
       </div>
     );

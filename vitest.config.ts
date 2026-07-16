@@ -30,7 +30,9 @@ export default defineConfig({
             headless: true,
             instances: [{ browser: "chromium" }],
           },
-          setupFiles: [path.join(dirname, "apps/storybook/.storybook/vitest.setup.ts")],
+          // No setupFiles: since Storybook 10.3 @storybook/addon-vitest applies
+          // preview + a11y annotations automatically (previously wired via a
+          // vitest.setup.ts calling setProjectAnnotations).
         },
       },
     ],

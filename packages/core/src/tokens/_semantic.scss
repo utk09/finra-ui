@@ -1,6 +1,6 @@
 // Semantic (characteristic) token tier.
 //
-// Components reference these — never the raw palette scale steps directly.
+// Components reference these - never the raw palette scale steps directly.
 // Grammar: --finra-{characteristic}-{property}[-{state}].
 //
 // Themes remap this tier; the raw palette (_color.scss) stays mode-invariant.
@@ -9,27 +9,27 @@
 // lighter scale step that reads correctly on a dark surface.
 
 :root {
-  // actionable — interactive accent (buttons, focus, selected states)
+  // actionable - interactive accent (buttons, focus, selected states)
   --finra-actionable-accent: var(--finra-color-primary-600);
   --finra-actionable-accent-hover: var(--finra-color-primary-700);
   --finra-actionable-accent-active: var(--finra-color-primary-800);
   --finra-actionable-accent-subtle: var(--finra-color-primary-50);
-  // emphasis — focus rings, field focus borders, checked indicators
+  // emphasis - focus rings, field focus borders, checked indicators
   --finra-actionable-emphasis: var(--finra-color-primary-500);
-  // emphasis-subtle — lower-contrast interactive border (e.g. drag hover)
+  // emphasis-subtle - lower-contrast interactive border (e.g. drag hover)
   --finra-actionable-emphasis-subtle: var(--finra-color-primary-400);
-  // accent-subtle-strong — border/outline on a subtle accent surface
+  // accent-subtle-strong - border/outline on a subtle accent surface
   // (e.g. selected chip: subtle background + this border + accent text)
   --finra-actionable-accent-subtle-strong: var(--finra-color-primary-200);
-  // foreground — text/icon on a filled actionable surface
+  // foreground - text/icon on a filled actionable surface
   --finra-actionable-foreground: var(--finra-color-white);
 
-  // container — surfaces, foreground text, borders (already theme-aware)
+  // container - surfaces, foreground text, borders (already theme-aware)
   --finra-container-background: var(--finra-color-background);
   --finra-container-foreground: var(--finra-color-foreground);
   --finra-container-border: var(--finra-color-border);
 
-  // status — danger / success / warning / info.
+  // status - danger / success / warning / info.
   // accent scale is mode-invariant; only the subtle background flips.
   --finra-status-danger-accent: var(--finra-color-error);
   --finra-status-danger-accent-hover: var(--finra-color-error-hover);
@@ -70,7 +70,7 @@
   --finra-actionable-accent-subtle-strong: var(--finra-color-primary-700);
   --finra-actionable-foreground: var(--finra-color-neutral-900);
 
-  // status subtle backgrounds — the only status tokens that flip
+  // status subtle backgrounds - the only status tokens that flip
   --finra-status-danger-subtle: #450a0a;
   --finra-status-success-subtle: #052e16;
   --finra-status-warning-subtle: #451a03;

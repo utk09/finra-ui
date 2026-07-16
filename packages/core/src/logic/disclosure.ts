@@ -1,5 +1,5 @@
 /**
- * Disclosure state machine — open/close/toggle. Zero framework imports.
+ * Disclosure state machine - open/close/toggle. Zero framework imports.
  * Backs `useDisclosure` (React) and, later, overlay Web Components (Lit).
  */
 import { createStore, type Store } from "./store";

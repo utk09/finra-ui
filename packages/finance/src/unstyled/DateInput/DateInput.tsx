@@ -1,4 +1,4 @@
-import { useClickOutside } from "@utk09/finra-ui";
+import { useClickOutside, useFormField } from "@utk09/finra-ui";
 import { mergeRefs } from "@utk09/finra-ui/utils";
 import {
   type ChangeEvent,
@@ -122,6 +122,15 @@ export const DateInputBase = forwardRef<HTMLInputElement, DateInputBaseProps>(
     const separator = getFormatSeparator(format);
     const segmentLengths = getFormatSegmentLengths(format);
     const maxLen = getMaxLength(segmentLengths, separator);
+
+    // Wire the text input into an enclosing FormField (id, aria-describedby,
+    // aria-invalid, aria-required). Works at any depth; no-op when standalone.
+    const field = useFormField({
+      id,
+      "aria-describedby": ariaDescribedBy,
+      "aria-invalid": ariaInvalid,
+      disabled,
+    });
 
     // Calendar open state
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -253,14 +262,15 @@ export const DateInputBase = forwardRef<HTMLInputElement, DateInputBaseProps>(
           className={classNames?.input}
           type="text"
           inputMode="numeric"
-          id={id}
+          id={field.id}
           value={inputText}
           placeholder={placeholder ?? getFormatPlaceholder(format)}
           disabled={disabled}
           readOnly={readOnly}
           maxLength={maxLen}
-          aria-describedby={ariaDescribedBy}
-          aria-invalid={ariaInvalid}
+          aria-describedby={field["aria-describedby"]}
+          aria-invalid={field["aria-invalid"]}
+          aria-required={field["aria-required"]}
           aria-label={ariaLabel}
           onChange={handleChange}
           onBlur={handleBlur}

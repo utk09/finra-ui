@@ -15,7 +15,15 @@ import {
 
 import { useClickOutside } from "../../hooks/useClickOutside";
 import { useControlledValue } from "../../hooks/useControlledValue";
-import { defaultFilter, groupOptions } from "../../logic/combobox";
+import { useFormField } from "../../hooks/useFormField";
+import {
+  defaultFilter,
+  flattenOptions,
+  groupOptions,
+  resolveComboBoxKey,
+  resolveSelectOption,
+  shouldShowCreateOption,
+} from "../../logic/combobox";
 import { cx } from "../../logic/cx";
 import { mergeRefs } from "../../utils/mergeRefs";
 
@@ -184,6 +192,9 @@ function ComboBoxBaseRender<T = string>(
     dataAttributes,
     "aria-label": ariaLabel,
     "aria-labelledby": ariaLabelledBy,
+    id: idProp,
+    "aria-describedby": ariaDescribedBy,
+    "aria-invalid": ariaInvalid,
     ...props
   }: ComboBoxBaseProps<T>,
   forwardedRef: ForwardedRef<HTMLInputElement>,
@@ -203,6 +214,16 @@ function ComboBoxBaseRender<T = string>(
   );
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
+  // Wire the combobox input into an enclosing FormField (the input is the
+  // labelable element). Works at any depth; no-op when standalone.
+  const field = useFormField({
+    id: idProp,
+    "aria-describedby": ariaDescribedBy,
+    "aria-invalid": ariaInvalid,
+    disabled,
+  });
+  const isDisabled = field.disabled;
+
   //  Selected values as array
   const selectedValues = useMemo<T[]>(() => {
     if (value == null) return [];
@@ -221,27 +242,15 @@ function ComboBoxBaseRender<T = string>(
     [options, filter, currentInputValue],
   );
 
-  //  Flat list for keyboard navigation
-  const flatOptions = useMemo(() => {
-    const { favourites, groups, ungrouped } = groupOptions(filteredOptions);
-    const flat: ComboBoxOption<T>[] = [];
-    for (const f of favourites) flat.push(f);
-    for (const g of groups) {
-      for (const o of g.options) {
-        if (!o.favourite) flat.push(o);
-      }
-    }
-    for (const o of ungrouped) {
-      if (!o.favourite) flat.push(o);
-    }
-    return flat;
-  }, [filteredOptions]);
+  //  Flat list for keyboard navigation (order mirrors the rendered sections)
+  const flatOptions = useMemo(() => flattenOptions(filteredOptions), [filteredOptions]);
 
   // Show create option?
-  const showCreateOption =
-    creatable &&
-    currentInputValue.trim() !== "" &&
-    !options.some((o) => o.label.toLowerCase() === currentInputValue.trim().toLowerCase());
+  const showCreateOption = shouldShowCreateOption({
+    creatable,
+    inputValue: currentInputValue,
+    options,
+  });
 
   const createLabel = formatCreateLabel
     ? formatCreateLabel(currentInputValue.trim())
@@ -249,26 +258,20 @@ function ComboBoxBaseRender<T = string>(
 
   const totalNavigable = flatOptions.length + (showCreateOption ? 1 : 0);
 
-  //  Selection logic
+  //  Selection logic - the multi/single decision lives in `resolveSelectOption`;
+  //  this adapter only applies the resulting value/input/close to its setters.
   const selectOption = useCallback(
     (opt: ComboBoxOption<T>) => {
-      if (opt.disabled) return;
+      const result = resolveSelectOption(opt, { multiple, selectedValues });
+      if (!result) return;
 
-      if (multiple) {
-        const next = isSelected(opt.value)
-          ? selectedValues.filter((v) => v !== opt.value)
-          : [...selectedValues, opt.value];
-        onChange?.(next);
-        setInputValue("");
-      } else {
-        onChange?.(opt.value);
-        setInputValue(opt.label);
-        setOpen(false);
-      }
+      onChange?.(result.nextValue);
+      setInputValue(result.inputValue);
+      if (result.close) setOpen(false);
 
       inputRef.current?.focus();
     },
-    [multiple, isSelected, selectedValues, onChange, setInputValue, setOpen],
+    [multiple, selectedValues, onChange, setInputValue, setOpen],
   );
 
   const removeValue = useCallback(
@@ -281,78 +284,47 @@ function ComboBoxBaseRender<T = string>(
     [multiple, selectedValues, onChange],
   );
 
-  //  Keyboard
+  //  Keyboard - decision logic lives in the pure `resolveComboBoxKey` machine;
+  //  this adapter only executes the effects it returns against local setters.
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
-      if (disabled) return;
+      const { preventDefault, effects } = resolveComboBoxKey(e.key, {
+        isOpen,
+        disabled: isDisabled,
+        highlightedIndex,
+        totalNavigable,
+        flatOptionsLength: flatOptions.length,
+        showCreateOption,
+        multiple,
+        inputValueEmpty: currentInputValue === "",
+        selectedCount: selectedValues.length,
+      });
 
-      switch (e.key) {
-        case "ArrowDown": {
-          e.preventDefault();
-          if (!isOpen) {
-            setOpen(true);
-            setHighlightedIndex(0);
-          } else {
-            setHighlightedIndex((prev) => (prev + 1) % totalNavigable);
-          }
-          break;
-        }
-        case "ArrowUp": {
-          e.preventDefault();
-          if (!isOpen) {
-            setOpen(true);
-            setHighlightedIndex(totalNavigable - 1);
-          } else {
-            setHighlightedIndex((prev) => (prev - 1 + totalNavigable) % totalNavigable);
-          }
-          break;
-        }
-        case "Enter": {
-          e.preventDefault();
-          if (isOpen && highlightedIndex >= 0) {
-            if (highlightedIndex < flatOptions.length) {
-              selectOption(flatOptions[highlightedIndex]);
-            } else if (showCreateOption) {
-              onCreateOption?.(currentInputValue.trim());
-              setInputValue("");
-            }
-          } else if (!isOpen) {
-            setOpen(true);
-          }
-          break;
-        }
-        case "Escape": {
-          if (isOpen) {
-            e.preventDefault();
-            setOpen(false);
-            setHighlightedIndex(-1);
-          }
-          break;
-        }
-        case "Backspace": {
-          if (multiple && currentInputValue === "" && selectedValues.length > 0) {
+      if (preventDefault) e.preventDefault();
+
+      for (const effect of effects) {
+        switch (effect.kind) {
+          case "setOpen":
+            setOpen(effect.open);
+            break;
+          case "setHighlight":
+            setHighlightedIndex(effect.index);
+            break;
+          case "selectOption":
+            selectOption(flatOptions[effect.index]);
+            break;
+          case "createOption":
+            onCreateOption?.(currentInputValue.trim());
+            setInputValue("");
+            break;
+          case "removeLastValue":
             removeValue(selectedValues[selectedValues.length - 1]);
-          }
-          break;
-        }
-        case "Home": {
-          if (isOpen) {
-            e.preventDefault();
-            setHighlightedIndex(0);
-          }
-          break;
-        }
-        case "End": {
-          if (isOpen) {
-            e.preventDefault();
-            setHighlightedIndex(totalNavigable - 1);
-          }
-          break;
+            break;
         }
       }
     },
     [
-      disabled,
+      isDisabled,
       isOpen,
       setOpen,
       highlightedIndex,
@@ -387,10 +359,10 @@ function ComboBoxBaseRender<T = string>(
 
   //  Focus
   const handleFocus = useCallback(() => {
-    if (!disabled && !isOpen) {
+    if (!isDisabled && !isOpen) {
       setOpen(true);
     }
-  }, [disabled, isOpen, setOpen]);
+  }, [isDisabled, isOpen, setOpen]);
 
   // Close on outside click
   const handleClickOutside = useCallback(() => {
@@ -470,7 +442,7 @@ function ComboBoxBaseRender<T = string>(
       return (
         <span key={String(val)} className={cn?.pill} data-combobox-pill>
           <span className={cn?.pillText}>{renderValue ? renderValue(opt) : opt.label}</span>
-          {!disabled ? (
+          {!isDisabled ? (
             <button
               type="button"
               className={cn?.pillRemove}
@@ -620,16 +592,20 @@ function ComboBoxBaseRender<T = string>(
   const inputProps = {
     type: "text" as const,
     role: "searchbox" as const,
+    id: field.id,
     "aria-autocomplete": "list" as const,
     "aria-controls": isOpen ? listboxId : undefined,
     "aria-activedescendant":
       isOpen && highlightedIndex >= 0 ? getOptionId(highlightedIndex) : undefined,
     "aria-label": ariaLabel ?? placeholder,
     "aria-labelledby": ariaLabelledBy,
+    "aria-describedby": field["aria-describedby"],
+    "aria-invalid": field["aria-invalid"],
+    "aria-required": field["aria-required"],
     onChange: handleInputChange,
     onKeyDown: handleKeyDown,
     onFocus: handleFocus,
-    disabled,
+    disabled: isDisabled,
   };
 
   return (
@@ -639,7 +615,7 @@ function ComboBoxBaseRender<T = string>(
         aria-expanded={isOpen}
         aria-controls={isOpen ? listboxId : undefined}
         aria-haspopup="listbox"
-        aria-disabled={disabled || undefined}
+        aria-disabled={isDisabled || undefined}
         className={cn?.wrapper}>
         {multiple ? (
           <div className={cn?.multiValueContainer}>

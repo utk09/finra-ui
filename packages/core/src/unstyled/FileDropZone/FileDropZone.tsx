@@ -9,6 +9,8 @@ import {
   useState,
 } from "react";
 
+import { useFormField } from "../../hooks/useFormField";
+import type { AriaInvalid } from "../../logic/formField";
 import { mergeRefs } from "../../utils/mergeRefs";
 
 export interface FileDropZoneBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
@@ -25,9 +27,33 @@ export interface FileDropZoneBaseProps extends Omit<HTMLAttributes<HTMLDivElemen
 }
 
 export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBaseProps>(
-  ({ onChange, accept, multiple, disabled, children, ...props }, forwardedRef) => {
+  (
+    {
+      onChange,
+      accept,
+      multiple,
+      disabled,
+      children,
+      id,
+      "aria-describedby": ariaDescribedBy,
+      "aria-invalid": ariaInvalid,
+      ...props
+    },
+    forwardedRef,
+  ) => {
     const [isDragOver, setIsDragOver] = useState(false);
     const internalRef = useRef<HTMLInputElement>(null);
+
+    // Wire the interactive drop target (the role="button" div) into an
+    // enclosing FormField. `disabled` drives behaviour and aria-disabled - a
+    // div can't take a real `disabled` attribute. No-op when standalone.
+    const field = useFormField({
+      id,
+      "aria-describedby": ariaDescribedBy,
+      "aria-invalid": ariaInvalid as AriaInvalid | undefined,
+      disabled,
+    });
+    const isDisabled = field.disabled;
 
     const handleFiles = useCallback(
       (fileList: FileList | null) => {
@@ -40,11 +66,11 @@ export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBasePro
     const handleDragOver = useCallback(
       (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        if (!disabled) {
+        if (!isDisabled) {
           setIsDragOver(true);
         }
       },
-      [disabled],
+      [isDisabled],
     );
 
     const handleDragLeave = useCallback((e: DragEvent<HTMLDivElement>) => {
@@ -56,11 +82,11 @@ export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBasePro
       (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         setIsDragOver(false);
-        if (!disabled) {
+        if (!isDisabled) {
           handleFiles(e.dataTransfer.files);
         }
       },
-      [disabled, handleFiles],
+      [isDisabled, handleFiles],
     );
 
     const handleInputChange = useCallback(
@@ -73,19 +99,19 @@ export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBasePro
     );
 
     const handleClick = useCallback(() => {
-      if (!disabled) {
+      if (!isDisabled) {
         internalRef.current?.click();
       }
-    }, [disabled]);
+    }, [isDisabled]);
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (!disabled && (e.key === "Enter" || e.key === " ")) {
+        if (!isDisabled && (e.key === "Enter" || e.key === " ")) {
           e.preventDefault();
           internalRef.current?.click();
         }
       },
-      [disabled],
+      [isDisabled],
     );
 
     return (
@@ -96,15 +122,17 @@ export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBasePro
           style={{ display: "none" }}
           accept={accept}
           multiple={multiple}
-          disabled={disabled}
+          disabled={isDisabled}
           onChange={handleInputChange}
           tabIndex={-1}
           aria-hidden="true"
         />
         <div
           role="button"
-          tabIndex={disabled ? -1 : 0}
-          aria-disabled={disabled || undefined}
+          id={field.id}
+          tabIndex={isDisabled ? -1 : 0}
+          aria-disabled={isDisabled || undefined}
+          aria-describedby={field["aria-describedby"]}
           data-drag-over={isDragOver || undefined}
           onClick={handleClick}
           onKeyDown={handleKeyDown}

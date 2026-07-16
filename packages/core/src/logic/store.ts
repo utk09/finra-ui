@@ -1,5 +1,5 @@
 /**
- * Framework-agnostic state store — zero framework imports.
+ * Framework-agnostic state store - zero framework imports.
  *
  * A "machine" is a pure `(state, action) => state` reducer plus an initial
  * state. `createStore` turns that into an observable store with

@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 
+import { useFormField } from "../../hooks/useFormField";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./Textarea.module.scss";
@@ -71,6 +72,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const internalRef = useRef<HTMLTextAreaElement>(null);
     const textareaRef = (ref as React.RefObject<HTMLTextAreaElement>) || internalRef;
 
+    // Wire into an enclosing FormField (works at any depth; no-op standalone).
+    const fieldProps = useFormField({ ...props, disabled });
+    const isDisabled = fieldProps.disabled;
+
     const [charCount, setCharCount] = useState(() => {
       const initial = (value ?? defaultValue ?? "") as string;
       return initial.length;
@@ -128,7 +133,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         className={clsx(
           textareaVariants({ variant }),
           effectiveValidation && validationClasses[effectiveValidation],
-          disabled && styles.disabled,
+          isDisabled && styles.disabled,
           fullWidth && styles.fullWidth,
           className,
         )}>
@@ -138,12 +143,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           className={styles.field}
           rows={minRows}
           maxLength={maxLength}
-          disabled={disabled}
           readOnly={readOnly}
           value={value}
           defaultValue={defaultValue}
           onChange={handleChange}
-          {...props}
+          {...fieldProps}
         />
         {showCharCount && maxLength !== undefined ? (
           <span

@@ -8,6 +8,8 @@ import {
 } from "react";
 
 import { useControlledValue } from "../../hooks/useControlledValue";
+import { useFormField } from "../../hooks/useFormField";
+import type { AriaInvalid } from "../../logic/formField";
 import { mergeRefs } from "../../utils/mergeRefs";
 
 export interface PillInputBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
@@ -34,6 +36,9 @@ export const PillInputBase = forwardRef<HTMLInputElement, PillInputBaseProps>(
       disabled,
       maxPills,
       delimiters = [],
+      id,
+      "aria-describedby": ariaDescribedBy,
+      "aria-invalid": ariaInvalid,
       ...props
     },
     forwardedRef,
@@ -41,6 +46,16 @@ export const PillInputBase = forwardRef<HTMLInputElement, PillInputBaseProps>(
     const [values, updateValues] = useControlledValue(controlledValues, [] as string[], onChange);
     const [inputValue, setInputValue] = useState("");
     const internalRef = useRef<HTMLInputElement>(null);
+
+    // Wire the typing input into an enclosing FormField (the input is the
+    // labelable element). Works at any depth; no-op when standalone.
+    const field = useFormField({
+      id,
+      "aria-describedby": ariaDescribedBy,
+      "aria-invalid": ariaInvalid as AriaInvalid | undefined,
+      disabled,
+    });
+    const isDisabled = field.disabled;
 
     const addPill = useCallback(
       (text: string) => {
@@ -82,18 +97,18 @@ export const PillInputBase = forwardRef<HTMLInputElement, PillInputBaseProps>(
     );
 
     const handleContainerClick = useCallback(() => {
-      if (!disabled) {
+      if (!isDisabled) {
         internalRef.current?.focus();
       }
-    }, [disabled]);
+    }, [isDisabled]);
 
     const handleContainerKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (!disabled && (e.key === "Enter" || e.key === " ")) {
+        if (!isDisabled && (e.key === "Enter" || e.key === " ")) {
           internalRef.current?.focus();
         }
       },
-      [disabled],
+      [isDisabled],
     );
 
     return (
@@ -105,7 +120,7 @@ export const PillInputBase = forwardRef<HTMLInputElement, PillInputBaseProps>(
         {values.map((pill) => (
           <span key={pill}>
             {pill}
-            {!disabled ? (
+            {!isDisabled ? (
               <button
                 type="button"
                 onClick={(e) => {
@@ -126,9 +141,13 @@ export const PillInputBase = forwardRef<HTMLInputElement, PillInputBaseProps>(
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={values.length === 0 ? placeholder : undefined}
-          disabled={disabled}
+          id={field.id}
           aria-label={props["aria-label"]}
           aria-labelledby={props["aria-labelledby"]}
+          aria-describedby={field["aria-describedby"]}
+          aria-invalid={field["aria-invalid"]}
+          aria-required={field["aria-required"]}
+          disabled={isDisabled}
         />
       </div>
     );

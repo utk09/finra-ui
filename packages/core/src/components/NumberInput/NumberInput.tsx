@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 
+import { useFormField } from "../../hooks/useFormField";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./NumberInput.module.scss";
@@ -87,6 +88,10 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
   ) => {
     const internalRef = useRef<HTMLInputElement>(null);
     const inputRef = (ref as React.RefObject<HTMLInputElement>) || internalRef;
+
+    // Wire into an enclosing FormField (works at any depth; no-op standalone).
+    const fieldProps = useFormField({ ...props, disabled });
+    const isDisabled = fieldProps.disabled;
 
     const isControlled = controlledValue !== undefined;
     const [internalValue, setInternalValue] = useState<string>(() =>
@@ -171,7 +176,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
         className={clsx(
           numberInputVariants({ variant }),
           validationStatus && validationClasses[validationStatus],
-          disabled && styles.disabled,
+          isDisabled && styles.disabled,
           fullWidth && styles.fullWidth,
           className,
         )}>
@@ -181,7 +186,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
           className={styles.stepButton}
           onClick={() => stepValue(-1)}
           disabled={
-            disabled ||
+            isDisabled ||
             readOnly ||
             (min !== undefined && (parseFloat(displayValue as string) || 0) <= min)
           }
@@ -198,7 +203,6 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
           onChange={handleChange}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          disabled={disabled}
           readOnly={readOnly}
           role="spinbutton"
           aria-valuemin={min}
@@ -206,7 +210,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
           aria-valuenow={
             typeof displayValue === "string" ? parseFloat(displayValue) || undefined : displayValue
           }
-          {...props}
+          {...fieldProps}
         />
         <button
           type="button"
@@ -214,7 +218,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
           className={styles.stepButton}
           onClick={() => stepValue(1)}
           disabled={
-            disabled ||
+            isDisabled ||
             readOnly ||
             (max !== undefined && (parseFloat(displayValue as string) || 0) >= max)
           }
