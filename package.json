@@ -25,6 +25,7 @@
     "lint:fix": "turbo lint:fix && pnpm format",
     "test:coverage": "turbo test:coverage",
     "typecheck": "turbo typecheck",
+    "verify": "pnpm run lint && pnpm run typecheck && pnpm run test:coverage && pnpm run build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky",
