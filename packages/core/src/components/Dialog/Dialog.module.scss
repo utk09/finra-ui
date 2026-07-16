@@ -1,0 +1,75 @@
+// Backdrop is rendered by the unstyled DialogContent with a stable data
+// attribute (its public styling hook), so it is targeted globally here.
+[data-finra-ui="dialog-overlay"] {
+  position: fixed;
+  inset: 0;
+  z-index: var(--finra-z-overlay, 1000);
+  background: rgb(0 0 0 / 50%);
+  animation: finra-dialog-overlay-in var(--finra-duration-fast) ease-out;
+}
+
+.panel {
+  position: fixed;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  z-index: var(--finra-z-overlay, 1000);
+  display: flex;
+  flex-direction: column;
+  gap: var(--finra-spacing-4);
+  inline-size: min(92vw, 32rem);
+  max-block-size: 85vh;
+  padding: var(--finra-spacing-6);
+  overflow-y: auto;
+  color: var(--finra-container-foreground);
+  background: var(--finra-container-background);
+  border: 1px solid var(--finra-container-border);
+  border-radius: var(--finra-radius-lg);
+  box-shadow: var(--finra-shadow-xl);
+  transform: translate(-50%, -50%);
+  animation: finra-dialog-panel-in var(--finra-duration-normal) ease-out;
+}
+
+.panel:focus {
+  outline: none;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--finra-text-lg);
+  font-weight: var(--finra-font-semibold);
+}
+
+.description {
+  margin: 0;
+  color: var(--finra-container-foreground);
+  opacity: 0.75;
+}
+
+@keyframes finra-dialog-overlay-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes finra-dialog-panel-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-finra-ui="dialog-overlay"],
+  .panel {
+    animation: none;
+  }
+}

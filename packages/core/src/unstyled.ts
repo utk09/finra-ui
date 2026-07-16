@@ -11,6 +11,15 @@ export type {
   ComboBoxRenderOptionState,
 } from "./unstyled/ComboBox/ComboBox";
 export { ComboBoxBase } from "./unstyled/ComboBox/ComboBox";
+export type { DialogContentProps, DialogProps, DialogTriggerProps } from "./unstyled/Dialog/Dialog";
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "./unstyled/Dialog/Dialog";
 export type { DismissableLayerProps } from "./unstyled/DismissableLayer/DismissableLayer";
 export { DismissableLayer } from "./unstyled/DismissableLayer/DismissableLayer";
 export type { FileDropZoneBaseProps } from "./unstyled/FileDropZone/FileDropZone";
@@ -37,3 +46,9 @@ export type { SwitchBaseProps } from "./unstyled/Switch/Switch";
 export { SwitchBase } from "./unstyled/Switch/Switch";
 export type { TextareaBaseProps } from "./unstyled/Textarea/Textarea";
 export { TextareaBase } from "./unstyled/Textarea/Textarea";
+export type {
+  TooltipContentProps,
+  TooltipProps,
+  TooltipTriggerProps,
+} from "./unstyled/Tooltip/Tooltip";
+export { Tooltip, TooltipContent, TooltipTrigger } from "./unstyled/Tooltip/Tooltip";

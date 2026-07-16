@@ -60,6 +60,13 @@ export const componentIds = {
   // ComboBox
   comboBox: "combo-box",
 
+  // Dialog
+  dialog: "dialog",
+  dialogOverlay: "dialog-overlay",
+  dialogTitle: "dialog-title",
+  dialogDescription: "dialog-description",
+  dialogClose: "dialog-close",
+
   // Divider
   divider: "divider",
 } as const;

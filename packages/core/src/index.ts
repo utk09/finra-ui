@@ -3,6 +3,7 @@ export type { ComponentId } from "./components/componentIds";
 export { componentIds, FINRA_UI_ATTR } from "./components/componentIds";
 
 // Hooks (public API for sister packages)
+export { useAnchoredPosition } from "./hooks/useAnchoredPosition";
 export { useClickOutside } from "./hooks/useClickOutside";
 export { useControlledValue } from "./hooks/useControlledValue";
 export { useFormField } from "./hooks/useFormField";
@@ -68,6 +69,21 @@ export type {
   ComboBoxRenderOptionState,
 } from "./components/ComboBox/ComboBox";
 export { ComboBox } from "./components/ComboBox/ComboBox";
+
+// Dialog
+export type {
+  DialogContentProps,
+  DialogProps,
+  DialogTriggerProps,
+} from "./components/Dialog/Dialog";
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "./components/Dialog/Dialog";
 
 // Badge
 export type { BadgeProps, BadgeSentiment } from "./components/Badge/Badge";
