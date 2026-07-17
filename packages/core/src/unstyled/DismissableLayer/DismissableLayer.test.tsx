@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { DismissableLayer } from "./DismissableLayer";
@@ -40,6 +41,25 @@ describe("DismissableLayer", () => {
     );
 
     fireEvent.pointerDown(screen.getByText("inside"));
+    expect(onDismiss).not.toHaveBeenCalled();
+  });
+
+  it("does not dismiss on a pointer inside an excluded element", () => {
+    const onDismiss = vi.fn();
+    function Harness() {
+      const [el, setEl] = useState<HTMLButtonElement | null>(null);
+      return (
+        <>
+          <button ref={setEl}>trigger</button>
+          <DismissableLayer onDismiss={onDismiss} excludeElements={[el]}>
+            <button>inside</button>
+          </DismissableLayer>
+        </>
+      );
+    }
+    render(<Harness />);
+
+    fireEvent.pointerDown(screen.getByText("trigger"));
     expect(onDismiss).not.toHaveBeenCalled();
   });
 

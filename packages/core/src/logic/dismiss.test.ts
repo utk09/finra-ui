@@ -1,6 +1,16 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { type DismissLayerHandle, getEscapeTarget, getOutsideDismissals } from "./dismiss";
+import {
+  type DismissLayerHandle,
+  getEscapeTarget,
+  getOutsideDismissals,
+  isPointerInsideLayer,
+} from "./dismiss";
+
+/** Fake element whose `contains` matches only the given marker node. */
+function fakeEl(match: Node | null): Element {
+  return { contains: (n: Node | null) => n === match } as unknown as Element;
+}
 
 function makeLayer(overrides: Partial<DismissLayerHandle> = {}): DismissLayerHandle {
   return {
@@ -52,5 +62,36 @@ describe("getOutsideDismissals", () => {
     const a = makeLayer();
     const b = makeLayer({ disableOutsidePointer: true });
     expect(getOutsideDismissals([a, b], () => false)).toEqual([a]);
+  });
+});
+
+describe("isPointerInsideLayer", () => {
+  const node = {} as Node;
+
+  it("is false when there is no target node", () => {
+    expect(isPointerInsideLayer(makeLayer({ getElement: () => fakeEl(node) }), null)).toBe(false);
+  });
+
+  it("is true when the node is inside the layer element", () => {
+    expect(isPointerInsideLayer(makeLayer({ getElement: () => fakeEl(node) }), node)).toBe(true);
+  });
+
+  it("is false when the layer has no element and no extras", () => {
+    // getElement returns null (default) and getExtraElements is undefined.
+    expect(isPointerInsideLayer(makeLayer(), node)).toBe(false);
+  });
+
+  it("is true when the node is inside an extra element", () => {
+    const layer = makeLayer({ getExtraElements: () => [fakeEl(node)] });
+    expect(isPointerInsideLayer(layer, node)).toBe(true);
+  });
+
+  it("ignores null extras and non-matching elements", () => {
+    const other = {} as Node;
+    const layer = makeLayer({
+      getElement: () => fakeEl(other),
+      getExtraElements: () => [null, fakeEl(other)],
+    });
+    expect(isPointerInsideLayer(layer, node)).toBe(false);
   });
 });

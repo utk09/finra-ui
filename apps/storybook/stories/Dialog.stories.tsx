@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@utk09/finra-ui";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 const meta: Meta<typeof Dialog> = {
   title: "Components/Dialog",
@@ -17,14 +17,20 @@ const meta: Meta<typeof Dialog> = {
     layout: "centered",
   },
   tags: ["autodocs", "a11y-test"],
-};
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
-  render: () => (
-    <Dialog>
+  argTypes: {
+    dismissOnEscape: { control: "boolean" },
+    dismissOnOutside: { control: "boolean" },
+    children: { table: { disable: true } },
+    open: { table: { disable: true } },
+    defaultOpen: { table: { disable: true } },
+    onOpenChange: { table: { disable: true } },
+  },
+  args: {
+    dismissOnEscape: true,
+    dismissOnOutside: true,
+  },
+  render: (args) => (
+    <Dialog {...args}>
       <DialogTrigger asChild>
         <Button>Open dialog</Button>
       </DialogTrigger>
@@ -44,13 +50,20 @@ export const Default: Story = {
       </DialogContent>
     </Dialog>
   ),
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("button", { name: "Open dialog" }));
 
     // The dialog is portalled to <body>, outside the story canvas.
     const dialog = await within(document.body).findByRole("dialog");
-    await expect(dialog).toBeVisible();
+    // Wait for the fade-in animation to settle before asserting visibility.
+    await waitFor(() => expect(dialog).toBeVisible());
     await expect(dialog).toHaveAttribute("aria-modal", "true");
 
     // Close it so the story doesn't leave a modal open in the docs.

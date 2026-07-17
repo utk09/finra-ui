@@ -67,6 +67,17 @@ export const componentIds = {
   dialogDescription: "dialog-description",
   dialogClose: "dialog-close",
 
+  // Tooltip
+  tooltip: "tooltip",
+
+  // Popover
+  popover: "popover",
+
+  // Select
+  select: "select",
+  selectTrigger: "select-trigger",
+  selectOption: "select-option",
+
   // Divider
   divider: "divider",
 } as const;

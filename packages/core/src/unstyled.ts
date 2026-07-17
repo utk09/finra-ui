@@ -36,10 +36,24 @@ export type { NumberInputBaseProps } from "./unstyled/NumberInput/NumberInput";
 export { NumberInputBase } from "./unstyled/NumberInput/NumberInput";
 export type { PillInputBaseProps } from "./unstyled/PillInput/PillInput";
 export { PillInputBase } from "./unstyled/PillInput/PillInput";
+export type {
+  PopoverContentProps,
+  PopoverProps,
+  PopoverTriggerProps,
+} from "./unstyled/Popover/Popover";
+export { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "./unstyled/Popover/Popover";
 export type { PortalProps } from "./unstyled/Portal/Portal";
 export { Portal } from "./unstyled/Portal/Portal";
 export type { RadioButtonBaseProps } from "./unstyled/RadioButton/RadioButton";
 export { RadioButtonBase } from "./unstyled/RadioButton/RadioButton";
+export type {
+  SelectContentProps,
+  SelectOptionData,
+  SelectProps,
+  SelectTriggerProps,
+  SelectValueProps,
+} from "./unstyled/Select/Select";
+export { Select, SelectContent, SelectTrigger, SelectValue } from "./unstyled/Select/Select";
 export type { SliderBaseProps } from "./unstyled/Slider/Slider";
 export { SliderBase } from "./unstyled/Slider/Slider";
 export type { SwitchBaseProps } from "./unstyled/Switch/Switch";

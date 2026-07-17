@@ -1,0 +1,120 @@
+.trigger {
+  --_select-border-color: var(--finra-color-border);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--finra-density-gap);
+  inline-size: 100%;
+  min-block-size: var(--finra-density-size-base);
+  padding-inline: var(--finra-density-input-padding-x);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-density-input-font-size);
+  line-height: var(--finra-leading-normal);
+  color: var(--finra-container-foreground);
+  text-align: start;
+  background-color: var(--finra-color-background);
+  border: var(--finra-border-thin) solid var(--_select-border-color);
+  border-radius: var(--finra-radius-md);
+  transition: border-color var(--finra-duration-fast) ease-in-out;
+  cursor: var(--finra-cursor-pointer);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    --_select-border-color: var(--finra-actionable-emphasis);
+  }
+
+  &:disabled {
+    opacity: var(--finra-opacity-disabled);
+    cursor: var(--finra-cursor-disabled);
+  }
+}
+
+.value {
+  flex: 1 1 auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.chevron {
+  flex: 0 0 auto;
+  inline-size: 1em;
+  block-size: 1em;
+  transition: transform var(--finra-duration-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  .trigger[aria-expanded="true"] & {
+    transform: rotate(180deg);
+  }
+}
+
+.listbox {
+  z-index: var(--finra-z-overlay, 1000);
+  display: flex;
+  flex-direction: column;
+  inline-size: max-content;
+  min-inline-size: var(--_select-anchor-width, 8rem);
+  max-block-size: 16rem;
+  padding: var(--finra-spacing-1);
+  overflow-y: auto;
+  background-color: var(--finra-color-background);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
+  border-radius: var(--finra-radius-md);
+  box-shadow: var(--finra-shadow-lg);
+  animation: finra-select-in var(--finra-duration-fast) ease-out;
+}
+
+// Options are rendered by the unstyled SelectContent with a stable data
+// attribute (their public styling hook), so they are targeted globally.
+[data-finra-ui="select-option"] {
+  display: flex;
+  align-items: center;
+  gap: var(--finra-spacing-2);
+  padding-block: var(--finra-spacing-1);
+  padding-inline: var(--finra-spacing-2);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-density-input-font-size);
+  color: var(--finra-container-foreground);
+  border-radius: var(--finra-radius-sm);
+  cursor: var(--finra-cursor-pointer);
+  user-select: none;
+}
+
+[data-finra-ui="select-option"][data-active] {
+  background-color: var(--finra-actionable-accent-subtle);
+}
+
+[data-finra-ui="select-option"][data-selected] {
+  font-weight: var(--finra-font-semibold);
+}
+
+[data-finra-ui="select-option"][data-disabled] {
+  opacity: var(--finra-opacity-disabled);
+  cursor: var(--finra-cursor-disabled);
+}
+
+@keyframes finra-select-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .listbox {
+    animation: none;
+  }
+}

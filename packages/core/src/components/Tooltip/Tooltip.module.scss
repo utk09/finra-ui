@@ -1,0 +1,31 @@
+.tooltip {
+  z-index: var(--finra-z-overlay, 1000);
+  max-inline-size: 18rem;
+  padding: var(--finra-spacing-1) var(--finra-spacing-2);
+  font-size: var(--finra-text-sm);
+  line-height: var(--finra-leading-tight);
+
+  // Inverse surface: swap container foreground/background so the bubble reads as
+  // dark-on-light (and light-on-dark in dark mode) without a new token tier.
+  color: var(--finra-container-background);
+  background: var(--finra-container-foreground);
+  border-radius: var(--finra-radius-md);
+  box-shadow: var(--finra-shadow-md);
+  animation: finra-tooltip-in var(--finra-duration-fast) ease-out;
+}
+
+@keyframes finra-tooltip-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    animation: none;
+  }
+}

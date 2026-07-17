@@ -21,6 +21,12 @@ export interface DismissLayerHandle {
   disableEscape?: boolean;
   /** Ignore outside pointers for this layer. */
   disableOutsidePointer?: boolean;
+  /**
+   * Extra elements that count as "inside" for outside-pointer detection - e.g. a
+   * popover's trigger, so clicking it toggles (via its own handler) instead of
+   * dismissing here and immediately re-opening.
+   */
+  getExtraElements?: () => readonly (Element | null)[];
 }
 
 //  Pure decision helpers (no DOM, no framework - unit tested directly)
@@ -57,6 +63,19 @@ export function getOutsideDismissals(
   return result;
 }
 
+/**
+ * Whether a pointer target falls inside a layer - either within its own element
+ * or within one of its extra ("excluded") elements, e.g. the trigger. Pure so it
+ * can be unit-tested across every branch without a real DOM.
+ */
+export function isPointerInsideLayer(layer: DismissLayerHandle, node: Node | null): boolean {
+  if (!node) return false;
+  const el = layer.getElement();
+  if (el && el.contains(node)) return true;
+  const extras = layer.getExtraElements?.() ?? [];
+  return extras.some((extra) => !!extra && extra.contains(node));
+}
+
 //  Stateful stack + global DOM listeners (the DOM adapter over the helpers)
 
 const activeStack: DismissLayerHandle[] = [];
@@ -68,10 +87,9 @@ function handleKeyDown(event: KeyboardEvent): void {
 
 function handlePointerDown(event: Event): void {
   const node = event.target as Node | null;
-  const dismissals = getOutsideDismissals(activeStack, (layer) => {
-    const el = layer.getElement();
-    return !!el && !!node && el.contains(node);
-  });
+  const dismissals = getOutsideDismissals(activeStack, (layer) =>
+    isPointerInsideLayer(layer, node),
+  );
   for (const layer of dismissals) layer.onDismiss("outside");
 }
 

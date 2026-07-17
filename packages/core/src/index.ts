@@ -85,6 +85,36 @@ export {
   DialogTrigger,
 } from "./components/Dialog/Dialog";
 
+// Tooltip
+export type {
+  TooltipContentProps,
+  TooltipProps,
+  TooltipTriggerProps,
+} from "./components/Tooltip/Tooltip";
+export { Tooltip, TooltipContent, TooltipTrigger } from "./components/Tooltip/Tooltip";
+
+// Popover
+export type {
+  PopoverContentProps,
+  PopoverProps,
+  PopoverTriggerProps,
+} from "./components/Popover/Popover";
+export {
+  Popover,
+  PopoverClose,
+  PopoverContent,
+  PopoverTrigger,
+} from "./components/Popover/Popover";
+
+// Select
+export type {
+  SelectContentProps,
+  SelectOptionData,
+  SelectProps,
+  SelectTriggerProps,
+} from "./components/Select/Select";
+export { Select, SelectContent, SelectTrigger } from "./components/Select/Select";
+
 // Badge
 export type { BadgeProps, BadgeSentiment } from "./components/Badge/Badge";
 export { Badge } from "./components/Badge/Badge";
