@@ -20,6 +20,18 @@ export { DateInput } from "./components/DateInput/DateInput";
 export type { DateTenorInputProps } from "./components/DateTenorInput/DateTenorInput";
 export { DateTenorInput } from "./components/DateTenorInput/DateTenorInput";
 
+// DateTenorPicker
+export type { DateTenorPickerProps } from "./components/DateTenorPicker/DateTenorPicker";
+export { DateTenorPicker } from "./components/DateTenorPicker/DateTenorPicker";
+export type {
+  BusinessCalendar,
+  DateTenorInvalidReason,
+  DateTenorParserFn,
+  DateTenorPickerHandle,
+  DateTenorValue,
+  SettlementEngine,
+} from "./unstyled/DateTenorPicker/DateTenorPicker";
+
 // TenorInput
 export type { TenorInputProps } from "./components/TenorInput/TenorInput";
 export { TenorInput } from "./components/TenorInput/TenorInput";

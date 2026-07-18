@@ -19,6 +19,19 @@ export type {
 } from "./unstyled/DateTenorInput/DateTenorInput";
 export { DateTenorInputBase } from "./unstyled/DateTenorInput/DateTenorInput";
 
+// DateTenorPickerBase
+export type {
+  BusinessCalendar,
+  DateTenorInvalidReason,
+  DateTenorParserFn,
+  DateTenorPickerBaseProps,
+  DateTenorPickerClassNames,
+  DateTenorPickerHandle,
+  DateTenorValue,
+  SettlementEngine,
+} from "./unstyled/DateTenorPicker/DateTenorPicker";
+export { DateTenorPickerBase } from "./unstyled/DateTenorPicker/DateTenorPicker";
+
 // TenorInputBase
 export type { TenorInputBaseProps, TenorInputClassNames } from "./unstyled/TenorInput/TenorInput";
 export { TenorInputBase } from "./unstyled/TenorInput/TenorInput";

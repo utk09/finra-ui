@@ -18,3 +18,13 @@ export {
   resolveTenor,
   STANDARD_TENORS,
 } from "./utils/tenor";
+
+// Unified date/tenor parser (DateTenorPicker's pluggable-parser seam)
+export type {
+  DateTenorMode,
+  DateTenorParseContext,
+  DateTenorParseError,
+  DateTenorParser,
+  DateTenorParseResult,
+} from "./utils/dateTenorParse";
+export { parseDateTenor } from "./utils/dateTenorParse";

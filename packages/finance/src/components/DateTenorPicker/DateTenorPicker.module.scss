@@ -1,0 +1,247 @@
+//  Root - the input bar + positioning context for the popup
+.root {
+  --_input-border-color: var(--finra-color-border);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--finra-density-gap);
+  block-size: var(--finra-density-size-base);
+  padding-inline: var(--finra-density-input-padding-x);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-density-input-font-size);
+  line-height: var(--finra-leading-normal);
+  background-color: var(--finra-color-background);
+  border: var(--finra-border-thin) solid var(--_input-border-color);
+  border-radius: var(--finra-radius-md);
+  transition: border-color var(--finra-duration-fast) ease-in-out;
+  cursor: var(--finra-cursor-text);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:focus-within {
+    --_input-border-color: var(--finra-actionable-emphasis);
+  }
+
+  &.fullWidth {
+    display: inline-flex;
+    inline-size: 100%;
+  }
+
+  //  Variants
+  &.variantSecondary {
+    background-color: var(--finra-color-neutral-50);
+  }
+
+  &.variantTertiary {
+    border-color: var(--finra-color-transparent);
+    border-block-end-color: var(--_input-border-color);
+    border-radius: 0;
+  }
+
+  //  Validation
+  &.statusError {
+    --_input-border-color: var(--finra-status-danger-accent);
+  }
+
+  &.statusWarning {
+    --_input-border-color: var(--finra-status-warning-accent);
+  }
+
+  &.statusSuccess {
+    --_input-border-color: var(--finra-status-success-accent);
+  }
+
+  //  Open - square off the bottom so the popup joins seamlessly
+  &.open {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+}
+
+//  Disabled - explicit colors (not opacity) to keep WCAG contrast
+.disabled {
+  cursor: var(--finra-cursor-disabled);
+
+  &.root {
+    background-color: var(--finra-color-neutral-50);
+    border-color: var(--finra-color-neutral-200);
+  }
+
+  .input {
+    color: var(--finra-color-neutral-300);
+    cursor: var(--finra-cursor-disabled);
+  }
+
+  .calendarButton,
+  .indicator {
+    color: var(--finra-color-neutral-200);
+  }
+}
+
+//  Text field
+.input {
+  flex: 1;
+  min-inline-size: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  color: var(--finra-color-foreground);
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: var(--finra-color-neutral-400);
+  }
+}
+
+//  Calendar toggle button
+.calendarButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--finra-color-neutral-500);
+  cursor: var(--finra-cursor-pointer);
+  border-radius: var(--finra-radius-sm);
+  transition: color var(--finra-duration-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover:not(:disabled) {
+    color: var(--finra-color-foreground);
+  }
+
+  &:disabled {
+    cursor: var(--finra-cursor-disabled);
+  }
+
+  > svg {
+    inline-size: var(--finra-density-icon-size);
+    block-size: var(--finra-density-icon-size);
+  }
+}
+
+//  Dropdown indicator (decorative chevron)
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--finra-color-neutral-400);
+  transition: transform var(--finra-duration-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  > svg {
+    inline-size: var(--finra-density-icon-size);
+    block-size: var(--finra-density-icon-size);
+  }
+
+  &.indicatorOpen {
+    transform: rotate(180deg);
+  }
+}
+
+//  Popup - calendar + tenor list side by side
+.popup {
+  position: absolute;
+  z-index: 50;
+  inset-inline-start: 0;
+  inset-block-start: 100%;
+  display: flex;
+  min-inline-size: max(100%, 26rem);
+  background-color: var(--finra-color-background);
+  border: var(--finra-border-thin) solid var(--finra-color-border);
+  border-block-start: none;
+  border-end-start-radius: var(--finra-radius-md);
+  border-end-end-radius: var(--finra-radius-md);
+  box-shadow: var(--finra-shadow-lg);
+}
+
+.calendarSection {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.tenorSection {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 6rem;
+  max-block-size: 20rem;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  border-inline-start: var(--finra-border-thin) solid var(--finra-color-neutral-100);
+}
+
+.tenorTitle {
+  position: sticky;
+  inset-block-start: 0;
+  padding-inline: var(--finra-density-gap);
+  padding-block: calc(var(--finra-density-gap) * 0.5);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-xs);
+  font-weight: var(--finra-font-semibold);
+  color: var(--finra-color-neutral-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: var(--finra-color-background);
+  border-block-end: var(--finra-border-thin) solid var(--finra-color-neutral-100);
+  user-select: none;
+}
+
+.tenorGrid {
+  display: flex;
+  flex-direction: column;
+}
+
+.tenor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--finra-density-gap);
+  padding-block: calc(var(--finra-density-gap) * 0.5);
+  border: none;
+  background: transparent;
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--finra-color-foreground);
+  cursor: var(--finra-cursor-pointer);
+  user-select: none;
+  transition: background-color var(--finra-duration-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--finra-actionable-accent-subtle);
+  }
+
+  //  Keyboard-highlighted (roving) option
+  &.tenorHighlighted {
+    background-color: var(--finra-actionable-emphasis);
+    color: var(--finra-color-neutral-0);
+    font-weight: var(--finra-font-semibold);
+  }
+
+  &.tenorDisabled,
+  &:disabled {
+    color: var(--finra-color-neutral-300);
+    cursor: var(--finra-cursor-disabled);
+  }
+}
