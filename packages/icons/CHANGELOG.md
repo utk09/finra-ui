@@ -1,5 +1,11 @@
 # @utk09/finra-ui-icons
 
+## 0.0.12
+
+### Patch Changes
+
+- add tenor picker, deprecate tenor input
+
 ## 0.0.11
 
 ### Patch Changes
