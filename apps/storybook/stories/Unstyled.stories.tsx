@@ -3,16 +3,46 @@ import {
   ButtonBase,
   CheckboxBase,
   ComboBoxBase,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+  DismissableLayer,
   FileDropZoneBase,
+  FocusScope,
   FormFieldBase,
   IconButtonBase,
   InputBase,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuSeparator,
+  MenuTrigger,
   NumberInputBase,
   PillInputBase,
+  Popover,
+  PopoverClose,
+  PopoverContent,
+  PopoverTrigger,
+  Portal,
   RadioButtonBase,
+  Select,
+  SelectContent,
+  SelectTrigger,
   SliderBase,
   SwitchBase,
+  Tab,
+  TabList,
+  TabPanel,
+  Tabs,
   TextareaBase,
+  toast,
+  Toaster,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from "@utk09/finra-ui/unstyled";
 import {
   CalendarBase,
@@ -20,8 +50,8 @@ import {
   DateTenorInputBase,
   TenorInputBase,
 } from "@utk09/finra-ui-finance/unstyled";
-import { useState } from "react";
-import { expect, userEvent, within } from "storybook/test";
+import { type CSSProperties, useState } from "react";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { CheckIcon, CloseIcon, EditIcon, PlusIcon, SearchIcon } from "./_icons";
 
@@ -809,4 +839,350 @@ export const AllUnstyled: Story = {
       </div>
     </div>
   ),
+};
+
+//  Overlay & primitive bases
+//
+//  The overlay compounds (Dialog, Popover, Menu, Select, Tooltip) and the
+//  primitives they compose (Portal, DismissableLayer, FocusScope) ship no CSS.
+//  These demos add just enough inline style to make the portalled content
+//  visible; a real app styles them via the `components/` layer or its own CSS.
+
+const overlayPanel: CSSProperties = {
+  border: "1px solid #8a8a8a",
+  borderRadius: 6,
+  background: "#ffffff",
+  color: "#111111",
+  padding: "0.75rem",
+  boxShadow: "0 6px 20px rgba(0, 0, 0, 0.18)",
+  maxWidth: 280,
+};
+
+const triggerButton: CSSProperties = {
+  padding: "0.375rem 0.75rem",
+  border: "1px solid #8a8a8a",
+  borderRadius: 6,
+  background: "#f5f5f5",
+  color: "#111111",
+  cursor: "pointer",
+};
+
+const menuItemStyle: CSSProperties = {
+  display: "block",
+  inlineSize: "100%",
+  textAlign: "left",
+  padding: "0.375rem 0.5rem",
+  border: "none",
+  background: "none",
+  cursor: "pointer",
+};
+
+//  TabsBase
+
+export const TabsBaseDefault: Story = {
+  name: "TabsBase - Default",
+  render: () => (
+    <Tabs defaultValue="overview" style={{ maxWidth: 360 }}>
+      <TabList
+        aria-label="Sections"
+        style={{ display: "flex", gap: "0.25rem", borderBottom: "1px solid #ccc" }}>
+        <Tab value="overview" style={{ padding: "0.5rem 0.75rem", cursor: "pointer" }}>
+          Overview
+        </Tab>
+        <Tab value="activity" style={{ padding: "0.5rem 0.75rem", cursor: "pointer" }}>
+          Activity
+        </Tab>
+        <Tab value="settings" style={{ padding: "0.5rem 0.75rem", cursor: "pointer" }}>
+          Settings
+        </Tab>
+      </TabList>
+      <TabPanel value="overview" style={{ padding: "0.75rem 0" }}>
+        Overview panel.
+      </TabPanel>
+      <TabPanel value="activity" style={{ padding: "0.75rem 0" }}>
+        Activity panel.
+      </TabPanel>
+      <TabPanel value="settings" style={{ padding: "0.75rem 0" }}>
+        Settings panel.
+      </TabPanel>
+    </Tabs>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const overview = canvas.getByRole("tab", { name: "Overview" });
+    overview.focus();
+    // Roving arrow keys; automatic activation follows focus.
+    await userEvent.keyboard("{ArrowRight}");
+    const activity = canvas.getByRole("tab", { name: "Activity" });
+    await expect(activity).toHaveFocus();
+    await expect(activity).toHaveAttribute("aria-selected", "true");
+  },
+};
+
+//  DialogBase
+
+export const DialogBaseDefault: Story = {
+  name: "DialogBase - Default",
+  render: () => (
+    <Dialog>
+      <DialogTrigger style={triggerButton}>Open dialog</DialogTrigger>
+      <DialogContent
+        style={{
+          ...overlayPanel,
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}>
+        <DialogTitle style={{ margin: "0 0 0.5rem" }}>Delete item?</DialogTitle>
+        <DialogDescription style={{ marginTop: 0 }}>This cannot be undone.</DialogDescription>
+        <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+          <DialogClose style={triggerButton}>Cancel</DialogClose>
+          <DialogClose style={triggerButton}>Delete</DialogClose>
+        </div>
+      </DialogContent>
+    </Dialog>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Open dialog" }));
+    // Content portals to <body>, traps focus, and locks body scroll.
+    const dialog = await within(document.body).findByRole("dialog");
+    await expect(dialog).toHaveAttribute("aria-modal", "true");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+    await waitFor(() => expect(within(document.body).queryByRole("dialog")).toBeNull());
+  },
+};
+
+//  PopoverBase
+
+export const PopoverBaseDefault: Story = {
+  name: "PopoverBase - Default",
+  render: () => (
+    <Popover>
+      <PopoverTrigger style={triggerButton}>Open popover</PopoverTrigger>
+      <PopoverContent style={overlayPanel}>
+        <p style={{ marginTop: 0 }}>A popover portals out with a focus trap and outside-dismiss.</p>
+        <PopoverClose style={triggerButton}>Close</PopoverClose>
+      </PopoverContent>
+    </Popover>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Open popover" }));
+    const panel = await within(document.body).findByRole("dialog");
+    await expect(panel).toBeVisible();
+    await userEvent.click(within(panel).getByRole("button", { name: "Close" }));
+    await waitFor(() => expect(within(document.body).queryByRole("dialog")).toBeNull());
+  },
+};
+
+//  MenuBase
+
+export const MenuBaseDefault: Story = {
+  name: "MenuBase - Default",
+  render: () => (
+    <Menu>
+      <MenuTrigger style={triggerButton}>Actions</MenuTrigger>
+      <MenuContent style={{ ...overlayPanel, padding: "0.25rem", minWidth: 160 }}>
+        <MenuItem onSelect={() => undefined} style={menuItemStyle}>
+          Edit
+        </MenuItem>
+        <MenuItem onSelect={() => undefined} style={menuItemStyle}>
+          Duplicate
+        </MenuItem>
+        <MenuSeparator style={{ height: 1, background: "#ddd", margin: "0.25rem 0" }} />
+        <MenuItem onSelect={() => undefined} style={menuItemStyle}>
+          Delete
+        </MenuItem>
+      </MenuContent>
+    </Menu>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Actions" }));
+    // Roving focus lands on the first item; selecting closes the menu.
+    const menu = await within(document.body).findByRole("menu");
+    await expect(within(menu).getByRole("menuitem", { name: "Edit" })).toBeVisible();
+    await userEvent.click(within(menu).getByRole("menuitem", { name: "Delete" }));
+    await waitFor(() => expect(within(document.body).queryByRole("menu")).toBeNull());
+  },
+};
+
+//  SelectBase
+
+const selectOptions = [
+  { value: "aapl", label: "Apple" },
+  { value: "msft", label: "Microsoft" },
+  { value: "goog", label: "Alphabet" },
+];
+
+export const SelectBaseDefault: Story = {
+  name: "SelectBase - Default",
+  render: () => (
+    <div style={{ maxWidth: 240 }}>
+      <Select options={selectOptions} placeholder="Select a ticker">
+        <SelectTrigger
+          aria-label="Ticker"
+          style={{ ...triggerButton, inlineSize: "100%", textAlign: "left" }}
+        />
+        <SelectContent aria-label="Tickers" style={{ ...overlayPanel, padding: "0.25rem" }} />
+      </Select>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole("combobox", { name: "Ticker" });
+    await userEvent.click(trigger);
+    // Listbox portals to <body> (APG activedescendant pattern).
+    const listbox = await within(document.body).findByRole("listbox");
+    await userEvent.click(within(listbox).getByRole("option", { name: "Microsoft" }));
+    await waitFor(() => expect(within(document.body).queryByRole("listbox")).toBeNull());
+    await expect(trigger).toHaveTextContent("Microsoft");
+  },
+};
+
+//  TooltipBase
+
+export const TooltipBaseDefault: Story = {
+  name: "TooltipBase - Default",
+  render: () => (
+    // Zero delay so the interaction is snappy in the demo (default is 700ms).
+    <Tooltip openDelay={0} closeDelay={0}>
+      <TooltipTrigger style={triggerButton}>Hover me</TooltipTrigger>
+      <TooltipContent style={{ ...overlayPanel, maxWidth: 200, fontSize: "0.8125rem" }}>
+        Tooltips portal out and follow the trigger.
+      </TooltipContent>
+    </Tooltip>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole("button", { name: "Hover me" });
+    await userEvent.hover(trigger);
+    const tip = await within(document.body).findByRole("tooltip");
+    await expect(tip).toBeVisible();
+    await userEvent.unhover(trigger);
+    await waitFor(() => expect(within(document.body).queryByRole("tooltip")).toBeNull());
+  },
+};
+
+//  ToastBase
+
+export const ToastBaseDefault: Story = {
+  name: "ToastBase - Default",
+  render: () => (
+    <>
+      <button
+        type="button"
+        style={triggerButton}
+        onClick={() => toast.success({ title: "Saved", description: "Changes saved." })}>
+        Show toast
+      </button>
+      <Toaster />
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    toast.clear(); // isolate from other stories
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Show toast" }));
+    // Toasts render into an aria-live region portalled to <body>.
+    const toastEl = await within(document.body).findByRole("status");
+    await expect(toastEl).toHaveTextContent("Saved");
+    await userEvent.click(within(toastEl).getByRole("button", { name: "Dismiss notification" }));
+    await waitFor(() => expect(within(document.body).queryByRole("status")).toBeNull());
+  },
+};
+
+//  Portal
+
+export const PortalDefault: Story = {
+  name: "Portal - Default",
+  render: () => (
+    <div>
+      <p>This paragraph renders in place, inside the story canvas.</p>
+      <Portal>
+        <div style={{ ...overlayPanel, marginTop: 8 }}>
+          Portalled to <code>document.body</code> - it escapes ancestor overflow/z-index/transform.
+        </div>
+      </Portal>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // The portalled node is NOT inside the story canvas...
+    await expect(canvas.queryByText(/Portalled to/)).toBeNull();
+    // ...it lives under document.body.
+    await expect(await within(document.body).findByText(/Portalled to/)).toBeVisible();
+  },
+};
+
+//  DismissableLayer
+
+export const DismissableLayerDefault: Story = {
+  name: "DismissableLayer - Default",
+  render: () => {
+    const [open, setOpen] = useState(false);
+    return (
+      <div>
+        <button type="button" style={triggerButton} onClick={() => setOpen(true)}>
+          Open layer
+        </button>
+        {open ? (
+          <DismissableLayer
+            onDismiss={() => setOpen(false)}
+            style={{ ...overlayPanel, marginTop: 8 }}>
+            <p style={{ margin: 0 }}>Press Escape or click outside to dismiss.</p>
+          </DismissableLayer>
+        ) : null}
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Open layer" }));
+    await expect(canvas.getByText(/click outside to dismiss/i)).toBeVisible();
+    // Escape dismisses the topmost layer.
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(canvas.queryByText(/click outside to dismiss/i)).toBeNull());
+  },
+};
+
+//  FocusScope
+
+export const FocusScopeDefault: Story = {
+  name: "FocusScope - Default",
+  render: () => {
+    const [open, setOpen] = useState(false);
+    return (
+      <div>
+        <button type="button" style={triggerButton} onClick={() => setOpen(true)}>
+          Activate scope
+        </button>
+        {open ? (
+          <FocusScope style={{ ...overlayPanel, marginTop: 8, display: "flex", gap: "0.5rem" }}>
+            <button type="button" style={triggerButton}>
+              First
+            </button>
+            <button type="button" style={triggerButton}>
+              Second
+            </button>
+            <button type="button" style={triggerButton} onClick={() => setOpen(false)}>
+              Close
+            </button>
+          </FocusScope>
+        ) : null}
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Activate scope" }));
+    // Focus moves to the first tabbable inside the scope on mount.
+    await waitFor(() => expect(canvas.getByRole("button", { name: "First" })).toHaveFocus());
+    await userEvent.tab();
+    await expect(canvas.getByRole("button", { name: "Second" })).toHaveFocus();
+    // Closing unmounts the scope and restores focus to the trigger.
+    await userEvent.click(canvas.getByRole("button", { name: "Close" }));
+    await expect(canvas.getByRole("button", { name: "Activate scope" })).toHaveFocus();
+  },
 };

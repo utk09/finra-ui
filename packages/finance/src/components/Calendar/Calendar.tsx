@@ -6,10 +6,16 @@ import type { CalendarBaseProps, CalendarClassNames } from "../../unstyled/Calen
 import { CalendarBase } from "../../unstyled/Calendar/Calendar";
 import { componentIds } from "../componentIds";
 import styles from "./Calendar.module.scss";
+import { CalendarMonthYear } from "./CalendarMonthYear";
 
 export interface CalendarProps extends CalendarBaseProps {
   /** Additional CSS class on the root element. */
   className?: string;
+  /**
+   * Replace the static header title with month + year dropdown quick-nav.
+   * Ignored when a custom `renderTitle` is supplied. Default false.
+   */
+  monthYearDropdowns?: boolean;
 }
 
 const defaultClassNames: CalendarClassNames = {
@@ -26,11 +32,13 @@ const defaultClassNames: CalendarClassNames = {
   daySelected: styles.daySelected,
   dayDisabled: styles.dayDisabled,
   dayOutside: styles.dayOutside,
+  dayHighlighted: styles.dayHighlighted,
+  weekNumber: styles.weekNumber,
   footer: styles.footer,
 };
 
 export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
-  ({ className, classNames: userClassNames, ...props }, ref) => {
+  ({ className, classNames: userClassNames, monthYearDropdowns, renderTitle, ...props }, ref) => {
     const mergedClassNames = useMemo<CalendarClassNames>(() => {
       if (!userClassNames)
         return { ...defaultClassNames, root: clsx(defaultClassNames.root, className) };
@@ -43,11 +51,16 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
       return merged;
     }, [className, userClassNames]);
 
+    // An explicit renderTitle wins; otherwise opt into the month/year dropdowns.
+    const resolvedRenderTitle =
+      renderTitle ?? (monthYearDropdowns ? (api) => <CalendarMonthYear api={api} /> : undefined);
+
     return (
       <CalendarBase
         ref={ref}
         classNames={mergedClassNames}
         dataAttributes={{ [FINRA_UI_ATTR]: componentIds.calendar }}
+        renderTitle={resolvedRenderTitle}
         {...props}
       />
     );

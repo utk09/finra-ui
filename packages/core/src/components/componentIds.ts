@@ -78,6 +78,25 @@ export const componentIds = {
   selectTrigger: "select-trigger",
   selectOption: "select-option",
 
+  // Menu
+  menu: "menu",
+  menuItem: "menu-item",
+  menuSeparator: "menu-separator",
+
+  // Toast
+  toastRegion: "toast-region",
+  toast: "toast",
+  toastTitle: "toast-title",
+  toastDescription: "toast-description",
+  toastAction: "toast-action",
+  toastClose: "toast-close",
+
+  // Tabs
+  tabs: "tabs",
+  tabList: "tab-list",
+  tab: "tab",
+  tabPanel: "tab-panel",
+
   // Divider
   divider: "divider",
 } as const;

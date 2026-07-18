@@ -32,6 +32,13 @@ export type { IconButtonBaseProps } from "./unstyled/IconButton/IconButton";
 export { IconButtonBase } from "./unstyled/IconButton/IconButton";
 export type { InputBaseProps } from "./unstyled/Input/Input";
 export { InputBase } from "./unstyled/Input/Input";
+export type {
+  MenuContentProps,
+  MenuItemProps,
+  MenuProps,
+  MenuTriggerProps,
+} from "./unstyled/Menu/Menu";
+export { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from "./unstyled/Menu/Menu";
 export type { NumberInputBaseProps } from "./unstyled/NumberInput/NumberInput";
 export { NumberInputBase } from "./unstyled/NumberInput/NumberInput";
 export type { PillInputBaseProps } from "./unstyled/PillInput/PillInput";
@@ -58,11 +65,27 @@ export type { SliderBaseProps } from "./unstyled/Slider/Slider";
 export { SliderBase } from "./unstyled/Slider/Slider";
 export type { SwitchBaseProps } from "./unstyled/Switch/Switch";
 export { SwitchBase } from "./unstyled/Switch/Switch";
+export type { TabPanelProps, TabProps, TabsProps } from "./unstyled/Tabs/Tabs";
+export { Tab, TabList, TabPanel, Tabs } from "./unstyled/Tabs/Tabs";
 export type { TextareaBaseProps } from "./unstyled/Textarea/Textarea";
 export { TextareaBase } from "./unstyled/Textarea/Textarea";
+export type {
+  ToastControls,
+  ToasterProps,
+  ToastItemProps,
+  ToastPosition,
+} from "./unstyled/Toast/Toast";
+export { Toaster, ToastItem } from "./unstyled/Toast/Toast";
 export type {
   TooltipContentProps,
   TooltipProps,
   TooltipTriggerProps,
 } from "./unstyled/Tooltip/Tooltip";
 export { Tooltip, TooltipContent, TooltipTrigger } from "./unstyled/Tooltip/Tooltip";
+
+// Imperative toast API + queue types (framework-agnostic store)
+export type { ToastApi, ToastData, ToastInput, ToastSentiment } from "./logic/toast";
+export { toast } from "./logic/toast";
+
+// Tabs orientation / activation enums (part of the Tabs props surface)
+export type { TabsActivationMode, TabsOrientation } from "./logic/tabs";

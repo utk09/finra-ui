@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, Tooltip, TooltipContent, TooltipTrigger } from "@utk09/finra-ui";
+import { Button, IconButton, Tooltip, TooltipContent, TooltipTrigger } from "@utk09/finra-ui";
 import { expect, userEvent, waitFor, within } from "storybook/test";
+
+import { EditIcon, TrashIcon } from "./_icons";
 
 const PLACEMENTS = [
   "top",
@@ -21,9 +23,19 @@ const meta: Meta<typeof Tooltip> = {
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
-    openDelay: { control: { type: "number", min: 0, max: 2000, step: 50 } },
-    closeDelay: { control: { type: "number", min: 0, max: 2000, step: 50 } },
-    placement: { control: "select", options: PLACEMENTS },
+    openDelay: {
+      control: { type: "number", min: 0, max: 2000, step: 50 },
+      table: { defaultValue: { summary: "0" } },
+    },
+    closeDelay: {
+      control: { type: "number", min: 0, max: 2000, step: 50 },
+      table: { defaultValue: { summary: "0" } },
+    },
+    placement: {
+      control: "select",
+      options: PLACEMENTS,
+      table: { defaultValue: { summary: "top" } },
+    },
     children: { table: { disable: true } },
     open: { table: { disable: true } },
     defaultOpen: { table: { disable: true } },
@@ -47,6 +59,7 @@ const meta: Meta<typeof Tooltip> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** Baseline: opens on hover or focus, wires `aria-describedby`, closes on Escape. */
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -68,6 +81,7 @@ export const Default: Story = {
   },
 };
 
+/** Every placement, so anchoring can be eyeballed. Hover any trigger. */
 export const Placements: Story = {
   render: () => (
     <div style={{ display: "flex", gap: "2rem" }}>
@@ -80,5 +94,44 @@ export const Placements: Story = {
         </Tooltip>
       ))}
     </div>
+  ),
+};
+
+/** `openDelay` avoids flicker on quick pointer passes; `closeDelay` keeps it up briefly. */
+export const WithDelay: Story = {
+  args: { openDelay: 400, closeDelay: 150 },
+};
+
+/** The most common real use: a label for an icon-only control. */
+export const OnIconButton: Story = {
+  render: (args) => (
+    <div style={{ display: "flex", gap: "0.5rem" }}>
+      <Tooltip {...args}>
+        <TooltipTrigger asChild>
+          <IconButton aria-label="Edit" icon={<EditIcon />} />
+        </TooltipTrigger>
+        <TooltipContent>Edit</TooltipContent>
+      </Tooltip>
+      <Tooltip {...args}>
+        <TooltipTrigger asChild>
+          <IconButton aria-label="Delete" sentiment="danger" icon={<TrashIcon />} />
+        </TooltipTrigger>
+        <TooltipContent>Delete</TooltipContent>
+      </Tooltip>
+    </div>
+  ),
+};
+
+/** Content can be more than a word - keep it short, though. */
+export const RichContent: Story = {
+  render: (args) => (
+    <Tooltip {...args}>
+      <TooltipTrigger asChild>
+        <Button variant="tertiary">Settlement date</Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        The date on which the trade must be settled - usually T+1 for equities.
+      </TooltipContent>
+    </Tooltip>
   ),
 };

@@ -1,5 +1,11 @@
 // CalendarBase
-export type { CalendarBaseProps, CalendarClassNames } from "./unstyled/Calendar/Calendar";
+export type { DateRange } from "./logic/calendar";
+export type {
+  CalendarBaseProps,
+  CalendarClassNames,
+  CalendarFooterApi,
+  CalendarTitleApi,
+} from "./unstyled/Calendar/Calendar";
 export { CalendarBase } from "./unstyled/Calendar/Calendar";
 
 // DateInputBase

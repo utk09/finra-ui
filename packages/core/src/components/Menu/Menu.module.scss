@@ -1,0 +1,71 @@
+.panel {
+  z-index: var(--finra-z-overlay, 1000);
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 10rem;
+  max-inline-size: min(92vw, 18rem);
+  padding: var(--finra-spacing-1);
+  background-color: var(--finra-container-background);
+  border: 1px solid var(--finra-container-border);
+  border-radius: var(--finra-radius-md);
+  box-shadow: var(--finra-shadow-lg);
+  animation: finra-menu-in var(--finra-duration-fast) ease-out;
+}
+
+.panel:focus {
+  outline: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--finra-spacing-2);
+  inline-size: 100%;
+  padding-block: var(--finra-spacing-1);
+  padding-inline: var(--finra-spacing-2);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-sm);
+  color: var(--finra-container-foreground);
+  text-align: start;
+  background: transparent;
+  border: none;
+  border-radius: var(--finra-radius-sm);
+  cursor: var(--finra-cursor-pointer);
+}
+
+// Roving focus is programmatic, so highlight on :focus (not :focus-visible).
+.item:focus,
+.item:hover:not([aria-disabled="true"]) {
+  background-color: var(--finra-actionable-accent-subtle);
+  outline: none;
+}
+
+.item[aria-disabled="true"] {
+  opacity: var(--finra-opacity-disabled);
+  cursor: var(--finra-cursor-disabled);
+}
+
+.separator {
+  block-size: 1px;
+  margin-block: var(--finra-spacing-1);
+  background-color: var(--finra-container-border);
+  border: none;
+}
+
+@keyframes finra-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
+}

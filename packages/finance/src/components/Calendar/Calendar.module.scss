@@ -157,12 +157,95 @@
   }
 }
 
+//  Range selection - endpoints are filled via .daySelected; middle days get a
+//  subtle band. Range days fill the cell so the band reads as continuous.
+
+.day[data-range-start],
+.day[data-range-end],
+.day[data-range-middle] {
+  inline-size: 100%;
+  border-radius: 0;
+}
+
+.day[data-range-middle] {
+  color: var(--finra-color-foreground);
+  background-color: var(--finra-actionable-accent-subtle);
+}
+
+.day[data-range-start] {
+  border-start-start-radius: var(--finra-radius-sm);
+  border-end-start-radius: var(--finra-radius-sm);
+}
+
+.day[data-range-end] {
+  border-start-end-radius: var(--finra-radius-sm);
+  border-end-end-radius: var(--finra-radius-sm);
+}
+
+//  Highlighted days - a marker that does not affect selectability.
+
+.dayHighlighted {
+  font-weight: var(--finra-font-semibold);
+  text-decoration: underline;
+  text-decoration-color: var(--finra-actionable-accent);
+  text-underline-offset: 3px;
+}
+
+//  Week numbers - a leading column when showWeekNumbers is set.
+
+.grid[data-week-numbers] .row {
+  grid-template-columns: auto repeat(7, 1fr);
+}
+
+.weekNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 1.5rem;
+  padding-inline-end: calc(var(--finra-density-gap) * 0.25);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--finra-color-neutral-500);
+}
+
 //  Footer
 
 .footer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+  gap: calc(var(--finra-density-gap) * 0.5);
   padding-block-start: calc(var(--finra-density-gap) * 0.5);
   border-block-start: var(--finra-border-thin) solid var(--finra-color-neutral-100);
+}
+
+.shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--finra-density-gap) * 0.5);
+}
+
+//  Month/year dropdown quick-nav (in the header title slot)
+
+.monthYear {
+  display: flex;
+  gap: calc(var(--finra-density-gap) * 0.5);
+  inline-size: 100%;
+
+  // Each core Select's trigger button is a direct flex child; share the row.
+  > * {
+    min-inline-size: 0;
+  }
+
+  > *:first-child {
+    flex: 3 1 0;
+  }
+
+  > *:last-child {
+    flex: 2 1 0;
+  }
 }

@@ -1,9 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
-import { getCalendarDays } from "../../logic/calendar";
-import { CalendarBase } from "./Calendar";
+import { type DateRange, getCalendarDays } from "../../logic/calendar";
+import { CalendarBase, type CalendarTitleApi } from "./Calendar";
 
 // Fixed "today" to avoid flaky tests
 const TODAY = new Date(2026, 2, 15); // March 15, 2026 (Sunday)
@@ -580,5 +581,269 @@ describe("getCalendarDays", () => {
     expect(march25!.isDisabled).toBe(true);
     const march15 = days.find((d) => d.isCurrentMonth && d.date.getDate() === 15);
     expect(march15!.isDisabled).toBe(false);
+  });
+});
+
+describe("CalendarBase footer API", () => {
+  it("passes a function footer the API and renders its result", () => {
+    render(
+      <CalendarBase today={TODAY} footer={(api) => <div>month {api.month.getMonth()}</div>} />,
+    );
+    expect(screen.getByText("month 2")).toBeInTheDocument(); // March = index 2
+  });
+
+  it("still supports a static ReactNode footer", () => {
+    render(<CalendarBase today={TODAY} footer={<span>static footer</span>} />);
+    expect(screen.getByText("static footer")).toBeInTheDocument();
+  });
+
+  it("goToToday navigates to today's month without selecting", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    render(
+      <CalendarBase
+        today={TODAY}
+        onSelect={onSelect}
+        footer={(api) => (
+          <button type="button" onClick={api.goToToday}>
+            Today
+          </button>
+        )}
+      />,
+    );
+    await user.click(screen.getByLabelText("Previous month"));
+    expect(screen.getByText("February 2026")).toBeInTheDocument();
+    await user.click(screen.getByText("Today"));
+    expect(screen.getByText("March 2026")).toBeInTheDocument();
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it("selectToday selects today and fires onSelect", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    render(
+      <CalendarBase
+        today={TODAY}
+        onSelect={onSelect}
+        footer={(api) => (
+          <button type="button" onClick={api.selectToday}>
+            Select today
+          </button>
+        )}
+      />,
+    );
+    await user.click(screen.getByText("Select today"));
+    expect(onSelect).toHaveBeenCalledTimes(1);
+    const arg = onSelect.mock.calls[0][0] as Date;
+    expect(arg.getFullYear()).toBe(2026);
+    expect(arg.getMonth()).toBe(2);
+    expect(arg.getDate()).toBe(15);
+  });
+
+  it("select() is a no-op for an out-of-range date, and isDateDisabled reflects it", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    render(
+      <CalendarBase
+        today={TODAY}
+        onSelect={onSelect}
+        max={new Date(2026, 2, 18)}
+        footer={(api) => (
+          <>
+            <button type="button" onClick={() => api.select(new Date(2026, 2, 20))}>
+              Select 20th
+            </button>
+            <span>disabled:{String(api.isDateDisabled(new Date(2026, 2, 20)))}</span>
+          </>
+        )}
+      />,
+    );
+    expect(screen.getByText("disabled:true")).toBeInTheDocument();
+    await user.click(screen.getByText("Select 20th"));
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it("select() selects an in-range date and navigates to its month", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    render(
+      <CalendarBase
+        today={TODAY}
+        value={TODAY}
+        onSelect={onSelect}
+        footer={(api) => (
+          <button type="button" onClick={() => api.select(new Date(2026, 4, 10))}>
+            May 10
+          </button>
+        )}
+      />,
+    );
+    await user.click(screen.getByText("May 10"));
+    expect(onSelect).toHaveBeenCalledWith(expect.any(Date));
+    expect(screen.getByText("May 2026")).toBeInTheDocument();
+  });
+});
+
+describe("CalendarBase title API (renderTitle)", () => {
+  it("renders the default static title when renderTitle is absent", () => {
+    render(<CalendarBase today={TODAY} />);
+    expect(screen.getByText("March 2026")).toBeInTheDocument();
+  });
+
+  it("passes renderTitle the API and can navigate month and year", async () => {
+    const user = userEvent.setup();
+    render(
+      <CalendarBase
+        today={TODAY}
+        renderTitle={(api) => (
+          <div>
+            <span>
+              y{api.year}m{api.monthIndex}
+            </span>
+            <button type="button" onClick={() => api.setMonthIndex(0)}>
+              Jan
+            </button>
+            <button type="button" onClick={() => api.setYear(2030)}>
+              2030
+            </button>
+          </div>
+        )}
+      />,
+    );
+    expect(screen.getByText("y2026m2")).toBeInTheDocument(); // March 2026
+    await user.click(screen.getByText("Jan"));
+    expect(screen.getByText("y2026m0")).toBeInTheDocument();
+    await user.click(screen.getByText("2030"));
+    expect(screen.getByText("y2030m0")).toBeInTheDocument();
+  });
+
+  it("exposes a min/max-bounded year range and disabled months", () => {
+    let captured: CalendarTitleApi | undefined;
+    render(
+      <CalendarBase
+        today={TODAY}
+        min={new Date(2026, 2, 10)}
+        max={new Date(2026, 2, 25)}
+        renderTitle={(api) => {
+          captured = api;
+          return <span>title</span>;
+        }}
+      />,
+    );
+    expect(captured?.years).toEqual([2026]);
+    expect(captured?.isMonthDisabled(2)).toBe(false); // March in range
+    expect(captured?.isMonthDisabled(0)).toBe(true); // January out of range
+  });
+});
+
+describe("CalendarBase range mode", () => {
+  function RangeHarness({ onChange }: { onChange?: (range: DateRange) => void }) {
+    const [range, setRange] = useState<DateRange | null>(null);
+    return (
+      <CalendarBase
+        mode="range"
+        today={TODAY}
+        rangeValue={range}
+        onRangeSelect={(r) => {
+          onChange?.(r);
+          setRange(r);
+        }}
+      />
+    );
+  }
+
+  it("marks range start / middle / end from a controlled rangeValue", () => {
+    render(
+      <CalendarBase
+        mode="range"
+        today={TODAY}
+        rangeValue={{ start: new Date(2026, 2, 10), end: new Date(2026, 2, 12) }}
+      />,
+    );
+    expect(screen.getByLabelText("March 10, 2026")).toHaveAttribute("data-range-start");
+    expect(screen.getByLabelText("March 11, 2026")).toHaveAttribute("data-range-middle");
+    expect(screen.getByLabelText("March 12, 2026")).toHaveAttribute("data-range-end");
+  });
+
+  it("selects a range across two clicks (second click completes it)", () => {
+    const onChange = vi.fn();
+    render(<RangeHarness onChange={onChange} />);
+
+    fireEvent.mouseDown(screen.getByLabelText("March 10, 2026"));
+    let call = onChange.mock.calls.at(-1)?.[0] as DateRange;
+    expect(call.start?.getDate()).toBe(10);
+    expect(call.end).toBeNull();
+    expect(screen.getByLabelText("March 10, 2026")).toHaveAttribute("data-range-start");
+
+    fireEvent.mouseDown(screen.getByLabelText("March 12, 2026"));
+    call = onChange.mock.calls.at(-1)?.[0] as DateRange;
+    expect(call.start?.getDate()).toBe(10);
+    expect(call.end?.getDate()).toBe(12);
+    expect(screen.getByLabelText("March 11, 2026")).toHaveAttribute("data-range-middle");
+    expect(screen.getByLabelText("March 12, 2026")).toHaveAttribute("data-range-end");
+  });
+
+  it("orders endpoints when the second click precedes the first", () => {
+    const onChange = vi.fn();
+    render(<RangeHarness onChange={onChange} />);
+    fireEvent.mouseDown(screen.getByLabelText("March 20, 2026"));
+    fireEvent.mouseDown(screen.getByLabelText("March 10, 2026"));
+    const call = onChange.mock.calls.at(-1)?.[0] as DateRange;
+    expect(call.start?.getDate()).toBe(10);
+    expect(call.end?.getDate()).toBe(20);
+  });
+
+  it("previews the range on hover while half-open", () => {
+    render(
+      <CalendarBase
+        mode="range"
+        today={TODAY}
+        rangeValue={{ start: new Date(2026, 2, 10), end: null }}
+      />,
+    );
+    fireEvent.mouseEnter(screen.getByLabelText("March 14, 2026"));
+    expect(screen.getByLabelText("March 12, 2026")).toHaveAttribute("data-range-middle");
+    expect(screen.getByLabelText("March 14, 2026")).toHaveAttribute("data-range-end");
+  });
+
+  it("selects via the keyboard in range mode", () => {
+    const onRangeSelect = vi.fn();
+    render(<CalendarBase mode="range" today={TODAY} onRangeSelect={onRangeSelect} />);
+    fireEvent.keyDown(screen.getByRole("grid"), { key: "Enter" });
+    const call = onRangeSelect.mock.calls.at(-1)?.[0] as DateRange;
+    expect(call.start?.getDate()).toBe(15); // today
+    expect(call.end).toBeNull();
+  });
+
+  it("does not set range attributes in single mode", () => {
+    render(<CalendarBase today={TODAY} value={new Date(2026, 2, 10)} />);
+    const day = screen.getByLabelText("March 10, 2026");
+    expect(day).toHaveAttribute("aria-selected", "true");
+    expect(day).not.toHaveAttribute("data-range-start");
+  });
+});
+
+describe("CalendarBase highlighted dates and week numbers", () => {
+  it("marks highlighted days via a date array", () => {
+    render(<CalendarBase today={TODAY} highlightedDates={[new Date(2026, 2, 20)]} />);
+    expect(screen.getByLabelText("March 20, 2026")).toHaveAttribute("data-highlighted");
+    expect(screen.getByLabelText("March 21, 2026")).not.toHaveAttribute("data-highlighted");
+  });
+
+  it("marks highlighted days via a predicate", () => {
+    render(<CalendarBase today={TODAY} highlightedDates={(d) => d.getDate() === 25} />);
+    expect(screen.getByLabelText("March 25, 2026")).toHaveAttribute("data-highlighted");
+  });
+
+  it("renders a week-number rowheader per row when enabled", () => {
+    render(<CalendarBase today={TODAY} showWeekNumbers />);
+    const rowheaders = screen.getAllByRole("rowheader");
+    expect(rowheaders).toHaveLength(6);
+    expect(Number(rowheaders[0].textContent)).toBeGreaterThan(0);
+  });
+
+  it("omits week numbers by default", () => {
+    render(<CalendarBase today={TODAY} />);
+    expect(screen.queryAllByRole("rowheader")).toHaveLength(0);
   });
 });

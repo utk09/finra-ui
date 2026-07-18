@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Select, SelectContent, SelectTrigger } from "@utk09/finra-ui";
+import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
 const options = [
@@ -9,6 +10,11 @@ const options = [
   { value: "amzn", label: "Amazon", disabled: true },
   { value: "nvda", label: "NVIDIA" },
 ];
+
+const manyOptions = Array.from({ length: 30 }, (_, i) => ({
+  value: `opt-${i}`,
+  label: `Option ${i + 1}`,
+}));
 
 const PLACEMENTS = [
   "top",
@@ -34,11 +40,18 @@ const meta: Meta<typeof Select> = {
   tags: ["autodocs", "a11y-test"],
   argTypes: {
     placeholder: { control: "text" },
-    placement: { control: "select", options: PLACEMENTS },
-    offset: { control: { type: "number", min: 0, max: 40 } },
-    loop: { control: "boolean" },
-    dismissOnEscape: { control: "boolean" },
-    dismissOnOutside: { control: "boolean" },
+    placement: {
+      control: "select",
+      options: PLACEMENTS,
+      table: { defaultValue: { summary: "bottom" } },
+    },
+    offset: {
+      control: { type: "number", min: 0, max: 40 },
+      table: { defaultValue: { summary: "6" } },
+    },
+    loop: { control: "boolean", table: { defaultValue: { summary: "true" } } },
+    dismissOnEscape: { control: "boolean", table: { defaultValue: { summary: "true" } } },
+    dismissOnOutside: { control: "boolean", table: { defaultValue: { summary: "true" } } },
     // Not useful as interactive controls.
     options: { table: { disable: true } },
     children: { table: { disable: true } },
@@ -71,6 +84,7 @@ const meta: Meta<typeof Select> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** Select-only combobox (APG activedescendant): open, arrow, type-ahead, Enter to pick. */
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -88,8 +102,36 @@ export const Default: Story = {
   },
 };
 
+/** A pre-selected value renders in the trigger. */
 export const WithSelectedValue: Story = {
-  args: {
-    defaultValue: "goog",
+  args: { defaultValue: "goog" },
+};
+
+/** Disabled options (Amazon) are shown but not selectable and skipped by the keyboard. */
+export const DisabledOptions: Story = {};
+
+/** Long lists scroll inside the listbox; type-ahead still jumps by first letter. */
+export const ManyOptions: Story = {
+  args: { options: manyOptions, placeholder: "Pick an option" },
+};
+
+/** Opens upward when there is more room above the trigger. */
+export const TopPlacement: Story = {
+  args: { placement: "top" },
+};
+
+/** Drive the value yourself to react to changes (here, echoing the selection). */
+export const Controlled: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<string | undefined>(undefined);
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", inlineSize: "16rem" }}>
+        <Select {...args} value={value} onValueChange={setValue}>
+          <SelectTrigger aria-label="Ticker" />
+          <SelectContent aria-label="Tickers" />
+        </Select>
+        <small>Selected: {value ?? "none"}</small>
+      </div>
+    );
   },
 };

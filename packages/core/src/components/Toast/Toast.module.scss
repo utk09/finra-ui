@@ -1,0 +1,154 @@
+.region {
+  position: fixed;
+  z-index: var(--finra-z-toast, 1100);
+  display: flex;
+  flex-direction: column;
+  gap: var(--finra-spacing-2);
+  inline-size: max-content;
+  max-inline-size: min(92vw, 24rem);
+  padding: var(--finra-spacing-4);
+  pointer-events: none; // let clicks through the gaps; toasts opt back in below
+}
+
+.region > * {
+  pointer-events: auto;
+}
+
+.region[data-position="top-left"] {
+  inset-block-start: 0;
+  inset-inline-start: 0;
+}
+
+.region[data-position="top-center"] {
+  inset-block-start: 0;
+  inset-inline-start: 50%;
+  align-items: center;
+  transform: translateX(-50%);
+}
+
+.region[data-position="top-right"] {
+  inset-block-start: 0;
+  inset-inline-end: 0;
+}
+
+.region[data-position="bottom-left"] {
+  inset-block-end: 0;
+  inset-inline-start: 0;
+}
+
+.region[data-position="bottom-center"] {
+  inset-block-end: 0;
+  inset-inline-start: 50%;
+  align-items: center;
+  transform: translateX(-50%);
+}
+
+.region[data-position="bottom-right"] {
+  inset-block-end: 0;
+  inset-inline-end: 0;
+}
+
+// Toast items are rendered by the unstyled layer with stable data attributes
+// (their public styling hook), so they are targeted globally here.
+
+[data-finra-ui="toast"] {
+  --_toast-accent: var(--finra-status-info-accent);
+
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--finra-spacing-1) var(--finra-spacing-3);
+  align-items: start;
+  min-inline-size: 16rem;
+  padding: var(--finra-spacing-3) var(--finra-spacing-4);
+  font-family: var(--finra-font-sans);
+  color: var(--finra-container-foreground);
+  background-color: var(--finra-container-background);
+  border: 1px solid var(--finra-container-border);
+  border-inline-start: 3px solid var(--_toast-accent);
+  border-radius: var(--finra-radius-md);
+  box-shadow: var(--finra-shadow-lg);
+  animation: finra-toast-in var(--finra-duration-normal) ease-out;
+}
+
+[data-finra-ui="toast"][data-sentiment="success"] {
+  --_toast-accent: var(--finra-status-success-accent);
+}
+
+[data-finra-ui="toast"][data-sentiment="warning"] {
+  --_toast-accent: var(--finra-status-warning-accent);
+}
+
+[data-finra-ui="toast"][data-sentiment="danger"] {
+  --_toast-accent: var(--finra-status-danger-accent);
+}
+
+[data-finra-ui="toast-title"] {
+  grid-column: 1;
+  font-size: var(--finra-text-sm);
+  font-weight: var(--finra-font-semibold);
+}
+
+[data-finra-ui="toast-description"] {
+  grid-column: 1;
+  font-size: var(--finra-text-sm);
+  color: var(--finra-container-foreground);
+  opacity: 0.85;
+}
+
+[data-finra-ui="toast-action"] {
+  grid-column: 1;
+  justify-self: start;
+  margin-block-start: var(--finra-spacing-1);
+  padding: 0;
+  font-size: var(--finra-text-sm);
+  font-weight: var(--finra-font-semibold);
+  color: var(--_toast-accent);
+  background: none;
+  border: none;
+  cursor: var(--finra-cursor-pointer);
+}
+
+[data-finra-ui="toast-action"]:hover {
+  text-decoration: underline;
+}
+
+[data-finra-ui="toast-close"] {
+  display: inline-flex;
+  grid-column: 2;
+  grid-row: 1;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  padding: 0;
+  font-size: var(--finra-text-base);
+  line-height: 1;
+  color: var(--finra-container-foreground);
+  background: none;
+  border: none;
+  border-radius: var(--finra-radius-sm);
+  cursor: var(--finra-cursor-pointer);
+  opacity: 0.6;
+}
+
+[data-finra-ui="toast-close"]:hover {
+  opacity: 1;
+}
+
+@keyframes finra-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-finra-ui="toast"] {
+    animation: none;
+  }
+}

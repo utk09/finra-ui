@@ -115,6 +115,26 @@ export type {
 } from "./components/Select/Select";
 export { Select, SelectContent, SelectTrigger } from "./components/Select/Select";
 
+// Menu
+export type {
+  MenuContentProps,
+  MenuItemProps,
+  MenuProps,
+  MenuTriggerProps,
+} from "./components/Menu/Menu";
+export { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from "./components/Menu/Menu";
+
+// Toast
+export type { ToasterProps, ToastPosition } from "./components/Toast/Toast";
+export { Toaster } from "./components/Toast/Toast";
+export type { ToastApi, ToastData, ToastInput, ToastSentiment } from "./logic/toast";
+export { toast } from "./logic/toast";
+
+// Tabs
+export type { TabPanelProps, TabProps, TabsProps } from "./components/Tabs/Tabs";
+export { Tab, TabList, TabPanel, Tabs } from "./components/Tabs/Tabs";
+export type { TabsActivationMode, TabsOrientation } from "./logic/tabs";
+
 // Badge
 export type { BadgeProps, BadgeSentiment } from "./components/Badge/Badge";
 export { Badge } from "./components/Badge/Badge";
