@@ -80,6 +80,7 @@ Packages publish with [npm provenance](https://docs.npmjs.com/generating-provena
 npm login
 
 # 2. Apply pending changesets - bumps versions, updates changelogs
+pnpm changeset # or, if you already have a changeset, run
 pnpm changeset version
 
 # 3. Review + commit the version bumps

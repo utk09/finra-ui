@@ -1,6 +1,6 @@
 {
   "name": "@utk09/finra-ui-finance",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "description": "Financial domain components for Finra UI. Date inputs, tenor pickers, and calendar.",
   "type": "module",
   "main": "./dist/index.js",

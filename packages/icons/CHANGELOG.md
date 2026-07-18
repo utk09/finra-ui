@@ -1,7 +1,13 @@
 # @utk09/finra-ui-icons
 
+## 0.0.11
+
+### Patch Changes
+
+- add price input, improve date tenor picker, update documentation
+
 ## 0.0.9
 
-### Minor Changes
+### Patch Changes
 
 - add dialogs and portals
