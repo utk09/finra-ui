@@ -15,6 +15,7 @@ import type {
   DateTenorPickerHandle,
 } from "../../unstyled/DateTenorPicker/DateTenorPicker";
 import { DateTenorPickerBase } from "../../unstyled/DateTenorPicker/DateTenorPicker";
+import type { DateTenorMode } from "../../utils/dateTenorParse";
 import calendarStyles from "../Calendar/Calendar.module.scss";
 import { componentIds } from "../componentIds";
 import styles from "./DateTenorPicker.module.scss";
@@ -52,12 +53,18 @@ export interface DateTenorPickerProps
       | "renderIndicator"
       | "renderCalendarNavPrev"
       | "renderCalendarNavNext"
+      | "renderModeIndicator"
+      | "renderBrokenIndicator"
     >,
     VariantProps<typeof rootVariants> {
   /** Visual validation status. */
   validationStatus?: ValidationStatus;
   /** Stretch to fill the container width. */
   fullWidth?: boolean;
+  /** Show a mode badge (Date / Tenor / Spot). */
+  showModeIndicator?: boolean;
+  /** Show a "Broken" badge when the committed date is a broken date. */
+  showBrokenDate?: boolean;
   /** Additional CSS class for the root wrapper. */
   className?: string;
 }
@@ -82,10 +89,37 @@ function styledNavNext() {
   return <ChevronRightIcon aria-hidden="true" />;
 }
 
+const MODE_LABELS: Record<DateTenorMode, string> = {
+  date: "Date",
+  tenor: "Tenor",
+  "spot-relative": "Spot",
+  keyword: "Date",
+};
+
+function styledModeIndicator(mode: DateTenorMode | null) {
+  return mode ? MODE_LABELS[mode] : null;
+}
+
+function styledBrokenIndicator(broken: boolean) {
+  return broken ? "Broken" : null;
+}
+
 //  Component
 
 export const DateTenorPicker = forwardRef<DateTenorPickerHandle, DateTenorPickerProps>(
-  ({ className, variant, validationStatus, fullWidth, disabled, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      validationStatus,
+      fullWidth,
+      disabled,
+      showModeIndicator,
+      showBrokenDate,
+      ...props
+    },
+    ref,
+  ) => {
     const classNames = useMemo<DateTenorPickerClassNames>(
       () => ({
         root: clsx(
@@ -108,6 +142,9 @@ export const DateTenorPicker = forwardRef<DateTenorPickerHandle, DateTenorPicker
         tenor: styles.tenor,
         tenorHighlighted: styles.tenorHighlighted,
         tenorDisabled: styles.tenorDisabled,
+        resolvedDate: styles.resolvedDate,
+        modeIndicator: styles.modeIndicator,
+        brokenIndicator: styles.brokenIndicator,
         calendar: {
           root: calendarStyles.root,
           header: calendarStyles.header,
@@ -140,6 +177,8 @@ export const DateTenorPicker = forwardRef<DateTenorPickerHandle, DateTenorPicker
         renderIndicator={styledIndicator}
         renderCalendarNavPrev={styledNavPrev}
         renderCalendarNavNext={styledNavNext}
+        renderModeIndicator={showModeIndicator ? styledModeIndicator : undefined}
+        renderBrokenIndicator={showBrokenDate ? styledBrokenIndicator : undefined}
         {...props}
       />
     );

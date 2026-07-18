@@ -79,7 +79,7 @@ export const Controlled: Story = {
         <small style={{ fontFamily: "monospace" }}>
           {value
             ? `${value.mode}: ${value.display} → ${
-                value.date ? formatDate(value.date, "YYYY-MM-DD") : "—"
+                value.date ? formatDate(value.date, "YYYY-MM-DD") : "--"
               }`
             : "no value"}
         </small>
@@ -222,5 +222,27 @@ export const AsyncHolidayProvider: Story = {
         <small>{holidays ? "Holiday calendar loaded" : "Loading holidays…"}</small>
       </div>
     );
+  },
+};
+
+/**
+ * Shows the resolved settlement date + mode/broken-date badges beside the field
+ * (FIN-003-04/06/07). Type a non-standard date (e.g. `2027-07-13`) to see the
+ * "Broken" badge.
+ */
+export const WithResolvedDate: Story = {
+  args: {
+    showResolvedDate: true,
+    showModeIndicator: true,
+    showBrokenDate: true,
+    resolvedDateFormat: (d: Date) =>
+      d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+    defaultValue: {
+      input: "Spot + 3M",
+      display: "Spot + 3M",
+      mode: "spot-relative",
+      tenor: "3M",
+      date: new Date(2026, 3, 15),
+    },
   },
 };

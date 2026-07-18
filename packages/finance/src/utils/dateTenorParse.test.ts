@@ -144,5 +144,26 @@ describe("parseDateTenor", () => {
       expect(r).toMatchObject({ valid: true, mode: "date" });
       expect(ymd(r.date)).toBe("2028-04-15");
     });
+
+    it("parses month-name dates in either order (incl. full names / comma)", () => {
+      for (const input of ["15 Jan 2027", "Jan 15 2027", "15 January 2027", "Jan 15, 2027"]) {
+        const r = parseDateTenor(input, { referenceDate: REF });
+        expect(r).toMatchObject({ valid: true, mode: "date" });
+        expect(ymd(r.date)).toBe("2027-01-15");
+      }
+    });
+
+    it("echoes a canonical month-name display", () => {
+      expect(parseDateTenor("Jan 15 2027", { referenceDate: REF }).display).toBe("15 Jan 2027");
+    });
+
+    it("rejects a bad month name or an impossible date", () => {
+      expect(parseDateTenor("15 Foo 2027", { referenceDate: REF })).toMatchObject({
+        error: "unrecognized",
+      });
+      expect(parseDateTenor("31 Feb 2027", { referenceDate: REF })).toMatchObject({
+        error: "unrecognized",
+      });
+    });
   });
 });

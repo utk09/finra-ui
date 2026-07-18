@@ -15,6 +15,9 @@ export const componentIds = {
 
   // DateTenorPicker
   dateTenorPicker: "date-tenor-picker",
+
+  // PriceInput
+  priceInput: "price-input",
 } as const;
 
 export type FinanceComponentId = (typeof componentIds)[keyof typeof componentIds];

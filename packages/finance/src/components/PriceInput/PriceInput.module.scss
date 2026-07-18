@@ -1,0 +1,159 @@
+//  Root - the input bar (and positioning context for the hierarchy overlay)
+.root {
+  --_input-border-color: var(--finra-color-border);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  block-size: var(--finra-density-size-base);
+  padding-inline: var(--finra-density-input-padding-x);
+  font-family: var(--finra-font-mono, var(--finra-font-sans));
+  font-size: var(--finra-density-input-font-size);
+  line-height: var(--finra-leading-normal);
+  font-variant-numeric: tabular-nums;
+  background-color: var(--finra-color-background);
+  border: var(--finra-border-thin) solid var(--_input-border-color);
+  border-radius: var(--finra-radius-md);
+  transition: border-color var(--finra-duration-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:focus-within {
+    --_input-border-color: var(--finra-actionable-emphasis);
+  }
+
+  &.fullWidth {
+    display: inline-flex;
+    inline-size: 100%;
+  }
+
+  &.variantSecondary {
+    background-color: var(--finra-color-neutral-50);
+  }
+
+  &.variantTertiary {
+    border-color: var(--finra-color-transparent);
+    border-block-end-color: var(--_input-border-color);
+    border-radius: 0;
+  }
+
+  &.statusError {
+    --_input-border-color: var(--finra-status-danger-accent);
+  }
+
+  &.statusWarning {
+    --_input-border-color: var(--finra-status-warning-accent);
+  }
+
+  &.statusSuccess {
+    --_input-border-color: var(--finra-status-success-accent);
+  }
+}
+
+.disabled {
+  cursor: var(--finra-cursor-disabled);
+
+  &.root {
+    background-color: var(--finra-color-neutral-50);
+    border-color: var(--finra-color-neutral-200);
+  }
+
+  .input {
+    color: var(--finra-color-neutral-300);
+    cursor: var(--finra-cursor-disabled);
+  }
+}
+
+//  Text field
+.input {
+  flex: 1;
+  min-inline-size: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-variant-numeric: inherit;
+  color: var(--finra-color-foreground);
+  text-align: end;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: var(--finra-color-neutral-400);
+  }
+}
+
+//  Digit-hierarchy overlay: the input goes transparent (caret still visible)
+//  and this mirror renders the styled segments in exact alignment.
+.hasHierarchy {
+  .input {
+    color: transparent;
+    caret-color: var(--finra-color-foreground);
+  }
+}
+
+.display {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: var(--finra-density-input-padding-x);
+  inset-inline-end: var(--finra-density-input-padding-x);
+  display: flex;
+  align-items: center; // vertically centre the single text line
+  justify-content: flex-end; // right-align (matches the input)
+  pointer-events: none;
+  font: inherit;
+  font-variant-numeric: inherit;
+  color: var(--finra-color-foreground);
+}
+
+//  One inline line: the mixed-size segments share a text baseline.
+.line {
+  white-space: pre;
+}
+
+//  Segments (themeable primary vs precision hierarchy)
+.segSign,
+.segInteger,
+.segSeparator,
+.segPrimary {
+  color: var(--finra-color-foreground);
+  font-weight: var(--finra-font-semibold);
+}
+
+.segPrecision {
+  color: var(--finra-color-neutral-400);
+  font-weight: var(--finra-font-normal);
+  font-size: 0.85em;
+}
+
+//  FX 3-zone (big figure / pips / fractional pip). The pips are the focal
+//  digits (largest, boldest); big figure is de-emphasized; fractional pip is
+//  medium. All sizes are token-overridable relative to the input font (= pips).
+.segBigFigure {
+  color: var(--finra-price-big-figure-color, var(--finra-color-neutral-500));
+  font-size: var(--finra-price-big-figure-size, 0.72em);
+  font-weight: var(--finra-font-normal);
+}
+
+.segPips {
+  color: var(--finra-price-pips-color, var(--finra-color-foreground));
+  font-size: var(--finra-price-pips-size, 1em);
+  font-weight: var(--finra-font-bold, 700);
+}
+
+.segFractionalPip {
+  color: var(--finra-price-fractional-pip-color, var(--finra-color-neutral-600));
+  font-size: var(--finra-price-fractional-pip-size, 0.85em);
+  font-weight: var(--finra-font-bold, 700);
+}
+
+.segUnit {
+  color: var(--finra-color-neutral-500);
+  font-weight: var(--finra-font-normal);
+  margin-inline-start: 0.15em;
+}

@@ -245,3 +245,41 @@
     cursor: var(--finra-cursor-disabled);
   }
 }
+
+//  Meta badges shown in the field row (resolved date, mode, broken-date)
+.resolvedDate {
+  flex-shrink: 0;
+  font-size: var(--finra-text-xs);
+  color: var(--finra-color-neutral-500);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.modeIndicator {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding-inline: calc(var(--finra-density-gap) * 0.5);
+  font-size: var(--finra-text-xs);
+  font-weight: var(--finra-font-semibold);
+  color: var(--finra-actionable-accent-hover);
+  background-color: var(--finra-actionable-accent-subtle);
+  border-radius: var(--finra-radius-full);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.brokenIndicator {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding-inline: calc(var(--finra-density-gap) * 0.5);
+  font-size: var(--finra-text-xs);
+  font-weight: var(--finra-font-semibold);
+  color: var(--finra-status-warning-accent);
+  border: var(--finra-border-thin) solid var(--finra-status-warning-accent);
+  border-radius: var(--finra-radius-full);
+  white-space: nowrap;
+  user-select: none;
+}

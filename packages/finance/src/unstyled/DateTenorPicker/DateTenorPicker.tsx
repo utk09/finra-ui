@@ -24,6 +24,7 @@ import type {
   DateTenorParseResult,
 } from "../../utils/dateTenorParse";
 import { parseDateTenor } from "../../utils/dateTenorParse";
+import { dateToTenor } from "../../utils/tenor";
 import type { CalendarClassNames } from "../Calendar/Calendar";
 import { CalendarBase } from "../Calendar/Calendar";
 
@@ -60,18 +61,31 @@ export interface DateTenorValue {
   tenor: string | null;
   /** Resolved settlement/value date. */
   date: Date | null;
+  /**
+   * The standard tenor this date lands on (e.g. `"3M"`), or `null` when it is a
+   * broken date. Computed against `referenceDate` on commit.
+   */
+  standardTenor?: string | null;
 }
 
 /** Why a commit was rejected. */
 export type DateTenorInvalidReason =
   DateTenorParseError | "disabled-tenor" | "disabled-date" | "no-settlement";
 
+/** Business-day roll convention passed to the calendar adapter's `adjust`. */
+export type AdjustmentConvention =
+  "none" | "following" | "modified-following" | "preceding" | "modified-preceding";
+
 /** Adjusts the parser's raw preview date to a settlement date. Default: identity. */
 export type SettlementEngine = (previewDate: Date, result: DateTenorParseResult) => Date | null;
 
-/** Injected business calendar. Omitted → every day is a business day. */
+/**
+ * Injected business calendar. Omitted → every day is a business day. `adjust`
+ * (holiday/business-day roll) is delegated to the consumer per market rules.
+ */
 export interface BusinessCalendar {
   isBusinessDay?: (date: Date) => boolean;
+  adjust?: (date: Date, convention: AdjustmentConvention) => Date;
 }
 
 /** Replacement parser (same signature as {@link parseDateTenor}). */
@@ -104,6 +118,9 @@ export interface DateTenorPickerClassNames {
   tenor?: string;
   tenorHighlighted?: string;
   tenorDisabled?: string;
+  resolvedDate?: string;
+  modeIndicator?: string;
+  brokenIndicator?: string;
   calendar?: CalendarClassNames;
 }
 
@@ -129,6 +146,11 @@ export interface DateTenorPickerBaseProps extends Omit<
   calendar?: BusinessCalendar;
   /** Adjust the preview date to a settlement date (business-day/holiday). */
   settlementEngine?: SettlementEngine;
+  /**
+   * Roll convention applied via `calendar.adjust` after settlement. Requires
+   * `calendar.adjust`. Default "none" (no adjustment).
+   */
+  adjustmentConvention?: AdjustmentConvention;
   /** Tenor suggestions shown in the popup. */
   tenorOptions?: readonly string[];
   /** Heading above the tenor grid. */
@@ -161,6 +183,14 @@ export interface DateTenorPickerBaseProps extends Omit<
   renderCalendarNavPrev?: () => ReactNode;
   /** Render the calendar next-month nav icon. */
   renderCalendarNavNext?: () => ReactNode;
+  /** Show the resolved settlement date alongside the field (coexists with the display). */
+  showResolvedDate?: boolean;
+  /** Format for the resolved date: a `DateFormat` or a custom formatter. */
+  resolvedDateFormat?: DateFormat | ((date: Date) => string);
+  /** Render a mode indicator (date / tenor / spot-relative). Receives the committed mode. */
+  renderModeIndicator?: (mode: DateTenorMode | null) => ReactNode;
+  /** Render a broken-date indicator. Receives whether the committed date is broken. */
+  renderBrokenIndicator?: (broken: boolean) => ReactNode;
   /** Fired on every parse attempt (typed commit, tenor pick). */
   onParse?: (result: DateTenorParseResult) => void;
   /** Fired when a commit is rejected. */
@@ -192,6 +222,7 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
       dateFormat = "YYYY-MM-DD",
       calendar,
       settlementEngine,
+      adjustmentConvention,
       tenorOptions = DEFAULT_TENOR_OPTIONS,
       tenorSectionTitle = "Tenors",
       minDate,
@@ -208,6 +239,10 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
       renderIndicator,
       renderCalendarNavPrev,
       renderCalendarNavNext,
+      showResolvedDate,
+      resolvedDateFormat,
+      renderModeIndicator,
+      renderBrokenIndicator,
       onParse,
       onInvalid,
       onModeChange,
@@ -273,9 +308,25 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
     );
 
     const settle = useCallback(
-      (date: Date, result: DateTenorParseResult): Date | null =>
-        settlementEngine ? settlementEngine(date, result) : date,
-      [settlementEngine],
+      (date: Date, result: DateTenorParseResult): Date | null => {
+        const settled = settlementEngine ? settlementEngine(date, result) : date;
+        if (
+          settled &&
+          adjustmentConvention &&
+          adjustmentConvention !== "none" &&
+          calendar?.adjust
+        ) {
+          return calendar.adjust(settled, adjustmentConvention);
+        }
+        return settled;
+      },
+      [settlementEngine, adjustmentConvention, calendar],
+    );
+
+    // The standard tenor a resolved date lands on (else null = broken date).
+    const standardTenorFor = useCallback(
+      (date: Date): string | null => dateToTenor(date, referenceDate ?? new Date()),
+      [referenceDate],
     );
 
     //  Open / close
@@ -350,12 +401,23 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
           mode: result.mode as DateTenorMode,
           tenor: result.tenor,
           date: settled,
+          standardTenor: standardTenorFor(settled),
         };
         setInputText(next.display);
         commitValue(next);
         return true;
       },
-      [parser, parseCtx, onParse, onInvalid, disabledTenors, settle, isDateDisabled, commitValue],
+      [
+        parser,
+        parseCtx,
+        onParse,
+        onInvalid,
+        disabledTenors,
+        settle,
+        isDateDisabled,
+        standardTenorFor,
+        commitValue,
+      ],
     );
 
     //  Tenor suggestion metadata (resolved date + disabled state)
@@ -495,13 +557,23 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
           mode: "date",
           tenor: null,
           date: settled,
+          standardTenor: standardTenorFor(settled),
         };
         setInputText(next.display);
         commitValue(next);
         closePopup();
         inputRef.current?.focus();
       },
-      [dateFormat, onParse, settle, isDateDisabled, onInvalid, commitValue, closePopup],
+      [
+        dateFormat,
+        onParse,
+        settle,
+        isDateDisabled,
+        onInvalid,
+        standardTenorFor,
+        commitValue,
+        closePopup,
+      ],
     );
 
     //  Imperative handle
@@ -522,6 +594,11 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
     );
 
     const activeDescendant = isOpen && highlight >= 0 ? optionId(highlight) : undefined;
+
+    const formatResolved = (date: Date): string =>
+      typeof resolvedDateFormat === "function"
+        ? resolvedDateFormat(date)
+        : formatDate(date, resolvedDateFormat ?? dateFormat);
 
     return (
       <div
@@ -566,6 +643,20 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
             disabled={disabled}>
             {renderCalendarIcon()}
           </button>
+        ) : null}
+
+        {renderModeIndicator && currentValue ? (
+          <span className={cn?.modeIndicator}>{renderModeIndicator(currentValue.mode)}</span>
+        ) : null}
+
+        {renderBrokenIndicator && currentValue?.mode === "date" ? (
+          <span className={cn?.brokenIndicator}>
+            {renderBrokenIndicator(currentValue.standardTenor == null)}
+          </span>
+        ) : null}
+
+        {showResolvedDate && currentValue?.date ? (
+          <span className={cn?.resolvedDate}>{formatResolved(currentValue.date)}</span>
         ) : null}
 
         {renderIndicator ? (

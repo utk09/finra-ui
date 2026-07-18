@@ -28,3 +28,32 @@ export type {
   DateTenorParseResult,
 } from "./utils/dateTenorParse";
 export { parseDateTenor } from "./utils/dateTenorParse";
+
+// Market-aware price parse/format/tick (PriceInput's pluggable seams)
+export type {
+  PriceFormat,
+  PriceFormatOptions,
+  PriceFormatter,
+  PriceParser,
+  PriceParseResult,
+  PriceSegment,
+  PriceSegmentConfig,
+  PriceSegmentKind,
+  TickEngine,
+} from "./utils/priceFormat";
+export { formatPrice, parsePrice, segmentPrice, stepPrice } from "./utils/priceFormat";
+
+// Shared increment engine (FP-safe, keyboard-independent) + tick validation
+export type {
+  IncrementAction,
+  IncrementContext,
+  NumericPrecision,
+  RoundingMode,
+  TickValidationMode,
+  TickValidationResult,
+} from "./utils/increment";
+export { displayDecimals, resolveIncrement, roundWith, validateTick } from "./utils/increment";
+
+// Configurable keyboard action map (key+modifier → semantic action)
+export type { KeyAction, KeyEventLike, KeyMap, NavMode } from "./utils/keymap";
+export { DEFAULT_PRICE_KEYMAP, keyChord, resolveKey } from "./utils/keymap";

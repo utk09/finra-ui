@@ -21,6 +21,7 @@ export { DateTenorInputBase } from "./unstyled/DateTenorInput/DateTenorInput";
 
 // DateTenorPickerBase
 export type {
+  AdjustmentConvention,
   BusinessCalendar,
   DateTenorInvalidReason,
   DateTenorParserFn,
@@ -31,6 +32,17 @@ export type {
   SettlementEngine,
 } from "./unstyled/DateTenorPicker/DateTenorPicker";
 export { DateTenorPickerBase } from "./unstyled/DateTenorPicker/DateTenorPicker";
+
+// PriceInputBase
+export type {
+  PriceInputBaseProps,
+  PriceInputClassNames,
+  PriceInputHandle,
+  PriceInstrument,
+  PriceValidationResult,
+  PriceValidator,
+} from "./unstyled/PriceInput/PriceInput";
+export { PriceInputBase } from "./unstyled/PriceInput/PriceInput";
 
 // TenorInputBase
 export type { TenorInputBaseProps, TenorInputClassNames } from "./unstyled/TenorInput/TenorInput";

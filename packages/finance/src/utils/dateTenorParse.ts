@@ -149,6 +149,60 @@ function fail(error: DateTenorParseError): DateTenorParseResult {
   return { valid: false, mode: null, date: null, tenor: null, display: null, error };
 }
 
+const MONTH_ABBR = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+] as const;
+
+/** Index (0-11) of a month name/abbreviation, or -1. */
+function monthIndex(token: string): number {
+  return MONTH_ABBR.findIndex((m) => m.toLowerCase() === token.slice(0, 3).toLowerCase());
+}
+
+/** Build a calendar date, validating it didn't roll over (e.g. 31 Feb). */
+function safeDate(year: number, month: number, day: number): Date | null {
+  const d = new Date(year, month, day);
+  return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day ? d : null;
+}
+
+/**
+ * Parse a month-name date in either order: `15 Jan 2027` / `Jan 15 2027`
+ * (also full names and an optional comma). Returns `null` when unrecognised.
+ */
+function parseMonthNameDate(input: string): Date | null {
+  const parts = input.replace(/,/g, "").trim().split(/\s+/);
+  if (parts.length !== 3) return null;
+
+  // day month year
+  const d1 = parseInt(parts[0], 10);
+  const m1 = monthIndex(parts[1]);
+  const y1 = parseInt(parts[2], 10);
+  if (!Number.isNaN(d1) && m1 >= 0 && !Number.isNaN(y1)) return safeDate(y1, m1, d1);
+
+  // month day year
+  const m2 = monthIndex(parts[0]);
+  const d2 = parseInt(parts[1], 10);
+  const y2 = parseInt(parts[2], 10);
+  if (m2 >= 0 && !Number.isNaN(d2) && !Number.isNaN(y2)) return safeDate(y2, m2, d2);
+
+  return null;
+}
+
+/** Format as `15 Jan 2027`. */
+function formatMonthNameDate(date: Date): string {
+  return `${date.getDate()} ${MONTH_ABBR[date.getMonth()]} ${date.getFullYear()}`;
+}
+
 /**
  * Parse a raw input string into a structured date/tenor result. See the module
  * docstring for supported forms and resolution bases.
@@ -209,7 +263,19 @@ export function parseDateTenor(
     };
   }
 
-  // 4. Calendar date (first matching format wins).
+  // 4a. Month-name date (`15 Jan 2027`).
+  const monthNameDate = parseMonthNameDate(trimmed);
+  if (monthNameDate) {
+    return {
+      valid: true,
+      mode: "date",
+      date: monthNameDate,
+      tenor: null,
+      display: formatMonthNameDate(monthNameDate),
+    };
+  }
+
+  // 4b. Numeric calendar date (first matching format wins).
   for (const fmt of dateFormats) {
     const parsed = parseDate(trimmed, fmt);
     if (parsed.valid && parsed.date) {

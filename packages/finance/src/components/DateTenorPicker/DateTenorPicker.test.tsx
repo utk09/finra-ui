@@ -63,4 +63,24 @@ describe("DateTenorPicker (styled)", () => {
     );
     expect(screen.getByRole("combobox")).toBeDisabled();
   });
+
+  it("shows resolved date + mode + broken badges for a broken date", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateTenorPicker
+        aria-label="Value date"
+        referenceDate={REF}
+        showResolvedDate
+        showModeIndicator
+        showBrokenDate
+      />,
+    );
+    const input = screen.getByRole("combobox");
+    await user.type(input, "2027-07-13"); // broken date
+    await user.keyboard("{Enter}");
+
+    expect(screen.getByText("Date")).toBeInTheDocument(); // mode badge
+    expect(screen.getByText("Broken")).toBeInTheDocument(); // broken badge
+    expect(screen.getByText("2027-07-13")).toBeInTheDocument(); // resolved date
+  });
 });

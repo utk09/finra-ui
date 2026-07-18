@@ -24,6 +24,7 @@ export { DateTenorInput } from "./components/DateTenorInput/DateTenorInput";
 export type { DateTenorPickerProps } from "./components/DateTenorPicker/DateTenorPicker";
 export { DateTenorPicker } from "./components/DateTenorPicker/DateTenorPicker";
 export type {
+  AdjustmentConvention,
   BusinessCalendar,
   DateTenorInvalidReason,
   DateTenorParserFn,
@@ -31,6 +32,16 @@ export type {
   DateTenorValue,
   SettlementEngine,
 } from "./unstyled/DateTenorPicker/DateTenorPicker";
+
+// PriceInput
+export type { PriceInputProps } from "./components/PriceInput/PriceInput";
+export { PriceInput } from "./components/PriceInput/PriceInput";
+export type {
+  PriceInputHandle,
+  PriceInstrument,
+  PriceValidationResult,
+  PriceValidator,
+} from "./unstyled/PriceInput/PriceInput";
 
 // TenorInput
 export type { TenorInputProps } from "./components/TenorInput/TenorInput";

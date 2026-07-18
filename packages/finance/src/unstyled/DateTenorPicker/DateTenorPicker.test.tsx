@@ -343,4 +343,78 @@ describe("DateTenorPickerBase", () => {
     await user.click(screen.getByRole("button", { name: "Toggle date and tenor picker" }));
     expect(input).toHaveAttribute("aria-expanded", "true");
   });
+
+  it("applies calendar.adjust with the configured convention", async () => {
+    const user = userEvent.setup();
+    const rolled = new Date(2026, 3, 16);
+    const adjust = vi.fn(() => rolled);
+    const { onChange, input } = setup({
+      calendar: { adjust },
+      adjustmentConvention: "following",
+    });
+
+    await user.type(input, "3M");
+    await user.keyboard("{Enter}");
+
+    // adjust receives the settled preview (3M from REF = 2026-04-15) + convention.
+    expect(adjust).toHaveBeenCalledWith(new Date(2026, 3, 15), "following");
+    expect(onChange.mock.calls[0][0].date).toEqual(rolled);
+  });
+
+  it("does not adjust when convention is 'none' or adjust is absent", async () => {
+    const user = userEvent.setup();
+    const adjust = vi.fn(() => new Date(2030, 0, 1));
+    const { onChange, input } = setup({ calendar: { adjust }, adjustmentConvention: "none" });
+
+    await user.type(input, "3M");
+    await user.keyboard("{Enter}");
+
+    expect(adjust).not.toHaveBeenCalled();
+    expect(onChange.mock.calls[0][0].date).toEqual(new Date(2026, 3, 15));
+  });
+
+  it("tags the committed value with its standard tenor, or null for a broken date", async () => {
+    const user = userEvent.setup();
+    const { onChange, input } = setup({});
+
+    await user.type(input, "3M");
+    await user.keyboard("{Enter}");
+    expect(onChange.mock.calls[0][0].standardTenor).toBe("3M");
+
+    await user.clear(input);
+    await user.type(input, "2027-07-13"); // arbitrary → broken date
+    await user.keyboard("{Enter}");
+    expect(onChange.mock.calls.at(-1)?.[0]).toMatchObject({ mode: "date", standardTenor: null });
+  });
+
+  it("shows the resolved date (custom format) and mode indicator", async () => {
+    const user = userEvent.setup();
+    const { input } = setup({
+      showResolvedDate: true,
+      resolvedDateFormat: (d) => `res:${d.getMonth() + 1}`,
+      renderModeIndicator: (m) => <span>mode:{m}</span>,
+    });
+
+    await user.type(input, "3M");
+    await user.keyboard("{Enter}");
+    // 3M from REF (15 Jan 2026) = 15 Apr 2026 → month 4.
+    expect(screen.getByText("res:4")).toBeInTheDocument();
+    expect(screen.getByText("mode:tenor")).toBeInTheDocument();
+  });
+
+  it("renders the broken-date indicator only for broken dates", async () => {
+    const user = userEvent.setup();
+    const { input } = setup({
+      renderBrokenIndicator: (broken) => <span>{broken ? "BROKEN" : "STD"}</span>,
+    });
+
+    await user.type(input, "2027-07-13"); // not a standard tenor
+    await user.keyboard("{Enter}");
+    expect(screen.getByText("BROKEN")).toBeInTheDocument();
+
+    await user.clear(input);
+    await user.type(input, "2026-04-15"); // == 3M from REF → standard
+    await user.keyboard("{Enter}");
+    expect(screen.getByText("STD")).toBeInTheDocument();
+  });
 });
