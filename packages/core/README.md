@@ -39,7 +39,7 @@ function App() {
 
 ## Components
 
-### Styled Components
+### Form & Input
 
 | Component      | Description                                                                                  |
 | -------------- | -------------------------------------------------------------------------------------------- |
@@ -49,40 +49,71 @@ function App() {
 | `Input`        | Text input with variants, validation states, adornments, and clearable support               |
 | `Textarea`     | Multi-line text input with character count and auto-resize                                   |
 | `NumberInput`  | Numeric input with increment/decrement buttons                                               |
-| `FormField`    | Wrapper that wires label, helper text, and error message with a11y attributes                |
+| `FormField`    | Wires label, helper text, and error message onto its child input via context                 |
 | `Checkbox`     | Custom-styled checkbox with indeterminate support                                            |
 | `Switch`       | Toggle switch (on/off)                                                                       |
 | `RadioButton`  | Radio button for grouped exclusive selection                                                 |
 | `Slider`       | Range slider with optional label and value display                                           |
 | `PillInput`    | Tokenized tag/pill input with keyboard support                                               |
 | `FileDropZone` | Drag-and-drop file upload zone                                                               |
-| `Badge`        | Inline status/category label with variant and sentiment                                      |
-| `Divider`      | Horizontal or vertical separator                                                             |
+| `ComboBox`     | Filterable single/multi-select with grouping and option creation                             |
 
-### Unstyled Components
+### Overlays & Navigation
+
+| Component                                                                                        | Description                                                                                        |
+| ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `Dialog` (+ `DialogTrigger`, `DialogContent`, `DialogTitle`, `DialogDescription`, `DialogClose`) | Modal dialog with focus trap, scroll lock, and dismiss handling                                    |
+| `Tooltip` (+ `TooltipTrigger`, `TooltipContent`)                                                 | Hover/focus tooltip with positioning                                                               |
+| `Popover` (+ `PopoverTrigger`, `PopoverContent`, `PopoverClose`)                                 | Generic anchored overlay                                                                           |
+| `Select` (+ `SelectTrigger`, `SelectContent`)                                                    | Listbox-button select with typeahead                                                               |
+| `Menu` (+ `MenuTrigger`, `MenuContent`, `MenuItem`, `MenuSeparator`)                             | Dropdown menu with roving focus and typeahead                                                      |
+| `Toaster` + `toast()`                                                                            | Toast queue with `aria-live` region; imperative `toast()`, `toast.success()`, `toast.error()`, ... |
+| `Tabs` (+ `TabList`, `Tab`, `TabPanel`)                                                          | APG-conformant tabs with automatic/manual activation                                               |
+
+### Display
+
+| Component | Description                                             |
+| --------- | ------------------------------------------------------- |
+| `Badge`   | Inline status/category label with variant and sentiment |
+| `Divider` | Horizontal or vertical separator                        |
+
+## Unstyled Components
 
 Every styled component has an unstyled base that provides only behavior and accessibility - no visual styles. Import from the `/unstyled` entry point:
 
 ```tsx
-import {
-  ButtonBase,
-  CheckboxBase,
-  SwitchBase,
-  RadioButtonBase,
-  SliderBase,
-  FormFieldBase,
-  PillInputBase,
-  FileDropZoneBase,
-} from "@utk09/finra-ui/unstyled";
+import { ButtonBase, ComboBoxBase, Dialog, DialogContent } from "@utk09/finra-ui/unstyled";
 ```
 
-Available: `ButtonBase`, `IconButtonBase`, `InputBase`, `TextareaBase`, `NumberInputBase`, `CheckboxBase`, `SwitchBase`, `RadioButtonBase`, `SliderBase`, `FormFieldBase`, `PillInputBase`, `FileDropZoneBase`.
+Available: `ButtonBase`, `IconButtonBase`, `InputBase`, `TextareaBase`, `NumberInputBase`, `CheckboxBase`, `SwitchBase`, `RadioButtonBase`, `SliderBase`, `FormFieldBase`, `PillInputBase`, `FileDropZoneBase`, `ComboBoxBase`, plus the compound overlay families (`Dialog`, `Tooltip`, `Popover`, `Select`, `Menu`, `Toaster`/`ToastItem`, `Tabs`).
+
+### Overlay Primitives
+
+The building blocks behind the overlay components are public - build your own popup components with them:
+
+```tsx
+import { Portal, DismissableLayer, FocusScope } from "@utk09/finra-ui/unstyled";
+```
+
+- `Portal` - renders into `document.body` (or a custom container) while preserving `data-theme` / `data-density` from the trigger's subtree.
+- `DismissableLayer` - layered outside-click + Escape dismissal (topmost layer wins).
+- `FocusScope` - focus trap with restore-on-unmount and initial-focus targeting.
+
+## Utilities
+
+Framework-agnostic helpers from the `/utils` entry point:
+
+```tsx
+import { mergeRefs, cx, createStore, computeAnchoredPosition } from "@utk09/finra-ui/utils";
+```
+
+Includes `mergeRefs`, `cx`, the `createStore` state container, dismiss-layer registration, and floating-ui-based positioning helpers.
 
 ## Features
 
 ### Variants & Sentiments
 
-Buttons and Badges support three **variants** and four **sentiments** that combine freely:
+Buttons and Badges support three **variants** (emphasis) and four **sentiments** (color meaning) that combine freely:
 
 ```tsx
 <Button variant="primary" sentiment="danger">Delete</Button>
@@ -95,53 +126,54 @@ Buttons and Badges support three **variants** and four **sentiments** that combi
 Control spacing globally via a `data-density` attribute on any ancestor element. All components respond automatically - no props needed:
 
 ```tsx
-{
-  /* Compact UI for data-dense screens */
-}
 <div data-density="high">
   <Button>Tight</Button>
   <Input placeholder="Compact" />
-</div>;
-
-{
-  /* Spacious UI */
-}
-<div data-density="low">
-  <Button>Relaxed</Button>
-</div>;
+</div>
 ```
 
 Three levels: `high`, `medium` (default), `low`.
 
+### Dark Mode
+
+Set `data-theme="dark"` on any ancestor. No provider, no JS - pure CSS:
+
+```html
+<body data-theme="dark">
+  ...
+</body>
+```
+
 ### Theming
 
-Override design tokens via CSS custom properties. Every component uses `--color-*`, `--radius-*`, `--font-*` tokens defined in the global styles:
+Tokens are three-tiered: raw palette (`--finra-color-*`) → semantic (`--finra-actionable-*`, `--finra-container-*`, `--finra-status-*`) → per-component (`--_*`). Override the semantic tier to retheme every component consistently:
 
 ```css
 :root {
-  --color-primary-600: #2563eb;
-  --color-error: #dc2626;
-  --radius-md: 0.375rem;
+  --finra-actionable-accent: #2563eb;
+  --finra-actionable-accent-hover: #1d4ed8;
+  --finra-status-danger-accent: #dc2626;
+  --finra-radius-md: 0.375rem;
 }
 ```
 
 ### CSS Override Selectors
 
-Every component renders a stable `data-finra-ui` attribute for targeted CSS overrides:
+Every component renders a stable `data-finra-ui` attribute - the public selector API for targeted CSS overrides (hashed module classes are not):
 
 ```css
 [data-finra-ui="button"] {
   text-transform: uppercase;
 }
 
-[data-finra-ui="input"] {
-  min-height: 3rem;
+[data-finra-ui="dialog-overlay"] {
+  backdrop-filter: blur(2px);
 }
 ```
 
 ### Form Field Composition
 
-`FormField` automatically wires `id`, `aria-describedby`, `aria-invalid`, and `disabled` onto its child input:
+`FormField` wires `id`, `aria-describedby`, `aria-invalid`, and `disabled` onto its child input via context:
 
 ```tsx
 <FormField
@@ -154,48 +186,36 @@ Every component renders a stable `data-finra-ui` attribute for targeted CSS over
 </FormField>
 ```
 
-### Zero External Runtime Dependencies
+### Toasts
 
-The only runtime dependencies are `clsx`, `class-variance-authority`, and `@utk09/finra-ui-icons`.
+```tsx
+import { Toaster, toast } from "@utk09/finra-ui";
 
-## Development
+// Render once near the app root
+<Toaster position="bottom-end" />;
 
-This is a pnpm monorepo with Turborepo.
-
-```bash
-# Install dependencies
-pnpm install
-
-# Run development (Storybook)
-pnpm run dev
-
-# Build the library
-pnpm run build
-
-# Run tests
-pnpm run test
-
-# Type check
-pnpm run typecheck
-
-# Lint
-pnpm run lint
-
-# All checks at once
-pnpm run typecheck && pnpm run lint && pnpm run test
+// Fire from anywhere
+toast.success("Order filled");
+toast.error("Connection lost");
 ```
 
-### Project Structure
+### Minimal Runtime Dependencies
 
-```txt
-packages/core/       - Core component library (@utk09/finra-ui)
-packages/finance/    - Financial domain components (@utk09/finra-ui-finance)
-packages/icons/      - Icon library (@utk09/finra-ui-icons)
-apps/storybook/      - Storybook documentation app
-apps/react-example-basic/    - E-commerce store demo
-apps/react-example-advanced/ - Financial dashboard demo
-```
+Runtime dependencies: `clsx`, `class-variance-authority`, `@floating-ui/dom`, and `@utk09/finra-ui-icons`. `react` / `react-dom` are peer dependencies.
+
+## Exports
+
+| Subpath                    | Contents                                        |
+| -------------------------- | ----------------------------------------------- |
+| `@utk09/finra-ui`          | Styled React components                         |
+| `@utk09/finra-ui/unstyled` | Unstyled bases + overlay primitives             |
+| `@utk09/finra-ui/utils`    | Framework-agnostic helpers (store, positioning) |
+| `@utk09/finra-ui/styles`   | Global CSS (tokens + component styles)          |
+
+## Contributing
+
+See [CONTRIBUTING.md](../../CONTRIBUTING.md) at the repository root.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](../../LICENSE)

@@ -72,6 +72,10 @@ Use the SVG data objects to render icons in any framework (Lit, vanilla DOM, etc
 
 All icons use `stroke="currentColor"` so they inherit the parent's text color. No fill colors are hardcoded - icons adapt to any theme automatically.
 
+## Contributing
+
+See [CONTRIBUTING.md](../../CONTRIBUTING.md) at the repository root.
+
 ## License
 
 [MIT](../../LICENSE)
