@@ -47,3 +47,13 @@ export { PriceInputBase } from "./unstyled/PriceInput/PriceInput";
 // TenorInputBase
 export type { TenorInputBaseProps, TenorInputClassNames } from "./unstyled/TenorInput/TenorInput";
 export { TenorInputBase } from "./unstyled/TenorInput/TenorInput";
+
+// TenorPickerBase
+export type { TenorGroupId, TenorOptionModel } from "./logic/tenorPicker";
+export type {
+  TenorPickerBaseProps,
+  TenorPickerClassNames,
+  TenorPickerHandle,
+  TenorPickerInvalidReason,
+} from "./unstyled/TenorPicker/TenorPicker";
+export { TenorPickerBase } from "./unstyled/TenorPicker/TenorPicker";

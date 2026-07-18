@@ -5,6 +5,12 @@ import { forwardRef, useCallback, useMemo } from "react";
 import { parseTenor, STANDARD_TENORS } from "../../utils/tenor";
 import { componentIds } from "../componentIds";
 
+/**
+ * @deprecated Use {@link TenorPicker} instead — it is a strict superset
+ * (`grouped={false}` gives the same flat list) and adds grouping, favourites,
+ * and flexible parsing (`3 months`, `1y6m`). `TenorInput` will be removed in a
+ * future release.
+ */
 export interface TenorInputProps extends Omit<
   ComboBoxProps<string>,
   | "options"
@@ -54,6 +60,10 @@ function tenorFilterFn(option: ComboBoxOption<string>, inputValue: string): bool
   return option.label.toUpperCase().includes(needle);
 }
 
+/**
+ * @deprecated Use {@link TenorPicker} instead (`grouped={false}` matches this
+ * flat single-select). Will be removed in a future release.
+ */
 export const TenorInput = forwardRef<HTMLInputElement, TenorInputProps>(
   (
     {

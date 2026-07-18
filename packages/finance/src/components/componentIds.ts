@@ -10,6 +10,9 @@ export const componentIds = {
   // TenorInput
   tenorInput: "tenor-input",
 
+  // TenorPicker
+  tenorPicker: "tenor-picker",
+
   // DateTenorInput
   dateTenorInput: "date-tenor-input",
 

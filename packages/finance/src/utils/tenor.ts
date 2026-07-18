@@ -123,3 +123,114 @@ export function dateToTenor(date: Date, referenceDate: Date): StandardTenor | nu
   }
   return null;
 }
+
+//  Flexible tenor input parsing (TenorPicker's replaceable parser)
+
+/** One decomposed leg of a (possibly compound) tenor, e.g. `{ value: 6, unit: "M" }`. */
+export interface TenorTerm {
+  value: number;
+  unit: TenorUnit;
+}
+
+export interface FlexibleTenorParseResult {
+  valid: boolean;
+  /** Canonical tenor string (e.g. `"18M"`, `"1Y6M"`, `"ON"`), or `null` when invalid. */
+  tenor: string | null;
+  /** Decomposed terms, in descending unit magnitude. Empty for special tenors. */
+  terms?: TenorTerm[];
+  /** Special tenor code when the input resolved to one (`ON`/`TN`/`SN`/`SW`). */
+  special?: string;
+  error?: "invalid-format" | "invalid-value";
+}
+
+/** Replaceable parser used by `TenorPicker` (same signature as {@link parseTenorInput}). */
+export type TenorInputParser = (input: string) => FlexibleTenorParseResult;
+
+/** Long/short unit words → canonical unit letter. Case-insensitive at the call site. */
+const UNIT_WORDS: Record<string, TenorUnit> = {
+  D: "D",
+  DAY: "D",
+  DAYS: "D",
+  W: "W",
+  WK: "W",
+  WKS: "W",
+  WEEK: "W",
+  WEEKS: "W",
+  M: "M",
+  MO: "M",
+  MON: "M",
+  MTH: "M",
+  MTHS: "M",
+  MONTH: "M",
+  MONTHS: "M",
+  Y: "Y",
+  YR: "Y",
+  YRS: "Y",
+  YEAR: "Y",
+  YEARS: "Y",
+};
+
+/** Named/coded special tenors (letters only, no digits) → canonical code. */
+const SPECIAL_NAME_TO_CODE: Record<string, string> = {
+  ON: "ON",
+  OVERNIGHT: "ON",
+  TN: "TN",
+  TOMNEXT: "TN",
+  TOMORROWNEXT: "TN",
+  SN: "SN",
+  SPOTNEXT: "SN",
+  SW: "SW",
+  SPOTWEEK: "SW",
+};
+
+/** Ordering weight so compound canonicals read `1Y6M`, never `6M1Y`. */
+const UNIT_RANK: Record<TenorUnit, number> = { Y: 4, M: 3, W: 2, D: 1 };
+
+const TERM_SCAN = /(\d+)\s*([a-z]+)/gi;
+
+/**
+ * Parse free-form tenor input into a canonical string.
+ *
+ * Accepts case-insensitive short/long units (`3m`, `3M`, `3 months`, `90d`),
+ * compound tenors (`1y6m`, `2w3d`), and named specials (`overnight`, `tom-next`,
+ * `SN`, `spot week`). Whitespace and a single `-`/`/` separator are ignored.
+ * Compound canonicals are emitted in descending unit magnitude (`1Y6M`).
+ */
+export function parseTenorInput(input: string): FlexibleTenorParseResult {
+  const raw = input.trim();
+  if (!raw) return { valid: false, tenor: null, error: "invalid-format" };
+
+  // Named/coded specials contain no digits (e.g. "overnight", "SN", "tom-next").
+  const compact = raw.replace(/[\s\-/]+/g, "").toUpperCase();
+  if (!/\d/.test(compact) && compact in SPECIAL_NAME_TO_CODE) {
+    const code = SPECIAL_NAME_TO_CODE[compact];
+    return { valid: true, tenor: code, terms: [], special: code };
+  }
+
+  // Numeric term scan (supports compound like "1y6m", "1y 6m", "2w3d").
+  const terms: TenorTerm[] = [];
+  const seen = new Set<TenorUnit>();
+  let consumed = 0;
+  let match: RegExpExecArray | null;
+  TERM_SCAN.lastIndex = 0;
+  while ((match = TERM_SCAN.exec(raw)) !== null) {
+    const value = parseInt(match[1], 10);
+    const unit = UNIT_WORDS[match[2].toUpperCase()];
+    if (!unit) return { valid: false, tenor: null, error: "invalid-format" };
+    if (value <= 0) return { valid: false, tenor: null, error: "invalid-value" };
+    if (seen.has(unit)) return { valid: false, tenor: null, error: "invalid-format" };
+    seen.add(unit);
+    terms.push({ value, unit });
+    consumed += match[0].replace(/\s+/g, "").length;
+  }
+
+  if (terms.length === 0) return { valid: false, tenor: null, error: "invalid-format" };
+  // Reject trailing/embedded junk not covered by the scan (e.g. "3m5", "3mx").
+  if (consumed !== raw.replace(/\s+/g, "").length) {
+    return { valid: false, tenor: null, error: "invalid-format" };
+  }
+
+  terms.sort((a, b) => UNIT_RANK[b.unit] - UNIT_RANK[a.unit]);
+  const canonical = terms.map((t) => `${t.value}${t.unit}`).join("");
+  return { valid: true, tenor: canonical, terms };
+}

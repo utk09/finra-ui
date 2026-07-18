@@ -66,6 +66,11 @@ function tenorFilterFn(option: ComboBoxOption<string>, inputValue: string): bool
   return option.label.toUpperCase().includes(needle);
 }
 
+/**
+ * @deprecated Use {@link TenorPickerBase} instead — a strict superset with
+ * grouping, favourites, and flexible parsing (`grouped={false}` reproduces this
+ * flat list). Will be removed in a future release.
+ */
 export const TenorInputBase = forwardRef<HTMLInputElement, TenorInputBaseProps>(
   (
     {

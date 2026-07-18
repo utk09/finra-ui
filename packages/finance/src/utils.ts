@@ -10,11 +10,20 @@ export {
 } from "./utils/dateFormat";
 
 // Tenor utilities
-export type { StandardTenor, TenorParseResult, TenorResolver, TenorUnit } from "./utils/tenor";
+export type {
+  FlexibleTenorParseResult,
+  StandardTenor,
+  TenorInputParser,
+  TenorParseResult,
+  TenorResolver,
+  TenorTerm,
+  TenorUnit,
+} from "./utils/tenor";
 export {
   dateToTenor,
   isStandardTenor,
   parseTenor,
+  parseTenorInput,
   resolveTenor,
   STANDARD_TENORS,
 } from "./utils/tenor";

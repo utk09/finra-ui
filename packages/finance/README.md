@@ -44,7 +44,8 @@ function TradeTicket() {
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Calendar`        | Month calendar: single or range selection, min/max, highlighted dates, week numbers, month/year dropdowns, footer shortcut API                       |
 | `DateInput`       | Date entry with format validation, auto-separators, calendar popup                                                                                   |
-| `TenorInput`      | Financial tenor picker (ON, 1W, 1M, 3M, 6M, 1Y, ...)                                                                                                 |
+| `TenorInput`      | **Deprecated** — use `TenorPicker` (`grouped={false}` for the flat list). Removed in a future release.                                               |
+| `TenorPicker`     | Market-aware tenor selector: grouped list (Overnight/Weeks/Months/Years/…), favourites, free-form parsing (`3 months`, `1y6m`), keyboard workflow    |
 | `DateTenorInput`  | Combined date + tenor input with tenor-to-date resolution                                                                                            |
 | `DateTenorPicker` | Hybrid date/tenor combobox: absolute dates, relative tenors (`3M`, `Spot+3M`), business-calendar adjustment, resolved-date + mode/broken-date badges |
 | `PriceInput`      | Market-aware price input: digit visual hierarchy (big-figure/pips), tick sizes, precision tiers, configurable keyboard increments                    |
@@ -63,6 +64,8 @@ import {
   DateTenorInputBase,
   DateTenorPickerBase,
   PriceInputBase,
+  TenorInputBase,
+  TenorPickerBase,
 } from "@utk09/finra-ui-finance/unstyled";
 ```
 
@@ -78,6 +81,7 @@ import {
   validateDate,
   // Tenors
   parseTenor,
+  parseTenorInput, // flexible: "3 months", "1y6m", "90d" → canonical
   resolveTenor,
   dateToTenor,
   STANDARD_TENORS,

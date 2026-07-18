@@ -46,3 +46,12 @@ export type {
 // TenorInput
 export type { TenorInputProps } from "./components/TenorInput/TenorInput";
 export { TenorInput } from "./components/TenorInput/TenorInput";
+
+// TenorPicker
+export type { TenorPickerProps } from "./components/TenorPicker/TenorPicker";
+export { TenorPicker } from "./components/TenorPicker/TenorPicker";
+export type { TenorGroupId, TenorOptionModel } from "./logic/tenorPicker";
+export type {
+  TenorPickerHandle,
+  TenorPickerInvalidReason,
+} from "./unstyled/TenorPicker/TenorPicker";

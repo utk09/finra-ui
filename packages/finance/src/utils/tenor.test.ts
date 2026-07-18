@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { dateToTenor, isStandardTenor, parseTenor, resolveTenor, STANDARD_TENORS } from "./tenor";
+import {
+  dateToTenor,
+  isStandardTenor,
+  parseTenor,
+  parseTenorInput,
+  resolveTenor,
+  STANDARD_TENORS,
+} from "./tenor";
 
 describe("parseTenor", () => {
   it("parses special tenors", () => {
@@ -161,5 +168,56 @@ describe("dateToTenor", () => {
   it("prefers earlier match (ON before TN for +1 day)", () => {
     const result = dateToTenor(new Date(2026, 2, 12), ref);
     expect(result).toBe("ON");
+  });
+});
+
+describe("parseTenorInput", () => {
+  it("parses short numeric units case-insensitively", () => {
+    expect(parseTenorInput("3m")).toMatchObject({ valid: true, tenor: "3M" });
+    expect(parseTenorInput("3M")).toMatchObject({ valid: true, tenor: "3M" });
+    expect(parseTenorInput("90d")).toMatchObject({ valid: true, tenor: "90D" });
+    expect(parseTenorInput("18m")).toMatchObject({ valid: true, tenor: "18M" });
+    expect(parseTenorInput("10Y")).toMatchObject({ valid: true, tenor: "10Y" });
+  });
+
+  it("parses long unit words with whitespace", () => {
+    expect(parseTenorInput("3 months")).toMatchObject({ valid: true, tenor: "3M" });
+    expect(parseTenorInput("1 year")).toMatchObject({ valid: true, tenor: "1Y" });
+    expect(parseTenorInput("2 weeks")).toMatchObject({ valid: true, tenor: "2W" });
+    expect(parseTenorInput("5 days")).toMatchObject({ valid: true, tenor: "5D" });
+  });
+
+  it("parses compound tenors and canonicalises by unit magnitude", () => {
+    expect(parseTenorInput("1y6m")).toMatchObject({ valid: true, tenor: "1Y6M" });
+    expect(parseTenorInput("1y 6m")).toMatchObject({ valid: true, tenor: "1Y6M" });
+    expect(parseTenorInput("6m1y")).toMatchObject({ valid: true, tenor: "1Y6M" });
+    expect(parseTenorInput("2w3d")).toMatchObject({ valid: true, tenor: "2W3D" });
+  });
+
+  it("exposes decomposed terms", () => {
+    expect(parseTenorInput("1y6m").terms).toEqual([
+      { value: 1, unit: "Y" },
+      { value: 6, unit: "M" },
+    ]);
+  });
+
+  it("parses named/coded special tenors", () => {
+    expect(parseTenorInput("overnight")).toMatchObject({ valid: true, tenor: "ON", special: "ON" });
+    expect(parseTenorInput("ON")).toMatchObject({ valid: true, tenor: "ON", special: "ON" });
+    expect(parseTenorInput("tom-next")).toMatchObject({ valid: true, tenor: "TN" });
+    expect(parseTenorInput("spot next")).toMatchObject({ valid: true, tenor: "SN" });
+    expect(parseTenorInput("SW")).toMatchObject({ valid: true, tenor: "SW" });
+  });
+
+  it("rejects invalid input", () => {
+    expect(parseTenorInput("")).toMatchObject({ valid: false, error: "invalid-format" });
+    expect(parseTenorInput("abc")).toMatchObject({ valid: false, error: "invalid-format" });
+    expect(parseTenorInput("3x")).toMatchObject({ valid: false, error: "invalid-format" });
+    expect(parseTenorInput("3m5")).toMatchObject({ valid: false, error: "invalid-format" });
+    expect(parseTenorInput("0m")).toMatchObject({ valid: false, error: "invalid-value" });
+  });
+
+  it("rejects duplicate units in a compound", () => {
+    expect(parseTenorInput("1m2m")).toMatchObject({ valid: false, error: "invalid-format" });
   });
 });

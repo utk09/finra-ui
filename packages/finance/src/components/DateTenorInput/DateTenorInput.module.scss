@@ -281,7 +281,7 @@
 
   &.tenorSelected {
     background-color: var(--finra-actionable-emphasis);
-    color: var(--finra-color-neutral-0);
+    color: var(--finra-actionable-foreground);
     font-weight: var(--finra-font-semibold);
 
     &:hover {

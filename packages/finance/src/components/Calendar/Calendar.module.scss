@@ -131,14 +131,14 @@
 
   &.daySelected {
     background-color: var(--finra-actionable-emphasis);
-    color: var(--finra-color-neutral-0);
+    color: var(--finra-actionable-foreground);
 
     &:hover:not(:disabled) {
       background-color: var(--finra-actionable-accent);
     }
 
     &.dayToday {
-      color: var(--finra-color-neutral-0);
+      color: var(--finra-actionable-foreground);
     }
   }
 

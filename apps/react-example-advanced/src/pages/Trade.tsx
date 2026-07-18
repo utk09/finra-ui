@@ -13,7 +13,7 @@ import {
   Switch,
   Textarea,
 } from "@utk09/finra-ui";
-import { Calendar, DateTenorInput, TenorInput } from "@utk09/finra-ui-finance";
+import { Calendar, DateTenorInput, TenorPicker } from "@utk09/finra-ui-finance";
 import { type ChangeEvent, useCallback, useState } from "react";
 
 import { instruments } from "../data/instruments";
@@ -233,10 +233,10 @@ export function Trade() {
             )}
 
             <FormField label="Settlement Tenor">
-              <TenorInput
+              <TenorPicker
                 value={tenor}
                 onChange={setTenor}
-                allowCustom
+                fullWidth
                 placeholder="Select tenor..."
                 aria-label="Settlement tenor"
               />
