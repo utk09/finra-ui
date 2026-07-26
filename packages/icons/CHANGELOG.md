@@ -1,5 +1,11 @@
 # @utk09/finra-ui-icons
 
+## 0.0.13
+
+### Patch Changes
+
+- APG a11y conformance and date i18n
+
 ## 0.0.12
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @utk09/finra-ui-finance
 
+## 0.0.13
+
+### Patch Changes
+
+- APG a11y conformance and date i18n
+- Updated dependencies
+  - @utk09/finra-ui@0.0.13
+  - @utk09/finra-ui-icons@0.0.13
+
 ## 0.0.12
 
 ### Patch Changes
