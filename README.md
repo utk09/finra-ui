@@ -12,11 +12,11 @@ Browse all components with interactive examples: **[finra-ui.netlify.app](https:
 
 ## Packages
 
-| Package                                                 | Description                                                                                                                                 |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`@utk09/finra-ui`](packages/core/README.md)            | Core components - buttons, inputs, forms, overlays (Dialog, Tooltip, Popover, Select, Menu, Toast), Tabs, ComboBox, and unstyled primitives |
-| [`@utk09/finra-ui-finance`](packages/finance/README.md) | Financial domain components - Calendar, DateInput, TenorInput, DateTenorPicker, PriceInput - plus parsing/formatting utilities              |
-| [`@utk09/finra-ui-icons`](packages/icons/README.md)     | SVG icons as framework-agnostic data objects + React components                                                                             |
+| Package                                                                                                                   | Description                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) · [README](packages/core/README.md)                    | Core components - buttons, inputs, forms, overlays (Dialog, Tooltip, Popover, Select, Menu, Toast), Tabs, ComboBox, and unstyled primitives |
+| [`@utk09/finra-ui-finance`](https://www.npmjs.com/package/@utk09/finra-ui-finance) · [README](packages/finance/README.md) | Financial domain components - Calendar, DateInput, TenorInput, DateTenorPicker, PriceInput - plus parsing/formatting utilities              |
+| [`@utk09/finra-ui-icons`](https://www.npmjs.com/package/@utk09/finra-ui-icons) · [README](packages/icons/README.md)       | SVG icons as framework-agnostic data objects + React components                                                                             |
 
 ## Installation
 
