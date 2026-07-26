@@ -1,3 +1,14 @@
+// AmountInput
+export type { AmountInputProps } from "./components/AmountInput/AmountInput";
+export { AmountInput } from "./components/AmountInput/AmountInput";
+export type {
+  AmountFormatter,
+  AmountInputHandle,
+  AmountParser,
+  AmountValidationResult,
+  AmountValidator,
+} from "./unstyled/AmountInput/AmountInput";
+
 // Calendar
 export type { CalendarProps } from "./components/Calendar/Calendar";
 export { Calendar } from "./components/Calendar/Calendar";

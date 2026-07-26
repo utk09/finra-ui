@@ -1,0 +1,90 @@
+//  Root - the input bar
+.root {
+  --_input-border-color: var(--finra-color-border);
+
+  display: inline-flex;
+  align-items: center;
+  block-size: var(--finra-density-size-base);
+  padding-inline: var(--finra-density-input-padding-x);
+  font-family: var(--finra-font-mono, var(--finra-font-sans));
+  font-size: var(--finra-density-input-font-size);
+  line-height: var(--finra-leading-normal);
+  font-variant-numeric: tabular-nums;
+  background-color: var(--finra-color-background);
+  border: var(--finra-border-thin) solid var(--_input-border-color);
+  border-radius: var(--finra-radius-md);
+  transition: border-color var(--finra-duration-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  // On the root, not the input: the bar is the focus affordance, and the
+  // input's own outline is suppressed below.
+  &:focus-within {
+    --_input-border-color: var(--finra-actionable-emphasis);
+  }
+
+  &.fullWidth {
+    inline-size: 100%;
+  }
+
+  &.variantSecondary {
+    background-color: var(--finra-color-neutral-50);
+  }
+
+  &.variantTertiary {
+    border-color: var(--finra-color-transparent);
+    border-block-end-color: var(--_input-border-color);
+    border-radius: 0;
+  }
+
+  &.statusError {
+    --_input-border-color: var(--finra-status-danger-accent);
+  }
+
+  &.statusWarning {
+    --_input-border-color: var(--finra-status-warning-accent);
+  }
+
+  &.statusSuccess {
+    --_input-border-color: var(--finra-status-success-accent);
+  }
+}
+
+.disabled {
+  cursor: var(--finra-cursor-disabled);
+
+  &.root {
+    background-color: var(--finra-color-neutral-50);
+    border-color: var(--finra-color-neutral-200);
+  }
+
+  .input {
+    color: var(--finra-color-neutral-300);
+    cursor: var(--finra-cursor-disabled);
+  }
+}
+
+//  Text field
+.input {
+  flex: 1;
+  min-inline-size: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-variant-numeric: inherit;
+  color: var(--finra-color-foreground);
+  // Amounts are compared down a column, so they align on their last digit.
+  text-align: end;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: var(--finra-color-neutral-400);
+  }
+}

@@ -7,11 +7,11 @@ Financial domain components for the Finra UI component system - built for trader
 
 ## Packages
 
-| Package                                                                                                                                                               | Description                                                                                                                                     |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) · [README](https://github.com/utk09/finra-ui/blob/main/packages/core/README.md)                    | Core components - buttons, inputs, forms, overlays (Dialog, Tooltip, Popover, Select, Menu, Toast), Tabs, ComboBox, and unstyled primitives     |
-| [`@utk09/finra-ui-finance`](https://www.npmjs.com/package/@utk09/finra-ui-finance) · [README](https://github.com/utk09/finra-ui/blob/main/packages/finance/README.md) | Financial domain components - Calendar, DateInput, DateTenorInput, DateTenorPicker, TenorPicker, PriceInput - plus parsing/formatting utilities |
-| [`@utk09/finra-ui-icons`](https://www.npmjs.com/package/@utk09/finra-ui-icons) · [README](https://github.com/utk09/finra-ui/blob/main/packages/icons/README.md)       | SVG icons as framework-agnostic data objects + React components                                                                                 |
+| Package                                                                                                                                                               | Description                                                                                                                                                                      |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) · [README](https://github.com/utk09/finra-ui/blob/main/packages/core/README.md)                    | Core components - buttons, inputs, forms, overlays (Dialog, Tooltip, Popover, Select, Menu, Toast), Tabs, ComboBox, and unstyled primitives                                      |
+| [`@utk09/finra-ui-finance`](https://www.npmjs.com/package/@utk09/finra-ui-finance) · [README](https://github.com/utk09/finra-ui/blob/main/packages/finance/README.md) | Financial domain components - AmountInput, Calendar, CurrencyPairPicker, DateInput, DateTenorInput, DateTenorPicker, TenorPicker, PriceInput - plus parsing/formatting utilities |
+| [`@utk09/finra-ui-icons`](https://www.npmjs.com/package/@utk09/finra-ui-icons) · [README](https://github.com/utk09/finra-ui/blob/main/packages/icons/README.md)       | SVG icons as framework-agnostic data objects + React components                                                                                                                  |
 
 ## Installation
 
@@ -48,15 +48,17 @@ function TradeTicket() {
 
 ### Styled Components
 
-| Component         | Description                                                                                                                                          |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Calendar`        | Month calendar: single or range selection, min/max, highlighted dates, week numbers, month/year dropdowns, footer shortcut API                       |
-| `DateInput`       | Date entry with format validation, auto-separators, calendar popup                                                                                   |
-| `TenorInput`      | **Deprecated** — use `TenorPicker` (`grouped={false}` for the flat list). Removed in a future release.                                               |
-| `TenorPicker`     | Market-aware tenor selector: grouped list (Overnight/Weeks/Months/Years/…), favourites, free-form parsing (`3 months`, `1y6m`), keyboard workflow    |
-| `DateTenorInput`  | Combined date + tenor input with tenor-to-date resolution                                                                                            |
-| `DateTenorPicker` | Hybrid date/tenor combobox: absolute dates, relative tenors (`3M`, `Spot+3M`), business-calendar adjustment, resolved-date + mode/broken-date badges |
-| `PriceInput`      | Market-aware price input: digit visual hierarchy (big-figure/pips), tick sizes, precision tiers, configurable keyboard increments                    |
+| Component            | Description                                                                                                                                                            |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AmountInput`        | Amount entry in human notation (`1.23M`, `10m`, `2bn`, `1e5`) resolved to a canonical number; currency-aware precision, lossless compact display, prop-driven stepping |
+| `Calendar`           | Month calendar: single or range selection, min/max, highlighted dates, week numbers, month/year dropdowns, footer shortcut API                                         |
+| `CurrencyPairPicker` | Async currency-pair search and selection: one pair can be several tradable instruments, so ambiguous input opens the list rather than guessing                         |
+| `DateInput`          | Date entry with format validation, auto-separators, calendar popup                                                                                                     |
+| `TenorInput`         | **Deprecated** — use `TenorPicker` (`grouped={false}` for the flat list). Removed in a future release.                                                                 |
+| `TenorPicker`        | Market-aware tenor selector: grouped list (Overnight/Weeks/Months/Years/…), favourites, free-form parsing (`3 months`, `1y6m`), keyboard workflow                      |
+| `DateTenorInput`     | Combined date + tenor input with tenor-to-date resolution                                                                                                              |
+| `DateTenorPicker`    | Hybrid date/tenor combobox: absolute dates, relative tenors (`3M`, `Spot+3M`), business-calendar adjustment, resolved-date + mode/broken-date badges                   |
+| `PriceInput`         | Market-aware price input: digit visual hierarchy (big-figure/pips), tick sizes, precision tiers, configurable keyboard increments                                      |
 
 Calendar footer extras: `CalendarTodayButton`, `CalendarShortcuts` (tenor shortcut buttons), `CalendarMonthYear` (header dropdowns).
 
@@ -66,9 +68,10 @@ Every styled component has an unstyled base. Import from the `/unstyled` entry p
 
 ```tsx
 import {
+  AmountInputBase,
   CalendarBase,
+  CurrencyPairPickerBase,
   DateInputBase,
-  TenorInputBase,
   DateTenorInputBase,
   DateTenorPickerBase,
   PriceInputBase,
@@ -100,6 +103,12 @@ import {
   formatPrice,
   segmentPrice,
   stepPrice,
+  // Amounts: human notation ("4.1m") ↔ canonical number
+  parseAmount,
+  formatAmount,
+  currencyDecimals,
+  compactSuffixesForLocale, // opt-in CLDR table, e.g. lakh/crore for en-IN
+  DEFAULT_AMOUNT_SUFFIXES,
   // Increment engine (FP-safe, keyboard-independent)
   resolveIncrement,
   roundWith,
@@ -108,6 +117,7 @@ import {
   resolveKey,
   keyChord,
   DEFAULT_PRICE_KEYMAP,
+  createAmountKeymap,
 } from "@utk09/finra-ui-finance/utils";
 ```
 
@@ -115,10 +125,11 @@ import {
 
 Business logic never lives in the components - provide it:
 
-- **Parsers** - `DateTenorPicker` and `PriceInput` accept replaceable parsers/formatters.
+- **Parsers** - `DateTenorPicker`, `PriceInput` and `AmountInput` accept replaceable parsers/formatters.
+- **Suffix tables** - `AmountInput` ships `K`/`M`/`B`/`T`; a house convention (`MM`) or a locale's own (lakh/crore) is merged in via `suffixes`. Unrecognised suffixes reject rather than commit a value off by a factor of a million.
 - **Business calendar** - `BusinessCalendar` adapter (`isBusinessDay`, `adjust(date, convention)`) with adjustment conventions (following, modified-following, preceding, ...).
 - **Instrument metadata** - `PriceInput` takes an `instrument` object (precision, tick size, min/max) that can change without remounting.
-- **Keyboard maps** - default price keymap (Arrow = ±1 tick, Shift = ±10, Ctrl = ±primary) is fully remappable.
+- **Keyboard maps** - default price keymap (Arrow = ±1 tick, Shift = ±10, Ctrl = ±primary) and `createAmountKeymap(step, largeStep)` are both fully remappable.
 
 ## Exports
 

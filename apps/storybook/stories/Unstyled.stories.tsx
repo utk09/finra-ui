@@ -45,6 +45,7 @@ import {
   TooltipTrigger,
 } from "@utk09/finra-ui/unstyled";
 import {
+  AmountInputBase,
   CalendarBase,
   type CurrencyPair,
   CurrencyPairPickerBase,
@@ -681,13 +682,54 @@ export const PriceInputBaseDefault: Story = {
   },
 };
 
+//  AmountInputBase
+
+/**
+ * Human notation in, a real number out. `10m` commits `10000000` - the
+ * shorthand is an input grammar, never the state. Focus shows the full digits
+ * (a caret among group separators is hostile to edit); blur shows the formatted
+ * value, abbreviated only where that loses nothing.
+ */
+export const AmountInputBaseDefault: Story = {
+  name: "AmountInputBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 300 }}>
+      <AmountInputBase
+        aria-label="Notional"
+        locale="en-US"
+        currency="USD"
+        step={1_000_000}
+        defaultValue={1_230_000}
+      />
+      <AmountInputBase aria-label="Exact notional" locale="en-US" defaultValue={1_500_123} />
+      <AmountInputBase aria-label="Disabled notional" locale="en-US" disabled />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole("spinbutton", { name: "Notional" });
+
+    // 1500123 has no exact abbreviation, so it is left whole rather than
+    // rounded to 1.5M.
+    await expect(canvas.getByRole("spinbutton", { name: "Exact notional" })).toHaveValue(
+      "1,500,123",
+    );
+
+    await userEvent.click(input);
+    await userEvent.clear(input);
+    await userEvent.type(input, "10m");
+    await userEvent.tab();
+    await expect(input).toHaveValue("$10M");
+  },
+};
+
 //  CurrencyPairPickerBase
 
 /**
  * One currency pair can be several tradable instruments. USDINR trades onshore
  * (deliverable, RBI fix) and as an NDF (cash-settled, tenor required): same base
  * and quote, different economics. `id` is the **instrument** key, so each gets
- * its own — `baseCurrency + quoteCurrency` names only the pair.
+ * its own - `baseCurrency + quoteCurrency` names only the pair.
  *
  * Typing `USDINR` therefore names two things, and the base refuses to guess:
  * it reports `ambiguous` and leaves the list open so the rows are the choice.

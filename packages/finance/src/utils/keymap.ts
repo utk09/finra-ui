@@ -44,6 +44,36 @@ export function resolveKey(event: KeyEventLike, keymap: KeyMap): KeyAction | und
 }
 
 /**
+ * Amount stepping: Arrow = ±`step`, Shift+Arrow and Page = ±`largeStep`
+ * (ten steps by default). Enter commits, Escape reverts. Left/Right are left
+ * unbound so the caret moves natively - an amount has no digit groups worth
+ * navigating between.
+ *
+ * A factory rather than a constant because the step is a prop: a module-level
+ * map cannot name a value that does not exist until render.
+ */
+export function createAmountKeymap(step: number, largeStep: number = step * 10): KeyMap {
+  return {
+    ArrowUp: { kind: "increment", direction: 1, action: { type: "amount", amount: step } },
+    ArrowDown: { kind: "increment", direction: -1, action: { type: "amount", amount: step } },
+    "shift+ArrowUp": {
+      kind: "increment",
+      direction: 1,
+      action: { type: "amount", amount: largeStep },
+    },
+    "shift+ArrowDown": {
+      kind: "increment",
+      direction: -1,
+      action: { type: "amount", amount: largeStep },
+    },
+    PageUp: { kind: "increment", direction: 1, action: { type: "amount", amount: largeStep } },
+    PageDown: { kind: "increment", direction: -1, action: { type: "amount", amount: largeStep } },
+    Enter: { kind: "commit" },
+    Escape: { kind: "revert" },
+  };
+}
+
+/**
  * Sensible default: Arrow = ±1 tick, Shift+Arrow = ±10 ticks, Ctrl+Arrow =
  * ±1 primary digit; Left/Right = digit navigation; Enter commits, Escape
  * reverts. Consumers override any binding.

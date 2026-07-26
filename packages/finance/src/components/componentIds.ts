@@ -1,4 +1,7 @@
 export const componentIds = {
+  // AmountInput
+  amountInput: "amount-input",
+
   // Calendar
   calendar: "calendar",
 

@@ -1,3 +1,21 @@
+// Human-notation amount parse/format (AmountInput's pluggable seams)
+export type {
+  AmountFormat,
+  AmountFormatOptions,
+  AmountParseError,
+  AmountParseOptions,
+  AmountParseResult,
+  AmountSuffixTable,
+} from "./utils/amount";
+export {
+  compactSuffixesForLocale,
+  currencyDecimals,
+  DEFAULT_AMOUNT_SUFFIXES,
+  DEFAULT_GROUP_SEPARATORS,
+  formatAmount,
+  parseAmount,
+} from "./utils/amount";
+
 // Date formatting
 export type { DateConstraints, DateFormat, DateParseResult } from "./utils/dateFormat";
 export {
@@ -98,4 +116,4 @@ export { displayDecimals, resolveIncrement, roundWith, validateTick } from "./ut
 
 // Configurable keyboard action map (key+modifier → semantic action)
 export type { KeyAction, KeyEventLike, KeyMap, NavMode } from "./utils/keymap";
-export { DEFAULT_PRICE_KEYMAP, keyChord, resolveKey } from "./utils/keymap";
+export { createAmountKeymap, DEFAULT_PRICE_KEYMAP, keyChord, resolveKey } from "./utils/keymap";

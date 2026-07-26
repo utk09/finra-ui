@@ -1,3 +1,15 @@
+// AmountInputBase
+export type {
+  AmountFormatter,
+  AmountInputBaseProps,
+  AmountInputClassNames,
+  AmountInputHandle,
+  AmountParser,
+  AmountValidationResult,
+  AmountValidator,
+} from "./unstyled/AmountInput/AmountInput";
+export { AmountInputBase } from "./unstyled/AmountInput/AmountInput";
+
 // CalendarBase
 export type { DateRange } from "./logic/calendar";
 export type {
