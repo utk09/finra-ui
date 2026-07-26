@@ -17,7 +17,13 @@ pnpm add @utk09/finra-ui-icons
 ### React Components
 
 ```tsx
-import { CalendarIcon, CheckIcon, ChevronDownIcon } from "@utk09/finra-ui-icons/react";
+import {
+  CalendarIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  SearchIcon,
+  DollarIcon,
+} from "@utk09/finra-ui-icons/react";
 
 function App() {
   return (
@@ -25,6 +31,8 @@ function App() {
       <CalendarIcon width={24} height={24} />
       <CheckIcon className="check" />
       <ChevronDownIcon aria-hidden="true" />
+      <SearchIcon width={24} height={24} />
+      <DollarIcon width={24} height={24} />
     </div>
   );
 }
@@ -35,7 +43,7 @@ All React icon components accept standard `SVGProps<SVGSVGElement>` - pass any S
 ### Framework-Agnostic SVG Data
 
 ```ts
-import { calendarIcon, checkIcon } from "@utk09/finra-ui-icons";
+import { calendarIcon, checkIcon, dollarIcon } from "@utk09/finra-ui-icons";
 
 // Each icon is a plain object describing the SVG
 console.log(calendarIcon.viewBox); // "0 0 24 24"
@@ -46,20 +54,7 @@ Use the SVG data objects to render icons in any framework (Lit, vanilla DOM, etc
 
 ## Available Icons
 
-| Icon          | React Component    | SVG Data           | Size  |
-| ------------- | ------------------ | ------------------ | ----- |
-| Calendar      | `CalendarIcon`     | `calendarIcon`     | 24x24 |
-| Check         | `CheckIcon`        | `checkIcon`        | 12x12 |
-| Chevron Down  | `ChevronDownIcon`  | `chevronDownIcon`  | 12x12 |
-| Chevron Left  | `ChevronLeftIcon`  | `chevronLeftIcon`  | 12x12 |
-| Chevron Right | `ChevronRightIcon` | `chevronRightIcon` | 12x12 |
-| Close         | `CloseIcon`        | `closeIcon`        | 24x24 |
-| Close Small   | `CloseSmallIcon`   | `closeSmallIcon`   | 12x12 |
-| Dash          | `DashIcon`         | `dashIcon`         | 12x12 |
-| Minus         | `MinusIcon`        | `minusIcon`        | 24x24 |
-| Plus          | `PlusIcon`         | `plusIcon`         | 24x24 |
-| Spinner       | `SpinnerIcon`      | `spinnerIcon`      | 24x24 |
-| Upload        | `UploadIcon`       | `uploadIcon`       | 24x24 |
+See the **[category-wise icon list](https://finra-ui.netlify.app/?path=/story/icons--category-icons)** for all available icons.
 
 ## Exports
 
@@ -70,7 +65,8 @@ Use the SVG data objects to render icons in any framework (Lit, vanilla DOM, etc
 
 ## Design
 
-All icons use `stroke="currentColor"` so they inherit the parent's text color. No fill colors are hardcoded - icons adapt to any theme automatically.
+- All icons use `stroke="currentColor"` so they inherit the parent's text color. No fill colors are hardcoded - icons adapt to any theme automatically.
+- All icons are normalized to a canonical **24x24** viewport grid.
 
 ## Contributing
 

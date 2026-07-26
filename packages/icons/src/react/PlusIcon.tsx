@@ -6,7 +6,7 @@ export function PlusIcon(props: SVGProps<SVGSVGElement>) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.5"
       strokeLinecap="round"
       {...props}>
       <path d="M12 5v14M5 12h14" />
