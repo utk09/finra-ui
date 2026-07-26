@@ -1,5 +1,13 @@
 # @utk09/finra-ui
 
+## 0.0.14
+
+### Patch Changes
+
+- add decimal arithmetic functions, cleanup tests
+- Updated dependencies
+  - @utk09/finra-ui-icons@0.0.14
+
 ## 0.0.13
 
 ### Patch Changes
