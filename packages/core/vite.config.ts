@@ -78,7 +78,7 @@ export default defineConfig({
         banner: '"use client";',
       },
     },
-    sourcemap: true,
+    sourcemap: false,
   },
   css: {
     modules: {
