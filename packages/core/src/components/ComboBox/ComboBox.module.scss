@@ -41,9 +41,11 @@
     background-color: var(--finra-color-neutral-50);
   }
 
+  // The listbox is portalled and floats with a gap, so the control keeps its
+  // full radius when open - it is no longer visually fused to the dropdown.
+  // Marking the open state on the border keeps the affordance.
   &.open {
-    border-end-start-radius: 0;
-    border-end-end-radius: 0;
+    border-color: var(--finra-actionable-accent);
   }
 
   //  Variants
@@ -132,6 +134,12 @@
   padding-block: calc(var(--finra-density-gap) * 0.25);
 }
 
+// The role="list" wrapper exists for semantics only - `display: contents` keeps
+// the pills as direct flex children of .multiValueContainer.
+.pillList {
+  display: contents;
+}
+
 //  Pills (multi select)
 .pill {
   display: inline-flex;
@@ -171,6 +179,14 @@
     color: var(--finra-color-foreground);
   }
 
+  // Now a real (roving) tab stop, so it needs its own visible focus ring - the
+  // control shell's ring only tracks the text input.
+  &:focus-visible {
+    outline: var(--finra-focus-width) solid var(--finra-focus-color);
+    outline-offset: var(--finra-focus-offset);
+    color: var(--finra-color-foreground);
+  }
+
   > svg {
     inline-size: 0.75rem;
     block-size: 0.75rem;
@@ -201,19 +217,18 @@
 }
 
 //  Dropdown listbox
+// Portalled and positioned by floating-ui, which writes `position/top/left`
+// inline - so this rule must NOT set its own insets (a leftover
+// `inset-inline-end: 0` would stretch it across the viewport). It is no longer
+// visually joined to the control, hence the full border and radius.
 .listbox {
-  position: absolute;
   z-index: 50;
-  inset-inline-start: 0;
-  inset-inline-end: 0;
-  inset-block-start: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   background-color: var(--finra-color-background);
   border: var(--finra-border-thin) solid var(--finra-color-border);
-  border-block-start: none;
-  border-end-start-radius: var(--finra-radius-md);
-  border-end-end-radius: var(--finra-radius-md);
+  border-radius: var(--finra-radius-md);
   box-shadow: var(--finra-shadow-lg);
   overflow: hidden;
 }

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -492,11 +492,11 @@ describe("DateInput", () => {
       // Open calendar
       await user.click(screen.getByLabelText("Toggle calendar"));
 
-      // The calendar shows the current month; click a day
-      // Find any enabled gridcell and click it
-      const gridcells = screen.getAllByRole("gridcell");
-      const enabledDay = gridcells.find(
-        (cell) => !cell.hasAttribute("disabled") && cell.getAttribute("aria-disabled") !== "true",
+      // The calendar shows the current month; click a day. The click target is
+      // the day <button> inside the gridcell, not the gridcell wrapper.
+      const days = within(screen.getByRole("grid")).getAllByRole("button");
+      const enabledDay = days.find(
+        (day) => !day.hasAttribute("disabled") && day.getAttribute("aria-disabled") !== "true",
       );
       expect(enabledDay).toBeTruthy();
 
@@ -526,8 +526,10 @@ describe("DateInput", () => {
 
       await user.click(screen.getByLabelText("Toggle calendar"));
 
-      const selectedDay = screen.getByLabelText("March 20, 2026");
-      expect(selectedDay).toHaveAttribute("aria-selected", "true");
+      // aria-selected belongs to the gridcell, not the day button inside it.
+      const selected = screen.getAllByRole("gridcell", { selected: true });
+      expect(selected).toHaveLength(1);
+      expect(within(selected[0]).getByRole("button")).toHaveAccessibleName("March 20, 2026");
     });
 
     it("calendar displays null when controlled value is null", async () => {
@@ -554,8 +556,9 @@ describe("DateInput", () => {
       await user.click(screen.getByLabelText("Toggle calendar"));
 
       // March 20 should be selected in the calendar
-      const day20 = screen.getByLabelText("March 20, 2026");
-      expect(day20).toHaveAttribute("aria-selected", "true");
+      const selected = screen.getAllByRole("gridcell", { selected: true });
+      expect(selected).toHaveLength(1);
+      expect(within(selected[0]).getByRole("button")).toHaveAccessibleName("March 20, 2026");
     });
 
     it("derives null calendar value from invalid typed input in uncontrolled mode", async () => {

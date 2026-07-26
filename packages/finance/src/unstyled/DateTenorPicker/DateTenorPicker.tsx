@@ -171,6 +171,12 @@ export interface DateTenorPickerBaseProps extends Omit<
   placeholder?: string;
   /** 0 = Sunday, 1 = Monday. Default 1. */
   weekStartsOn?: 0 | 1;
+  /**
+   * BCP 47 locale for the calendar popup's month/weekday names and day
+   * labels. Defaults to the runtime locale. Display only - date parsing is
+   * unaffected by this.
+   */
+  locale?: string;
   /** CSS class names injected by the styled layer. */
   classNames?: DateTenorPickerClassNames;
   /** data-* attributes injected by the styled layer. */
@@ -233,6 +239,7 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
       readOnly,
       placeholder = "e.g. 3M, Spot + 3M, Today, 2028-04-15",
       weekStartsOn,
+      locale,
       classNames: cn,
       dataAttributes,
       renderCalendarIcon,
@@ -681,6 +688,7 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
                 highlightedDates={previewDate ? [previewDate] : undefined}
                 today={referenceDate}
                 weekStartsOn={weekStartsOn}
+                locale={locale}
                 classNames={cn?.calendar}
                 renderNavPrev={renderCalendarNavPrev}
                 renderNavNext={renderCalendarNavNext}

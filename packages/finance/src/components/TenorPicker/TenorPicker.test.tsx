@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -33,7 +33,11 @@ describe("TenorPicker (styled)", () => {
     await user.click(screen.getByRole("combobox"));
     expect(screen.getByRole("group", { name: "Favourites" })).toBeInTheDocument();
     expect(screen.getByRole("group", { name: "Months" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Remove 3M from favourites" })).toBeInTheDocument();
+    // The star is decorative; favourite state is carried by the option's name.
+    const favourited = screen.getByRole("option", { name: "3M, favourite" });
+    expect(within(favourited).getByText("★")).toBeInTheDocument();
+    // ...and it must not be an interactive control nested in the option.
+    expect(within(screen.getByRole("listbox")).queryByRole("button")).toBeNull();
   });
 
   it("forwards the imperative handle", () => {
@@ -64,7 +68,8 @@ describe("TenorPicker (styled)", () => {
     const user = userEvent.setup();
     render(<TenorPicker aria-label="Tenor" showFavourites={false} />);
     await user.click(screen.getByRole("combobox"));
-    expect(screen.queryByRole("button", { name: /favourites/i })).not.toBeInTheDocument();
+    expect(screen.queryByText("☆")).not.toBeInTheDocument();
+    expect(screen.queryByText("★")).not.toBeInTheDocument();
   });
 
   it("marks + checks the selected option and highlights on keyboard nav", async () => {

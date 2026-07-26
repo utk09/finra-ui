@@ -233,8 +233,9 @@
   }
 
   //  Keyboard-highlighted (roving) option
+  // Accent, not emphasis - white on emphasis (primary-500) is 3.67:1, under AA.
   &.tenorHighlighted {
-    background-color: var(--finra-actionable-emphasis);
+    background-color: var(--finra-actionable-accent);
     color: var(--finra-actionable-foreground);
     font-weight: var(--finra-font-semibold);
   }

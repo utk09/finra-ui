@@ -52,7 +52,7 @@ describe("ComboBox", () => {
     const user = userEvent.setup();
     render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     expect(screen.getByRole("listbox")).toBeInTheDocument();
   });
 
@@ -60,7 +60,7 @@ describe("ComboBox", () => {
     const user = userEvent.setup();
     render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
@@ -73,7 +73,7 @@ describe("ComboBox", () => {
     const user = userEvent.setup();
     render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     expect(screen.getByRole("listbox")).toBeInTheDocument();
 
     await user.keyboard("{Escape}");
@@ -89,7 +89,7 @@ describe("ComboBox", () => {
       <ComboBox options={options} value={null} onChange={handleChange} placeholder="Select" />,
     );
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     await user.click(screen.getByRole("option", { name: "Apple" }));
 
     expect(handleChange).toHaveBeenCalledWith("apple");
@@ -102,7 +102,7 @@ describe("ComboBox", () => {
       <ComboBox options={options} value={null} onChange={handleChange} placeholder="Select" />,
     );
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
     await user.keyboard("{ArrowDown}{Enter}");
 
@@ -111,7 +111,7 @@ describe("ComboBox", () => {
 
   it("displays selected value label", () => {
     render(<ComboBox options={options} value="banana" onChange={vi.fn()} placeholder="Select" />);
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     expect(input).toHaveValue("Banana");
   });
 
@@ -121,7 +121,7 @@ describe("ComboBox", () => {
     const user = userEvent.setup();
     render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
     await user.type(input, "ch");
 
@@ -142,8 +142,8 @@ describe("ComboBox", () => {
       />,
     );
 
-    await user.click(screen.getByRole("searchbox"));
-    await user.type(screen.getByRole("searchbox"), "xyz");
+    await user.click(screen.getByRole("combobox"));
+    await user.type(screen.getByRole("combobox"), "xyz");
 
     expect(screen.getByText("Nothing found")).toBeInTheDocument();
   });
@@ -163,7 +163,7 @@ describe("ComboBox", () => {
       />,
     );
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     await user.click(screen.getByRole("option", { name: "Apple" }));
 
     expect(handleChange).toHaveBeenCalledWith(["apple"]);
@@ -213,7 +213,7 @@ describe("ComboBox", () => {
       />,
     );
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
     await user.keyboard("{Backspace}");
 
@@ -233,7 +233,7 @@ describe("ComboBox", () => {
       />,
     );
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     expect(screen.getByText("Favourites")).toBeInTheDocument();
   });
 
@@ -248,7 +248,7 @@ describe("ComboBox", () => {
       />,
     );
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     expect(screen.getByText("Major")).toBeInTheDocument();
     expect(screen.getByText("Minor")).toBeInTheDocument();
   });
@@ -268,7 +268,7 @@ describe("ComboBox", () => {
       />,
     );
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     expect(screen.getByText("Header content")).toBeInTheDocument();
     expect(screen.getByText("Footer content")).toBeInTheDocument();
   });
@@ -279,7 +279,7 @@ describe("ComboBox", () => {
     const user = userEvent.setup();
     render(<ComboBox options={[]} value={null} onChange={vi.fn()} loading placeholder="Select" />);
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
@@ -296,7 +296,7 @@ describe("ComboBox", () => {
       />,
     );
 
-    await user.type(screen.getByRole("searchbox"), "ban");
+    await user.type(screen.getByRole("combobox"), "ban");
     expect(handleLoad).toHaveBeenCalledWith("ban");
   });
 
@@ -308,7 +308,7 @@ describe("ComboBox", () => {
       <ComboBox options={options} value={null} onChange={vi.fn()} creatable placeholder="Select" />,
     );
 
-    await user.type(screen.getByRole("searchbox"), "Mango");
+    await user.type(screen.getByRole("combobox"), "Mango");
     expect(screen.getByText('Create "Mango"')).toBeInTheDocument();
   });
 
@@ -326,7 +326,7 @@ describe("ComboBox", () => {
       />,
     );
 
-    await user.type(screen.getByRole("searchbox"), "Mango");
+    await user.type(screen.getByRole("combobox"), "Mango");
     await user.click(screen.getByText('Create "Mango"'));
     expect(handleCreate).toHaveBeenCalledWith("Mango");
   });
@@ -337,7 +337,7 @@ describe("ComboBox", () => {
       <ComboBox options={options} value={null} onChange={vi.fn()} creatable placeholder="Select" />,
     );
 
-    await user.type(screen.getByRole("searchbox"), "Apple");
+    await user.type(screen.getByRole("combobox"), "Apple");
     expect(screen.queryByText(/Create/)).not.toBeInTheDocument();
   });
 
@@ -347,9 +347,10 @@ describe("ComboBox", () => {
     render(
       <ComboBox options={options} value={null} onChange={vi.fn()} disabled placeholder="Select" />,
     );
-    expect(screen.getByRole("searchbox")).toBeDisabled();
-    const combobox = screen.getByRole("combobox");
-    expect(combobox).toHaveAttribute("aria-disabled", "true");
+    // The native `disabled` on the input is the real signal; the shell only
+    // carries `data-disabled` for styling (it has no ARIA role any more).
+    expect(screen.getByRole("combobox")).toBeDisabled();
+    expect(screen.getByTestId("combo-box-control")).toHaveAttribute("data-disabled", "true");
     expect(screen.getByTestId("combo-box")).toBeInTheDocument();
   });
 
@@ -383,7 +384,7 @@ describe("ComboBox", () => {
     const user = userEvent.setup();
     render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
 
     await user.keyboard("{ArrowDown}");
@@ -405,7 +406,7 @@ describe("ComboBox", () => {
       <ComboBox options={shortOptions} value={null} onChange={vi.fn()} placeholder="Select" />,
     );
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
     await user.keyboard("{ArrowDown}{ArrowDown}{ArrowDown}");
 
@@ -429,7 +430,7 @@ describe("ComboBox", () => {
       />,
     );
 
-    await user.type(screen.getByRole("searchbox"), "Kiwi");
+    await user.type(screen.getByRole("combobox"), "Kiwi");
     expect(screen.getByText("Add new: Kiwi")).toBeInTheDocument();
   });
 
@@ -445,7 +446,7 @@ describe("ComboBox", () => {
         placeholder="Select"
       />,
     );
-    const combobox = screen.getByRole("combobox");
+    const combobox = screen.getByTestId("combo-box-control");
     expect(combobox.className).toMatch(/statusWarning/);
   });
 
@@ -459,7 +460,7 @@ describe("ComboBox", () => {
         placeholder="Select"
       />,
     );
-    const combobox = screen.getByRole("combobox");
+    const combobox = screen.getByTestId("combo-box-control");
     expect(combobox.className).toMatch(/statusSuccess/);
   });
 
@@ -473,7 +474,7 @@ describe("ComboBox", () => {
         placeholder="Select"
       />,
     );
-    const combobox = screen.getByRole("combobox");
+    const combobox = screen.getByTestId("combo-box-control");
     expect(combobox.className).toMatch(/statusError/);
   });
 
@@ -515,7 +516,7 @@ describe("ComboBox", () => {
     const user = userEvent.setup();
     render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
     await user.keyboard("{Escape}");
     await user.keyboard("{ArrowUp}");
@@ -529,7 +530,7 @@ describe("ComboBox", () => {
     const user = userEvent.setup();
     render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
     await user.keyboard("{ArrowDown}{ArrowDown}{Home}");
 
@@ -541,7 +542,7 @@ describe("ComboBox", () => {
     const user = userEvent.setup();
     render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
     await user.keyboard("{End}");
 
@@ -565,7 +566,7 @@ describe("ComboBox", () => {
       />,
     );
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.type(input, "Mango");
     // Navigate past all filtered options (none match) to the create option
     await user.keyboard("{ArrowDown}{Enter}");
@@ -591,7 +592,7 @@ describe("ComboBox", () => {
       />,
     );
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     await user.click(screen.getByRole("option", { name: "Beta" }));
 
     expect(handleChange).not.toHaveBeenCalled();
@@ -627,7 +628,7 @@ describe("ComboBox", () => {
       />,
     );
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     await user.click(screen.getByRole("option", { name: "Apple" }));
 
     expect(handleChange).toHaveBeenCalledWith(["banana"]);
@@ -639,12 +640,184 @@ describe("ComboBox", () => {
     const user = userEvent.setup();
     render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
 
     await user.keyboard("{Enter}");
     expect(screen.getByRole("listbox")).toBeInTheDocument();
+  });
+
+  //  APG 1.2 conformance
+
+  describe("APG 1.2 conformance", () => {
+    it("puts the combobox role and its state on the input, not a wrapper", async () => {
+      const user = userEvent.setup();
+      render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+      // Exactly one combobox, and it is the text input.
+      const combobox = screen.getByRole("combobox");
+      expect(combobox.tagName).toBe("INPUT");
+      expect(combobox).toHaveAttribute("aria-expanded", "false");
+      expect(combobox).toHaveAttribute("aria-haspopup", "listbox");
+      expect(combobox).toHaveAttribute("aria-autocomplete", "list");
+      expect(combobox).not.toHaveAttribute("aria-controls");
+
+      await user.click(combobox);
+      expect(combobox).toHaveAttribute("aria-expanded", "true");
+      expect(combobox).toHaveAttribute("aria-controls", screen.getByRole("listbox").id);
+    });
+
+    it("closes the listbox on Tab and lets focus move on", async () => {
+      const user = userEvent.setup();
+      render(
+        <>
+          <ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />
+          <button type="button">After</button>
+        </>,
+      );
+
+      await user.click(screen.getByRole("combobox"));
+      expect(screen.getByRole("listbox")).toBeInTheDocument();
+
+      await user.tab();
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "After" })).toHaveFocus();
+    });
+
+    it("opens with Alt+ArrowDown without activating an option", async () => {
+      const user = userEvent.setup();
+      render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+      const input = screen.getByRole("combobox");
+      input.focus();
+      await user.keyboard("{Escape}");
+
+      await user.keyboard("{Alt>}{ArrowDown}{/Alt}");
+      expect(screen.getByRole("listbox")).toBeInTheDocument();
+      expect(input).not.toHaveAttribute("aria-activedescendant");
+    });
+
+    it("announces the result count in a live region", async () => {
+      const user = userEvent.setup();
+      render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+      const status = screen.getByRole("status");
+      expect(status).toBeEmptyDOMElement();
+
+      await user.click(screen.getByRole("combobox"));
+      expect(status).toHaveTextContent(`${options.length} results available`);
+    });
+
+    it("announces when filtering leaves no results", async () => {
+      const user = userEvent.setup();
+      render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+      await user.type(screen.getByRole("combobox"), "zzzz");
+      expect(screen.getByRole("status")).toHaveTextContent("No results available");
+    });
+
+    it("singularises the announcement for a single result", async () => {
+      const user = userEvent.setup();
+      render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+      await user.type(screen.getByRole("combobox"), "cherry");
+      expect(screen.getByRole("status")).toHaveTextContent("1 result available");
+    });
+
+    it("accepts a custom result-count formatter", async () => {
+      const user = userEvent.setup();
+      render(
+        <ComboBox
+          options={options}
+          value={null}
+          onChange={vi.fn()}
+          placeholder="Select"
+          formatResultCount={(count) => `${count} matches`}
+        />,
+      );
+
+      await user.click(screen.getByRole("combobox"));
+      expect(screen.getByRole("status")).toHaveTextContent("4 matches");
+    });
+  });
+
+  //  Keyboard-reachable pills (multi-select)
+
+  describe("pill keyboard access", () => {
+    function renderMulti(onChange = vi.fn()) {
+      render(
+        <ComboBox
+          options={options}
+          value={["apple", "banana"]}
+          onChange={onChange}
+          multiple
+          placeholder="Select"
+        />,
+      );
+      return onChange;
+    }
+
+    it("exposes exactly one pill in the tab order", () => {
+      renderMulti();
+      expect(screen.getByLabelText("Remove Apple")).toHaveAttribute("tabindex", "0");
+      expect(screen.getByLabelText("Remove Banana")).toHaveAttribute("tabindex", "-1");
+    });
+
+    it("removes a pill with the Delete key", async () => {
+      const user = userEvent.setup();
+      const onChange = renderMulti();
+
+      screen.getByLabelText("Remove Apple").focus();
+      await user.keyboard("{Delete}");
+
+      expect(onChange).toHaveBeenCalledWith(["banana"]);
+    });
+
+    it("removes a pill with Enter (a real button, not a div)", async () => {
+      const user = userEvent.setup();
+      const onChange = renderMulti();
+
+      screen.getByLabelText("Remove Banana").focus();
+      await user.keyboard("{Enter}");
+
+      expect(onChange).toHaveBeenCalledWith(["apple"]);
+    });
+
+    it("moves between pills with the arrow keys", async () => {
+      const user = userEvent.setup();
+      renderMulti();
+
+      screen.getByLabelText("Remove Apple").focus();
+      await user.keyboard("{ArrowRight}");
+      expect(screen.getByLabelText("Remove Banana")).toHaveFocus();
+
+      await user.keyboard("{ArrowLeft}");
+      expect(screen.getByLabelText("Remove Apple")).toHaveFocus();
+    });
+
+    it("steps off the last pill back into the input", async () => {
+      const user = userEvent.setup();
+      renderMulti();
+
+      screen.getByLabelText("Remove Banana").focus();
+      await user.keyboard("{ArrowRight}");
+      expect(screen.getByRole("combobox")).toHaveFocus();
+    });
+
+    it("enters the pill list with ArrowLeft from the start of the input", async () => {
+      const user = userEvent.setup();
+      renderMulti();
+
+      screen.getByRole("combobox").focus();
+      await user.keyboard("{ArrowLeft}");
+      expect(screen.getByLabelText("Remove Banana")).toHaveFocus();
+    });
+
+    it("groups the pills in a list for assistive tech", () => {
+      renderMulti();
+      expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    });
   });
 });

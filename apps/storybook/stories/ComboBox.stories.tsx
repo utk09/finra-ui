@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ComboBox, type ComboBoxOption } from "@utk09/finra-ui";
 import { useCallback, useState } from "react";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 const fruitOptions: ComboBoxOption[] = [
   { value: "apple", label: "Apple" },
@@ -66,10 +66,12 @@ export const Default: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const input = canvas.getByRole("searchbox");
+    const input = canvas.getByRole("combobox");
     await expect(input).toBeVisible();
     await userEvent.click(input);
-    await expect(canvas.getByRole("listbox")).toBeVisible();
+    // The listbox is portalled to <body>, outside the story canvas.
+    const listbox = await within(document.body).findByRole("listbox");
+    await waitFor(() => expect(listbox).toBeVisible());
   },
 };
 
@@ -81,7 +83,7 @@ export const WithValue: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const input = canvas.getByRole("searchbox");
+    const input = canvas.getByRole("combobox");
     await expect(input).toHaveValue("Cherry");
   },
 };
@@ -95,7 +97,7 @@ export const Disabled: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("searchbox")).toBeDisabled();
+    await expect(canvas.getByRole("combobox")).toBeDisabled();
   },
 };
 

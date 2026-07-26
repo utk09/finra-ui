@@ -67,7 +67,7 @@ function tenorFilterFn(option: ComboBoxOption<string>, inputValue: string): bool
 }
 
 /**
- * @deprecated Use {@link TenorPickerBase} instead — a strict superset with
+ * @deprecated Use {@link TenorPickerBase} instead - a strict superset with
  * grouping, favourites, and flexible parsing (`grouped={false}` reproduces this
  * flat list). Will be removed in a future release.
  */

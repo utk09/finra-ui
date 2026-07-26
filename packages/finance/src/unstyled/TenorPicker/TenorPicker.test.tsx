@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -128,9 +128,57 @@ describe("TenorPickerBase", () => {
     await user.click(input);
     const groups = screen.getAllByRole("group");
     expect(groups[0]).toHaveAccessibleName("Favourites");
-    // Remove 3M from favourites.
-    await user.click(screen.getByRole("button", { name: "Remove 3M from favourites" }));
+    // The star is decorative; favourite state rides on the option's name.
+    const option = screen.getByRole("option", { name: "3M, favourite" });
+    // Remove 3M from favourites by clicking the star.
+    await user.click(within(option).getByText("★"));
     expect(onFavouriteChange).toHaveBeenCalledWith("3M", false, []);
+  });
+
+  it("keeps options free of nested interactive controls", async () => {
+    const user = userEvent.setup();
+    const { input } = setup({
+      defaultFavourites: ["3M"],
+      renderFavourite: (active) => (active ? "★" : "☆"),
+    });
+    await user.click(input);
+
+    // A listbox option may not contain interactive descendants (axe
+    // `nested-interactive`); the favourite toggle used to be a <button>.
+    expect(within(screen.getByRole("listbox")).queryByRole("button")).toBeNull();
+  });
+
+  it("toggles the highlighted option's favourite with Ctrl+D", async () => {
+    const user = userEvent.setup();
+    const onFavouriteChange = vi.fn();
+    const { input } = setup({
+      favourites: [],
+      onFavouriteChange,
+      renderFavourite: (active) => (active ? "★" : "☆"),
+    });
+
+    await user.click(input);
+    await user.keyboard("{ArrowDown}"); // highlight the first option
+    await user.keyboard("{Control>}d{/Control}");
+
+    expect(onFavouriteChange).toHaveBeenCalledTimes(1);
+    expect(onFavouriteChange.mock.calls[0][1]).toBe(true);
+  });
+
+  it("ignores Ctrl+D when favourites are hidden", async () => {
+    const user = userEvent.setup();
+    const onFavouriteChange = vi.fn();
+    const { input } = setup({
+      showFavourites: false,
+      onFavouriteChange,
+      renderFavourite: () => "☆",
+    });
+
+    await user.click(input);
+    await user.keyboard("{ArrowDown}");
+    await user.keyboard("{Control>}d{/Control}");
+
+    expect(onFavouriteChange).not.toHaveBeenCalled();
   });
 
   it("hides favourites entirely when showFavourites is false", async () => {
@@ -142,7 +190,7 @@ describe("TenorPickerBase", () => {
     });
     await user.click(input);
     expect(screen.queryByRole("group", { name: "Favourites" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /favourites/i })).not.toBeInTheDocument();
+    expect(screen.queryByText("☆")).not.toBeInTheDocument();
   });
 
   it("supports controlled favourites", async () => {
@@ -154,7 +202,8 @@ describe("TenorPickerBase", () => {
       renderFavourite: (active) => (active ? "★" : "☆"),
     });
     await user.click(input);
-    await user.click(screen.getByRole("button", { name: "Add 3M to favourites" }));
+    const option = screen.getByRole("option", { name: "3M" });
+    await user.click(within(option).getByText("☆"));
     expect(onFavouriteChange).toHaveBeenCalledWith("3M", true, ["3M"]);
     // Controlled: no favourites group appears until the parent updates the prop.
     expect(screen.queryByRole("group", { name: "Favourites" })).not.toBeInTheDocument();

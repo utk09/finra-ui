@@ -36,7 +36,7 @@ describe("DateTenorPicker (styled)", () => {
     await user.click(screen.getByRole("combobox"));
     expect(screen.getByRole("grid")).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "3M" })).toBeInTheDocument();
-    expect(screen.getByRole("gridcell", { name: "January 15, 2026" })).toBeInTheDocument();
+    expect(screen.getByLabelText("January 15, 2026")).toBeInTheDocument();
   });
 
   it("forwards the imperative handle", () => {

@@ -190,8 +190,9 @@
   }
 
   //  Keyboard-highlighted (roving) option
+  // Accent, not emphasis - white on emphasis (primary-500) is 3.67:1, under AA.
   &.optionHighlighted {
-    background-color: var(--finra-actionable-emphasis);
+    background-color: var(--finra-actionable-accent);
     color: var(--finra-actionable-foreground);
   }
 
@@ -228,14 +229,13 @@
 }
 
 //  Favourite star toggle
-.favouriteButton {
+// A decorative <span>, not a button: a listbox option may not contain
+// interactive descendants. Clicks are handled by the option itself.
+.favouriteToggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding: 0;
-  border: none;
-  background: transparent;
   font-size: var(--finra-text-base);
   line-height: 1;
   color: var(--finra-color-neutral-400);

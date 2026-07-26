@@ -3,10 +3,13 @@ import { describe, expect, it } from "vitest";
 import {
   type ComboBoxKeyContext,
   type ComboBoxOptionLike,
+  type ComboBoxPillKeyContext,
   defaultFilter,
   flattenOptions,
   groupOptions,
+  nextActivePillAfterRemoval,
   resolveComboBoxKey,
+  resolveComboBoxPillKey,
   resolveSelectOption,
   shouldShowCreateOption,
 } from "./combobox";
@@ -70,7 +73,7 @@ describe("resolveComboBoxKey", () => {
 
   it("ignores unmapped keys", () => {
     expect(resolveComboBoxKey("a", ctx())).toEqual({ preventDefault: false, effects: [] });
-    expect(resolveComboBoxKey("Tab", ctx())).toEqual({ preventDefault: false, effects: [] });
+    expect(resolveComboBoxKey("F2", ctx())).toEqual({ preventDefault: false, effects: [] });
   });
 
   //  ArrowDown
@@ -251,6 +254,179 @@ describe("resolveComboBoxKey", () => {
       preventDefault: false,
       effects: [],
     });
+  });
+
+  //  APG 1.2 additions
+
+  it("Alt+ArrowDown opens the popup without moving the active option", () => {
+    expect(resolveComboBoxKey("ArrowDown", ctx({ isOpen: false, altKey: true }))).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "setOpen", open: true }],
+    });
+  });
+
+  it("Alt+ArrowDown while already open navigates normally", () => {
+    expect(resolveComboBoxKey("ArrowDown", ctx({ highlightedIndex: 0, altKey: true }))).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "setHighlight", index: 1 }],
+    });
+  });
+
+  it("Alt+ArrowUp closes the popup", () => {
+    expect(resolveComboBoxKey("ArrowUp", ctx({ altKey: true }))).toEqual({
+      preventDefault: true,
+      effects: [
+        { kind: "setOpen", open: false },
+        { kind: "setHighlight", index: -1 },
+      ],
+    });
+  });
+
+  it("Tab closes an open popup but never preventDefaults (focus must leave)", () => {
+    expect(resolveComboBoxKey("Tab", ctx())).toEqual({
+      preventDefault: false,
+      effects: [
+        { kind: "setOpen", open: false },
+        { kind: "setHighlight", index: -1 },
+      ],
+    });
+  });
+
+  it("Tab while closed is a no-op", () => {
+    expect(resolveComboBoxKey("Tab", ctx({ isOpen: false }))).toEqual({
+      preventDefault: false,
+      effects: [],
+    });
+  });
+
+  it("ArrowLeft at the caret start steps into the pill list", () => {
+    expect(
+      resolveComboBoxKey(
+        "ArrowLeft",
+        ctx({ multiple: true, caretAtStart: true, selectedCount: 2 }),
+      ),
+    ).toEqual({ preventDefault: true, effects: [{ kind: "focusLastPill" }] });
+  });
+
+  it("ArrowLeft mid-text falls through to normal caret movement", () => {
+    expect(
+      resolveComboBoxKey(
+        "ArrowLeft",
+        ctx({ multiple: true, caretAtStart: false, selectedCount: 2 }),
+      ),
+    ).toEqual({ preventDefault: false, effects: [] });
+  });
+
+  it("ArrowLeft with no pills falls through", () => {
+    expect(
+      resolveComboBoxKey(
+        "ArrowLeft",
+        ctx({ multiple: true, caretAtStart: true, selectedCount: 0 }),
+      ),
+    ).toEqual({ preventDefault: false, effects: [] });
+  });
+
+  it("ArrowLeft in single-select mode falls through", () => {
+    expect(resolveComboBoxKey("ArrowLeft", ctx({ multiple: false, caretAtStart: true }))).toEqual({
+      preventDefault: false,
+      effects: [],
+    });
+  });
+});
+
+//  Selected-pill roving focus
+
+describe("resolveComboBoxPillKey", () => {
+  function pillCtx(overrides: Partial<ComboBoxPillKeyContext> = {}): ComboBoxPillKeyContext {
+    return { activeIndex: 1, pillCount: 3, ...overrides };
+  }
+
+  it("is inert when there are no pills", () => {
+    expect(resolveComboBoxPillKey("ArrowRight", pillCtx({ pillCount: 0 }))).toEqual({
+      preventDefault: false,
+      effects: [],
+    });
+  });
+
+  it("ignores unmapped keys", () => {
+    expect(resolveComboBoxPillKey("a", pillCtx())).toEqual({
+      preventDefault: false,
+      effects: [],
+    });
+  });
+
+  it("ArrowRight moves to the next pill", () => {
+    expect(resolveComboBoxPillKey("ArrowRight", pillCtx({ activeIndex: 0 }))).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "setActivePill", index: 1 }],
+    });
+  });
+
+  it("ArrowRight past the last pill returns focus to the input", () => {
+    expect(resolveComboBoxPillKey("ArrowRight", pillCtx({ activeIndex: 2 }))).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "focusInput" }],
+    });
+  });
+
+  it("ArrowLeft moves to the previous pill and clamps at the first", () => {
+    expect(resolveComboBoxPillKey("ArrowLeft", pillCtx({ activeIndex: 2 }))).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "setActivePill", index: 1 }],
+    });
+    expect(resolveComboBoxPillKey("ArrowLeft", pillCtx({ activeIndex: 0 }))).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "setActivePill", index: 0 }],
+    });
+  });
+
+  it("swaps the horizontal arrows under RTL", () => {
+    expect(resolveComboBoxPillKey("ArrowLeft", pillCtx({ activeIndex: 0, rtl: true }))).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "setActivePill", index: 1 }],
+    });
+  });
+
+  it("Home and End jump to the ends", () => {
+    expect(resolveComboBoxPillKey("Home", pillCtx())).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "setActivePill", index: 0 }],
+    });
+    expect(resolveComboBoxPillKey("End", pillCtx())).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "setActivePill", index: 2 }],
+    });
+  });
+
+  it("Delete and Backspace both remove the active pill", () => {
+    const expected = {
+      preventDefault: true,
+      effects: [{ kind: "removePill", index: 1 }],
+    };
+    expect(resolveComboBoxPillKey("Delete", pillCtx())).toEqual(expected);
+    expect(resolveComboBoxPillKey("Backspace", pillCtx())).toEqual(expected);
+  });
+
+  it("Escape returns focus to the input", () => {
+    expect(resolveComboBoxPillKey("Escape", pillCtx())).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "focusInput" }],
+    });
+  });
+});
+
+describe("nextActivePillAfterRemoval", () => {
+  it("keeps the index when a pill slid into the gap", () => {
+    expect(nextActivePillAfterRemoval(0, 2)).toBe(0);
+    expect(nextActivePillAfterRemoval(1, 2)).toBe(1);
+  });
+
+  it("falls back to the new last pill when the removed one was last", () => {
+    expect(nextActivePillAfterRemoval(2, 2)).toBe(1);
+  });
+
+  it("returns null (meaning the text input) when none are left", () => {
+    expect(nextActivePillAfterRemoval(0, 0)).toBeNull();
   });
 });
 

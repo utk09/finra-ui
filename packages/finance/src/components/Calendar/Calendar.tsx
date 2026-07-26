@@ -27,6 +27,7 @@ const defaultClassNames: CalendarClassNames = {
   weekday: styles.weekday,
   grid: styles.grid,
   row: styles.row,
+  dayCell: styles.dayCell,
   day: styles.day,
   dayToday: styles.dayToday,
   daySelected: styles.daySelected,

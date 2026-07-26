@@ -1,4 +1,5 @@
 import {
+  type CSSProperties,
   type ForwardedRef,
   forwardRef,
   type HTMLAttributes,
@@ -13,19 +14,47 @@ import {
   useState,
 } from "react";
 
-import { useClickOutside } from "../../hooks/useClickOutside";
+import { useAnchoredPosition } from "../../hooks/useAnchoredPosition";
 import { useControlledValue } from "../../hooks/useControlledValue";
 import { useFormField } from "../../hooks/useFormField";
 import {
   defaultFilter,
   flattenOptions,
   groupOptions,
+  nextActivePillAfterRemoval,
   resolveComboBoxKey,
+  resolveComboBoxPillKey,
   resolveSelectOption,
   shouldShowCreateOption,
 } from "../../logic/combobox";
 import { cx } from "../../logic/cx";
 import { mergeRefs } from "../../utils/mergeRefs";
+import { DismissableLayer } from "../DismissableLayer/DismissableLayer";
+import { Portal } from "../Portal/Portal";
+
+//  Constants
+
+/**
+ * Screen-reader-only styling for the results live region. Inlined (rather than a
+ * utility class) so unstyled consumers get the announcement without importing
+ * any CSS.
+ */
+const SR_ONLY: CSSProperties = {
+  position: "absolute",
+  width: 1,
+  height: 1,
+  margin: -1,
+  padding: 0,
+  overflow: "hidden",
+  clip: "rect(0 0 0 0)",
+  whiteSpace: "nowrap",
+  border: 0,
+};
+
+function defaultFormatResultCount(count: number): string {
+  if (count === 0) return "No results available";
+  return `${count} result${count === 1 ? "" : "s"} available`;
+}
 
 //  Public Types
 
@@ -57,6 +86,12 @@ export interface ComboBoxClassNames {
   root?: string;
   wrapper?: string;
   multiValueContainer?: string;
+  /**
+   * The `role="list"` wrapper around the selected pills. Layout-neutral in the
+   * styled layer (`display: contents`) so the pills stay direct flex children
+   * of the multi-value container.
+   */
+  pillList?: string;
   pill?: string;
   pillText?: string;
   pillRemove?: string;
@@ -131,6 +166,12 @@ export interface ComboBoxBaseProps<T = string> extends Omit<
   disabled?: boolean;
   /** Message shown when no options match. */
   noOptionsMessage?: string | ReactNode;
+  /**
+   * Text announced by the results live region whenever the open listbox's
+   * result count changes. Defaults to "N results available" / "No results
+   * available". Return an empty string to silence the announcement.
+   */
+  formatResultCount?: (count: number) => string;
 
   //  Rendering
   /** Custom option renderer. */
@@ -157,6 +198,13 @@ export interface ComboBoxBaseProps<T = string> extends Omit<
   classNames?: ComboBoxClassNames;
   /** Root element data attributes. */
   dataAttributes?: Record<string, string>;
+  /**
+   * Data attributes for the control shell (the bordered box holding the pills,
+   * input and indicator). Separate from `dataAttributes` because the shell is
+   * the element consumers target for border/background overrides, and it is no
+   * longer reachable by role - ARIA 1.2 moved `role="combobox"` to the input.
+   */
+  controlDataAttributes?: Record<string, string>;
 }
 
 //  Component
@@ -180,6 +228,7 @@ function ComboBoxBaseRender<T = string>(
     placeholder,
     disabled = false,
     noOptionsMessage = "No options",
+    formatResultCount = defaultFormatResultCount,
     renderOption,
     renderValue,
     renderCheckIcon,
@@ -190,6 +239,7 @@ function ComboBoxBaseRender<T = string>(
     onOpenChange,
     classNames: cn,
     dataAttributes,
+    controlDataAttributes,
     "aria-label": ariaLabel,
     "aria-labelledby": ariaLabelledBy,
     id: idProp,
@@ -203,7 +253,9 @@ function ComboBoxBaseRender<T = string>(
   const listboxId = `${id}-listbox`;
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  // The control shell doubles as the positioning anchor, so it is tracked in
+  // state (a ref would not re-run the positioning effect when it mounts).
+  const [controlEl, setControlEl] = useState<HTMLDivElement | null>(null);
 
   //  Internal state
   const [isOpen, setOpen] = useControlledValue(controlledOpen, false, onOpenChange);
@@ -213,6 +265,11 @@ function ComboBoxBaseRender<T = string>(
     onInputChange,
   );
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  // Roving tab stop across the selected-value pills (multi-select only).
+  const [activePillIndex, setActivePillIndex] = useState(0);
+  const pillListRef = useRef<HTMLDivElement>(null);
+  // Set when a removal should hand focus to another pill once React re-renders.
+  const pendingPillFocus = useRef<number | null>(null);
 
   // Wire the combobox input into an enclosing FormField (the input is the
   // labelable element). Works at any depth; no-op when standalone.
@@ -284,6 +341,93 @@ function ComboBoxBaseRender<T = string>(
     [multiple, selectedValues, onChange],
   );
 
+  //  Pill keyboard navigation - decisions live in `resolveComboBoxPillKey`.
+
+  // Clamp rather than reset: if the value shrinks from outside (controlled
+  // `onChange`), a stale index would leave every pill at tabIndex -1 and drop
+  // the whole group out of the tab order.
+  const effectiveActivePill = Math.min(activePillIndex, Math.max(0, selectedValues.length - 1));
+
+  /** Focus the remove button of pill `index`, if it is rendered. */
+  const focusPill = useCallback((index: number) => {
+    const list = pillListRef.current;
+    if (!list) return;
+    const btn = list.querySelector(`[data-pill-index="${index}"]`) as HTMLElement | null;
+    btn?.focus();
+  }, []);
+
+  /**
+   * Remove pill `index` and keep focus inside the widget: on the pill that took
+   * its place, or back in the text input once none are left.
+   */
+  const removePillAt = useCallback(
+    (index: number) => {
+      // `index` always addresses a rendered pill: it comes either from the
+      // render loop or from the resolver, which is bounded by `pillCount`.
+      const val = selectedValues[index];
+
+      // Only chase focus when it was already inside the pill list - i.e. the
+      // removal came from the keyboard. A mouse click should leave focus alone.
+      const fromKeyboard = pillListRef.current?.contains(document.activeElement) ?? false;
+
+      const remaining = selectedValues.length - 1;
+      const nextActive = nextActivePillAfterRemoval(index, remaining);
+
+      const next = selectedValues.filter((v) => v !== val);
+      onChange?.(next.length > 0 ? next : null);
+
+      if (!fromKeyboard) return;
+
+      if (nextActive == null) {
+        inputRef.current?.focus();
+      } else {
+        setActivePillIndex(nextActive);
+        // The pill only exists after the parent re-renders with the new value.
+        pendingPillFocus.current = nextActive;
+      }
+    },
+    [selectedValues, onChange],
+  );
+
+  useEffect(() => {
+    const target = pendingPillFocus.current;
+    if (target == null) return;
+    pendingPillFocus.current = null;
+    focusPill(target);
+  }, [selectedValues, focusPill]);
+
+  const handlePillKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      // Read direction off the list itself - the handler is bound to it, so
+      // currentTarget is always the element we want.
+      const rtl = getComputedStyle(e.currentTarget).direction === "rtl";
+
+      const { preventDefault, effects } = resolveComboBoxPillKey(e.key, {
+        activeIndex: effectiveActivePill,
+        pillCount: selectedValues.length,
+        rtl,
+      });
+
+      if (preventDefault) e.preventDefault();
+
+      for (const effect of effects) {
+        switch (effect.kind) {
+          case "setActivePill":
+            setActivePillIndex(effect.index);
+            focusPill(effect.index);
+            break;
+          case "removePill":
+            removePillAt(effect.index);
+            break;
+          case "focusInput":
+            inputRef.current?.focus();
+            break;
+        }
+      }
+    },
+    [effectiveActivePill, selectedValues.length, focusPill, removePillAt],
+  );
+
   //  Keyboard - decision logic lives in the pure `resolveComboBoxKey` machine;
   //  this adapter only executes the effects it returns against local setters.
   const handleKeyDown = useCallback(
@@ -298,6 +442,8 @@ function ComboBoxBaseRender<T = string>(
         multiple,
         inputValueEmpty: currentInputValue === "",
         selectedCount: selectedValues.length,
+        altKey: e.altKey,
+        caretAtStart: e.currentTarget.selectionStart === 0 && e.currentTarget.selectionEnd === 0,
       });
 
       if (preventDefault) e.preventDefault();
@@ -320,6 +466,12 @@ function ComboBoxBaseRender<T = string>(
           case "removeLastValue":
             removeValue(selectedValues[selectedValues.length - 1]);
             break;
+          case "focusLastPill": {
+            const last = selectedValues.length - 1;
+            setActivePillIndex(last);
+            focusPill(last);
+            break;
+          }
         }
       }
     },
@@ -338,6 +490,7 @@ function ComboBoxBaseRender<T = string>(
       multiple,
       selectedValues,
       removeValue,
+      focusPill,
     ],
   );
 
@@ -364,12 +517,19 @@ function ComboBoxBaseRender<T = string>(
     }
   }, [isDisabled, isOpen, setOpen]);
 
-  // Close on outside click
-  const handleClickOutside = useCallback(() => {
+  // Close on Escape / outside pointer. Handled by DismissableLayer on the
+  // portalled listbox rather than a click-outside hook on the root, since the
+  // listbox is no longer a DOM descendant of the root.
+  const handleDismiss = useCallback(() => {
     setOpen(false);
     setHighlightedIndex(-1);
   }, [setOpen]);
-  useClickOutside(containerRef, handleClickOutside, isOpen);
+
+  // Anchor the portalled listbox to the control shell.
+  const { setFloating, x, y } = useAnchoredPosition(controlEl, {
+    placement: "bottom-start",
+    offset: 4,
+  });
 
   // Scroll highlighted into view
   useEffect(() => {
@@ -434,24 +594,33 @@ function ComboBoxBaseRender<T = string>(
   };
 
   //  Render selected values (multi mode)
+  //
+  //  The pills form a single Tab stop with a roving tabindex across the remove
+  //  buttons (React Aria TagGroup model). Previously every remove button was
+  //  `tabIndex={-1}` with only a mousedown handler, so removing a value was
+  //  impossible without a pointer.
   const renderSelectedPills = () => {
-    if (!multiple) return null;
-    return selectedValues.map((val) => {
+    if (!multiple || selectedValues.length === 0) return null;
+    return selectedValues.map((val, index) => {
       const opt = options.find((o) => o.value === val);
       if (!opt) return null;
       return (
-        <span key={String(val)} className={cn?.pill} data-combobox-pill>
+        <span key={String(val)} className={cn?.pill} data-combobox-pill role="listitem">
           <span className={cn?.pillText}>{renderValue ? renderValue(opt) : opt.label}</span>
           {!isDisabled ? (
             <button
               type="button"
               className={cn?.pillRemove}
-              tabIndex={-1}
+              data-pill-index={index}
+              tabIndex={index === effectiveActivePill ? 0 : -1}
               aria-label={`Remove ${opt.label}`}
+              onFocus={() => setActivePillIndex(index)}
+              onClick={() => removePillAt(index)}
               onMouseDown={(e) => {
+                // Keep focus off the button on pointer interaction so the input
+                // keeps the caret; the click handler still fires.
                 e.preventDefault();
                 e.stopPropagation();
-                removeValue(val);
               }}>
               {renderPillRemoveIcon ? renderPillRemoveIcon() : "\u00d7"}
             </button>
@@ -589,11 +758,19 @@ function ComboBoxBaseRender<T = string>(
   const hasOptions = flatOptions.length > 0 || showCreateOption;
 
   //  Shared input props
+  //
+  //  ARIA 1.2 puts `role="combobox"` (and its expanded/controls/haspopup state)
+  //  on the *text input* itself. It used to sit on the wrapper <div> with the
+  //  input marked `role="searchbox"`, which is non-conformant: screen readers
+  //  announced a search field with no popup relationship, and the expanded
+  //  state was on an element the user never focused.
   const inputProps = {
     type: "text" as const,
-    role: "searchbox" as const,
+    role: "combobox" as const,
     id: field.id,
     "aria-autocomplete": "list" as const,
+    "aria-expanded": isOpen,
+    "aria-haspopup": "listbox" as const,
     "aria-controls": isOpen ? listboxId : undefined,
     "aria-activedescendant":
       isOpen && highlightedIndex >= 0 ? getOptionId(highlightedIndex) : undefined,
@@ -609,17 +786,28 @@ function ComboBoxBaseRender<T = string>(
   };
 
   return (
-    <div ref={containerRef} className={cn?.root} {...dataAttributes} {...props}>
+    <div className={cn?.root} {...dataAttributes} {...props}>
+      {/* Presentational shell only - all combobox ARIA lives on the input. */}
       <div
-        role="combobox"
-        aria-expanded={isOpen}
-        aria-controls={isOpen ? listboxId : undefined}
-        aria-haspopup="listbox"
-        aria-disabled={isDisabled || undefined}
-        className={cn?.wrapper}>
+        ref={setControlEl}
+        className={cn?.wrapper}
+        data-disabled={isDisabled || undefined}
+        {...controlDataAttributes}>
         {multiple ? (
           <div className={cn?.multiValueContainer}>
-            {renderSelectedPills()}
+            {selectedValues.length > 0 ? (
+              // One Tab stop for the whole set; arrows move within it. The list
+              // wraps only the pills - an <input> is not a valid list child.
+              //
+              // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- roving-focus container: the handler is delegated from the focusable remove buttons inside. The list itself must stay non-focusable (a focusable role="list" would add a dead tab stop), so tabIndex is deliberately absent.
+              <div
+                ref={pillListRef}
+                role="list"
+                className={cn?.pillList}
+                onKeyDown={handlePillKeyDown}>
+                {renderSelectedPills()}
+              </div>
+            ) : null}
             <input
               ref={mergeRefs(forwardedRef, inputRef)}
               className={cn?.input}
@@ -643,33 +831,63 @@ function ComboBoxBaseRender<T = string>(
         {renderIndicator ? renderIndicator(isOpen) : null}
       </div>
 
+      {/*
+        Portalled so the listbox escapes any ancestor `overflow: hidden` /
+        `z-index` / `transform` context - inline rendering meant it was clipped
+        inside scrollable panels and table cells.
+      */}
       {isOpen ? (
-        <div className={cn?.listbox}>
-          {header ? <div className={cn?.header}>{header}</div> : null}
+        <Portal>
+          <DismissableLayer
+            ref={setFloating}
+            className={cn?.listbox}
+            style={{
+              position: "absolute",
+              top: y,
+              left: x,
+              // Match the control's width so the list lines up under it.
+              minInlineSize: controlEl?.getBoundingClientRect().width,
+            }}
+            onDismiss={handleDismiss}
+            // The control holds the input and indicator; pointing at either
+            // must not count as "outside" or the click would close then reopen.
+            excludeElements={[controlEl]}>
+            {header ? <div className={cn?.header}>{header}</div> : null}
 
-          <div
-            ref={listRef}
-            id={listboxId}
-            role="listbox"
-            aria-multiselectable={multiple || undefined}
-            className={cn?.options}
-            tabIndex={-1}>
-            {loading ? (
-              <div role="presentation" className={cn?.loading} aria-live="polite">
-                {renderLoading ? renderLoading() : "Loading..."}
-              </div>
-            ) : !hasOptions ? (
-              <div role="presentation" className={cn?.empty} aria-live="polite">
-                {noOptionsMessage}
-              </div>
-            ) : (
-              optionSections
-            )}
-          </div>
+            <div
+              ref={listRef}
+              id={listboxId}
+              role="listbox"
+              aria-multiselectable={multiple || undefined}
+              className={cn?.options}
+              tabIndex={-1}>
+              {loading ? (
+                <div role="presentation" className={cn?.loading} aria-live="polite">
+                  {renderLoading ? renderLoading() : "Loading..."}
+                </div>
+              ) : !hasOptions ? (
+                <div role="presentation" className={cn?.empty} aria-live="polite">
+                  {noOptionsMessage}
+                </div>
+              ) : (
+                optionSections
+              )}
+            </div>
 
-          {footer ? <div className={cn?.footer}>{footer}</div> : null}
-        </div>
+            {footer ? <div className={cn?.footer}>{footer}</div> : null}
+          </DismissableLayer>
+        </Portal>
       ) : null}
+
+      {/*
+        Result-count announcement. The region is always mounted (a live region
+        added to the DOM at the same time as its content is unreliably
+        announced); only its text changes. Silent while closed or loading - the
+        loading node has its own aria-live.
+      */}
+      <div role="status" aria-live="polite" style={SR_ONLY}>
+        {isOpen && !loading ? formatResultCount(totalNavigable) : ""}
+      </div>
     </div>
   );
 }

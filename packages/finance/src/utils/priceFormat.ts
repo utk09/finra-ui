@@ -178,7 +178,7 @@ export interface PriceSegmentConfig {
  * `1` `.` `0834` `5` (primary vs precision).
  *
  * FX 3-zone (`pipDigits` set): `1.23456` @ `{ bigFigureDigits: 2, pipDigits: 2 }`
- * → `1.23` (big-figure) `45` (pips) `6` (fractional-pip) — the trader view where
+ * → `1.23` (big-figure) `45` (pips) `6` (fractional-pip) - the trader view where
  * the pips are the focal digits.
  *
  * Non-decimal displays (bonds) with no `.` return a single integer segment.

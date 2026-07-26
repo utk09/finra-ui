@@ -6,7 +6,7 @@ import { parseTenor, STANDARD_TENORS } from "../../utils/tenor";
 import { componentIds } from "../componentIds";
 
 /**
- * @deprecated Use {@link TenorPicker} instead — it is a strict superset
+ * @deprecated Use {@link TenorPicker} instead - it is a strict superset
  * (`grouped={false}` gives the same flat list) and adds grouping, favourites,
  * and flexible parsing (`3 months`, `1y6m`). `TenorInput` will be removed in a
  * future release.

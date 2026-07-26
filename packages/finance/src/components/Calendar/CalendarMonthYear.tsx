@@ -1,7 +1,6 @@
 import { Select, SelectContent, SelectTrigger } from "@utk09/finra-ui";
 import type { ReactNode } from "react";
 
-import { MONTH_NAMES } from "../../logic/calendar";
 import type { CalendarTitleApi } from "../../unstyled/Calendar/Calendar";
 import styles from "./Calendar.module.scss";
 
@@ -15,7 +14,7 @@ export interface CalendarMonthYearProps {
  * min/max range disable themselves; the year list is bounded by min/max.
  */
 export function CalendarMonthYear({ api }: CalendarMonthYearProps): ReactNode {
-  const monthOptions = MONTH_NAMES.map((name, index) => ({
+  const monthOptions = api.monthNames.map((name, index) => ({
     value: String(index),
     label: name,
     disabled: api.isMonthDisabled(index),

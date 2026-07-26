@@ -533,9 +533,9 @@ describe("DateTenorInput", () => {
 
     await user.click(screen.getByLabelText("Date"));
 
-    // Check weekday headers: first should be "Su"
+    // Check weekday headers: first should be Sunday
     const columnHeaders = screen.getAllByRole("columnheader");
-    expect(columnHeaders[0]).toHaveTextContent("Su");
+    expect(columnHeaders[0]).toHaveAttribute("aria-label", "Sunday");
   });
 
   //  disabled does not open popup on input click

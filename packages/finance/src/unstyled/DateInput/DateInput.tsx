@@ -76,6 +76,12 @@ export interface DateInputBaseProps extends Omit<
   renderCalendarNavNext?: () => ReactNode;
   /** 0 = Sunday, 1 = Monday. Default: 1. */
   weekStartsOn?: 0 | 1;
+  /**
+   * BCP 47 locale for the calendar popup's month/weekday names and day
+   * labels. Defaults to the runtime locale. Display only - date parsing is
+   * unaffected by this.
+   */
+  locale?: string;
   /** id for the input element. */
   id?: string;
   /** aria-describedby for the input element. */
@@ -109,6 +115,7 @@ export const DateInputBase = forwardRef<HTMLInputElement, DateInputBaseProps>(
       renderCalendarNavPrev,
       renderCalendarNavNext,
       weekStartsOn,
+      locale,
       id,
       "aria-describedby": ariaDescribedBy,
       "aria-invalid": ariaInvalid,
@@ -298,6 +305,7 @@ export const DateInputBase = forwardRef<HTMLInputElement, DateInputBaseProps>(
               max={max}
               disabledDates={disabledDates}
               weekStartsOn={weekStartsOn}
+              locale={locale}
               classNames={classNames?.calendar}
               renderNavPrev={renderCalendarNavPrev}
               renderNavNext={renderCalendarNavNext}

@@ -429,10 +429,12 @@ export const ComboBoxBaseDefault: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const input = canvas.getAllByRole("searchbox")[0];
+    const input = canvas.getAllByRole("combobox")[0];
     await expect(input).toBeVisible();
     await userEvent.click(input);
-    await expect(canvas.getByRole("listbox")).toBeVisible();
+    // The listbox is portalled to <body>, outside the story canvas.
+    const listbox = await within(document.body).findByRole("listbox");
+    await waitFor(() => expect(listbox).toBeVisible());
   },
 };
 
@@ -505,9 +507,12 @@ export const CalendarBaseSundayStart: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    // First weekday abbreviation should be "Su" for Sunday start
-    const abbrs = canvas.getAllByText(/^(Su|Mo|Tu|We|Th|Fr|Sa)$/);
-    await expect(abbrs[0]).toHaveTextContent("Su");
+    // Assert the column's identity, not its abbreviation: the visible label is
+    // Intl-derived and its width is configurable (`weekdayFormat`), but the
+    // aria-label is always the full day name.
+    const headers = canvas.getAllByRole("columnheader");
+    await expect(headers).toHaveLength(7);
+    await expect(headers[0]).toHaveAttribute("aria-label", "Sunday");
   },
 };
 

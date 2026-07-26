@@ -72,7 +72,7 @@ describe("DateTenorPickerBase", () => {
     const { onChange, input } = setup();
 
     await user.click(input); // opens popup
-    await user.click(screen.getByRole("gridcell", { name: "January 20, 2026" }));
+    await user.click(screen.getByLabelText("January 20, 2026"));
 
     const value = onChange.mock.calls[0][0];
     expect(value).toMatchObject({ mode: "date" });
@@ -174,7 +174,7 @@ describe("DateTenorPickerBase", () => {
 
     // The committed 3M lands in April, so the calendar reopens on April.
     await user.click(input);
-    await user.click(screen.getByRole("gridcell", { name: "April 20, 2026" }));
+    await user.click(screen.getByLabelText("April 20, 2026"));
     expect(onModeChange).toHaveBeenLastCalledWith("date");
   });
 

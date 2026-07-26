@@ -83,6 +83,11 @@ export interface ComboBoxProps<T = string>
   validationStatus?: ValidationStatus;
   fullWidth?: boolean;
   noOptionsMessage?: string | ReactNode;
+  /**
+   * Text announced by the results live region whenever the open listbox's
+   * result count changes. Defaults to "N results available".
+   */
+  formatResultCount?: (count: number) => string;
 
   renderOption?: (option: ComboBoxOption<T>, state: ComboBoxRenderOptionState) => ReactNode;
   renderValue?: (option: ComboBoxOption<T>) => ReactNode;
@@ -124,6 +129,13 @@ function styledRenderLoading(): ReactNode {
 
 const comboBoxDataAttributes = { [FINRA_UI_ATTR]: componentIds.comboBox } as const;
 
+/**
+ * The control shell carries its own id: since ARIA 1.2 moved `role="combobox"`
+ * onto the input, this element is otherwise unaddressable, and it is what
+ * consumers override for border/background/validation styling.
+ */
+const comboBoxControlDataAttributes = { [FINRA_UI_ATTR]: componentIds.comboBoxControl } as const;
+
 //  Component
 
 function ComboBoxRender<T = string>(
@@ -151,6 +163,7 @@ function ComboBoxRender<T = string>(
         open && styles.open,
       ),
       multiValueContainer: styles.multiValueContainer,
+      pillList: styles.pillList,
       pill: styles.pill,
       pillText: styles.pillText,
       pillRemove: styles.pillRemove,
@@ -186,6 +199,7 @@ function ComboBoxRender<T = string>(
       open={open}
       classNames={classNames}
       dataAttributes={comboBoxDataAttributes}
+      controlDataAttributes={comboBoxControlDataAttributes}
       renderCheckIcon={styledRenderCheckIcon}
       renderIndicator={styledRenderIndicator}
       renderPillRemoveIcon={styledRenderPillRemoveIcon}

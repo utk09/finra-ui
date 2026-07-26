@@ -39,6 +39,13 @@ export interface TenorPickerHandle {
   getValue: () => string | null;
 }
 
+/**
+ * Marks the star affordance so the option's single mousedown handler can tell a
+ * "toggle favourite" click from a "select this tenor" click, without the star
+ * needing a handler (and therefore interactivity) of its own.
+ */
+const FAVOURITE_ATTR = "data-tenor-favourite";
+
 export interface TenorPickerClassNames {
   root?: string;
   rootOpen?: string;
@@ -54,7 +61,12 @@ export interface TenorPickerClassNames {
   optionDisabled?: string;
   optionFavourite?: string;
   optionLabel?: string;
-  favouriteButton?: string;
+  /**
+   * The star affordance. Renamed from `favouriteButton`: it is no longer a
+   * `<button>`, because a listbox `option` may not contain interactive
+   * descendants (axe `nested-interactive`).
+   */
+  favouriteToggle?: string;
   favouriteActive?: string;
   check?: string;
   empty?: string;
@@ -101,6 +113,11 @@ export interface TenorPickerBaseProps extends Omit<
   onFavouriteChange?: (tenor: string, favourite: boolean, favourites: string[]) => void;
   /** Show the pinned Favourites group + star toggles. Default true. */
   showFavourites?: boolean;
+  /**
+   * Appended to a favourited option's accessible name (e.g. "3M, favourite").
+   * The star itself is decorative, so this is how the state is announced.
+   */
+  favouriteHint?: string;
 
   //  State
   disabled?: boolean;
@@ -149,6 +166,7 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
       defaultFavourites,
       onFavouriteChange,
       showFavourites = true,
+      favouriteHint = "favourite",
       disabled,
       readOnly,
       placeholder = "Select or type a tenor…",
@@ -404,6 +422,15 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
           event.preventDefault();
           openPopup();
           setHighlight(moveTenorHighlight(flat, -1, 1));
+        } else if (event.ctrlKey && event.key.toLowerCase() === "d") {
+          // Ctrl+D toggles the highlighted option's favourite. The star is
+          // decorative, so this is the only keyboard route to favouriting -
+          // without it the feature is mouse-only (FIN-002-04 requires it be
+          // keyboard accessible).
+          if (isOpen && showFavourites && highlight >= 0) {
+            event.preventDefault();
+            toggleFavourite(flat[highlight].tenor);
+          }
         }
         // Tab falls through: blur commits, native focus move proceeds.
       },
@@ -420,6 +447,8 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
         commitText,
         closePopup,
         revertInput,
+        showFavourites,
+        toggleFavourite,
       ],
     );
 
@@ -452,6 +481,11 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
           tabIndex={-1}
           aria-selected={selected}
           aria-disabled={option.disabled || undefined}
+          // Favourite state rides on the option's name (the star is decorative),
+          // so screen-reader users hear it without a second focusable control.
+          aria-label={
+            showFavourites && option.favourite ? `${option.label}, ${favouriteHint}` : undefined
+          }
           className={
             [
               cn?.option,
@@ -463,8 +497,20 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
               .filter(Boolean)
               .join(" ") || undefined
           }
+          // One handler for the whole option. Hit-testing the star here (rather
+          // than giving it its own handler) keeps the star a plain element:
+          // a listbox `option` may not contain interactive descendants, and a
+          // nested <button> both broke that rule and was unreachable anyway
+          // (tabIndex -1, and options are not in the tab sequence).
           onMouseDown={(event) => {
             event.preventDefault();
+            if (
+              showFavourites &&
+              (event.target as Element).closest?.(`[${FAVOURITE_ATTR}]`) !== null
+            ) {
+              toggleFavourite(option.tenor);
+              return;
+            }
             selectOption(option);
           }}>
           <span className={cn?.optionLabel}>{option.label}</span>
@@ -474,27 +520,18 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
             </span>
           ) : null}
           {showFavourites && renderFavourite ? (
-            <button
-              type="button"
-              tabIndex={-1}
+            // Decorative: the favourite state is carried by the option's own
+            // accessible name, so announcing the star again would be noise.
+            <span
+              {...{ [FAVOURITE_ATTR]: "" }}
+              aria-hidden="true"
               className={
-                [cn?.favouriteButton, option.favourite && cn?.favouriteActive]
+                [cn?.favouriteToggle, option.favourite && cn?.favouriteActive]
                   .filter(Boolean)
                   .join(" ") || undefined
-              }
-              aria-pressed={option.favourite}
-              aria-label={
-                option.favourite
-                  ? `Remove ${option.tenor} from favourites`
-                  : `Add ${option.tenor} to favourites`
-              }
-              onMouseDown={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                toggleFavourite(option.tenor);
-              }}>
+              }>
               {renderFavourite(option.favourite)}
-            </button>
+            </span>
           ) : null}
         </div>
       );

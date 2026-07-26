@@ -1,135 +1,211 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  CALENDAR_CELL_COUNT,
+  addDays,
+  addMonths,
   type CalendarKeyContext,
+  endOfWeek,
   firstOfMonth,
+  formatDayLabel,
+  formatMonthYear,
   getDayRangeState,
   getEffectiveRange,
   getISOWeek,
+  getMonthNames,
+  getWeekdayNames,
   getYearRange,
   isDateDisabled,
   isDateHighlighted,
   isMonthDisabled,
   nextRange,
   resolveCalendarKey,
+  startOfWeek,
 } from "./calendar";
 
-/** Full-grid default (42 rendered day cells); override per test. */
+/** Thursday 15 Jan 2026 - mid-month, mid-week, so every direction is unclamped. */
+const FOCUSED = new Date(2026, 0, 15);
+
 function ctx(overrides: Partial<CalendarKeyContext> = {}): CalendarKeyContext {
-  return { focusedIndex: 10, dayCount: CALENDAR_CELL_COUNT, ...overrides };
+  return { focusedDate: FOCUSED, weekStartsOn: 1, ...overrides };
+}
+
+/** The single date a key resolves to, or null when it produced no focus move. */
+function focusedBy(key: string, overrides: Partial<CalendarKeyContext> = {}): Date | null {
+  const { effects } = resolveCalendarKey(key, ctx(overrides));
+  const effect = effects.find((e) => e.kind === "focusDate");
+  return effect?.kind === "focusDate" ? effect.date : null;
 }
 
 describe("resolveCalendarKey", () => {
   it("ignores unmapped keys (no preventDefault, no effects)", () => {
     expect(resolveCalendarKey("a", ctx())).toEqual({ preventDefault: false, effects: [] });
+  });
+
+  it("leaves Tab alone so focus can escape the grid", () => {
     expect(resolveCalendarKey("Tab", ctx())).toEqual({ preventDefault: false, effects: [] });
   });
 
   //  Horizontal movement
 
-  it("ArrowRight moves focus one cell forward", () => {
-    expect(resolveCalendarKey("ArrowRight", ctx({ focusedIndex: 10 }))).toEqual({
-      preventDefault: true,
-      effects: [{ kind: "setFocus", index: 11 }],
-    });
+  it("ArrowRight moves focus one day forward", () => {
+    expect(focusedBy("ArrowRight")).toEqual(new Date(2026, 0, 16));
   });
 
-  it("ArrowRight past the last cell rolls to the next month", () => {
-    expect(
-      resolveCalendarKey("ArrowRight", ctx({ focusedIndex: CALENDAR_CELL_COUNT - 1 })),
-    ).toEqual({ preventDefault: true, effects: [{ kind: "goToNextMonth" }] });
+  it("ArrowLeft moves focus one day back", () => {
+    expect(focusedBy("ArrowLeft")).toEqual(new Date(2026, 0, 14));
   });
 
-  it("ArrowLeft moves focus one cell back", () => {
-    expect(resolveCalendarKey("ArrowLeft", ctx({ focusedIndex: 10 }))).toEqual({
-      preventDefault: true,
-      effects: [{ kind: "setFocus", index: 9 }],
-    });
+  it("ArrowRight off the end of a month lands on the 1st of the next month", () => {
+    expect(focusedBy("ArrowRight", { focusedDate: new Date(2026, 0, 31) })).toEqual(
+      new Date(2026, 1, 1),
+    );
   });
 
-  it("ArrowLeft before the first cell rolls to the previous month", () => {
-    expect(resolveCalendarKey("ArrowLeft", ctx({ focusedIndex: 0 }))).toEqual({
-      preventDefault: true,
-      effects: [{ kind: "goToPrevMonth" }],
-    });
+  it("ArrowLeft off the start of a month lands on the last day of the previous month", () => {
+    expect(focusedBy("ArrowLeft", { focusedDate: new Date(2026, 1, 1) })).toEqual(
+      new Date(2026, 0, 31),
+    );
   });
 
-  //  Vertical movement (7-cell step)
-
-  it("ArrowDown moves focus down a week", () => {
-    expect(resolveCalendarKey("ArrowDown", ctx({ focusedIndex: 10 }))).toEqual({
-      preventDefault: true,
-      effects: [{ kind: "setFocus", index: 17 }],
-    });
+  it("swaps the horizontal arrows under RTL", () => {
+    expect(focusedBy("ArrowRight", { rtl: true })).toEqual(new Date(2026, 0, 14));
+    expect(focusedBy("ArrowLeft", { rtl: true })).toEqual(new Date(2026, 0, 16));
   });
 
-  it("ArrowDown past the last row rolls to the next month", () => {
-    // 36 + 7 = 43 >= 42
-    expect(resolveCalendarKey("ArrowDown", ctx({ focusedIndex: 36 }))).toEqual({
-      preventDefault: true,
-      effects: [{ kind: "goToNextMonth" }],
-    });
+  //  Vertical movement
+
+  it("ArrowDown moves focus a week forward", () => {
+    expect(focusedBy("ArrowDown")).toEqual(new Date(2026, 0, 22));
   });
 
-  it("ArrowUp moves focus up a week", () => {
-    expect(resolveCalendarKey("ArrowUp", ctx({ focusedIndex: 20 }))).toEqual({
-      preventDefault: true,
-      effects: [{ kind: "setFocus", index: 13 }],
-    });
+  it("ArrowUp moves focus a week back", () => {
+    expect(focusedBy("ArrowUp")).toEqual(new Date(2026, 0, 8));
   });
 
-  it("ArrowUp before the first row rolls to the previous month", () => {
-    // 6 - 7 = -1 < 0
-    expect(resolveCalendarKey("ArrowUp", ctx({ focusedIndex: 6 }))).toEqual({
-      preventDefault: true,
-      effects: [{ kind: "goToPrevMonth" }],
-    });
+  it("ArrowDown across a month boundary preserves the weekday (APG)", () => {
+    const from = new Date(2026, 0, 29); // Thursday
+    const to = focusedBy("ArrowDown", { focusedDate: from });
+    expect(to).toEqual(new Date(2026, 1, 5));
+    expect(to?.getDay()).toBe(from.getDay());
+  });
+
+  it("ArrowUp across a month boundary preserves the weekday (APG)", () => {
+    const from = new Date(2026, 1, 3); // Tuesday
+    const to = focusedBy("ArrowUp", { focusedDate: from });
+    expect(to).toEqual(new Date(2026, 0, 27));
+    expect(to?.getDay()).toBe(from.getDay());
+  });
+
+  //  Week edges
+
+  it("Home moves to the start of the week (Monday start)", () => {
+    expect(focusedBy("Home")).toEqual(new Date(2026, 0, 12));
+  });
+
+  it("End moves to the end of the week (Monday start)", () => {
+    expect(focusedBy("End")).toEqual(new Date(2026, 0, 18));
+  });
+
+  it("Home/End respect a Sunday week start", () => {
+    expect(focusedBy("Home", { weekStartsOn: 0 })).toEqual(new Date(2026, 0, 11));
+    expect(focusedBy("End", { weekStartsOn: 0 })).toEqual(new Date(2026, 0, 17));
+  });
+
+  //  Paging
+
+  it("PageDown pages a month forward", () => {
+    expect(focusedBy("PageDown")).toEqual(new Date(2026, 1, 15));
+  });
+
+  it("PageUp pages a month back", () => {
+    expect(focusedBy("PageUp")).toEqual(new Date(2025, 11, 15));
+  });
+
+  it("Shift+PageDown pages a year forward", () => {
+    expect(focusedBy("PageDown", { shiftKey: true })).toEqual(new Date(2027, 0, 15));
+  });
+
+  it("Shift+PageUp pages a year back", () => {
+    expect(focusedBy("PageUp", { shiftKey: true })).toEqual(new Date(2025, 0, 15));
+  });
+
+  it("paging clamps the day to the target month's length", () => {
+    // 31 Jan + 1 month must be 28 Feb, not 3 Mar.
+    expect(focusedBy("PageDown", { focusedDate: new Date(2026, 0, 31) })).toEqual(
+      new Date(2026, 1, 28),
+    );
   });
 
   //  Selection
 
-  it("Enter selects the focused day when in bounds", () => {
-    expect(resolveCalendarKey("Enter", ctx({ focusedIndex: 10, dayCount: 42 }))).toEqual({
+  it("Enter selects the focused day", () => {
+    expect(resolveCalendarKey("Enter", ctx())).toEqual({
       preventDefault: true,
       effects: [{ kind: "selectFocused" }],
     });
   });
 
   it("Space behaves exactly like Enter", () => {
-    expect(resolveCalendarKey(" ", ctx({ focusedIndex: 10 }))).toEqual(
-      resolveCalendarKey("Enter", ctx({ focusedIndex: 10 })),
-    );
+    expect(resolveCalendarKey(" ", ctx())).toEqual(resolveCalendarKey("Enter", ctx()));
+  });
+});
+
+describe("date arithmetic", () => {
+  it("addDays crosses month and year boundaries", () => {
+    expect(addDays(new Date(2026, 0, 31), 1)).toEqual(new Date(2026, 1, 1));
+    expect(addDays(new Date(2026, 11, 31), 1)).toEqual(new Date(2027, 0, 1));
+    expect(addDays(new Date(2026, 0, 1), -1)).toEqual(new Date(2025, 11, 31));
   });
 
-  it("Enter with nothing focused is a no-op (but still preventDefault)", () => {
-    expect(resolveCalendarKey("Enter", ctx({ focusedIndex: -1 }))).toEqual({
-      preventDefault: true,
-      effects: [],
-    });
+  it("addMonths clamps to the target month's last day", () => {
+    expect(addMonths(new Date(2026, 0, 31), 1)).toEqual(new Date(2026, 1, 28));
+    expect(addMonths(new Date(2024, 0, 31), 1)).toEqual(new Date(2024, 1, 29)); // leap year
+    expect(addMonths(new Date(2026, 2, 31), -1)).toEqual(new Date(2026, 1, 28));
   });
 
-  it("Enter past the rendered day count is a no-op (but still preventDefault)", () => {
-    expect(resolveCalendarKey("Enter", ctx({ focusedIndex: 42, dayCount: 42 }))).toEqual({
-      preventDefault: true,
-      effects: [],
-    });
+  it("addMonths keeps the day when it fits", () => {
+    expect(addMonths(new Date(2026, 0, 15), 2)).toEqual(new Date(2026, 2, 15));
   });
 
-  //  Paging
+  it("startOfWeek/endOfWeek bracket the week per weekStartsOn", () => {
+    const thu = new Date(2026, 0, 15);
+    expect(startOfWeek(thu, 1)).toEqual(new Date(2026, 0, 12));
+    expect(endOfWeek(thu, 1)).toEqual(new Date(2026, 0, 18));
+    expect(startOfWeek(thu, 0)).toEqual(new Date(2026, 0, 11));
+    expect(endOfWeek(thu, 0)).toEqual(new Date(2026, 0, 17));
+  });
+});
 
-  it("PageDown pages to the next month", () => {
-    expect(resolveCalendarKey("PageDown", ctx())).toEqual({
-      preventDefault: true,
-      effects: [{ kind: "goToNextMonth" }],
-    });
+describe("Intl-backed names", () => {
+  it("getMonthNames returns 12 localised names, January-first", () => {
+    expect(getMonthNames("en-US")).toHaveLength(12);
+    expect(getMonthNames("en-US")[0]).toBe("January");
+    expect(getMonthNames("fr-FR")[0]).toBe("janvier");
   });
 
-  it("PageUp pages to the previous month", () => {
-    expect(resolveCalendarKey("PageUp", ctx())).toEqual({
-      preventDefault: true,
-      effects: [{ kind: "goToPrevMonth" }],
-    });
+  it("getMonthNames supports a short width", () => {
+    expect(getMonthNames("en-US", "short")[0]).toBe("Jan");
+  });
+
+  it("getWeekdayNames rotates to the configured week start", () => {
+    expect(getWeekdayNames("en-US", 1, "long")[0]).toBe("Monday");
+    expect(getWeekdayNames("en-US", 0, "long")[0]).toBe("Sunday");
+    expect(getWeekdayNames("en-US", 1, "long")).toHaveLength(7);
+  });
+
+  it("getWeekdayNames honours the requested width", () => {
+    expect(getWeekdayNames("en-US", 1, "short")[0]).toBe("Mon");
+    expect(getWeekdayNames("en-US", 1, "narrow")[0]).toBe("M");
+  });
+
+  it("getWeekdayNames localises", () => {
+    expect(getWeekdayNames("fr-FR", 1, "long")[0]).toBe("lundi");
+  });
+
+  it("formatMonthYear and formatDayLabel follow the locale", () => {
+    expect(formatMonthYear(2026, 0, "en-US")).toBe("January 2026");
+    expect(formatDayLabel(new Date(2026, 0, 15), "en-US")).toBe("January 15, 2026");
+    expect(formatMonthYear(2026, 0, "fr-FR")).toBe("janvier 2026");
   });
 });
 

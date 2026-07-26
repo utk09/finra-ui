@@ -74,52 +74,116 @@ export function getISOWeek(date: Date): number {
   return Math.ceil(((d.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
 }
 
-export const MONTH_NAMES = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-] as const;
+//  Locale-aware names (Intl) - display only; parsing stays English by design
 
-export const WEEKDAY_SHORT_MON = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] as const;
-export const WEEKDAY_SHORT_SUN = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] as const;
-export const WEEKDAY_LONG_MON = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-] as const;
-export const WEEKDAY_LONG_SUN = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-] as const;
+/** Display width for weekday column headers. */
+export type WeekdayWidth = "narrow" | "short" | "long";
+
+/**
+ * Month/weekday names come from `Intl.DateTimeFormat`, not a hardcoded English
+ * table. `Intl.DateTimeFormat` construction is comparatively expensive and these
+ * are read on every render, so resolved name arrays are memoised by locale.
+ *
+ * Note this is *display* only. Month-name **parsing** (`utils/dateTenorParse`)
+ * deliberately stays English - a trader typing `15 Jan 2027` means January
+ * regardless of their UI locale.
+ */
+const monthNameCache = new Map<string, string[]>();
+const weekdayNameCache = new Map<string, string[]>();
+
+/**
+ * A month whose day-1 is unambiguous in UTC, used purely as a formatting probe.
+ * The year is arbitrary; only the month component is read.
+ */
+function monthProbe(monthIndex: number): Date {
+  return new Date(Date.UTC(2021, monthIndex, 1));
+}
+
+/**
+ * 2023-01-01 was a Sunday, so `2023-01-01 + i` walks Sunday → Saturday. Used as
+ * a formatting probe for weekday names.
+ */
+function weekdayProbe(dayOfWeek: number): Date {
+  return new Date(Date.UTC(2023, 0, 1 + dayOfWeek));
+}
+
+/** Localised month names, January-first. */
+export function getMonthNames(locale?: string, width: "long" | "short" = "long"): string[] {
+  const key = `${locale ?? ""}|${width}`;
+  const cached = monthNameCache.get(key);
+  if (cached) return cached;
+
+  const fmt = new Intl.DateTimeFormat(locale, { month: width, timeZone: "UTC" });
+  const names = Array.from({ length: 12 }, (_, m) => fmt.format(monthProbe(m)));
+  monthNameCache.set(key, names);
+  return names;
+}
+
+/**
+ * Localised weekday names, rotated so index 0 is `weekStartsOn`.
+ *
+ * `width: "short"` yields e.g. "Mon" (en-US) rather than the old hand-written
+ * two-letter "Mo" - there is no Intl width for exactly two letters, and slicing
+ * localised text breaks non-Latin scripts.
+ */
+export function getWeekdayNames(
+  locale: string | undefined,
+  weekStartsOn: 0 | 1,
+  width: WeekdayWidth,
+): string[] {
+  const key = `${locale ?? ""}|${weekStartsOn}|${width}`;
+  const cached = weekdayNameCache.get(key);
+  if (cached) return cached;
+
+  const fmt = new Intl.DateTimeFormat(locale, { weekday: width, timeZone: "UTC" });
+  const names = Array.from({ length: 7 }, (_, i) =>
+    fmt.format(weekdayProbe((i + weekStartsOn) % 7)),
+  );
+  weekdayNameCache.set(key, names);
+  return names;
+}
 
 export function dayOfWeekIndex(date: Date, weekStartsOn: 0 | 1): number {
   return (date.getDay() - weekStartsOn + 7) % 7;
 }
 
-export function formatMonthYear(year: number, month: number): string {
-  return `${MONTH_NAMES[month]} ${year}`;
+/** Header title, e.g. "January 2026". */
+export function formatMonthYear(year: number, month: number, locale?: string): string {
+  return new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(
+    new Date(year, month, 1),
+  );
 }
 
-export function formatDayLabel(date: Date): string {
-  return `${MONTH_NAMES[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+/** Accessible name for a day cell, e.g. "January 15, 2026". */
+export function formatDayLabel(date: Date, locale?: string): string {
+  return new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(date);
+}
+
+//  Date arithmetic used by the keyboard machine
+
+/** `date` shifted by `n` days, normalised to midnight local time. */
+export function addDays(date: Date, n: number): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + n);
+}
+
+/**
+ * `date` shifted by `n` months, clamping the day-of-month to the target month's
+ * length so Jan 31 + 1 month is Feb 28, not Mar 3.
+ */
+export function addMonths(date: Date, n: number): Date {
+  const target = new Date(date.getFullYear(), date.getMonth() + n, 1);
+  const daysInTarget = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+  return new Date(target.getFullYear(), target.getMonth(), Math.min(date.getDate(), daysInTarget));
+}
+
+/** First day of the display week containing `date`. */
+export function startOfWeek(date: Date, weekStartsOn: 0 | 1): Date {
+  return addDays(date, -dayOfWeekIndex(date, weekStartsOn));
+}
+
+/** Last day of the display week containing `date`. */
+export function endOfWeek(date: Date, weekStartsOn: 0 | 1): Date {
+  return addDays(startOfWeek(date, weekStartsOn), 6);
 }
 
 /** Cells in a calendar grid: 6 rows x 7 columns. */
@@ -168,13 +232,17 @@ export function getCalendarDays(
   return days;
 }
 
-/** Resolve which day index should be focused initially. */
-export function getInitialFocusIndex(days: CalendarDay[]): number {
-  const sel = days.findIndex((d) => d.isSelected && d.isCurrentMonth);
-  if (sel >= 0) return sel;
-  const tod = days.findIndex((d) => d.isToday && d.isCurrentMonth);
-  if (tod >= 0) return tod;
-  return days.findIndex((d) => d.isCurrentMonth);
+/**
+ * Which day should hold the grid's single tab stop: the selection, else today,
+ * else the first day of the month. Returns a date (not a grid index) so focus
+ * survives month navigation - see {@link resolveCalendarKey}.
+ */
+export function getInitialFocusDate(days: CalendarDay[]): Date | null {
+  const sel = days.find((d) => d.isSelected && d.isCurrentMonth);
+  if (sel) return sel.date;
+  const tod = days.find((d) => d.isToday && d.isCurrentMonth);
+  if (tod) return tod.date;
+  return days.find((d) => d.isCurrentMonth)?.date ?? null;
 }
 
 /**
@@ -274,19 +342,29 @@ export function getDayRangeState(
  * A single state change a keydown resolves to. The framework adapter (React
  * `CalendarBase`, future Lit `finra-calendar`) executes these against its own
  * setters - the pure layer never touches the DOM.
+ *
+ * Focus is expressed as a **date**, not a grid index. That is what makes APG
+ * focus preservation fall out for free: ArrowRight on the last day of a month
+ * simply resolves to the 1st of the next month, and the adapter follows the
+ * displayed month to wherever focus landed. The previous index-based model had
+ * to roll the month over and then re-seed focus from scratch, which lost the
+ * day-of-week on ArrowDown and always landed on day 1 on ArrowRight.
  */
 export type CalendarKeyEffect =
-  | { kind: "setFocus"; index: number }
-  | { kind: "goToNextMonth" }
-  | { kind: "goToPrevMonth" }
+  | { kind: "focusDate"; date: Date }
   /** Select the currently focused day (adapter re-checks the disabled guard). */
   | { kind: "selectFocused" };
 
 /** Everything a keydown decision needs, with zero framework/DOM coupling. */
 export interface CalendarKeyContext {
-  focusedIndex: number;
-  /** Number of day cells rendered - the Enter/Space selection bound. */
-  dayCount: number;
+  /** The day currently holding the grid's tab stop. */
+  focusedDate: Date;
+  /** 0 = Sunday, 1 = Monday. Determines where Home/End land. */
+  weekStartsOn: 0 | 1;
+  /** Under `dir="rtl"` the horizontal arrows swap. Default false. */
+  rtl?: boolean;
+  /** Shift pages by a year instead of a month on PageUp/PageDown. */
+  shiftKey?: boolean;
 }
 
 export interface CalendarKeyResult {
@@ -297,48 +375,36 @@ export interface CalendarKeyResult {
 
 const noneCal = (): CalendarKeyResult => ({ preventDefault: false, effects: [] });
 
-/**
- * Step focus by `delta` cells. Crossing either grid edge (past the last cell or
- * before the first) rolls over to the adjacent month rather than clamping -
- * the month change re-seeds focus via `getInitialFocusIndex`.
- */
-function stepFocus(focusedIndex: number, delta: number): CalendarKeyResult {
-  const next = focusedIndex + delta;
-  if (next >= CALENDAR_CELL_COUNT) {
-    return { preventDefault: true, effects: [{ kind: "goToNextMonth" }] };
-  }
-  if (next < 0) {
-    return { preventDefault: true, effects: [{ kind: "goToPrevMonth" }] };
-  }
-  return { preventDefault: true, effects: [{ kind: "setFocus", index: next }] };
-}
+const focusTo = (date: Date): CalendarKeyResult => ({
+  preventDefault: true,
+  effects: [{ kind: "focusDate", date }],
+});
 
 type CalendarKeyHandler = (ctx: CalendarKeyContext) => CalendarKeyResult;
 
 /**
- * Keyboard map as data. Arrow keys move focus (with month rollover), Enter and
- * Space select, PageUp/PageDown page months. RTL support (Phase 6) becomes a
- * swap of the ArrowLeft/ArrowRight entries.
+ * Keyboard map as data (APG "date picker grid"). Horizontal arrows read the
+ * `rtl` flag rather than being swapped at the call site, so RTL is one boolean
+ * rather than a second key table.
  */
 const calendarKeyMap: Record<string, CalendarKeyHandler> = {
-  ArrowRight: (ctx) => stepFocus(ctx.focusedIndex, 1),
-  ArrowLeft: (ctx) => stepFocus(ctx.focusedIndex, -1),
-  ArrowDown: (ctx) => stepFocus(ctx.focusedIndex, CALENDAR_COLUMNS),
-  ArrowUp: (ctx) => stepFocus(ctx.focusedIndex, -CALENDAR_COLUMNS),
-  Enter: (ctx) => ({
-    preventDefault: true,
-    effects:
-      ctx.focusedIndex >= 0 && ctx.focusedIndex < ctx.dayCount ? [{ kind: "selectFocused" }] : [],
-  }),
-  PageDown: () => ({ preventDefault: true, effects: [{ kind: "goToNextMonth" }] }),
-  PageUp: () => ({ preventDefault: true, effects: [{ kind: "goToPrevMonth" }] }),
+  ArrowRight: (ctx) => focusTo(addDays(ctx.focusedDate, ctx.rtl ? -1 : 1)),
+  ArrowLeft: (ctx) => focusTo(addDays(ctx.focusedDate, ctx.rtl ? 1 : -1)),
+  ArrowDown: (ctx) => focusTo(addDays(ctx.focusedDate, CALENDAR_COLUMNS)),
+  ArrowUp: (ctx) => focusTo(addDays(ctx.focusedDate, -CALENDAR_COLUMNS)),
+  Home: (ctx) => focusTo(startOfWeek(ctx.focusedDate, ctx.weekStartsOn)),
+  End: (ctx) => focusTo(endOfWeek(ctx.focusedDate, ctx.weekStartsOn)),
+  PageDown: (ctx) => focusTo(addMonths(ctx.focusedDate, ctx.shiftKey ? 12 : 1)),
+  PageUp: (ctx) => focusTo(addMonths(ctx.focusedDate, ctx.shiftKey ? -12 : -1)),
+  Enter: () => ({ preventDefault: true, effects: [{ kind: "selectFocused" }] }),
 };
 // Space shares Enter's behaviour.
 calendarKeyMap[" "] = calendarKeyMap.Enter;
 
 /**
  * Resolve a grid keydown to its effects without touching the DOM. Unmapped keys
- * are a no-op (no preventDefault), so normal browser handling is preserved.
+ * are a no-op (no preventDefault), so normal browser handling is preserved -
+ * notably Tab, which must leave the grid rather than move within it.
  */
 export function resolveCalendarKey(key: string, ctx: CalendarKeyContext): CalendarKeyResult {
   const handler = calendarKeyMap[key];

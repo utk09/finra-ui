@@ -139,7 +139,9 @@ export type ComboBoxKeyEffect =
   /** Commit the "create new option" affordance from the current input. */
   | { kind: "createOption" }
   /** Remove the last selected value (multi-select Backspace-on-empty). */
-  | { kind: "removeLastValue" };
+  | { kind: "removeLastValue" }
+  /** Move focus out of the input and onto the last selected pill. */
+  | { kind: "focusLastPill" };
 
 /** Everything a keydown decision needs, with zero framework/DOM coupling. */
 export interface ComboBoxKeyContext {
@@ -154,6 +156,17 @@ export interface ComboBoxKeyContext {
   multiple: boolean;
   inputValueEmpty: boolean;
   selectedCount: number;
+  /**
+   * Alt modifier. APG combobox: Alt+ArrowDown opens the popup *without* moving
+   * the active option, and Alt+ArrowUp closes it - distinct from the bare arrows.
+   */
+  altKey?: boolean;
+  /**
+   * Whether the text caret sits at position 0 with nothing selected. Only then
+   * may ArrowLeft leave the input and enter the pill list; otherwise the browser
+   * must keep handling it as normal caret movement.
+   */
+  caretAtStart?: boolean;
 }
 
 export interface ComboBoxKeyResult {
@@ -175,8 +188,12 @@ type KeyHandler = (ctx: ComboBoxKeyContext) => ComboBoxKeyResult;
  * over this table rather than edits scattered through a switch statement.
  */
 const keyMap: Record<string, KeyHandler> = {
-  ArrowDown: (ctx) =>
-    ctx.isOpen
+  ArrowDown: (ctx) => {
+    // APG: Alt+ArrowDown opens the popup but does NOT move the active option.
+    if (!ctx.isOpen && ctx.altKey) {
+      return { preventDefault: true, effects: [{ kind: "setOpen", open: true }] };
+    }
+    return ctx.isOpen
       ? {
           preventDefault: true,
           effects: [
@@ -189,9 +206,20 @@ const keyMap: Record<string, KeyHandler> = {
             { kind: "setOpen", open: true },
             { kind: "setHighlight", index: 0 },
           ],
-        },
-  ArrowUp: (ctx) =>
-    ctx.isOpen
+        };
+  },
+  ArrowUp: (ctx) => {
+    // APG: Alt+ArrowUp closes the popup, leaving focus on the input.
+    if (ctx.isOpen && ctx.altKey) {
+      return {
+        preventDefault: true,
+        effects: [
+          { kind: "setOpen", open: false },
+          { kind: "setHighlight", index: -1 },
+        ],
+      };
+    }
+    return ctx.isOpen
       ? {
           preventDefault: true,
           effects: [
@@ -204,7 +232,19 @@ const keyMap: Record<string, KeyHandler> = {
             { kind: "setOpen", open: true },
             { kind: "setHighlight", index: ctx.totalNavigable - 1 },
           ],
-        },
+        };
+  },
+  // Tab must close the popup but never swallow the event - focus has to leave.
+  Tab: (ctx) =>
+    ctx.isOpen
+      ? {
+          preventDefault: false,
+          effects: [
+            { kind: "setOpen", open: false },
+            { kind: "setHighlight", index: -1 },
+          ],
+        }
+      : none(),
   Enter: (ctx) => {
     const effects: ComboBoxKeyEffect[] = [];
     if (ctx.isOpen && ctx.highlightedIndex >= 0) {
@@ -232,6 +272,12 @@ const keyMap: Record<string, KeyHandler> = {
     ctx.multiple && ctx.inputValueEmpty && ctx.selectedCount > 0
       ? { preventDefault: false, effects: [{ kind: "removeLastValue" }] }
       : none(),
+  // ArrowLeft from the very start of the input steps into the pill list. Any
+  // other caret position falls through so normal text navigation still works.
+  ArrowLeft: (ctx) =>
+    ctx.multiple && ctx.caretAtStart && ctx.selectedCount > 0
+      ? { preventDefault: true, effects: [{ kind: "focusLastPill" }] }
+      : none(),
   Home: (ctx) =>
     ctx.isOpen ? { preventDefault: true, effects: [{ kind: "setHighlight", index: 0 }] } : none(),
   End: (ctx) =>
@@ -249,4 +295,93 @@ export function resolveComboBoxKey(key: string, ctx: ComboBoxKeyContext): ComboB
   if (ctx.disabled) return none();
   const handler = keyMap[key];
   return handler ? handler(ctx) : none();
+}
+
+//  Selected-pill navigation (multi-select) - framework-agnostic
+
+/**
+ * Effects for keyboard interaction with the selected-value pills. Pills use a
+ * roving tab stop (React Aria's TagGroup model): the whole list is one Tab stop,
+ * arrows move within it, and stepping off the end returns to the text input.
+ */
+export type ComboBoxPillEffect =
+  | { kind: "setActivePill"; index: number }
+  /** Remove the pill at this index. */
+  | { kind: "removePill"; index: number }
+  /** Leave the pill list and put focus back in the text input. */
+  | { kind: "focusInput" };
+
+export interface ComboBoxPillKeyContext {
+  /** Index of the pill currently holding the roving tab stop. */
+  activeIndex: number;
+  /** How many pills are rendered. */
+  pillCount: number;
+  /** Under `dir="rtl"` the horizontal arrows swap. */
+  rtl?: boolean;
+}
+
+export interface ComboBoxPillKeyResult {
+  preventDefault: boolean;
+  effects: ComboBoxPillEffect[];
+}
+
+const nonePill = (): ComboBoxPillKeyResult => ({ preventDefault: false, effects: [] });
+
+/** Step to `index`, or back to the input when stepping past the last pill. */
+function movePill(index: number, pillCount: number): ComboBoxPillKeyResult {
+  if (index >= pillCount) {
+    return { preventDefault: true, effects: [{ kind: "focusInput" }] };
+  }
+  return {
+    preventDefault: true,
+    effects: [{ kind: "setActivePill", index: Math.max(0, index) }],
+  };
+}
+
+/**
+ * Resolve a keydown while a pill has focus. Delete and Backspace both remove -
+ * Delete is the APG-documented key, Backspace matches what users reflexively
+ * press on a token they just tabbed onto.
+ */
+export function resolveComboBoxPillKey(
+  key: string,
+  ctx: ComboBoxPillKeyContext,
+): ComboBoxPillKeyResult {
+  if (ctx.pillCount === 0) return nonePill();
+
+  const forward = ctx.rtl ? -1 : 1;
+
+  switch (key) {
+    case "ArrowRight":
+      return movePill(ctx.activeIndex + forward, ctx.pillCount);
+    case "ArrowLeft":
+      return movePill(ctx.activeIndex - forward, ctx.pillCount);
+    case "Home":
+      return movePill(0, ctx.pillCount);
+    case "End":
+      return movePill(ctx.pillCount - 1, ctx.pillCount);
+    case "Delete":
+    case "Backspace":
+      return {
+        preventDefault: true,
+        effects: [{ kind: "removePill", index: ctx.activeIndex }],
+      };
+    case "Escape":
+      return { preventDefault: true, effects: [{ kind: "focusInput" }] };
+    default:
+      return nonePill();
+  }
+}
+
+/**
+ * Where focus belongs after removing the pill at `removedIndex`. Prefers the
+ * pill that slid into its place, falls back to the new last pill, and returns
+ * `null` (meaning "the text input") when the list is now empty.
+ */
+export function nextActivePillAfterRemoval(
+  removedIndex: number,
+  remainingCount: number,
+): number | null {
+  if (remainingCount <= 0) return null;
+  return Math.min(removedIndex, remainingCount - 1);
 }

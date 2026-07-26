@@ -86,6 +86,12 @@ export interface DateTenorInputBaseProps extends Omit<
   tenorSectionTitle?: string;
   /** 0 = Sunday, 1 = Monday. Default: 1. */
   weekStartsOn?: 0 | 1;
+  /**
+   * BCP 47 locale for the calendar popup's month/weekday names and day
+   * labels. Defaults to the runtime locale. Display only - date parsing is
+   * unaffected by this.
+   */
+  locale?: string;
   /** CSS class names injected by the styled layer. */
   classNames?: DateTenorInputClassNames;
   /** data-* attributes injected by the styled layer. */
@@ -127,6 +133,7 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
       datePlaceholder,
       tenorSectionTitle = "Tenor",
       weekStartsOn,
+      locale,
       classNames: cn,
       dataAttributes,
       renderCalendarIcon,
@@ -386,6 +393,7 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
                 max={maxDate}
                 disabledDates={disabledDates}
                 weekStartsOn={weekStartsOn}
+                locale={locale}
                 classNames={cn?.calendar}
                 renderNavPrev={renderCalendarNavPrev}
                 renderNavNext={renderCalendarNavNext}

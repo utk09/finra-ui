@@ -91,6 +91,13 @@
   gap: 1px;
 }
 
+// The role="gridcell" wrapper exists purely to carry grid semantics without
+// overriding the day <button>'s role. `display: contents` keeps the button
+// itself as the grid item, so .row's column tracks are unaffected.
+.dayCell {
+  display: contents;
+}
+
 .day {
   display: flex;
   align-items: center;
@@ -129,12 +136,16 @@
     color: var(--finra-actionable-accent);
   }
 
+  // `--finra-actionable-accent`, not `-emphasis`: emphasis is the border/ring
+  // step (primary-500), and white on it is only 3.67:1 - below WCAG AA. Accent
+  // (primary-600) is the token `--finra-actionable-foreground` is defined
+  // against for filled surfaces, and clears 4.5:1.
   &.daySelected {
-    background-color: var(--finra-actionable-emphasis);
+    background-color: var(--finra-actionable-accent);
     color: var(--finra-actionable-foreground);
 
     &:hover:not(:disabled) {
-      background-color: var(--finra-actionable-accent);
+      background-color: var(--finra-actionable-accent-hover);
     }
 
     &.dayToday {

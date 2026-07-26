@@ -21,18 +21,18 @@ import {
   getCalendarDays,
   getDayRangeState,
   getEffectiveRange,
-  getInitialFocusIndex,
+  getInitialFocusDate,
   getISOWeek,
+  getMonthNames,
+  getWeekdayNames,
   getYearRange,
   isDateDisabled,
   isDateHighlighted,
   isMonthDisabled,
+  isSameDay,
   nextRange,
   resolveCalendarKey,
-  WEEKDAY_LONG_MON,
-  WEEKDAY_LONG_SUN,
-  WEEKDAY_SHORT_MON,
-  WEEKDAY_SHORT_SUN,
+  type WeekdayWidth,
 } from "../../logic/calendar";
 
 //  Constants
@@ -54,6 +54,14 @@ const SR_ONLY: CSSProperties = {
   whiteSpace: "nowrap",
   border: 0,
 };
+
+/**
+ * Stable `YYYY-M-D` key used to find a day's button in the DOM. Local-time
+ * components (not ISO) so it matches how the grid builds its dates.
+ */
+function dayKey(date: Date): string {
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+}
 
 //  Types
 
@@ -99,6 +107,12 @@ export interface CalendarTitleApi {
   years: number[];
   /** Whether a month is fully out of range in the displayed year. */
   isMonthDisabled: (monthIndex: number) => boolean;
+  /**
+   * Localised month names, January-first, resolved against the calendar's
+   * `locale`. Supplied here so header content never has to reach back into the
+   * i18n layer itself.
+   */
+  monthNames: string[];
 }
 
 export interface CalendarClassNames {
@@ -110,6 +124,12 @@ export interface CalendarClassNames {
   weekday?: string;
   grid?: string;
   row?: string;
+  /**
+   * The `role="gridcell"` wrapper around each day button. Layout-neutral by
+   * default in the styled layer (`display: contents`) so the button stays the
+   * grid item; unstyled consumers styling `.row` as a grid must do the same.
+   */
+  dayCell?: string;
   day?: string;
   dayToday?: string;
   daySelected?: string;
@@ -168,6 +188,16 @@ export interface CalendarBaseProps {
   footer?: ReactNode | ((api: CalendarFooterApi) => ReactNode);
   /** Override "today" for testing. */
   today?: Date;
+  /**
+   * BCP 47 locale for month/weekday names and day labels. Defaults to the
+   * runtime locale. Display only - date *parsing* is unaffected.
+   */
+  locale?: string;
+  /**
+   * Width of the weekday column headers. Default "short" (e.g. "Mon"); use
+   * "narrow" for single letters. The `aria-label` always uses the long form.
+   */
+  weekdayFormat?: WeekdayWidth;
 }
 
 //  Component
@@ -195,6 +225,8 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
       renderTitle,
       footer,
       today: todayOverride,
+      locale,
+      weekdayFormat = "short",
     },
     ref,
   ) => {
@@ -250,22 +282,37 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
       [displayYear, displayMonthIndex, weekStartsOn, focusSeed, today, min, max, disabledDates],
     );
 
-    // Focused day for keyboard navigation
-    const [focusedIndex, setFocusedIndex] = useState<number>(() => getInitialFocusIndex(days));
+    // The grid's single tab stop, tracked as a DATE so it survives month
+    // navigation (APG: ArrowRight off the end of a month must land on the 1st of
+    // the next month, ArrowDown must keep the weekday).
+    const [focusedDate, setFocusedDate] = useState<Date | null>(() => getInitialFocusDate(days));
 
+    // Re-seed focus only when the displayed month no longer contains it - i.e.
+    // the month was changed by something other than keyboard navigation (nav
+    // buttons, month/year dropdowns, a controlled `month` prop). Keyboard moves
+    // set focus and month together, so this sees them already consistent and
+    // leaves focus alone.
     useEffect(() => {
-      setFocusedIndex(getInitialFocusIndex(days));
-    }, [days]);
+      if (
+        focusedDate &&
+        focusedDate.getFullYear() === displayYear &&
+        focusedDate.getMonth() === displayMonthIndex
+      ) {
+        return;
+      }
+      setFocusedDate(getInitialFocusDate(days));
+    }, [days, focusedDate, displayYear, displayMonthIndex]);
 
-    // Move focus to the button when focusedIndex changes (only if grid already has focus)
+    // Move DOM focus to the newly focused day, but only when the grid already
+    // owns focus - otherwise merely rendering the calendar would steal it.
     useEffect(() => {
       const grid = gridRef.current;
-      if (!grid) return;
-      const btn = grid.querySelector(`[data-day-index="${focusedIndex}"]`) as HTMLElement | null;
+      if (!grid || !focusedDate) return;
+      const btn = grid.querySelector(`[data-day="${dayKey(focusedDate)}"]`) as HTMLElement | null;
       if (btn && grid.contains(document.activeElement)) {
         btn.focus();
       }
-    }, [focusedIndex]);
+    }, [focusedDate]);
 
     const handleDayClick = useCallback(
       (day: CalendarDay) => {
@@ -289,8 +336,9 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
         setMonthIndex: (m) => setMonth(new Date(displayYear, m, 1)),
         years: getYearRange(displayYear, min, max),
         isMonthDisabled: (m) => isMonthDisabled(displayYear, m, min, max),
+        monthNames: getMonthNames(locale),
       }),
-      [displayYear, displayMonthIndex, min, max, setMonth],
+      [displayYear, displayMonthIndex, min, max, setMonth, locale],
     );
 
     //  Footer API - lets footer content navigate/select via stable callbacks.
@@ -318,35 +366,49 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
     //  this adapter only executes the effects it returns against local setters.
     const handleKeyDown = useCallback(
       (e: KeyboardEvent<HTMLDivElement>) => {
+        if (!focusedDate) return;
+
+        // Read direction off the live grid rather than taking a prop: RTL is set
+        // by an ancestor (`dir="rtl"` / a CSS `direction`), so the DOM is the
+        // only honest source. Cheap - one read per keydown.
+        const rtl = getComputedStyle(e.currentTarget).direction === "rtl";
+
         const { preventDefault, effects } = resolveCalendarKey(e.key, {
-          focusedIndex,
-          dayCount: days.length,
+          focusedDate,
+          weekStartsOn,
+          rtl,
+          shiftKey: e.shiftKey,
         });
 
         if (preventDefault) e.preventDefault();
 
         for (const effect of effects) {
           switch (effect.kind) {
-            case "setFocus":
-              setFocusedIndex(effect.index);
+            case "focusDate": {
+              setFocusedDate(effect.date);
+              // Follow focus across the month boundary. Set together with focus
+              // so the re-seed effect above sees a consistent pair.
+              if (
+                effect.date.getFullYear() !== displayYear ||
+                effect.date.getMonth() !== displayMonthIndex
+              ) {
+                setMonth(firstOfMonth(effect.date));
+              }
               break;
-            case "goToNextMonth":
-              goToNextMonth();
+            }
+            case "selectFocused": {
+              const day = days.find((d) => isSameDay(d.date, focusedDate));
+              if (day) handleDayClick(day);
               break;
-            case "goToPrevMonth":
-              goToPrevMonth();
-              break;
-            case "selectFocused":
-              handleDayClick(days[focusedIndex]);
-              break;
+            }
           }
         }
       },
-      [focusedIndex, days, handleDayClick, goToNextMonth, goToPrevMonth],
+      [focusedDate, weekStartsOn, days, handleDayClick, displayYear, displayMonthIndex, setMonth],
     );
 
-    const weekdayLabels = weekStartsOn === 1 ? WEEKDAY_SHORT_MON : WEEKDAY_SHORT_SUN;
-    const weekdayLong = weekStartsOn === 1 ? WEEKDAY_LONG_MON : WEEKDAY_LONG_SUN;
+    const weekdayLabels = getWeekdayNames(locale, weekStartsOn, weekdayFormat);
+    const weekdayLong = getWeekdayNames(locale, weekStartsOn, "long");
 
     return (
       <div ref={ref} {...dataAttributes} className={cn?.root}>
@@ -360,7 +422,9 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
             {renderNavPrev ? renderNavPrev() : "\u25C0"}
           </button>
           <div className={cn?.title} aria-live={renderTitle ? undefined : "polite"}>
-            {renderTitle ? renderTitle(titleApi) : formatMonthYear(displayYear, displayMonthIndex)}
+            {renderTitle
+              ? renderTitle(titleApi)
+              : formatMonthYear(displayYear, displayMonthIndex, locale)}
           </div>
           <button
             type="button"
@@ -377,7 +441,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
           className={cn?.grid}
           role="grid"
           tabIndex={-1}
-          aria-label={formatMonthYear(displayYear, displayMonthIndex)}
+          aria-label={formatMonthYear(displayYear, displayMonthIndex, locale)}
           data-week-numbers={showWeekNumbers || undefined}
           onKeyDown={handleKeyDown}
           onMouseLeave={isRange ? () => setHoveredDate(null) : undefined}>
@@ -389,8 +453,10 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
               </span>
             ) : null}
             {weekdayLabels.map((label, i) => (
+              // Keyed by position, not text: "narrow" weekday names are not
+              // unique in most locales (en-US narrow is T, T, S, S...).
               <span
-                key={label}
+                key={weekdayLong[i]}
                 className={cn?.weekday}
                 role="columnheader"
                 aria-label={weekdayLong[i]}>
@@ -409,8 +475,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
                     {getISOWeek(rowDays[0].date)}
                   </span>
                 ) : null}
-                {rowDays.map((day, colIdx) => {
-                  const i = rowIdx * 7 + colIdx;
+                {rowDays.map((day) => {
                   const range = isRange ? getDayRangeState(day.date, effectiveRange) : null;
                   // Endpoints render as "selected" (filled); middle days are marked
                   // via data-range-middle for the styled layer.
@@ -421,36 +486,52 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
                     ? range.isRangeStart || range.isRangeEnd || range.isInRange
                     : day.isSelected;
                   const highlighted = isDateHighlighted(day.date, highlightedDates);
+                  const isFocused = focusedDate != null && isSameDay(day.date, focusedDate);
                   return (
-                    <button
+                    // The gridcell is a wrapper, not the button: putting
+                    // role="gridcell" on the <button> would override its button
+                    // semantics, so AT never announced it as activatable. Grid
+                    // membership (role, aria-selected) lives here; everything
+                    // interactive stays on the button. Layout-neutral - the
+                    // styled layer gives this `display: contents`.
+                    <div
                       key={day.date.getTime()}
-                      type="button"
                       role="gridcell"
-                      data-day-index={i}
-                      tabIndex={i === focusedIndex ? 0 : -1}
-                      aria-label={formatDayLabel(day.date)}
                       aria-selected={ariaSelected || undefined}
-                      aria-disabled={day.isDisabled || undefined}
-                      disabled={day.isDisabled}
-                      data-range-start={range?.isRangeStart || undefined}
-                      data-range-end={range?.isRangeEnd || undefined}
-                      data-range-middle={range?.isInRange || undefined}
-                      data-highlighted={highlighted || undefined}
-                      className={cx(
-                        cn?.day,
-                        day.isToday && cn?.dayToday,
-                        isSelected && cn?.daySelected,
-                        day.isDisabled && cn?.dayDisabled,
-                        !day.isCurrentMonth && cn?.dayOutside,
-                        highlighted && cn?.dayHighlighted,
-                      )}
-                      onMouseEnter={isRange ? () => setHoveredDate(day.date) : undefined}
-                      onMouseDown={(e) => {
-                        e.preventDefault(); // prevent blur on the parent input
-                        handleDayClick(day);
-                      }}>
-                      {day.date.getDate()}
-                    </button>
+                      className={cn?.dayCell}>
+                      <button
+                        type="button"
+                        data-day={dayKey(day.date)}
+                        tabIndex={isFocused ? 0 : -1}
+                        aria-label={formatDayLabel(day.date, locale)}
+                        aria-disabled={day.isDisabled || undefined}
+                        disabled={day.isDisabled}
+                        data-range-start={range?.isRangeStart || undefined}
+                        data-range-end={range?.isRangeEnd || undefined}
+                        data-range-middle={range?.isInRange || undefined}
+                        data-highlighted={highlighted || undefined}
+                        className={cx(
+                          cn?.day,
+                          day.isToday && cn?.dayToday,
+                          isSelected && cn?.daySelected,
+                          day.isDisabled && cn?.dayDisabled,
+                          !day.isCurrentMonth && cn?.dayOutside,
+                          highlighted && cn?.dayHighlighted,
+                        )}
+                        // Keep the roving tab stop in sync when focus arrives
+                        // from outside the keyboard handler. Guarded so the
+                        // focus-moving effect below cannot feed itself.
+                        onFocus={() => {
+                          if (!isFocused) setFocusedDate(day.date);
+                        }}
+                        onMouseEnter={isRange ? () => setHoveredDate(day.date) : undefined}
+                        onMouseDown={(e) => {
+                          e.preventDefault(); // prevent blur on the parent input
+                          handleDayClick(day);
+                        }}>
+                        {day.date.getDate()}
+                      </button>
+                    </div>
                   );
                 })}
               </div>

@@ -1,10 +1,18 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { type DateRange, getCalendarDays } from "../../logic/calendar";
 import { CalendarBase, type CalendarTitleApi } from "./Calendar";
+
+/**
+ * The 42 day buttons. They are the only buttons inside `role="grid"` - the
+ * month nav lives in the header, which is a sibling of the grid.
+ */
+function dayButtons(): HTMLElement[] {
+  return within(screen.getByRole("grid")).getAllByRole("button");
+}
 
 // Fixed "today" to avoid flaky tests
 const TODAY = new Date(2026, 2, 15); // March 15, 2026 (Sunday)
@@ -25,23 +33,38 @@ describe("CalendarBase", () => {
   });
 
   it("renders weekday headers for Monday-start (default)", () => {
-    render(<CalendarBase today={TODAY} />);
+    render(<CalendarBase today={TODAY} locale="en-US" />);
     const columnHeaders = screen.getAllByRole("columnheader");
     expect(columnHeaders).toHaveLength(7);
-    expect(columnHeaders[0]).toHaveTextContent("Mo");
-    expect(columnHeaders[6]).toHaveTextContent("Su");
+    // Intl "short" width, not the old hand-written two-letter table.
+    expect(columnHeaders[0]).toHaveTextContent("Mon");
+    expect(columnHeaders[6]).toHaveTextContent("Sun");
     // Check aria-label for full day name
     expect(columnHeaders[0]).toHaveAttribute("aria-label", "Monday");
     expect(columnHeaders[6]).toHaveAttribute("aria-label", "Sunday");
   });
 
   it("renders weekday headers for Sunday-start", () => {
-    render(<CalendarBase today={TODAY} weekStartsOn={0} />);
+    render(<CalendarBase today={TODAY} locale="en-US" weekStartsOn={0} />);
     const columnHeaders = screen.getAllByRole("columnheader");
-    expect(columnHeaders[0]).toHaveTextContent("Su");
-    expect(columnHeaders[6]).toHaveTextContent("Sa");
+    expect(columnHeaders[0]).toHaveTextContent("Sun");
+    expect(columnHeaders[6]).toHaveTextContent("Sat");
     expect(columnHeaders[0]).toHaveAttribute("aria-label", "Sunday");
     expect(columnHeaders[6]).toHaveAttribute("aria-label", "Saturday");
+  });
+
+  it("narrows weekday headers when weekdayFormat=narrow", () => {
+    render(<CalendarBase today={TODAY} locale="en-US" weekdayFormat="narrow" />);
+    const columnHeaders = screen.getAllByRole("columnheader");
+    expect(columnHeaders[0]).toHaveTextContent("M");
+    // The long name is still what assistive tech announces.
+    expect(columnHeaders[0]).toHaveAttribute("aria-label", "Monday");
+  });
+
+  it("localises month title, weekday headers and day labels", () => {
+    render(<CalendarBase today={TODAY} locale="fr-FR" />);
+    expect(screen.getAllByRole("columnheader")[0]).toHaveAttribute("aria-label", "lundi");
+    expect(screen.getByRole("grid")).toHaveAccessibleName("mars 2026");
   });
 
   it("renders 42 day buttons (6 rows x 7 columns)", () => {
@@ -59,18 +82,22 @@ describe("CalendarBase", () => {
 
   //  Value / Selected day
 
+  // aria-selected belongs to the gridcell (a button does not support it), so
+  // these assert on the wrapper and identify it by the button it contains.
   it("marks the selected day with aria-selected", () => {
     const value = new Date(2026, 2, 20); // March 20
     render(<CalendarBase value={value} today={TODAY} />);
-    const selected = screen.getByLabelText("March 20, 2026");
-    expect(selected).toHaveAttribute("aria-selected", "true");
+    const selected = screen.getAllByRole("gridcell", { selected: true });
+    expect(selected).toHaveLength(1);
+    expect(within(selected[0]).getByRole("button")).toHaveAccessibleName("March 20, 2026");
   });
 
   it("does not mark non-selected days with aria-selected", () => {
     const value = new Date(2026, 2, 20);
     render(<CalendarBase value={value} today={TODAY} />);
-    const otherDay = screen.getByLabelText("March 19, 2026");
-    expect(otherDay).not.toHaveAttribute("aria-selected");
+    const selected = screen.getAllByRole("gridcell", { selected: true });
+    expect(selected).toHaveLength(1);
+    expect(within(selected[0]).queryByLabelText("March 19, 2026")).toBeNull();
   });
 
   //  Today override
@@ -248,9 +275,9 @@ describe("CalendarBase", () => {
   //  Keyboard navigation
 
   describe("keyboard navigation", () => {
+    // The roving tab stop lives on the day <button>, not the gridcell wrapper.
     function getFocusedDay(): HTMLElement {
-      const cells = screen.getAllByRole("gridcell");
-      return cells.find((el) => el.getAttribute("tabindex") === "0")!;
+      return dayButtons().find((el) => el.getAttribute("tabindex") === "0")!;
     }
 
     it("moves focus right with ArrowRight", () => {
@@ -817,9 +844,10 @@ describe("CalendarBase range mode", () => {
 
   it("does not set range attributes in single mode", () => {
     render(<CalendarBase today={TODAY} value={new Date(2026, 2, 10)} />);
-    const day = screen.getByLabelText("March 10, 2026");
-    expect(day).toHaveAttribute("aria-selected", "true");
-    expect(day).not.toHaveAttribute("data-range-start");
+    const selected = screen.getAllByRole("gridcell", { selected: true });
+    expect(selected).toHaveLength(1);
+    expect(within(selected[0]).getByRole("button")).toHaveAccessibleName("March 10, 2026");
+    expect(screen.getByLabelText("March 10, 2026")).not.toHaveAttribute("data-range-start");
   });
 });
 

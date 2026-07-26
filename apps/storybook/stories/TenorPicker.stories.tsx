@@ -9,11 +9,10 @@ const meta: Meta<typeof TenorPicker> = {
   parameters: {
     layout: "centered",
   },
-  // Autodocs only (no a11y-test): the open popup is a roving listbox whose
-  // options carry a nested favourite-toggle button. Axe's nested-interactive
-  // gate for that pattern is tracked with the other listbox a11y work in
-  // Phase 6; add "a11y-test" once it lands (mirrors DateTenorPicker).
-  tags: ["autodocs"],
+  // Phase 6 removed the nested favourite-toggle button (the star is now
+  // decorative, toggled by clicking it or Ctrl+D), so the nested-interactive
+  // gate this was waiting on is satisfied.
+  tags: ["autodocs", "a11y-test"],
   argTypes: {
     variant: {
       control: "select",
@@ -54,7 +53,7 @@ export const WithValue: Story = {
 };
 
 /**
- * Type a free-form tenor — short (`3m`), long (`3 months`), or compound (`1y6m`).
+ * Type a free-form tenor - short (`3m`), long (`3 months`), or compound (`1y6m`).
  * The parser canonicalises it on commit.
  */
 export const FreeFormParsing: Story = {
@@ -112,7 +111,7 @@ export const FixedList: Story = {
   },
 };
 
-/** Flat, ungrouped list — the drop-in replacement for the deprecated `TenorInput`. */
+/** Flat, ungrouped list - the drop-in replacement for the deprecated `TenorInput`. */
 export const Flat: Story = {
   args: {
     grouped: false,

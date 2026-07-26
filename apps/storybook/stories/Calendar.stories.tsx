@@ -45,9 +45,9 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-  // a11y-test intentionally omitted: Calendar's grid semantics (button role
-  // override, focus preservation) are tracked for Phase 6; add the gate then.
-  tags: ["autodocs"],
+  // Phase 6 landed the grid fix (gridcell wrapper + date-based focus), so the
+  // a11y gate that was deferred for it is now enabled.
+  tags: ["autodocs", "a11y-test"],
   argTypes: {
     weekStartsOn: {
       control: "inline-radio",
@@ -151,15 +151,16 @@ export const Range: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const grid = canvas.getByRole("grid");
-    // Re-query cells after each click (state change re-renders the grid).
-    const cells = () => within(grid).getAllByRole("gridcell");
-    const firstEnabled = cells().findIndex((d) => !d.hasAttribute("disabled"));
+    // The day <button>s inside the grid (the gridcell is a wrapper). Re-query
+    // after each click, since the state change re-renders the grid.
+    const days = () => within(grid).getAllByRole("button");
+    const firstEnabled = days().findIndex((d) => !d.hasAttribute("disabled"));
 
-    await userEvent.click(cells()[firstEnabled]);
-    await expect(cells()[firstEnabled]).toHaveAttribute("data-range-start");
+    await userEvent.click(days()[firstEnabled]);
+    await expect(days()[firstEnabled]).toHaveAttribute("data-range-start");
 
-    await userEvent.click(cells()[firstEnabled + 4]);
-    await expect(cells()[firstEnabled + 4]).toHaveAttribute("data-range-end");
+    await userEvent.click(days()[firstEnabled + 4]);
+    await expect(days()[firstEnabled + 4]).toHaveAttribute("data-range-end");
   },
 };
 

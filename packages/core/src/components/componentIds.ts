@@ -59,6 +59,7 @@ export const componentIds = {
 
   // ComboBox
   comboBox: "combo-box",
+  comboBoxControl: "combo-box-control",
 
   // Dialog
   dialog: "dialog",

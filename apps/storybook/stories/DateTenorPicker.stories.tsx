@@ -18,10 +18,9 @@ const meta: Meta<typeof DateTenorPicker> = {
   parameters: {
     layout: "centered",
   },
-  // Autodocs only (no a11y-test): opening the popup renders the Calendar grid,
-  // whose APG grid-semantics gaps are tracked in Phase 6. Add the a11y gate
-  // once that lands (mirrors the Calendar story).
-  tags: ["autodocs"],
+  // Phase 6 landed the Calendar grid fix (gridcell wrapper + date-based focus),
+  // so the gate this was waiting on is satisfied.
+  tags: ["autodocs", "a11y-test"],
   argTypes: {
     variant: {
       control: "select",

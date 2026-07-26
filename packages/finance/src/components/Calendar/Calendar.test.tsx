@@ -1,9 +1,17 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
 import { describe, expect, it } from "vitest";
 
 import { Calendar } from "./Calendar";
+
+/**
+ * The day buttons are the only buttons inside `role="grid"` - the month nav
+ * lives in the header, which is a sibling of the grid.
+ */
+function dayButtons(): HTMLElement[] {
+  return within(screen.getByRole("grid")).getAllByRole("button");
+}
 
 const TODAY = new Date(2026, 2, 15); // March 15, 2026
 
@@ -38,20 +46,21 @@ describe("Calendar", () => {
 
   it("marks selected day", () => {
     const value = new Date(2026, 2, 20);
-    render(<Calendar value={value} today={TODAY} />);
-    expect(screen.getByLabelText("March 20, 2026")).toHaveAttribute("aria-selected", "true");
+    render(<Calendar value={value} locale="en-US" today={TODAY} />);
+    // aria-selected belongs to the gridcell, not the button inside it.
+    const selected = screen.getAllByRole("gridcell", { selected: true });
+    expect(selected).toHaveLength(1);
+    expect(within(selected[0]).getByRole("button")).toHaveAccessibleName("March 20, 2026");
   });
 
   it("applies SCSS module styles to day cells", () => {
     render(<Calendar today={TODAY} />);
-    const days = screen.getAllByRole("gridcell");
-    expect(days[0].className).toBeTruthy();
+    expect(dayButtons()[0].className).toBeTruthy();
   });
 
   it("merges user classNames with default styles", () => {
     render(<Calendar today={TODAY} classNames={{ day: "user-day", header: "user-header" }} />);
-    const days = screen.getAllByRole("gridcell");
-    expect(days[0]).toHaveClass("user-day");
+    expect(dayButtons()[0]).toHaveClass("user-day");
   });
 });
 

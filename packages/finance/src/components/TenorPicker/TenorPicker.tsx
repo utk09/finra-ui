@@ -97,7 +97,7 @@ export const TenorPicker = forwardRef<TenorPickerHandle, TenorPickerProps>(
         optionDisabled: styles.optionDisabled,
         optionFavourite: styles.optionFavourite,
         optionLabel: styles.optionLabel,
-        favouriteButton: styles.favouriteButton,
+        favouriteToggle: styles.favouriteToggle,
         favouriteActive: styles.favouriteActive,
         check: styles.check,
         empty: styles.empty,

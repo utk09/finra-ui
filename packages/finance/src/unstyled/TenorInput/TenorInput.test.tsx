@@ -19,7 +19,7 @@ describe("TenorInputBase", () => {
     const user = userEvent.setup();
     render(<TenorInputBase aria-label="Tenor" />);
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     expect(screen.getByText("ON")).toBeInTheDocument();
     expect(screen.getByText("3M")).toBeInTheDocument();
     expect(screen.getByText("1Y")).toBeInTheDocument();
@@ -30,7 +30,7 @@ describe("TenorInputBase", () => {
     const user = userEvent.setup();
     render(<TenorInputBase aria-label="Tenor" onChange={handleChange} />);
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     await user.click(screen.getByText("3M"));
     expect(handleChange).toHaveBeenCalledWith("3M");
   });
@@ -44,7 +44,7 @@ describe("TenorInputBase", () => {
     const user = userEvent.setup();
     render(<TenorInputBase aria-label="Tenor" allowedTenors={["1M", "3M"]} />);
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     expect(screen.getByText("1M")).toBeInTheDocument();
     expect(screen.getByText("3M")).toBeInTheDocument();
     expect(screen.queryByText("ON")).not.toBeInTheDocument();
@@ -54,7 +54,7 @@ describe("TenorInputBase", () => {
     const user = userEvent.setup();
     render(<TenorInputBase aria-label="Tenor" extraTenors={["4M"]} />);
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     expect(screen.getByText("4M")).toBeInTheDocument();
     expect(screen.getByText("ON")).toBeInTheDocument();
   });
@@ -63,7 +63,7 @@ describe("TenorInputBase", () => {
     const user = userEvent.setup();
     render(<TenorInputBase aria-label="Tenor" extraTenors={["3M"]} />);
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     const items = screen.getAllByText("3M");
     expect(items).toHaveLength(1);
   });
@@ -72,7 +72,7 @@ describe("TenorInputBase", () => {
     const user = userEvent.setup();
     render(<TenorInputBase aria-label="Tenor" />);
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
     await user.type(input, "1");
 
@@ -83,7 +83,7 @@ describe("TenorInputBase", () => {
 
   it("disabled state", () => {
     render(<TenorInputBase aria-label="Tenor" disabled />);
-    expect(screen.getByRole("searchbox")).toBeDisabled();
+    expect(screen.getByRole("combobox")).toBeDisabled();
   });
 
   it("handles allowCustom with valid tenor", async () => {
@@ -91,7 +91,7 @@ describe("TenorInputBase", () => {
     const user = userEvent.setup();
     render(<TenorInputBase aria-label="Tenor" allowCustom onChange={handleChange} />);
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
     await user.type(input, "4M");
 
@@ -105,7 +105,7 @@ describe("TenorInputBase", () => {
     const user = userEvent.setup();
     render(<TenorInputBase aria-label="Tenor" allowCustom onChange={handleChange} />);
 
-    const input = screen.getByRole("searchbox");
+    const input = screen.getByRole("combobox");
     await user.click(input);
     await user.type(input, "ABC");
 
@@ -119,7 +119,7 @@ describe("TenorInputBase", () => {
     const user = userEvent.setup();
     render(<TenorInputBase aria-label="Tenor" onChange={handleChange} />);
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     await user.click(screen.getByText("6M"));
     expect(handleChange).toHaveBeenCalledWith("6M");
   });
@@ -135,7 +135,7 @@ describe("TenorInputBase", () => {
     const user = userEvent.setup();
     render(<TenorInputBase aria-label="Tenor" open={false} onOpenChange={onOpenChange} />);
 
-    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("combobox"));
     expect(onOpenChange).toHaveBeenCalled();
   });
 });
