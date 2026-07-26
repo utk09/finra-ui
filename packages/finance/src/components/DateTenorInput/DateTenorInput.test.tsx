@@ -606,7 +606,7 @@ describe("DateTenorInput", () => {
     await user.click(screen.getByLabelText("Date"));
     expect(screen.getByText("Tenor")).toBeInTheDocument();
 
-    fireEvent.mouseDown(screen.getByText("Outside"));
+    fireEvent.pointerDown(screen.getByText("Outside"));
     expect(screen.queryByText("Tenor")).not.toBeInTheDocument();
   });
 

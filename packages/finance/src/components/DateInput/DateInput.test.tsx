@@ -471,7 +471,7 @@ describe("DateInput", () => {
       expect(screen.getByRole("grid")).toBeInTheDocument();
 
       // Click outside
-      fireEvent.mouseDown(screen.getByText("Outside"));
+      fireEvent.pointerDown(screen.getByText("Outside"));
       expect(screen.queryByRole("grid")).not.toBeInTheDocument();
     });
 
@@ -639,7 +639,7 @@ describe("DateInput", () => {
       );
 
       // Calendar not open - clicking outside should not throw or break
-      fireEvent.mouseDown(screen.getByText("Outside"));
+      fireEvent.pointerDown(screen.getByText("Outside"));
       expect(screen.queryByRole("grid")).not.toBeInTheDocument();
     });
   });

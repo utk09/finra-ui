@@ -26,7 +26,20 @@ describe("useClickOutside", () => {
     const handler = vi.fn();
     render(<TestComponent onClickOutside={handler} enabled={true} />);
 
+    fireEvent.pointerDown(screen.getByText("Outside"));
+    expect(handler).toHaveBeenCalledOnce();
+  });
+
+  it("listens for pointerdown, not mousedown", () => {
+    // iOS Safari does not synthesise `mousedown` reliably, so a mousedown-based
+    // listener silently fails to dismiss on touch. Pinned so it cannot regress.
+    const handler = vi.fn();
+    render(<TestComponent onClickOutside={handler} enabled={true} />);
+
     fireEvent.mouseDown(screen.getByText("Outside"));
+    expect(handler).not.toHaveBeenCalled();
+
+    fireEvent.pointerDown(screen.getByText("Outside"));
     expect(handler).toHaveBeenCalledOnce();
   });
 
@@ -34,7 +47,7 @@ describe("useClickOutside", () => {
     const handler = vi.fn();
     render(<TestComponent onClickOutside={handler} enabled={true} />);
 
-    fireEvent.mouseDown(screen.getByText("Inside"));
+    fireEvent.pointerDown(screen.getByText("Inside"));
     expect(handler).not.toHaveBeenCalled();
   });
 
@@ -42,7 +55,7 @@ describe("useClickOutside", () => {
     const handler = vi.fn();
     render(<TestComponent onClickOutside={handler} enabled={false} />);
 
-    fireEvent.mouseDown(screen.getByText("Outside"));
+    fireEvent.pointerDown(screen.getByText("Outside"));
     expect(handler).not.toHaveBeenCalled();
   });
 
@@ -51,7 +64,7 @@ describe("useClickOutside", () => {
     const { unmount } = render(<TestComponent onClickOutside={handler} enabled={true} />);
 
     unmount();
-    fireEvent.mouseDown(document.body);
+    fireEvent.pointerDown(document.body);
     expect(handler).not.toHaveBeenCalled();
   });
 
@@ -60,7 +73,7 @@ describe("useClickOutside", () => {
     const { rerender } = render(<TestComponent onClickOutside={handler} enabled={true} />);
 
     rerender(<TestComponent onClickOutside={handler} enabled={false} />);
-    fireEvent.mouseDown(document.body);
+    fireEvent.pointerDown(document.body);
     expect(handler).not.toHaveBeenCalled();
   });
 });

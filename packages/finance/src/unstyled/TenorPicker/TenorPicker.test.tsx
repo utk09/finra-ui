@@ -1,4 +1,4 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -115,6 +115,25 @@ describe("TenorPickerBase", () => {
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("closes on an outside pointer", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <TenorPickerBase aria-label="Tenor" />
+        <button type="button">Outside</button>
+      </>,
+    );
+
+    const input = screen.getByRole("combobox", { name: "Tenor" });
+    await user.click(input);
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+
+    // `pointerdown`, not `mousedown` - the latter is not synthesised reliably
+    // on iOS Safari, so a mousedown-based dismiss silently fails on touch.
+    fireEvent.pointerDown(screen.getByRole("button", { name: "Outside" }));
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
   });
 
   it("pins favourites into a first group and toggles via the star", async () => {
