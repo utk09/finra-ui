@@ -1,5 +1,14 @@
 # @utk09/finra-ui-finance
 
+## 0.0.15
+
+### Patch Changes
+
+- add icons
+- Updated dependencies
+  - @utk09/finra-ui@0.0.15
+  - @utk09/finra-ui-icons@0.0.15
+
 ## 0.0.14
 
 ### Patch Changes
