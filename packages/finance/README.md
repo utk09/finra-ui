@@ -5,6 +5,14 @@ Financial domain components for the Finra UI component system - built for trader
 [![npm version](https://img.shields.io/npm/v/@utk09/finra-ui-finance.svg)](https://www.npmjs.com/package/@utk09/finra-ui-finance)
 [![Storybook](https://img.shields.io/badge/Storybook-deployed-ff4785)](https://finra-ui.netlify.app)
 
+## Packages
+
+| Package                                                                                                                                                               | Description                                                                                                                                     |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) · [README](https://github.com/utk09/finra-ui/blob/main/packages/core/README.md)                    | Core components - buttons, inputs, forms, overlays (Dialog, Tooltip, Popover, Select, Menu, Toast), Tabs, ComboBox, and unstyled primitives     |
+| [`@utk09/finra-ui-finance`](https://www.npmjs.com/package/@utk09/finra-ui-finance) · [README](https://github.com/utk09/finra-ui/blob/main/packages/finance/README.md) | Financial domain components - Calendar, DateInput, DateTenorInput, DateTenorPicker, TenorPicker, PriceInput - plus parsing/formatting utilities |
+| [`@utk09/finra-ui-icons`](https://www.npmjs.com/package/@utk09/finra-ui-icons) · [README](https://github.com/utk09/finra-ui/blob/main/packages/icons/README.md)       | SVG icons as framework-agnostic data objects + React components                                                                                 |
+
 ## Installation
 
 ```bash
