@@ -23,6 +23,6 @@ export default defineConfig({
     rolldownOptions: {
       external: ["react", "react/jsx-runtime"],
     },
-    sourcemap: true,
+    sourcemap: false,
   },
 });
