@@ -38,7 +38,6 @@ export type {
   PriceInputBaseProps,
   PriceInputClassNames,
   PriceInputHandle,
-  PriceInstrument,
   PriceValidationResult,
   PriceValidator,
 } from "./unstyled/PriceInput/PriceInput";

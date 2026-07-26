@@ -41,6 +41,31 @@ export type PriceFormatter = (value: number, opts?: PriceFormatOptions) => strin
 /** Signature of a replacement tick engine (component `tickEngine` prop). */
 export type TickEngine = (value: number, steps: number, opts?: PriceFormatOptions) => number;
 
+/**
+ * Quoting convention for an instrument: how many decimals it shows, where the
+ * pip sits, its tick size and its bounds. Explicit component props override
+ * each field individually.
+ *
+ * Pure configuration, so it lives beside the other price types rather than with
+ * the React input that happens to consume it - that keeps it usable by anything
+ * describing an instrument, not just by a rendered field.
+ */
+export interface PriceInstrument {
+  format?: PriceFormat;
+  /** Primary decimals (e.g. 4 for FX `1.0834`). Alias: `precision`. */
+  primaryPrecision?: number;
+  /** Extra fractional-precision digits (e.g. 1 for the trailing pip fraction). */
+  precisionDigits?: number;
+  /** Total decimals shown (default primary + precisionDigits). */
+  displayPrecision?: number;
+  /** Legacy single-precision alias for `primaryPrecision`. */
+  precision?: number;
+  tickSize?: number;
+  bondSeparator?: string;
+  min?: number;
+  max?: number;
+}
+
 const BOND_TICK = 1 / 32;
 
 function defaultPrecision(format: PriceFormat): number {
@@ -171,8 +196,7 @@ export interface PriceSegmentConfig {
 }
 
 /**
- * Split a formatted decimal price into semantic segments for visual hierarchy
- * (FIN-001-01).
+ * Split a formatted decimal price into semantic segments for visual hierarchy.
  *
  * 2-tier (`primaryPrecision` / a bare number): `1.08345` @ 4 →
  * `1` `.` `0834` `5` (primary vs precision).

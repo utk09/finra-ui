@@ -83,7 +83,7 @@ export interface TenorPickerBaseProps extends Omit<
   /** Fired when the committed tenor changes (null when cleared). */
   onChange?: (tenor: string | null) => void;
 
-  /** Tenors to offer. Defaults to the JIRA market set. */
+  /** Tenors to offer. Defaults to the standard market set. */
   tenors?: readonly string[];
   /** Per-tenor display label overrides. */
   tenorLabels?: Record<string, string>;
@@ -425,8 +425,7 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
         } else if (event.ctrlKey && event.key.toLowerCase() === "d") {
           // Ctrl+D toggles the highlighted option's favourite. The star is
           // decorative, so this is the only keyboard route to favouriting -
-          // without it the feature is mouse-only (FIN-002-04 requires it be
-          // keyboard accessible).
+          // without it the feature would be mouse-only.
           if (isOpen && showFavourites && highlight >= 0) {
             event.preventDefault();
             toggleFavourite(flat[highlight].tenor);

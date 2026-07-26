@@ -269,7 +269,9 @@ function ComboBoxBaseRender<T = string>(
   const [activePillIndex, setActivePillIndex] = useState(0);
   const pillListRef = useRef<HTMLDivElement>(null);
   // Set when a removal should hand focus to another pill once React re-renders.
-  const pendingPillFocus = useRef<number | null>(null);
+  // `expectedCount` is the pill count that removal should produce; if the next
+  // commit disagrees, the parent declined and the request is dropped.
+  const pendingPillFocus = useRef<{ index: number; expectedCount: number } | null>(null);
 
   // Wire the combobox input into an enclosing FormField (the input is the
   // labelable element). Works at any depth; no-op when standalone.
@@ -382,19 +384,30 @@ function ComboBoxBaseRender<T = string>(
         inputRef.current?.focus();
       } else {
         setActivePillIndex(nextActive);
-        // The pill only exists after the parent re-renders with the new value.
-        pendingPillFocus.current = nextActive;
+        // The pill only exists once the parent re-renders with the new value,
+        // so record what that render should look like and verify it below.
+        pendingPillFocus.current = { index: nextActive, expectedCount: remaining };
       }
     },
     [selectedValues, onChange],
   );
 
+  // Two guards, both needed:
+  //
+  // Unkeyed, so the request is consumed on the very next commit whatever caused
+  // it - keying it to `selectedValues` left it armed indefinitely when a
+  // controlled parent declined the removal.
+  //
+  // `expectedCount`, because "declined" can mean no re-render at all (the index
+  // is unchanged, so the setState bails). The request then survives until some
+  // unrelated render, and without this check that render would yank focus into
+  // the pill list out of nowhere.
   useEffect(() => {
-    const target = pendingPillFocus.current;
-    if (target == null) return;
+    const pending = pendingPillFocus.current;
+    if (!pending) return;
     pendingPillFocus.current = null;
-    focusPill(target);
-  }, [selectedValues, focusPill]);
+    if (selectedValues.length === pending.expectedCount) focusPill(pending.index);
+  });
 
   const handlePillKeyDown = useCallback(
     (e: KeyboardEvent<HTMLDivElement>) => {

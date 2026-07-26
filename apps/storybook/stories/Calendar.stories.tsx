@@ -45,8 +45,7 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-  // Phase 6 landed the grid fix (gridcell wrapper + date-based focus), so the
-  // a11y gate that was deferred for it is now enabled.
+  // Day cells follow the APG grid pattern, so the a11y gate applies.
   tags: ["autodocs", "a11y-test"],
   argTypes: {
     weekStartsOn: {

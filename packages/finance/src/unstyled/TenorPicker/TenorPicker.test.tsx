@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -213,7 +213,8 @@ describe("TenorPickerBase", () => {
     const ref = createRef<TenorPickerHandle>();
     const { onChange } = setup({ ref, defaultValue: "3M" });
     expect(ref.current?.getValue()).toBe("3M");
-    ref.current?.clear();
+    // clear() commits through component state, so React must flush it.
+    act(() => ref.current?.clear());
     expect(onChange).toHaveBeenCalledWith(null);
   });
 

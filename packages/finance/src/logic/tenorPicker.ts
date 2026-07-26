@@ -29,7 +29,7 @@ export const DEFAULT_TENOR_GROUP_LABELS: Record<TenorGroupId, string> = {
   custom: "Custom",
 };
 
-/** JIRA-specified default market tenor set. */
+/** Default market tenor set. */
 export const DEFAULT_STANDARD_TENORS = [
   "ON",
   "TN",
@@ -223,7 +223,14 @@ export function moveTenorHighlight(
 ): number {
   const count = flat.length;
   if (count === 0) return -1;
-  let next = current;
+
+  // With nothing highlighted, entering backwards has to start *past* the end so
+  // the first step lands on the last option. Stepping back from -1 arrives at
+  // count - 2 instead, which is reachable: clicking the input opens the popup
+  // without a highlight, so ArrowUp would skip to the second-to-last option.
+  const start = current >= 0 ? current : direction === 1 ? -1 : count;
+
+  let next = start;
   for (let step = 0; step < count; step++) {
     next = (next + direction + count) % count;
     if (!flat[next].disabled) return next;

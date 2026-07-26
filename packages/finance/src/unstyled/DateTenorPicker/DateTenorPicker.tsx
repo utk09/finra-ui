@@ -30,7 +30,7 @@ import { CalendarBase } from "../Calendar/Calendar";
 
 //  Types
 
-/** Default tenor suggestions (JIRA-specified market set). */
+/** Default market tenor suggestions. */
 const DEFAULT_TENOR_OPTIONS = [
   "ON",
   "TN",

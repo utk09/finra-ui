@@ -9,9 +9,8 @@ const meta: Meta<typeof TenorPicker> = {
   parameters: {
     layout: "centered",
   },
-  // Phase 6 removed the nested favourite-toggle button (the star is now
-  // decorative, toggled by clicking it or Ctrl+D), so the nested-interactive
-  // gate this was waiting on is satisfied.
+  // The favourite star is decorative (click it, or Ctrl+D), so options contain
+  // no nested interactive controls and the a11y gate applies.
   tags: ["autodocs", "a11y-test"],
   argTypes: {
     variant: {

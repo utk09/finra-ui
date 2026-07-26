@@ -30,6 +30,7 @@ import {
   type PriceFormat,
   type PriceFormatOptions,
   type PriceFormatter,
+  type PriceInstrument,
   type PriceParser,
   type PriceParseResult,
   type PriceSegment,
@@ -38,23 +39,6 @@ import {
 } from "../../utils/priceFormat";
 
 //  Types
-
-/** Bundled instrument metadata; explicit props override these. */
-export interface PriceInstrument {
-  format?: PriceFormat;
-  /** Primary decimals (e.g. 4 for FX `1.0834`). Alias: `precision`. */
-  primaryPrecision?: number;
-  /** Extra fractional-precision digits (e.g. 1 for the trailing pip fraction). */
-  precisionDigits?: number;
-  /** Total decimals shown (default primary + precisionDigits). */
-  displayPrecision?: number;
-  /** Legacy single-precision alias for `primaryPrecision`. */
-  precision?: number;
-  tickSize?: number;
-  bondSeparator?: string;
-  min?: number;
-  max?: number;
-}
 
 /** Result of value-level validation (after a successful parse). */
 export interface PriceValidationResult {

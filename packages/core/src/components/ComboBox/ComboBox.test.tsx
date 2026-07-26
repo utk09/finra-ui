@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { ComboBox, type ComboBoxOption } from "./ComboBox";
@@ -691,7 +692,7 @@ describe("ComboBox", () => {
       render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
 
       const input = screen.getByRole("combobox");
-      input.focus();
+      act(() => input.focus());
       await user.keyboard("{Escape}");
 
       await user.keyboard("{Alt>}{ArrowDown}{/Alt}");
@@ -769,7 +770,7 @@ describe("ComboBox", () => {
       const user = userEvent.setup();
       const onChange = renderMulti();
 
-      screen.getByLabelText("Remove Apple").focus();
+      act(() => screen.getByLabelText("Remove Apple").focus());
       await user.keyboard("{Delete}");
 
       expect(onChange).toHaveBeenCalledWith(["banana"]);
@@ -779,7 +780,7 @@ describe("ComboBox", () => {
       const user = userEvent.setup();
       const onChange = renderMulti();
 
-      screen.getByLabelText("Remove Banana").focus();
+      act(() => screen.getByLabelText("Remove Banana").focus());
       await user.keyboard("{Enter}");
 
       expect(onChange).toHaveBeenCalledWith(["apple"]);
@@ -789,7 +790,7 @@ describe("ComboBox", () => {
       const user = userEvent.setup();
       renderMulti();
 
-      screen.getByLabelText("Remove Apple").focus();
+      act(() => screen.getByLabelText("Remove Apple").focus());
       await user.keyboard("{ArrowRight}");
       expect(screen.getByLabelText("Remove Banana")).toHaveFocus();
 
@@ -801,7 +802,7 @@ describe("ComboBox", () => {
       const user = userEvent.setup();
       renderMulti();
 
-      screen.getByLabelText("Remove Banana").focus();
+      act(() => screen.getByLabelText("Remove Banana").focus());
       await user.keyboard("{ArrowRight}");
       expect(screen.getByRole("combobox")).toHaveFocus();
     });
@@ -810,7 +811,7 @@ describe("ComboBox", () => {
       const user = userEvent.setup();
       renderMulti();
 
-      screen.getByRole("combobox").focus();
+      act(() => screen.getByRole("combobox").focus());
       await user.keyboard("{ArrowLeft}");
       expect(screen.getByLabelText("Remove Banana")).toHaveFocus();
     });
@@ -818,6 +819,77 @@ describe("ComboBox", () => {
     it("groups the pills in a list for assistive tech", () => {
       renderMulti();
       expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    });
+
+    // The tests above hold `value` static, so the parent never actually applies
+    // the removal. These drive a real stateful parent, which is the only way the
+    // post-removal focus handoff is exercised.
+    function StatefulMulti({ initial }: { initial: string[] }) {
+      const [value, setValue] = useState<string[] | null>(initial);
+      return (
+        <ComboBox
+          options={options}
+          value={value}
+          onChange={(next) => setValue(next as string[] | null)}
+          multiple
+          placeholder="Select"
+        />
+      );
+    }
+
+    it("moves focus to the pill that takes the removed one's place", async () => {
+      const user = userEvent.setup();
+      render(<StatefulMulti initial={["apple", "banana", "cherry"]} />);
+
+      act(() => screen.getByLabelText("Remove Banana").focus());
+      await user.keyboard("{Delete}");
+
+      expect(screen.queryByLabelText("Remove Banana")).toBeNull();
+      // Cherry slid into Banana's index, so focus follows the position.
+      expect(screen.getByLabelText("Remove Cherry")).toHaveFocus();
+    });
+
+    it("returns focus to the input when the last pill is removed", async () => {
+      const user = userEvent.setup();
+      render(<StatefulMulti initial={["apple"]} />);
+
+      act(() => screen.getByLabelText("Remove Apple").focus());
+      await user.keyboard("{Delete}");
+
+      expect(screen.queryByRole("listitem")).toBeNull();
+      expect(screen.getByRole("combobox")).toHaveFocus();
+    });
+
+    it("does not steal focus on a later change when a removal was declined", async () => {
+      const user = userEvent.setup();
+      // Controlled parent that ignores removals but accepts additions - the
+      // shape that used to leave a focus target armed indefinitely.
+      function DecliningParent() {
+        const [value, setValue] = useState<string[] | null>(["apple", "banana"]);
+        return (
+          <ComboBox
+            options={options}
+            value={value}
+            onChange={(next) => {
+              const arr = (next as string[] | null) ?? [];
+              if (arr.length >= 2) setValue(arr);
+            }}
+            multiple
+            placeholder="Select"
+          />
+        );
+      }
+      render(<DecliningParent />);
+
+      act(() => screen.getByLabelText("Remove Apple").focus());
+      await user.keyboard("{Delete}"); // declined: still two pills
+      expect(screen.getAllByRole("listitem")).toHaveLength(2);
+
+      // An unrelated accepted change must not drag focus back into the pills.
+      await user.click(screen.getByRole("combobox"));
+      await user.click(screen.getByRole("option", { name: "Cherry" }));
+
+      expect(screen.getByRole("combobox")).toHaveFocus();
     });
   });
 });

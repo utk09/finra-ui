@@ -126,6 +126,14 @@ describe("resolveComboBoxKey", () => {
     });
   });
 
+  it("ArrowUp with nothing highlighted goes to the last option", () => {
+    // Focusing the input opens the listbox with no highlight, so this is the
+    // ArrowUp-after-focus path; stepping back from -1 must not land on count-2.
+    expect(resolveComboBoxKey("ArrowUp", ctx({ highlightedIndex: -1, totalNavigable: 4 }))).toEqual(
+      { preventDefault: true, effects: [{ kind: "setHighlight", index: 3 }] },
+    );
+  });
+
   //  Enter
 
   it("Enter selects the highlighted option", () => {

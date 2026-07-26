@@ -18,8 +18,7 @@ const meta: Meta<typeof DateTenorPicker> = {
   parameters: {
     layout: "centered",
   },
-  // Phase 6 landed the Calendar grid fix (gridcell wrapper + date-based focus),
-  // so the gate this was waiting on is satisfied.
+  // The Calendar popup meets the APG grid pattern, so the a11y gate applies.
   tags: ["autodocs", "a11y-test"],
   argTypes: {
     variant: {
@@ -225,8 +224,8 @@ export const AsyncHolidayProvider: Story = {
 };
 
 /**
- * Shows the resolved settlement date + mode/broken-date badges beside the field
- * (FIN-003-04/06/07). Type a non-standard date (e.g. `2027-07-13`) to see the
+ * Shows the resolved settlement date + mode/broken-date badges beside the
+ * field. Type a non-standard date (e.g. `2027-07-13`) to see the
  * "Broken" badge.
  */
 export const WithResolvedDate: Story = {

@@ -38,7 +38,6 @@ Operational guide for current and future maintainers of finra-ui.
 
 - **Storybook** (finra-ui.netlify.app) deploys from Netlify; it is the primary consumer-facing documentation. Stories are part of the definition of done for component changes.
 - **READMEs**: root + per-package READMEs are consumer-facing - update component tables and export lists when the public API changes.
-- **PLAN.md** tracks phase/epic status - update status markers when work lands.
 - **CONTRIBUTING.md** is the source of truth for conventions - if a review establishes a new pattern, land it there in the same PR.
 
 ## Updating Dependencies
@@ -46,7 +45,7 @@ Operational guide for current and future maintainers of finra-ui.
 - All versions live in the **`pnpm-workspace.yaml` catalog**. Bump there; packages reference `"catalog:"`.
 - After bumping: `pnpm install`, then `pnpm verify` (lint → typecheck → test:coverage → build). Run the full `pnpm test` too - Storybook `play` tests run in a real browser and catch what jsdom misses.
 - Major upgrades of build-critical tools (Vite, Vitest, Storybook, TypeScript, ESLint) get their own PR with a changeset only if build output changes.
-- Runtime dependency additions to published packages are rare and deliberate (current set: `clsx`, `class-variance-authority`, `@floating-ui/dom`). New runtime deps need a written justification in the PR (see `@floating-ui/dom` precedent in PLAN.md).
+- Runtime dependency additions to published packages are rare and deliberate (current set: `clsx`, `class-variance-authority`, `@floating-ui/dom`). New runtime deps need a written justification in the PR: what it buys, why it cannot be a devDependency, and its bundle cost.
 - Node version is pinned in `.nvmrc` (22) and mirrored in CI and Netlify - bump all three together.
 
 ## Versioning

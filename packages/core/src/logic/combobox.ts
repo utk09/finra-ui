@@ -178,14 +178,21 @@ export interface ComboBoxKeyResult {
 const none = (): ComboBoxKeyResult => ({ preventDefault: false, effects: [] });
 
 const wrapNext = (current: number, count: number): number => (current + 1) % count;
-const wrapPrev = (current: number, count: number): number => (current - 1 + count) % count;
+
+/**
+ * Nothing highlighted (-1) must step to the LAST option, not `count - 2`.
+ * Reachable: focusing the input opens the listbox without a highlight, so
+ * ArrowUp would otherwise skip the final option.
+ */
+const wrapPrev = (current: number, count: number): number =>
+  current < 0 ? count - 1 : (current - 1 + count) % count;
 
 type KeyHandler = (ctx: ComboBoxKeyContext) => ComboBoxKeyResult;
 
 /**
  * Keyboard map as data (Zag.js / React-Aria style). Each key maps to a pure
- * function of context → effects. RTL support (Phase 6) becomes a transform
- * over this table rather than edits scattered through a switch statement.
+ * function of context → effects, so directional concerns like RTL become a
+ * transform over this table rather than edits scattered through a switch.
  */
 const keyMap: Record<string, KeyHandler> = {
   ArrowDown: (ctx) => {

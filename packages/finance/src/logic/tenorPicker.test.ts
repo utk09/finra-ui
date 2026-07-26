@@ -140,6 +140,13 @@ describe("moveTenorHighlight", () => {
     expect(moveTenorHighlight(flat, 0, -1)).toBe(2);
   });
 
+  it("enters the list from nothing highlighted", () => {
+    expect(moveTenorHighlight(flat, -1, 1)).toBe(0);
+    // Backwards must reach the LAST option. Clicking the input opens the popup
+    // with no highlight, so this is the ArrowUp-after-click path.
+    expect(moveTenorHighlight(flat, -1, -1)).toBe(2);
+  });
+
   it("returns -1 when empty", () => {
     expect(moveTenorHighlight([], -1, 1)).toBe(-1);
   });

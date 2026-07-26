@@ -38,7 +38,6 @@ export type { PriceInputProps } from "./components/PriceInput/PriceInput";
 export { PriceInput } from "./components/PriceInput/PriceInput";
 export type {
   PriceInputHandle,
-  PriceInstrument,
   PriceValidationResult,
   PriceValidator,
 } from "./unstyled/PriceInput/PriceInput";

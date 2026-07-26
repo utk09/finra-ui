@@ -28,6 +28,25 @@ export {
   STANDARD_TENORS,
 } from "./utils/tenor";
 
+// Currency-pair parse/format (CurrencyPairPicker's pluggable-parser seam)
+export type {
+  CurrencyPairFormatOptions,
+  CurrencyPairParseError,
+  CurrencyPairParseOptions,
+  CurrencyPairParseResult,
+  CurrencyPairValue,
+} from "./utils/currencyPair";
+export {
+  collectCurrencyCodes,
+  currencyDisplayName,
+  DEFAULT_PAIR_SEPARATORS,
+  formatCurrencyPair,
+  isCurrencyCode,
+  OPTIONAL_PAIR_SEPARATORS,
+  pairId,
+  parseCurrencyPair,
+} from "./utils/currencyPair";
+
 // Unified date/tenor parser (DateTenorPicker's pluggable-parser seam)
 export type {
   DateTenorMode,
@@ -38,11 +57,25 @@ export type {
 } from "./utils/dateTenorParse";
 export { parseDateTenor } from "./utils/dateTenorParse";
 
+// Decimal arithmetic that avoids binary floating-point artefacts
+export {
+  addDecimal,
+  decimalPlaces,
+  divideDecimal,
+  multiplyDecimal,
+  productDecimal,
+  roundToDecimals,
+  scaleByPowerOfTen,
+  subtractDecimal,
+  sumDecimal,
+} from "./utils/decimal";
+
 // Market-aware price parse/format/tick (PriceInput's pluggable seams)
 export type {
   PriceFormat,
   PriceFormatOptions,
   PriceFormatter,
+  PriceInstrument,
   PriceParser,
   PriceParseResult,
   PriceSegment,
