@@ -1,5 +1,11 @@
 # @utk09/finra-ui-icons
 
+## 0.1.0
+
+### Minor Changes
+
+- add CurrencyPairPicker, async currency pair search and selection combobox, bump to minor
+
 ## 0.0.15
 
 ### Patch Changes
