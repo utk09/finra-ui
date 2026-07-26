@@ -1,0 +1,327 @@
+//  Root - wrapper only. The listbox is portalled out of it, so this element is
+//  not a positioning context for the popup the way an inline dropdown's would be.
+.root {
+  display: inline-flex;
+  inline-size: 16rem;
+
+  &.fullWidth {
+    inline-size: 100%;
+  }
+}
+
+//  Control shell - the visible input bar, and the anchor the portalled panel
+//  is positioned and sized against.
+.control {
+  --_input-border-color: var(--finra-color-border);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--finra-density-gap);
+  inline-size: 100%;
+  block-size: var(--finra-density-size-base);
+  padding-inline: var(--finra-density-input-padding-x);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-density-input-font-size);
+  line-height: var(--finra-leading-normal);
+  background-color: var(--finra-color-background);
+  border: var(--finra-border-thin) solid var(--_input-border-color);
+  border-radius: var(--finra-radius-md);
+  transition: border-color var(--finra-duration-fast) ease-in-out;
+  cursor: var(--finra-cursor-text);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:focus-within {
+    --_input-border-color: var(--finra-actionable-emphasis);
+  }
+}
+
+//  Variants
+.variantSecondary .control {
+  background-color: var(--finra-color-neutral-50);
+}
+
+.variantTertiary .control {
+  border-color: var(--finra-color-transparent);
+  border-block-end-color: var(--_input-border-color);
+  border-radius: 0;
+}
+
+//  Validation
+.statusError .control {
+  --_input-border-color: var(--finra-status-danger-accent);
+}
+
+.statusWarning .control {
+  --_input-border-color: var(--finra-status-warning-accent);
+}
+
+.statusSuccess .control {
+  --_input-border-color: var(--finra-status-success-accent);
+}
+
+//  Disabled - explicit colors rather than opacity, to keep WCAG contrast
+.disabled {
+  cursor: var(--finra-cursor-disabled);
+
+  .control {
+    background-color: var(--finra-color-neutral-50);
+    border-color: var(--finra-color-neutral-200);
+  }
+
+  .input {
+    color: var(--finra-color-neutral-300);
+    cursor: var(--finra-cursor-disabled);
+  }
+
+  .indicator {
+    color: var(--finra-color-neutral-200);
+  }
+}
+
+//  Text field
+.input {
+  flex: 1;
+  min-inline-size: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  color: var(--finra-color-foreground);
+  text-transform: uppercase;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::placeholder {
+    // Placeholders are prose, not codes.
+    text-transform: none;
+    color: var(--finra-color-neutral-400);
+  }
+}
+
+//  Dropdown indicator (decorative chevron)
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--finra-color-neutral-400);
+  transition: transform var(--finra-duration-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  > svg {
+    inline-size: var(--finra-density-icon-size);
+    block-size: var(--finra-density-icon-size);
+  }
+
+  &.indicatorOpen {
+    transform: rotate(180deg);
+  }
+}
+
+//  Portalled panel - free-floating, so it carries its own chrome on all sides.
+//  Position and width come from the anchoring hook as inline styles.
+.listbox {
+  z-index: 50;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--finra-color-background);
+  border: var(--finra-border-thin) solid var(--finra-color-border);
+  border-radius: var(--finra-radius-md);
+  box-shadow: var(--finra-shadow-lg);
+  overflow: hidden;
+}
+
+//  Scroll container, separate from the panel so its border and shadow stay put
+.options {
+  max-block-size: 20rem;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  padding-block: calc(var(--finra-density-gap) * 0.5);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+
+  & + & {
+    border-block-start: var(--finra-border-thin) solid var(--finra-color-neutral-100);
+    margin-block-start: calc(var(--finra-density-gap) * 0.5);
+    padding-block-start: calc(var(--finra-density-gap) * 0.5);
+  }
+}
+
+.sectionLabel {
+  padding-inline: var(--finra-density-gap);
+  padding-block: calc(var(--finra-density-gap) * 0.4);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-xs);
+  font-weight: var(--finra-font-semibold);
+  color: var(--finra-color-neutral-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  user-select: none;
+}
+
+//  Option row
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--finra-density-gap);
+  padding-inline: var(--finra-density-gap);
+  padding-block: calc(var(--finra-density-gap) * 0.5);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-sm);
+  color: var(--finra-color-foreground);
+  cursor: var(--finra-cursor-pointer);
+  user-select: none;
+  outline: none;
+  transition: background-color var(--finra-duration-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover:not(.optionDisabled) {
+    background-color: var(--finra-actionable-accent-subtle);
+  }
+
+  //  Keyboard-highlighted (roving) row.
+  //  Accent, not emphasis - white on emphasis (primary-500) is 3.67:1, under AA.
+  &.optionHighlighted {
+    background-color: var(--finra-actionable-accent);
+    color: var(--finra-actionable-foreground);
+  }
+
+  &.optionSelected .optionSymbol {
+    font-weight: var(--finra-font-semibold);
+  }
+
+  &.optionDisabled {
+    color: var(--finra-color-neutral-300);
+    cursor: var(--finra-cursor-disabled);
+  }
+}
+
+//  The canonical symbol. Tabular figures so codes line up column-wise down the
+//  list, which is how a trader scans it.
+.optionSymbol {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+//  Secondary descriptive name - truncates first, since the symbol is identity.
+.optionName {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--finra-text-xs);
+  color: var(--finra-color-neutral-500);
+
+  .optionHighlighted & {
+    color: var(--finra-actionable-foreground);
+  }
+}
+
+//  Instrument badges
+.badges {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: calc(var(--finra-density-gap) * 0.5);
+}
+
+//  Outlined rather than filled, and deliberately so: a badge here labels the
+//  instrument (NDF, G10, Restricted), it does not carry a sentiment. A tinted
+//  chip would read as status or as something actionable. An outline also keeps
+//  both colours on the mode-aware semantic tier, so it survives dark mode -
+//  a neutral-scale fill would not, the neutral scale being mode-invariant.
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: calc(var(--finra-density-gap) * 0.5);
+  padding-block: 0;
+  font-size: var(--finra-text-xs);
+  font-weight: var(--finra-font-medium);
+  line-height: 1.5;
+  color: var(--finra-container-foreground);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
+  border-radius: var(--finra-radius-sm);
+  white-space: nowrap;
+
+  // On the highlighted row the chip sits on the accent fill, so it restates the
+  // on-accent foreground - softened for the border so the outline reads as a
+  // hairline rather than competing with the text.
+  .optionHighlighted & {
+    color: var(--finra-actionable-foreground);
+    border-color: color-mix(in srgb, var(--finra-actionable-foreground) 45%, transparent);
+  }
+
+  .optionDisabled & {
+    color: var(--finra-color-neutral-400);
+    border-color: var(--finra-color-neutral-200);
+  }
+}
+
+//  Favourite star.
+//  A decorative <span>, not a button: a listbox option may not contain
+//  interactive descendants. Clicks are handled by the option itself.
+.favouriteToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: var(--finra-text-base);
+  line-height: 1;
+  color: var(--finra-color-neutral-400);
+  cursor: var(--finra-cursor-pointer);
+  transition: color var(--finra-duration-fast) ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    color: var(--finra-status-warning-accent);
+  }
+
+  &.favouriteActive {
+    color: var(--finra-status-warning-accent);
+  }
+
+  .optionHighlighted & {
+    color: var(--finra-actionable-foreground);
+  }
+}
+
+//  Status rows - empty / loading / error
+.empty,
+.loading {
+  padding-inline: var(--finra-density-gap);
+  padding-block: calc(var(--finra-density-gap) * 0.75);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-sm);
+  color: var(--finra-color-neutral-500);
+  user-select: none;
+}
+
+.error {
+  padding-inline: var(--finra-density-gap);
+  padding-block: calc(var(--finra-density-gap) * 0.75);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-sm);
+  color: var(--finra-status-danger-accent);
+  user-select: none;
+}

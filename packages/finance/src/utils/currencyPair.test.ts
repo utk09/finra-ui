@@ -167,6 +167,44 @@ describe("parseCurrencyPair — registry-driven splitting (crypto)", () => {
   });
 });
 
+describe("parseCurrencyPair - strictCodes", () => {
+  it("accepts separated input outside the registry when strictness is waived", () => {
+    // The separator already did the splitting, so membership is a separate
+    // question - and against an async provider the local registry is only
+    // whatever the last search returned.
+    expect(parseCurrencyPair("GBP/JPY", { codes: ["GBP", "USD"] })).toMatchObject({
+      error: "unknown-code",
+    });
+    expect(
+      parseCurrencyPair("GBP/JPY", { codes: ["GBP", "USD"], strictCodes: false }),
+    ).toMatchObject({ valid: true, id: "GBPJPY" });
+  });
+
+  it("still rejects input that is not code-shaped", () => {
+    expect(parseCurrencyPair("1/2", { codes: ["GBP"], strictCodes: false })).toMatchObject({
+      error: "unknown-code",
+    });
+  });
+
+  it("still needs the registry to split unseparated input", () => {
+    // Waiving strictness cannot invent a split; the ISO fallback is all that is
+    // left, and BTCUSDT is seven characters.
+    expect(
+      parseCurrencyPair("BTCUSDT", { codes: ["GBP", "USD"], strictCodes: false }),
+    ).toMatchObject({ error: "unknown-code" });
+    // Six characters still falls back to the ISO 3/3 assumption.
+    expect(
+      parseCurrencyPair("GBPJPY", { codes: ["GBP", "USD"], strictCodes: false }),
+    ).toMatchObject({ valid: true, id: "GBPJPY" });
+  });
+
+  it("still refuses a same-currency pair", () => {
+    expect(parseCurrencyPair("JPY/JPY", { codes: ["GBP"], strictCodes: false })).toMatchObject({
+      error: "same-currency",
+    });
+  });
+});
+
 describe("canonical identity is independent of formatting", () => {
   it("every accepted spelling yields one id", () => {
     const ids = ["GBPUSD", "GBP/USD", "GBP\\USD", "GBP,USD", "GBP USD", "gbp/usd"].map(

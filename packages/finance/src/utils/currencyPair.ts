@@ -67,6 +67,21 @@ export interface CurrencyPairParseOptions {
   codes?: Iterable<string>;
   /** Permit `GBP/GBP`. Default false. */
   allowSameCurrency?: boolean;
+  /**
+   * Whether `codes` also *validates* separated input, not just splits
+   * unseparated input. Default true.
+   *
+   * The registry has two jobs, and they are not equally forced. Splitting
+   * `"BTCUSDT"` genuinely needs it. Validating `"GBP/JPY"` does not - the
+   * separator already did the splitting - so requiring membership there is a
+   * data-availability question wearing a parser's clothes.
+   *
+   * That distinction matters against an async provider, where the local
+   * registry is only whatever the last search happened to return. Callers that
+   * can resolve membership themselves (and report an unknown-but-well-formed
+   * pair rather than rejecting it) pass `false`.
+   */
+  strictCodes?: boolean;
 }
 
 export interface CurrencyPairFormatOptions {
@@ -175,7 +190,12 @@ export function parseCurrencyPair(
   input: string,
   options: CurrencyPairParseOptions = {},
 ): CurrencyPairParseResult {
-  const { separators = DEFAULT_PAIR_SEPARATORS, codes, allowSameCurrency = false } = options;
+  const {
+    separators = DEFAULT_PAIR_SEPARATORS,
+    codes,
+    allowSameCurrency = false,
+    strictCodes = true,
+  } = options;
 
   // Collapse runs of whitespace so "GBP   USD" behaves like "GBP USD".
   const normalized = input.trim().toUpperCase().replace(/\s+/g, " ");
@@ -206,7 +226,10 @@ export function parseCurrencyPair(
     if (parts.length !== 2) return fail("invalid-format");
     const [base, quote] = parts;
     if (!CODE_PATTERN.test(base) || !CODE_PATTERN.test(quote)) return fail("unknown-code");
-    if (codeSet && (!codeSet.has(base) || !codeSet.has(quote))) return fail("unknown-code");
+    // The separator already split this; membership is only enforced on request.
+    if (strictCodes && codeSet && (!codeSet.has(base) || !codeSet.has(quote))) {
+      return fail("unknown-code");
+    }
     candidate = { baseCurrency: base, quoteCurrency: quote };
   } else {
     const splits = codeSet ? registrySplits(normalized, codeSet) : [];

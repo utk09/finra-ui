@@ -8,6 +8,36 @@ export type {
 } from "./unstyled/Calendar/Calendar";
 export { CalendarBase } from "./unstyled/Calendar/Calendar";
 
+// CurrencyPairPickerBase
+// The ranking helpers ship with it, not from `./utils`: they are what a
+// replacement `rankPairs` prop is built from, so they belong beside the
+// component that takes it.
+export type {
+  CurrencyPairLike,
+  PairMatchTier,
+  PairSectionId,
+  PairSectionModel,
+  RankedPair,
+  RankPairsContext,
+} from "./logic/currencyPairPicker";
+export { matchPairTier, PAIR_MATCH_TIERS, rankPairs } from "./logic/currencyPairPicker";
+export type {
+  InstrumentProvider,
+  InstrumentSearchState,
+  InstrumentSearchStatus,
+} from "./logic/instrumentSearch";
+export type {
+  CurrencyPair,
+  CurrencyPairFixing,
+  CurrencyPairInvalidReason,
+  CurrencyPairLeg,
+  CurrencyPairPickerBaseProps,
+  CurrencyPairPickerClassNames,
+  CurrencyPairPickerHandle,
+  CurrencyPairRenderOptionState,
+} from "./unstyled/CurrencyPairPicker/CurrencyPairPicker";
+export { CurrencyPairPickerBase } from "./unstyled/CurrencyPairPicker/CurrencyPairPicker";
+
 // DateInputBase
 export type { DateInputBaseProps, DateInputClassNames } from "./unstyled/DateInput/DateInput";
 export { DateInputBase } from "./unstyled/DateInput/DateInput";

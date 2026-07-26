@@ -21,6 +21,16 @@ export const componentIds = {
 
   // PriceInput
   priceInput: "price-input",
+
+  // CurrencyPairPicker
+  currencyPairPicker: "currency-pair-picker",
+  /**
+   * The input shell. Addressable separately because the listbox is portalled
+   * out of the root, so the shell is what anchors and sizes it.
+   */
+  currencyPairPickerControl: "currency-pair-picker-control",
+  /** Instrument badges, so consumers can theme them without a render prop. */
+  currencyPairBadge: "currency-pair-badge",
 } as const;
 
 export type FinanceComponentId = (typeof componentIds)[keyof typeof componentIds];

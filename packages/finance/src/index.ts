@@ -12,6 +12,24 @@ export { CalendarMonthYear } from "./components/Calendar/CalendarMonthYear";
 export type { DateRange } from "./logic/calendar";
 export type { CalendarFooterApi, CalendarTitleApi } from "./unstyled/Calendar/Calendar";
 
+// CurrencyPairPicker
+export type { CurrencyPairPickerProps } from "./components/CurrencyPairPicker/CurrencyPairPicker";
+export { CurrencyPairPicker } from "./components/CurrencyPairPicker/CurrencyPairPicker";
+export type { CurrencyPairLike, PairSectionId } from "./logic/currencyPairPicker";
+export type {
+  InstrumentProvider,
+  InstrumentSearchState,
+  InstrumentSearchStatus,
+} from "./logic/instrumentSearch";
+export type {
+  CurrencyPair,
+  CurrencyPairFixing,
+  CurrencyPairInvalidReason,
+  CurrencyPairLeg,
+  CurrencyPairPickerHandle,
+  CurrencyPairRenderOptionState,
+} from "./unstyled/CurrencyPairPicker/CurrencyPairPicker";
+
 // DateInput
 export type { DateInputProps } from "./components/DateInput/DateInput";
 export { DateInput } from "./components/DateInput/DateInput";

@@ -46,9 +46,14 @@ import {
 } from "@utk09/finra-ui/unstyled";
 import {
   CalendarBase,
+  type CurrencyPair,
+  CurrencyPairPickerBase,
   DateInputBase,
   DateTenorInputBase,
+  DateTenorPickerBase,
+  PriceInputBase,
   TenorInputBase,
+  TenorPickerBase,
 } from "@utk09/finra-ui-finance/unstyled";
 import { type CSSProperties, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
@@ -577,6 +582,165 @@ export const DateTenorInputBaseDefault: Story = {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText("Date");
     await expect(input).toBeVisible();
+  },
+};
+
+//  TenorPickerBase
+
+/**
+ * Grouped tenor selection with no styling: the groups are real `role="group"`
+ * containers, the favourite star is a decorative span (a listbox option may own
+ * no interactive descendant), and free-form entry canonicalises on commit.
+ */
+export const TenorPickerBaseDefault: Story = {
+  name: "TenorPickerBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 300 }}>
+      <TenorPickerBase
+        aria-label="Default tenor"
+        placeholder="Select or type a tenor..."
+        defaultFavourites={["3M"]}
+        renderFavourite={(active) => (active ? "*" : "-")}
+      />
+      <TenorPickerBase aria-label="Flat tenor" grouped={false} showFavourites={false} />
+      <TenorPickerBase aria-label="Disabled tenor" disabled />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole("combobox", { name: "Default tenor" });
+
+    // Free-form entry is canonicalised by the parser, unstyled included.
+    await userEvent.type(input, "1y6m");
+    await userEvent.keyboard("{Enter}");
+    await expect(input).toHaveValue("1Y6M");
+  },
+};
+
+//  DateTenorPickerBase
+
+/**
+ * One field accepting either an absolute date or a relative tenor. The mode is
+ * decided by the parser, not by a toggle, and the resolved date is derived - so
+ * all of it is visible without a stylesheet.
+ */
+export const DateTenorPickerBaseDefault: Story = {
+  name: "DateTenorPickerBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 340 }}>
+      <DateTenorPickerBase
+        aria-label="Value date"
+        referenceDate={new Date(2026, 5, 11)}
+        showResolvedDate
+        // The base takes a renderer, not a boolean: what a mode badge *looks
+        // like* is the styled layer's business.
+        renderModeIndicator={(mode) => (mode ? `[${mode}]` : null)}
+      />
+      <DateTenorPickerBase aria-label="Disabled value date" disabled />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole("combobox", { name: "Value date" });
+
+    // A tenor resolves against referenceDate; an absolute date would not.
+    await userEvent.type(input, "3M");
+    await userEvent.keyboard("{Enter}");
+    await expect(input).toHaveValue("3M");
+  },
+};
+
+//  PriceInputBase
+
+/**
+ * Market price entry. The digit hierarchy (big figure vs pips) is expressed as
+ * segment elements the styled layer colours - unstyled, the value and the tick
+ * arithmetic are still exactly right, which is the point of the split.
+ */
+export const PriceInputBaseDefault: Story = {
+  name: "PriceInputBase - Default",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 300 }}>
+      <PriceInputBase
+        aria-label="FX rate"
+        instrument={{ primaryPrecision: 4, precisionDigits: 1, tickSize: 0.00005 }}
+        defaultValue={1.0834}
+      />
+      <PriceInputBase aria-label="Yield" precision={3} tickSize={0.001} defaultValue={4.125} />
+      <PriceInputBase aria-label="Disabled rate" precision={2} disabled />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole("spinbutton", { name: "FX rate" });
+
+    // ArrowUp steps one tick - 0.00005, not 1 - because the instrument says so.
+    await userEvent.click(input);
+    await userEvent.keyboard("{ArrowUp}");
+    await expect(input).toHaveValue("1.08345");
+  },
+};
+
+//  CurrencyPairPickerBase
+
+/**
+ * One currency pair can be several tradable instruments. USDINR trades onshore
+ * (deliverable, RBI fix) and as an NDF (cash-settled, tenor required): same base
+ * and quote, different economics. `id` is the **instrument** key, so each gets
+ * its own — `baseCurrency + quoteCurrency` names only the pair.
+ *
+ * Typing `USDINR` therefore names two things, and the base refuses to guess:
+ * it reports `ambiguous` and leaves the list open so the rows are the choice.
+ * Entirely a behaviour concern, so it is visible with no styling at all.
+ */
+const usdinrInstruments: CurrencyPair[] = [
+  {
+    id: "USDINR.ONSHORE",
+    baseCurrency: "USD",
+    quoteCurrency: "INR",
+    displayName: "Onshore",
+    settlementStyle: "Deliverable",
+  },
+  {
+    id: "USDINR.NDF",
+    baseCurrency: "USD",
+    quoteCurrency: "INR",
+    displayName: "Non-deliverable",
+    settlementStyle: "NDF",
+    requiresTenor: true,
+  },
+];
+
+export const CurrencyPairPickerBaseDefault: Story = {
+  name: "CurrencyPairPickerBase - One pair, several instruments",
+  render: () => {
+    const [status, setStatus] = useState("");
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 360 }}>
+        <CurrencyPairPickerBase
+          aria-label="Instrument"
+          pairs={usdinrInstruments}
+          onChange={(pair) => setStatus(pair ? `Selected ${pair.id}` : "")}
+          onInvalid={(reason) => setStatus(`Rejected: ${reason}`)}
+        />
+        <p style={{ margin: 0 }}>{status}</p>
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole("combobox", { name: "Instrument" });
+
+    await userEvent.type(input, "usdinr");
+    // Portalled, so the listbox is outside the story canvas even unstyled.
+    const body = within(document.body);
+    await expect(within(await body.findByRole("listbox")).getAllByRole("option")).toHaveLength(2);
+
+    await userEvent.keyboard("{Enter}");
+    await expect(await canvas.findByText("Rejected: ambiguous")).toBeInTheDocument();
+
+    await userEvent.click(await body.findByRole("option", { name: /Non-deliverable/ }));
+    await expect(await canvas.findByText("Selected USDINR.NDF")).toBeInTheDocument();
   },
 };
 
