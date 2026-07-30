@@ -54,7 +54,7 @@ describe("PriceInputBase", () => {
     const onTick = vi.fn();
     const { input } = setup({ ...CENTS, defaultValue: 1, onTick });
 
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowUp}");
     expect(input).toHaveValue("1.01");
     expect(onTick).toHaveBeenLastCalledWith(expect.closeTo(1.01, 6), 1);
@@ -67,7 +67,7 @@ describe("PriceInputBase", () => {
     const user = userEvent.setup();
     const { input } = setup({ ...CENTS, defaultValue: 1 });
 
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{Shift>}{ArrowUp}{/Shift}");
     expect(input).toHaveValue("1.10");
   });
@@ -77,7 +77,7 @@ describe("PriceInputBase", () => {
     const { input } = setup({ format: "bond32", defaultValue: 101.5 });
 
     expect(input).toHaveValue("101-16");
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowUp}");
     expect(input).toHaveValue("101-17");
   });
@@ -99,7 +99,7 @@ describe("PriceInputBase", () => {
     const onTick = vi.fn();
     const { onChange, input } = setup({ ...CENTS, defaultValue: 0, min: 0, onTick });
 
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowDown}");
     expect(input).toHaveValue("0.00");
     expect(onTick).toHaveBeenCalledWith(0, -1);
@@ -143,7 +143,7 @@ describe("PriceInputBase", () => {
     const user = userEvent.setup();
     const { input } = setup({ instrument: { format: "bond32" }, defaultValue: 101.5 });
     expect(input).toHaveValue("101-16");
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowUp}");
     expect(input).toHaveValue("101-17");
   });
@@ -165,7 +165,7 @@ describe("PriceInputBase", () => {
   it("ticks from zero when the field is empty", async () => {
     const user = userEvent.setup();
     const { input } = setup({ ...CENTS });
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowUp}");
     expect(input).toHaveValue("0.01");
   });
@@ -192,7 +192,7 @@ describe("PriceInputBase", () => {
     const { input } = setup({ ...CENTS, defaultValue: 1, readOnly: true, onTick });
 
     expect(input).toHaveAttribute("readonly");
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowUp}");
     expect(input).toHaveValue("1.00");
     expect(onTick).not.toHaveBeenCalled();
@@ -229,7 +229,7 @@ describe("PriceInputBase v2 (engines)", () => {
     const user = userEvent.setup();
     render(<PriceInputBase aria-label="Price" {...FX} defaultValue={1.08345} />);
     const input = screen.getByRole("spinbutton");
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowUp}");
     expect(input).toHaveValue("1.08350");
   });
@@ -238,7 +238,7 @@ describe("PriceInputBase v2 (engines)", () => {
     const user = userEvent.setup();
     render(<PriceInputBase aria-label="Price" {...FX} defaultValue={1.08345} />);
     const input = screen.getByRole("spinbutton");
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{Control>}{ArrowUp}{/Control}");
     expect(input).toHaveValue("1.08355");
   });
@@ -255,7 +255,7 @@ describe("PriceInputBase v2 (engines)", () => {
     };
     render(<PriceInputBase aria-label="Price" {...FX} defaultValue={1.08345} keymap={keymap} />);
     const input = screen.getByRole("spinbutton");
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowUp}");
     expect(input).toHaveValue("1.08355"); // primary (+0.0001), not tick (+0.00005)
   });
@@ -346,7 +346,7 @@ describe("PriceInputBase v2 (engines)", () => {
       />,
     );
     const input = screen.getByRole("spinbutton");
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowLeft}{ArrowRight}");
     expect(input).toHaveValue("1.00");
     expect(onTick).not.toHaveBeenCalled();
@@ -417,5 +417,73 @@ describe("PriceInputBase v2 (engines)", () => {
       expect(input.selectionStart).toBe(4);
       expect(input.selectionEnd).toBe(6);
     });
+  });
+});
+
+describe("PriceInputBase — consumer event handlers", () => {
+  it("keeps its own keymap when a consumer passes onKeyDown", async () => {
+    const user = userEvent.setup();
+    const onKeyDown = vi.fn();
+    const { input } = setup({ ...CENTS, defaultValue: 1, onKeyDown });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+
+    // A consumer handler must add to the field's behaviour, never replace it.
+    // Spread after the bound handlers, `onKeyDown` silently disabled the whole
+    // increment keymap and commit-on-blur.
+    expect(onKeyDown).toHaveBeenCalled();
+    expect(input).toHaveValue("1.01");
+  });
+
+  it("forwards onKeyDown for keys the keymap does not bind", async () => {
+    const user = userEvent.setup();
+    const onKeyDown = vi.fn();
+    const { input } = setup({ ...CENTS, onKeyDown });
+
+    await user.click(input);
+    await user.keyboard("5");
+
+    expect(onKeyDown.mock.calls.at(-1)?.[0]).toMatchObject({ key: "5" });
+  });
+
+  it("lets a consumer take a bound key back with preventDefault", async () => {
+    const user = userEvent.setup();
+    const { input } = setup({
+      ...CENTS,
+      defaultValue: 1,
+      onKeyDown: (event) => {
+        if (event.key === "ArrowUp") event.preventDefault();
+      },
+    });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+
+    expect(input).toHaveValue("1.00");
+  });
+
+  it("keeps commit-on-blur when a consumer passes onBlur", async () => {
+    const user = userEvent.setup();
+    const onBlur = vi.fn();
+    const { onChange, input } = setup({ ...CENTS, onBlur });
+
+    await user.type(input, "1.25");
+    await user.tab();
+
+    expect(onBlur).toHaveBeenCalled();
+    expect(onChange).toHaveBeenLastCalledWith(1.25);
+    expect(input).toHaveValue("1.25");
+  });
+
+  it("forwards onFocus", async () => {
+    const user = userEvent.setup();
+    const onFocus = vi.fn();
+    const { input } = setup({ ...CENTS, defaultValue: 1, onFocus });
+
+    await user.click(input);
+
+    expect(onFocus).toHaveBeenCalled();
+    expect(input).toHaveValue("1.00");
   });
 });

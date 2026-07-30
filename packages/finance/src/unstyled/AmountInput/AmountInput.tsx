@@ -280,12 +280,11 @@ export const AmountInputBase = forwardRef<AmountInputHandle, AmountInputBaseProp
 
     const [inputText, setInputText] = useState(() => formatter(defaultValue ?? null, formatOpts));
 
-    // Sync a controlled value to the resting display. Skipped while focused, so
-    // a parent re-render cannot overwrite half-typed text.
-    useEffect(() => {
-      if (!isControlled || focusedRef.current) return;
-      setInputText(formatter(value ?? null, formatOpts));
-    }, [isControlled, value, formatter, formatOpts]);
+    // Bumped on every commit attempt. The display sync below keys off it as well
+    // as off the value, so a commit re-derives the text even when the value it
+    // settles on is the one already held - which is exactly what a controlled
+    // parent declining the change looks like from in here.
+    const [commitNonce, setCommitNonce] = useState(0);
 
     // Increments round to the finer of the currency's precision and the step's,
     // so a 0.25 step never rounds itself away in a 0-decimal currency.
@@ -325,6 +324,34 @@ export const AmountInputBase = forwardRef<AmountInputHandle, AmountInputBaseProp
       [toEditText, formatter, formatOpts],
     );
 
+    /**
+     * The displayed text is derived from the value the field actually holds -
+     * never left as whatever the last interaction proposed.
+     *
+     * Two cases this exists for, both of which showed the wrong number without
+     * it:
+     *
+     * - **A controlled parent that declines the change.** `value` does not move,
+     *   so a value-keyed effect never fires, and the field would go on showing
+     *   the amount the parent rejected. The commit counter is what makes the
+     *   sync happen anyway. Display text is only the field's to choose while
+     *   uncontrolled.
+     * - **A formatting prop changing while uncontrolled** - `currency`,
+     *   `format`, `locale`, `decimals`. The resting text is a function of those,
+     *   so a currency selector beside the field must re-render the amount
+     *   without waiting for the next focus/blur cycle.
+     *
+     * Skipped while focused so a parent re-render cannot overwrite a live edit,
+     * except straight after a commit, where re-deriving is the entire point.
+     */
+    const lastSyncedCommit = useRef(commitNonce);
+    useEffect(() => {
+      const afterCommit = lastSyncedCommit.current !== commitNonce;
+      lastSyncedCommit.current = commitNonce;
+      if (focusedRef.current && !afterCommit) return;
+      setInputText(renderValue(currentValue ?? null));
+    }, [currentValue, renderValue, commitNonce]);
+
     const revert = useCallback(() => {
       setInputText(renderValue(currentValue));
     }, [renderValue, currentValue]);
@@ -345,6 +372,12 @@ export const AmountInputBase = forwardRef<AmountInputHandle, AmountInputBaseProp
     const commit = useCallback(() => {
       const result = parser(inputText, parseOpts);
       onParse?.(result);
+      // Wakes the sync effect below even when the committed value turns out to
+      // be the one already held - which is what a controlled parent declining
+      // the change looks like from in here. The text is still set eagerly on
+      // each path: leaving it to the effect alone would leave the raw typed
+      // text on screen until passive effects flush, a visible flicker on blur.
+      setCommitNonce((n) => n + 1);
 
       if (!result.valid || result.value === null) {
         if (result.error === "empty") {
@@ -399,6 +432,18 @@ export const AmountInputBase = forwardRef<AmountInputHandle, AmountInputBaseProp
         if (min != null && next < min) next = min;
         if (max != null && next > max) next = max;
 
+        // Same gate the commit path applies. `min`/`max` are clamped above, but
+        // a custom `validate` can still reject the result, and a stepped value
+        // that skips the check would be a value the field would refuse if the
+        // identical number were typed.
+        const validation = validateValue(next);
+        onValidate?.(validation);
+        setCommitNonce((n) => n + 1);
+        if (!validation.valid) {
+          revert();
+          return;
+        }
+
         setInputText(renderValue(next));
         setCommitted(next);
         onTick?.(next, direction);
@@ -413,6 +458,9 @@ export const AmountInputBase = forwardRef<AmountInputHandle, AmountInputBaseProp
         incrementDecimals,
         min,
         max,
+        validateValue,
+        onValidate,
+        revert,
         renderValue,
         setCommitted,
         onTick,
@@ -431,7 +479,15 @@ export const AmountInputBase = forwardRef<AmountInputHandle, AmountInputBaseProp
 
     const handleKeyDown = useCallback(
       (event: KeyboardEvent<HTMLInputElement>) => {
-        if (disabled) return;
+        // First, and for every key. A consumer's `onKeyDown` is an ordinary
+        // React prop and must fire for the keys the field does nothing with -
+        // typing, Tab, Home/End - not only for the handful the keymap binds.
+        // Running it ahead of the field's own handling also gives it the one
+        // useful power it can have here: calling `preventDefault` to suppress a
+        // binding it wants for itself.
+        onKeyDownProp?.(event);
+        if (disabled || event.defaultPrevented) return;
+
         const bound = resolveKey(event, effectiveKeymap);
         if (!bound || bound.kind === "nav") return;
 
@@ -439,8 +495,6 @@ export const AmountInputBase = forwardRef<AmountInputHandle, AmountInputBaseProp
         if (bound.kind === "commit") commit();
         else if (bound.kind === "revert") revert();
         else applyIncrement(bound.direction, bound.action);
-
-        onKeyDownProp?.(event);
       },
       [disabled, effectiveKeymap, commit, revert, applyIncrement, onKeyDownProp],
     );

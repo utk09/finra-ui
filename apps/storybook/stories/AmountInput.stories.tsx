@@ -64,6 +64,22 @@ export const Shorthand: Story = {
     step: 1_000_000,
     defaultValue: 1_230_000,
   },
+};
+
+/**
+ * The same field, driven end to end: `2bn` in, `2000000000` held, `$2B` at
+ * rest.
+ *
+ * Kept apart from {@link Shorthand} because a story carrying an interaction
+ * replays it on every visit - the field types itself, which is useful to watch
+ * once and distracting when you opened the page to look at the component.
+ */
+export const ShorthandInteraction: Story = {
+  args: {
+    currency: "USD",
+    step: 1_000_000,
+    defaultValue: 1_230_000,
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByRole("spinbutton", { name: "Notional" });
@@ -96,6 +112,13 @@ export const NeverRounds: Story = {
   args: {
     defaultValue: 1_500_123,
   },
+};
+
+/** Retyping the same amount without the stray digits lets it abbreviate. */
+export const NeverRoundsInteraction: Story = {
+  args: {
+    defaultValue: 1_500_123,
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByRole("spinbutton", { name: "Notional" });
@@ -125,6 +148,16 @@ export const FullNotation: Story = {
     step: 1_000_000,
     defaultValue: 2_500_000_000,
   },
+};
+
+/** `10m` in, `$10,000,000.00` at rest - the format never touches what is parsed. */
+export const FullNotationInteraction: Story = {
+  args: {
+    format: "full",
+    currency: "USD",
+    step: 1_000_000,
+    defaultValue: 2_500_000_000,
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByRole("spinbutton", { name: "Notional" });
@@ -146,6 +179,14 @@ export const FullNotation: Story = {
  * convention fails loudly instead of committing a value off by 10⁶.
  */
 export const CustomSuffixes: Story = {
+  args: {
+    suffixes: compactSuffixesForLocale("en-IN"),
+    defaultValue: 25_000_000,
+  },
+};
+
+/** `1.5Cr` parses and rests as `1.5Cr`, because the table defines both directions. */
+export const CustomSuffixesInteraction: Story = {
   args: {
     suffixes: compactSuffixesForLocale("en-IN"),
     defaultValue: 25_000_000,
@@ -194,6 +235,15 @@ export const Stepping: Story = {
     largeStep: 1_000_000,
     defaultValue: 1_000_000,
   },
+};
+
+/** Arrow steps by `step`, PageUp by `largeStep`, both in the editable form. */
+export const SteppingInteraction: Story = {
+  args: {
+    step: 100_000,
+    largeStep: 1_000_000,
+    defaultValue: 1_000_000,
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByRole("spinbutton", { name: "Notional" });
@@ -222,6 +272,42 @@ export const Validation: Story = {
         onChange={() => setStatus(undefined)}
       />
     );
+  },
+};
+
+/**
+ * Controlled: the parent owns the value, and the field shows whatever the
+ * parent settled on.
+ *
+ * The second field rejects any amount above 10M. Type `50m` into it and the
+ * display comes back to the parent's value rather than keeping the number it
+ * proposed - a controlled field must never show one amount while `value` holds
+ * another.
+ */
+export const Controlled: Story = {
+  render: (args) => {
+    const [free, setFree] = useState<number | null>(1_230_000);
+    const [capped, setCapped] = useState<number | null>(1_230_000);
+
+    return (
+      <div style={{ display: "grid", gap: "0.5rem" }}>
+        <AmountInput {...args} aria-label="Accepts" value={free} onChange={setFree} />
+        <AmountInput
+          {...args}
+          aria-label="Rejects above 10M"
+          value={capped}
+          onChange={(next) => {
+            if (next === null || next <= 10_000_000) setCapped(next);
+          }}
+        />
+        <output style={{ font: "inherit" }}>
+          accepts: {String(free)} · rejects: {String(capped)}
+        </output>
+      </div>
+    );
+  },
+  args: {
+    currency: "USD",
   },
 };
 

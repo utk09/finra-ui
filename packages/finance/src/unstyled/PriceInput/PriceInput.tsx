@@ -1,6 +1,7 @@
 import { useFormField } from "@utk09/finra-ui";
 import {
   type ChangeEvent,
+  type FocusEvent,
   forwardRef,
   type InputHTMLAttributes,
   type KeyboardEvent,
@@ -204,6 +205,13 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
       "aria-describedby": ariaDescribedBy,
       "aria-invalid": ariaInvalid,
       "aria-label": ariaLabel,
+      // Pulled out of `rest` and forwarded explicitly. Left in `rest`, a
+      // consumer passing any of the three would *replace* this field's own
+      // handler rather than add to it - silently disabling commit-on-blur or
+      // the entire increment keymap.
+      onFocus: onFocusProp,
+      onBlur: onBlurProp,
+      onKeyDown: onKeyDownProp,
       ...rest
     },
     forwardedRef,
@@ -385,7 +393,11 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
 
     const handleKeyDown = useCallback(
       (event: KeyboardEvent<HTMLInputElement>) => {
-        if (disabled) return;
+        // First, and for every key: a consumer's `onKeyDown` must fire for the
+        // keys this field ignores, and calling `preventDefault` is how it takes
+        // a binding back for itself.
+        onKeyDownProp?.(event);
+        if (disabled || event.defaultPrevented) return;
         const bound = resolveKey(event, keymap);
         if (!bound) return;
         // Left/Right navigation is handled by the native caret for now
@@ -397,7 +409,15 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
         else if (bound.kind === "revert") revert();
         else applyIncrement(bound.direction, bound.action);
       },
-      [disabled, keymap, commit, revert, applyIncrement],
+      [disabled, keymap, commit, revert, applyIncrement, onKeyDownProp],
+    );
+
+    const handleBlur = useCallback(
+      (event: FocusEvent<HTMLInputElement>) => {
+        commit();
+        onBlurProp?.(event);
+      },
+      [commit, onBlurProp],
     );
 
     // Digit segments for the visual-hierarchy overlay + group selection.
@@ -430,10 +450,14 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
       [segments],
     );
 
-    const handleFocus = useCallback(() => {
-      // Defer so it wins over the browser's own focus selection.
-      if (selectOnFocus) requestAnimationFrame(() => selectGroup(selectOnFocus));
-    }, [selectOnFocus, selectGroup]);
+    const handleFocus = useCallback(
+      (event: FocusEvent<HTMLInputElement>) => {
+        // Defer so it wins over the browser's own focus selection.
+        if (selectOnFocus) requestAnimationFrame(() => selectGroup(selectOnFocus));
+        onFocusProp?.(event);
+      },
+      [selectOnFocus, selectGroup, onFocusProp],
+    );
 
     useImperativeHandle(
       forwardedRef,
@@ -472,11 +496,11 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
           aria-invalid={field["aria-invalid"]}
           aria-required={field["aria-required"]}
           aria-label={ariaLabel}
+          {...rest}
           onChange={handleChange}
-          onBlur={commit}
+          onBlur={handleBlur}
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
-          {...rest}
         />
         {renderDisplay ? (
           <span className={cn?.display} aria-hidden="true">

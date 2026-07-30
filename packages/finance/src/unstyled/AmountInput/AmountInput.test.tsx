@@ -122,7 +122,7 @@ describe("AmountInputBase — stepping", () => {
     const onTick = vi.fn();
     const { input } = setup({ defaultValue: 1_000_000, step: 1_000_000, onTick });
 
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowUp}");
 
     expect(input).toHaveValue("2000000");
@@ -136,7 +136,7 @@ describe("AmountInputBase — stepping", () => {
     const user = userEvent.setup();
     const { input } = setup({ defaultValue: 0, step: 1_000 });
 
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{Shift>}{ArrowUp}{/Shift}");
     expect(input).toHaveValue("10000");
 
@@ -148,7 +148,7 @@ describe("AmountInputBase — stepping", () => {
     const user = userEvent.setup();
     const { input } = setup({ defaultValue: 0, step: 1_000, largeStep: 250_000 });
 
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{PageUp}");
     expect(input).toHaveValue("250000");
   });
@@ -167,16 +167,57 @@ describe("AmountInputBase — stepping", () => {
     const user = userEvent.setup();
     const { input } = setup({ defaultValue: 1, step: 0.25, currency: "JPY" });
 
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowUp}");
     expect(input).toHaveValue("1.25");
+  });
+
+  it("applies the custom validator to a stepped value, not only a typed one", async () => {
+    const user = userEvent.setup();
+    const onValidate = vi.fn();
+    const onTick = vi.fn();
+    const { onChange, input } = setup({
+      defaultValue: 100,
+      step: 50,
+      validate: (v) => v % 100 === 0,
+      onValidate,
+      onTick,
+    });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+
+    // 150 is a value the field would refuse if it were typed, so stepping must
+    // refuse it too.
+    expect(onValidate).toHaveBeenLastCalledWith({ valid: false, value: 150, error: "custom" });
+    expect(onTick).not.toHaveBeenCalled();
+    expect(onChange).not.toHaveBeenCalled();
+    expect(input).toHaveValue("100");
+  });
+
+  it("still commits a stepped value the validator accepts", async () => {
+    const user = userEvent.setup();
+    const onTick = vi.fn();
+    const { onChange, input } = setup({
+      defaultValue: 100,
+      step: 100,
+      validate: (v) => v % 100 === 0,
+      onTick,
+    });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+
+    expect(input).toHaveValue("200");
+    expect(onTick).toHaveBeenLastCalledWith(200, 1);
+    expect(onChange).toHaveBeenLastCalledWith(200);
   });
 
   it("clamps an increment to min and max", async () => {
     const user = userEvent.setup();
     const { input } = setup({ defaultValue: 95, step: 10, min: 0, max: 100 });
 
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowUp}");
     expect(input).toHaveValue("100");
 
@@ -330,6 +371,29 @@ describe("AmountInputBase — configuration", () => {
     const { input } = setup({ defaultValue: 2_500_000_000, format: "full" });
     expect(input).toHaveValue("2,500,000,000");
   });
+
+  it("re-renders the resting display when a formatting prop changes", async () => {
+    const user = userEvent.setup();
+    const props = { "aria-label": "Amount", ...EN, defaultValue: 1_000 };
+    const { rerender } = render(<AmountInputBase {...props} currency="USD" />);
+    const input = screen.getByRole("spinbutton", { name: "Amount" });
+
+    // Commit something other than `defaultValue`, so a remount would be visible
+    // as the value reverting rather than merely reformatting.
+    await user.clear(input);
+    await user.type(input, "7m");
+    await user.tab();
+    expect(input).toHaveValue("$7M");
+
+    // The resting text is a function of these props. A currency selector beside
+    // the field has to re-render the amount without waiting for a focus cycle -
+    // and the value must survive.
+    rerender(<AmountInputBase {...props} currency="JPY" />);
+    expect(input).toHaveValue("¥7M");
+
+    rerender(<AmountInputBase {...props} currency="JPY" format="full" />);
+    expect(input).toHaveValue("¥7,000,000");
+  });
 });
 
 describe("AmountInputBase — controlled, disabled, read-only", () => {
@@ -355,11 +419,47 @@ describe("AmountInputBase — controlled, disabled, read-only", () => {
     expect(input).toHaveValue("7m");
   });
 
+  it("shows the parent's value when a controlled parent declines the change", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const { rerender } = render(
+      <AmountInputBase aria-label="Amount" {...EN} value={1_000} onChange={onChange} />,
+    );
+    const input = screen.getByRole("spinbutton", { name: "Amount" });
+
+    await user.click(input);
+    await user.clear(input);
+    await user.type(input, "7m");
+    await user.tab();
+
+    // The parent hears the proposal but keeps its own value, so the field must
+    // show 1,000 - not the 7M it suggested. Nothing re-renders it back on its
+    // own, because `value` never moved.
+    expect(onChange).toHaveBeenLastCalledWith(7_000_000);
+    rerender(<AmountInputBase aria-label="Amount" {...EN} value={1_000} onChange={onChange} />);
+    expect(input).toHaveValue("1,000");
+  });
+
+  it("shows the parent's value when a controlled parent declines a stepped change", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <AmountInputBase aria-label="Amount" {...EN} value={1_000} step={500} onChange={onChange} />,
+    );
+    const input = screen.getByRole("spinbutton", { name: "Amount" });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+
+    expect(onChange).toHaveBeenLastCalledWith(1_500);
+    expect(input).toHaveValue("1000");
+  });
+
   it("ignores typing and stepping when read-only", async () => {
     const user = userEvent.setup();
     const { onChange, input } = setup({ defaultValue: 1_000, step: 100, readOnly: true });
 
-    input.focus();
+    act(() => input.focus());
     await user.keyboard("{ArrowUp}");
     await user.type(input, "5");
 
@@ -372,6 +472,78 @@ describe("AmountInputBase — controlled, disabled, read-only", () => {
 
     await user.type(input, "5");
     expect(onChange).not.toHaveBeenCalled();
+  });
+});
+
+describe("AmountInputBase — consumer event handlers", () => {
+  it("forwards onKeyDown for keys the keymap does not bind", async () => {
+    const user = userEvent.setup();
+    const onKeyDown = vi.fn();
+    const { input } = setup({ onKeyDown });
+
+    await user.click(input);
+    await user.keyboard("5");
+
+    // The keymap binds six keys. `onKeyDown` is an ordinary React prop and has
+    // to fire for the rest, or a consumer cannot own any shortcut of its own.
+    expect(onKeyDown).toHaveBeenCalled();
+    expect(onKeyDown.mock.calls.at(-1)?.[0]).toMatchObject({ key: "5" });
+  });
+
+  it("forwards onKeyDown for a bound key, before acting on it", async () => {
+    const user = userEvent.setup();
+    const order: string[] = [];
+    const { input } = setup({
+      defaultValue: 100,
+      step: 10,
+      onKeyDown: () => order.push("consumer"),
+      onTick: () => order.push("tick"),
+    });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+
+    expect(order).toEqual(["consumer", "tick"]);
+  });
+
+  it("lets a consumer take a bound key back with preventDefault", async () => {
+    const user = userEvent.setup();
+    const onTick = vi.fn();
+    const { input } = setup({
+      defaultValue: 100,
+      step: 10,
+      onTick,
+      onKeyDown: (event) => {
+        if (event.key === "ArrowUp") event.preventDefault();
+      },
+    });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+
+    expect(onTick).not.toHaveBeenCalled();
+    expect(input).toHaveValue("100");
+  });
+
+  it("forwards onFocus and onBlur without losing the field's own behaviour", async () => {
+    const user = userEvent.setup();
+    const onFocus = vi.fn();
+    const onBlur = vi.fn();
+    const { onChange, input } = setup({ defaultValue: 1_000, onFocus, onBlur });
+
+    await user.click(input);
+    expect(onFocus).toHaveBeenCalled();
+    // The field's own focus handling still ran.
+    expect(input).toHaveValue("1000");
+
+    await user.clear(input);
+    await user.type(input, "2m");
+    await user.tab();
+
+    expect(onBlur).toHaveBeenCalled();
+    // ...and so did commit-on-blur.
+    expect(onChange).toHaveBeenLastCalledWith(2_000_000);
+    expect(input).toHaveValue("2M");
   });
 });
 
