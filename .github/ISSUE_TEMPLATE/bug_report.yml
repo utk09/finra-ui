@@ -1,0 +1,83 @@
+name: Bug report
+description: Something behaves differently from how it is documented.
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file this.
+
+        If the problem is a security vulnerability, please do not use this form. Report it privately through
+        [Security Advisories](https://github.com/utk09/finra-ui/security/advisories/new) instead.
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - "@utk09/finra-ui"
+        - "@utk09/finra-ui-finance"
+        - "@utk09/finra-ui-icons"
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The version you are on. `npm ls @utk09/finra-ui` will tell you.
+      placeholder: "0.3.0"
+    validations:
+      required: true
+
+  - type: input
+    id: component
+    attributes:
+      label: Component or function
+      placeholder: "PriceInput, or parseAmount"
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: What did you think would happen, and what made you think that? A quote from the docs or a prop's description is ideal.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: |
+        The smallest thing that shows the problem. A code snippet is usually enough; a StackBlitz or a failing test
+        is better. Please include the props you passed, since most behaviour here is prop-driven.
+      render: tsx
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Anything that might matter.
+      placeholder: |
+        React 19.2, Next.js 15 app router, Chrome 141, macOS
+        Also happens in Firefox
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: I am on the latest version, or I have said above why I cannot be.
+          required: true

@@ -17,7 +17,9 @@
   },
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "NOTICE"
   ],
   "scripts": {
     "build": "vite build",
@@ -56,7 +58,7 @@
     "url": "https://github.com/utk09/finra-ui",
     "directory": "packages/icons"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [
     "icons",
     "svg",

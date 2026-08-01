@@ -32,15 +32,15 @@ This is a pnpm monorepo orchestrated by Turborepo. All dependency versions are c
 
 ## Scripts
 
-| Command                       | What it does                                                                                   |
-| ----------------------------- | ---------------------------------------------------------------------------------------------- |
-| `pnpm dev`                    | Storybook dev server                                                                           |
-| `pnpm build`                  | Build all packages                                                                             |
-| `pnpm test`                   | Full test suite (includes the browser-based Storybook project)                                 |
-| `pnpm test:coverage`          | Unit tests with coverage (85% per-file threshold - a hard gate)                                |
-| `pnpm typecheck`              | TypeScript checks                                                                              |
-| `pnpm lint` / `pnpm lint:fix` | ESLint (flat config at root) / autofix + Prettier                                              |
-| `pnpm verify`                 | `lint → typecheck → test:coverage → build` - reproduces every CI/push gate; run before pushing |
+| Command | What it does |
+| --- | --- |
+| `pnpm dev` | Storybook dev server |
+| `pnpm build` | Build all packages |
+| `pnpm test` | Full test suite (includes the browser-based Storybook project) |
+| `pnpm test:coverage` | Unit tests with coverage (85% per-file threshold - a hard gate) |
+| `pnpm typecheck` | TypeScript checks |
+| `pnpm lint` / `pnpm lint:fix` | ESLint (flat config at root) / autofix + Prettier |
+| `pnpm verify` | `lint → typecheck → test:coverage → build` - reproduces every CI/push gate; run before pushing |
 
 ## Git Hooks (installed automatically via husky)
 
@@ -52,9 +52,12 @@ This is a pnpm monorepo orchestrated by Turborepo. All dependency versions are c
 
 1. Branch from `main`.
 2. Implement, with tests and stories (see standards below).
-3. If the change affects a published package, add a changeset: `pnpm changeset` (pick packages + bump type, write a short summary, commit the generated file).
-4. Run `pnpm verify` locally.
-5. Open a PR against `main`.
+3. Run `pnpm verify` locally.
+4. Open a PR against `main`.
+
+**Do not bump versions or edit any `CHANGELOG.md`.** Releases are cut by hand: a maintainer bumps the three `package.json` versions and writes the three changelog entries in one `chore: update version to X` commit. A version bump inside a feature PR conflicts with that and will be asked for removal.
+
+What you write in the PR description is what the changelog entry gets written from, so a sentence explaining what changes for a consumer is worth more than a list of touched files.
 
 ## Coding Standards
 
@@ -99,7 +102,7 @@ This is a pnpm monorepo orchestrated by Turborepo. All dependency versions are c
 ## Pull Requests
 
 - Keep PRs focused - one feature or fix per PR.
-- Include tests and stories for new behavior; include a changeset for anything that ships.
+- Include tests and stories for new behavior. Leave versions and changelogs alone; a maintainer handles those at release time.
 - CI must pass: lint + format check, typecheck, tests (jsdom + browser), build.
 - A maintainer will review for architecture fit (unstyled/styled split, `logic/` extraction, token usage) as well as correctness. Expect requests to move logic or rename tokens - the conventions above are enforced.
 
@@ -107,5 +110,5 @@ This is a pnpm monorepo orchestrated by Turborepo. All dependency versions are c
 
 - Verify behavior changes carry tests in the same PR (per-file coverage gate makes this mechanical).
 - Check new styles use semantic tokens and density variables, not hard-coded values or raw palette steps.
-- Check public API changes have a changeset and story updates.
+- Check public API changes carry story updates, and that exported types, props and functions are documented including the gotchas.
 - Prefer suggesting the established pattern over inventing a new one; if a new pattern is genuinely needed, it should land in this document in the same PR.

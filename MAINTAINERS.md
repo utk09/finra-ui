@@ -17,7 +17,7 @@ Operational guide for current and future maintainers of finra-ui.
 
 - Review and merge PRs; keep CI green on `main`.
 - Triage issues (labels, repro confirmation, close-or-schedule decisions).
-- Cut releases via Changesets and keep changelogs meaningful.
+- Cut releases by hand and keep changelogs meaningful.
 - Keep the dependency catalog current and the docs in sync with shipped behavior.
 - Guard the architecture: unstyled/styled split, `logic/` extraction, semantic tokens, no cross-entry re-exports (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
@@ -30,7 +30,7 @@ Operational guide for current and future maintainers of finra-ui.
 ## Managing Pull Requests
 
 - Require green CI (lint + format, typecheck, jsdom + browser tests, build) before review effort.
-- Check the contribution checklist: tests in the same PR (per-file 85% coverage makes this mechanical), stories for new behavior, a changeset for anything that publishes.
+- Check the contribution checklist: tests in the same PR (per-file 85% coverage makes this mechanical), stories for new behavior, and no version or changelog edits.
 - Squash-merge with a conventional-commit title (commitlint types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`).
 - Architecture review points are listed in [CONTRIBUTING.md → Code Review Guidelines](CONTRIBUTING.md#code-review-guidelines-for-reviewers).
 
@@ -44,52 +44,57 @@ Operational guide for current and future maintainers of finra-ui.
 
 - All versions live in the **`pnpm-workspace.yaml` catalog**. Bump there; packages reference `"catalog:"`.
 - After bumping: `pnpm install`, then `pnpm verify` (lint → typecheck → test:coverage → build). Run the full `pnpm test` too - Storybook `play` tests run in a real browser and catch what jsdom misses.
-- Major upgrades of build-critical tools (Vite, Vitest, Storybook, TypeScript, ESLint) get their own PR with a changeset only if build output changes.
+- Major upgrades of build-critical tools (Vite, Vitest, Storybook, TypeScript, ESLint) get their own PR, and a changelog entry at release time only if build output changes.
 - Runtime dependency additions to published packages are rare and deliberate (current set: `clsx`, `class-variance-authority`, `@floating-ui/dom`). New runtime deps need a written justification in the PR: what it buys, why it cannot be a devDependency, and its bundle cost.
 - Node version is pinned in `.nvmrc` (22) and mirrored in CI and Netlify - bump all three together.
 
 ## Versioning
 
-- Semver via [Changesets](https://github.com/changesets/changesets). Every user-facing change carries a changeset chosen at PR time:
+- Semver, decided by the maintainer at release time rather than per PR:
   - **patch** - bug fixes, internal refactors that alter published output
   - **minor** - new components, props, or exports
   - **major** - breaking API/token/selector changes (avoid; the `data-finra-ui` attributes and semantic tokens are public API)
-- The three published packages (`@utk09/finra-ui`, `@utk09/finra-ui-finance`, `@utk09/finra-ui-icons`) version independently; changesets handles peer-dependency bumps across them.
+- The three published packages (`@utk09/finra-ui`, `@utk09/finra-ui-finance`, `@utk09/finra-ui-icons`) are currently kept in lockstep: all three carry the same version and are released together, whether or not each one changed. That keeps the peer-dependency ranges trivially satisfiable, at the cost of publishing no-op versions.
+- Contributors do not bump versions or write changelog entries. If a PR contains either, ask for it to be removed.
 - `@finra-ui/storybook` and the example apps are private and never published.
 
 ## Publishing to npm
 
-Releases are managed with Changesets under the public `@utk09` scope.
+Releases are cut by hand under the public `@utk09` scope. There is no release workflow and no automation.
 
-### Automated release (preferred, once `NPM_TOKEN` is configured)
-
-On every push to `main`, the [`Release` workflow](.github/workflows/release.yml) runs `changesets/action`:
-
-1. If unreleased changesets exist, it opens/updates a **"Version Packages"** PR that bumps versions and updates changelogs.
-2. Merging that PR triggers the workflow again, which runs `pnpm run release` (`turbo build && changeset publish`) to publish to npm.
-
-Packages publish with [npm provenance](https://docs.npmjs.com/generating-provenance-statements) (`NPM_CONFIG_PROVENANCE`; workflow grants `id-token: write`).
-
-**One-time setup:** add an npm automation token with publish rights to the `@utk09` scope as the `NPM_TOKEN` repository secret (Settings → Secrets and variables → Actions).
-
-### Manual release (current setup)
+### How a release actually happens
 
 ```bash
 # 1. Authenticate (one-time; needs publish rights to @utk09)
 npm login
 
-# 2. Apply pending changesets - bumps versions, updates changelogs
-pnpm changeset # or, if you already have a changeset, run
-pnpm changeset version
+# 2. Confirm main is green and clean
+git switch main && git pull
+pnpm verify
 
-# 3. Review + commit the version bumps
-git add . && git commit -m "chore: version packages"
+# 3. Edit the three package.json versions by hand, keeping them identical
 
-# 4. Build all packages and publish
-pnpm run release
+# 4. Write the three CHANGELOG.md entries by hand, newest first
+
+# 5. Commit both together, in one commit
+git add . && git commit -m "chore: update version to X.Y.Z"
+
+# 6. Build, then publish each package
+pnpm build
+pnpm --filter @utk09/finra-ui publish --access public
+pnpm --filter @utk09/finra-ui-icons publish --access public
+pnpm --filter @utk09/finra-ui-finance publish --access public
 ```
 
-`pnpm run release` builds via Turborepo first, then runs `changeset publish`, which only publishes packages whose version isn't already on npm.
+Publish icons before finance, since finance peer-depends on it.
+
+### About Changesets
+
+`@changesets/cli` is installed and `pnpm changeset` / `pnpm run release` are wired up, but **the tool is not in use**: no changeset file has ever been committed, and every release so far has been hand-written as above. Treat the scripts as unused scaffolding. Either adopt Changesets properly, in which case this section and the contributor guide both need rewriting, or remove the dependency. Leaving it half-wired is what caused the contributor guide to document a flow nobody follows.
+
+### Known gap
+
+Publishing is manual, so it depends on one person's local machine and npm credentials, and the published artifact is not attested. Adding a release workflow with an `NPM_TOKEN` secret and [npm provenance](https://docs.npmjs.com/generating-provenance-statements) would fix both. Not done yet.
 
 ### Post-release checklist
 

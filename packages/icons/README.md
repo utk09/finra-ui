@@ -1,85 +1,56 @@
-# Finra UI - Icons
+# @utk09/finra-ui-icons
 
-Icon library for the Finra UI component system.
+127 icons for [finra-ui](https://github.com/utk09/finra-ui), as plain data with React wrappers on top.
 
-[![npm version](https://img.shields.io/npm/v/@utk09/finra-ui-icons.svg)](https://www.npmjs.com/package/@utk09/finra-ui-icons)
+[![npm](https://img.shields.io/npm/v/@utk09/finra-ui-icons.svg)](https://www.npmjs.com/package/@utk09/finra-ui-icons) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-## Packages
+**[See every icon](https://finra-ui.netlify.app/?path=/story/icons--category-icons)**
 
-| Package                                                                                                                                                               | Description                                                                                                                                     |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) · [README](https://github.com/utk09/finra-ui/blob/main/packages/core/README.md)                    | Core components - buttons, inputs, forms, overlays (Dialog, Tooltip, Popover, Select, Menu, Toast), Tabs, ComboBox, and unstyled primitives     |
-| [`@utk09/finra-ui-finance`](https://www.npmjs.com/package/@utk09/finra-ui-finance) · [README](https://github.com/utk09/finra-ui/blob/main/packages/finance/README.md) | Financial domain components - Calendar, DateInput, DateTenorInput, DateTenorPicker, TenorPicker, PriceInput - plus parsing/formatting utilities |
-| [`@utk09/finra-ui-icons`](https://www.npmjs.com/package/@utk09/finra-ui-icons) · [README](https://github.com/utk09/finra-ui/blob/main/packages/icons/README.md)       | SVG icons as framework-agnostic data objects + React components                                                                                 |
-
-## Installation
+## Install
 
 ```bash
 npm install @utk09/finra-ui-icons
-# or
-pnpm add @utk09/finra-ui-icons
 ```
 
-## Usage
+React 18 or later for the wrappers. The data export needs no framework at all. ESM only.
 
-### React Components
+## Use
 
 ```tsx
-import {
-  CalendarIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  SearchIcon,
-  DollarIcon,
-} from "@utk09/finra-ui-icons/react";
+import { CalendarIcon, SearchIcon } from "@utk09/finra-ui-icons/react";
 
-function App() {
-  return (
-    <div>
-      <CalendarIcon width={24} height={24} />
-      <CheckIcon className="check" />
-      <ChevronDownIcon aria-hidden="true" />
-      <SearchIcon width={24} height={24} />
-      <DollarIcon width={24} height={24} />
-    </div>
-  );
-}
+<SearchIcon aria-hidden="true" />;
+<CalendarIcon role="img" aria-label="Pick a date" />;
 ```
 
-All React icon components accept standard `SVGProps<SVGSVGElement>` - pass any SVG attribute as a prop.
+Every wrapper takes the standard `SVGProps<SVGSVGElement>`, so any SVG attribute works as a prop.
 
-### Framework-Agnostic SVG Data
+## Naming an icon is your call
+
+The icons carry no `title` and no `aria-label`, deliberately. An icon cannot know whether it is decoration beside a text label or the entire content of a button, and guessing wrong is worse than not guessing. Mark it `aria-hidden` when nearby text already says what it means, or give it `role="img"` and a label when it stands alone. If you want an icon-only button, `IconButton` in the core package requires a label and will not compile without one.
+
+## Icons are data first
+
+The React components are one consumer of the icon data, not the source of it. Each icon is a plain object, so Lit, Vue, a canvas renderer or a build script can use the same definitions.
 
 ```ts
-import { calendarIcon, checkIcon, dollarIcon } from "@utk09/finra-ui-icons";
+import { calendarIcon } from "@utk09/finra-ui-icons";
 
-// Each icon is a plain object describing the SVG
-console.log(calendarIcon.viewBox); // "0 0 24 24"
-console.log(calendarIcon.children); // [{ tag: "rect", ... }, { tag: "line", ... }, ...]
+calendarIcon.viewBox; // "0 0 24 24"
+calendarIcon.children; // [{ tag: "rect", ... }, { tag: "line", ... }]
 ```
-
-Use the SVG data objects to render icons in any framework (Lit, vanilla DOM, etc.).
-
-## Available Icons
-
-See the **[category-wise icon list](https://finra-ui.netlify.app/?path=/story/icons--category-icons)** for all available icons.
-
-## Exports
-
-| Subpath                       | Contents                                                             |
-| ----------------------------- | -------------------------------------------------------------------- |
-| `@utk09/finra-ui-icons`       | Framework-agnostic SVG data objects + types (`IconData`, `SvgChild`) |
-| `@utk09/finra-ui-icons/react` | React SVG components                                                 |
 
 ## Design
 
-- All icons use `stroke="currentColor"` so they inherit the parent's text color. No fill colors are hardcoded - icons adapt to any theme automatically.
-- All icons are normalized to a canonical **24x24** viewport grid.
+Every icon is stroked with `currentColor` on a 24x24 grid, so it inherits the surrounding text colour and needs no per-theme variant. Nothing is pinned to a palette.
 
-## Contributing
+## Entry points
 
-See [CONTRIBUTING.md](../../CONTRIBUTING.md) at the repository root.
+| Import                        | Contains                                                 |
+| ----------------------------- | -------------------------------------------------------- |
+| `@utk09/finra-ui-icons`       | The icon data, plus the `IconData` and `SvgChild` types. |
+| `@utk09/finra-ui-icons/react` | The React components.                                    |
 
 ## License
 
-[MIT](../../LICENSE)
+[Apache-2.0](LICENSE). Keep the notices and pass on the [NOTICE](NOTICE) file when redistributing.

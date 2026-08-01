@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Component documentation
+    url: https://finra-ui.netlify.app
+    about: Every component, its props and live examples. Worth checking before filing.
+  - name: Questions and ideas
+    url: https://github.com/utk09/finra-ui/discussions
+    about: For "how do I", "should I", and anything not yet a bug or a concrete proposal.
+  - name: Report a vulnerability
+    url: https://github.com/utk09/finra-ui/security/advisories/new
+    about: Private disclosure. Please do not open a public issue for security problems.

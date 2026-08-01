@@ -1,0 +1,65 @@
+name: Feature request
+description: Propose a new component, prop, or capability.
+labels: ["enhancement", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The most useful proposals start from a real screen you are building rather than from an API shape. Tell us
+        what you are trying to do and we can often suggest something that already works, or design something better
+        than either of us would alone.
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - "@utk09/finra-ui"
+        - "@utk09/finra-ui-finance"
+        - "@utk09/finra-ui-icons"
+        - New package
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to build?
+      description: The screen, the workflow, the user. Not the API you have in mind yet.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: What do you do today?
+      description: |
+        The workaround, the component you wrote yourself, or the library you reached for instead. This tells us how
+        much the gap costs.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like instead?
+      description: A sketch is fine. Concrete input and output pairs are better than a prop list.
+      render: tsx
+
+  - type: textarea
+    id: conventions
+    attributes:
+      label: Does this depend on market convention?
+      description: |
+        Only relevant for the finance package. Anything that varies per desk, per currency or per venue (holiday
+        calendars, settlement lag, tick grids, rounding rules) is injected rather than built in, so it helps to know
+        early which parts of your proposal are convention and which are behaviour.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and the Storybook, and this does not already exist.
+          required: true

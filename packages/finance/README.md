@@ -1,149 +1,76 @@
-# Finra UI - Finance
+# @utk09/finra-ui-finance
 
-Financial domain components for the Finra UI component system - built for traders, operations, treasury, and risk users. Components encapsulate **financial behaviour** (parsing, formatting, keyboard semantics, visual hierarchy); business rules (holiday calendars, settlement conventions, instrument data) are injected by the consumer.
+The financial fields of [finra-ui](https://github.com/utk09/finra-ui): prices, amounts, tenors and dates, plus the parsers that make them work.
 
-[![npm version](https://img.shields.io/npm/v/@utk09/finra-ui-finance.svg)](https://www.npmjs.com/package/@utk09/finra-ui-finance)
-[![Storybook](https://img.shields.io/badge/Storybook-deployed-ff4785)](https://finra-ui.netlify.app)
+[![npm](https://img.shields.io/npm/v/@utk09/finra-ui-finance.svg)](https://www.npmjs.com/package/@utk09/finra-ui-finance) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-## Packages
+**[Browse the components](https://finra-ui.netlify.app)**
 
-| Package                                                                                                                                                               | Description                                                                                                                                                                      |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) · [README](https://github.com/utk09/finra-ui/blob/main/packages/core/README.md)                    | Core components - buttons, inputs, forms, overlays (Dialog, Tooltip, Popover, Select, Menu, Toast), Tabs, ComboBox, and unstyled primitives                                      |
-| [`@utk09/finra-ui-finance`](https://www.npmjs.com/package/@utk09/finra-ui-finance) · [README](https://github.com/utk09/finra-ui/blob/main/packages/finance/README.md) | Financial domain components - AmountInput, Calendar, CurrencyPairPicker, DateInput, DateTenorInput, DateTenorPicker, TenorPicker, PriceInput - plus parsing/formatting utilities |
-| [`@utk09/finra-ui-icons`](https://www.npmjs.com/package/@utk09/finra-ui-icons) · [README](https://github.com/utk09/finra-ui/blob/main/packages/icons/README.md)       | SVG icons as framework-agnostic data objects + React components                                                                                                                  |
-
-## Installation
+## Install
 
 ```bash
 npm install @utk09/finra-ui-finance @utk09/finra-ui @utk09/finra-ui-icons
-# or
-pnpm add @utk09/finra-ui-finance @utk09/finra-ui @utk09/finra-ui-icons
 ```
 
-`@utk09/finra-ui` and `@utk09/finra-ui-icons` are peer dependencies - they provide shared tokens, base components, and icons.
+Core and icons are peer dependencies. React 18 or later. ESM only.
 
-## Quick Start
+## What you get
+
+A handful of fields that already know their domain.
 
 ```tsx
-import "@utk09/finra-ui/styles";
-import { DateTenorPicker, PriceInput, Calendar } from "@utk09/finra-ui-finance";
-
-function TradeTicket() {
-  return (
-    <div>
-      <PriceInput
-        aria-label="Rate"
-        instrument={{ primaryPrecision: 4, precisionDigits: 1, tickSize: 0.00005 }}
-        digitHierarchy
-      />
-      <DateTenorPicker aria-label="Value date" showResolvedDate showModeIndicator />
-      <Calendar mode="range" />
-    </div>
-  );
-}
+import "@utk09/finra-ui-finance/styles";
+import { AmountInput, PriceInput, TenorPicker } from "@utk09/finra-ui-finance";
 ```
 
-## Components
+Type `10m` into `AmountInput` and it commits `10000000`, resting as `$10M`. `2bn`, `1.5k` and `(2m)` for a negative all do the obvious thing. What you receive is a plain number, not an object to unpack before doing arithmetic; currency is a separate prop that selects precision and the symbol.
 
-### Styled Components
+Arrow on a `PriceInput` and it moves by the instrument's tick, not by one. It reads decimal, FX big-figure and pips, bond 32nds (`101-16`, `101-16+`), percent and basis points, and it snaps an off-grid price onto the tick before stepping.
 
-| Component            | Description                                                                                                                                                            |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AmountInput`        | Amount entry in human notation (`1.23M`, `10m`, `2bn`, `1e5`) resolved to a canonical number; currency-aware precision, lossless compact display, prop-driven stepping |
-| `Calendar`           | Month calendar: single or range selection, min/max, highlighted dates, week numbers, month/year dropdowns, footer shortcut API                                         |
-| `CurrencyPairPicker` | Async currency-pair search and selection: one pair can be several tradable instruments, so ambiguous input opens the list rather than guessing                         |
-| `DateInput`          | Date entry with format validation, auto-separators, calendar popup                                                                                                     |
-| `TenorInput`         | **Deprecated** — use `TenorPicker` (`grouped={false}` for the flat list). Removed in a future release.                                                                 |
-| `TenorPicker`        | Market-aware tenor selector: grouped list (Overnight/Weeks/Months/Years/…), favourites, free-form parsing (`3 months`, `1y6m`), keyboard workflow                      |
-| `DateTenorInput`     | Combined date + tenor input with tenor-to-date resolution                                                                                                              |
-| `DateTenorPicker`    | Hybrid date/tenor combobox: absolute dates, relative tenors (`3M`, `Spot+3M`), business-calendar adjustment, resolved-date + mode/broken-date badges                   |
-| `PriceInput`         | Market-aware price input: digit visual hierarchy (big-figure/pips), tick sizes, precision tiers, configurable keyboard increments                                      |
+`3M`, `1y6m`, `90d` and `3 months` all normalise to the same canonical tenor in `TenorPicker`. `DateTenorPicker` goes further and accepts `SPOT+1W` or a literal date in the same field, then reports which of the two the user meant and whether the result is a broken date.
 
-Calendar footer extras: `CalendarTodayButton`, `CalendarShortcuts` (tenor shortcut buttons), `CalendarMonthYear` (header dropdowns).
+## The one thing to understand
 
-### Unstyled Components
-
-Every styled component has an unstyled base. Import from the `/unstyled` entry point:
+This package has no opinion about your market conventions, because it cannot have a correct one. Holiday calendars, settlement lag and spot dates differ per desk and per currency, so they are injected.
 
 ```tsx
-import {
-  AmountInputBase,
-  CalendarBase,
-  CurrencyPairPickerBase,
-  DateInputBase,
-  DateTenorInputBase,
-  DateTenorPickerBase,
-  PriceInputBase,
-  TenorInputBase,
-  TenorPickerBase,
-} from "@utk09/finra-ui-finance/unstyled";
+<DateTenorPicker
+  referenceDate={today}
+  calendar={{ isBusinessDay, adjust }}
+  adjustmentConvention="following"
+  settlementEngine={(date, parsed) => addSpotLag(date, parsed)}
+/>
 ```
 
-### Utilities
+Omit them and you get plain calendar arithmetic, which is right for many screens and wrong for a trading desk. The components own the interaction and the accessibility. You own the conventions.
 
-Pure, framework-agnostic engines - the same ones the components use internally. Import from the `/utils` entry point:
+The same holds for instruments. `CurrencyPairPicker` takes an `InstrumentProvider` you implement, and hands back the whole pair on selection rather than just its id, so the pricing metadata it carries can seed the price field beside it.
 
-```tsx
-import {
-  // Dates
-  formatDate,
-  parseDate,
-  validateDate,
-  // Tenors
-  parseTenor,
-  parseTenorInput, // flexible: "3 months", "1y6m", "90d" → canonical
-  resolveTenor,
-  dateToTenor,
-  STANDARD_TENORS,
-  // Unified date/tenor parsing (DateTenorPicker's replaceable parser)
-  parseDateTenor,
-  // Prices: parse / format / segment / tick-step
-  parsePrice,
-  formatPrice,
-  segmentPrice,
-  stepPrice,
-  // Amounts: human notation ("4.1m") ↔ canonical number
-  parseAmount,
-  formatAmount,
-  currencyDecimals,
-  compactSuffixesForLocale, // opt-in CLDR table, e.g. lakh/crore for en-IN
-  DEFAULT_AMOUNT_SUFFIXES,
-  // Increment engine (FP-safe, keyboard-independent)
-  resolveIncrement,
-  roundWith,
-  validateTick,
-  // Keyboard action maps
-  resolveKey,
-  keyChord,
-  DEFAULT_PRICE_KEYMAP,
-  createAmountKeymap,
-} from "@utk09/finra-ui-finance/utils";
+## Entry points
+
+| Import                             | Contains                                                   |
+| ---------------------------------- | ---------------------------------------------------------- |
+| `@utk09/finra-ui-finance`          | The styled components. Start here.                         |
+| `@utk09/finra-ui-finance/unstyled` | The same components with behaviour and ARIA but no CSS.    |
+| `@utk09/finra-ui-finance/utils`    | The engines on their own: parsers, formatters, tick maths. |
+| `@utk09/finra-ui-finance/styles`   | The stylesheet. Import once, for side effects.             |
+
+## Using the engines without the components
+
+The parsing and formatting is pure and framework-free. It is useful in a grid cell, a server route, or a validation schema, anywhere a React component would be the wrong shape.
+
+```ts
+import { formatPrice, parseAmount, parseTenorInput } from "@utk09/finra-ui-finance/utils";
+
+parseAmount("2.5bn").value; // 2500000000
+formatPrice(101.5, { format: "bond32" }); // "101-16"
+parseTenorInput("1 year 6 months").tenor; // "1Y6M"
 ```
 
-## Injectable Adapters
+## Documentation
 
-Business logic never lives in the components - provide it:
-
-- **Parsers** - `DateTenorPicker`, `PriceInput` and `AmountInput` accept replaceable parsers/formatters.
-- **Suffix tables** - `AmountInput` ships `K`/`M`/`B`/`T`; a house convention (`MM`) or a locale's own (lakh/crore) is merged in via `suffixes`. Unrecognised suffixes reject rather than commit a value off by a factor of a million.
-- **Business calendar** - `BusinessCalendar` adapter (`isBusinessDay`, `adjust(date, convention)`) with adjustment conventions (following, modified-following, preceding, ...).
-- **Instrument metadata** - `PriceInput` takes an `instrument` object (precision, tick size, min/max) that can change without remounting.
-- **Keyboard maps** - default price keymap (Arrow = ±1 tick, Shift = ±10, Ctrl = ±primary) and `createAmountKeymap(step, largeStep)` are both fully remappable.
-
-## Exports
-
-| Subpath                            | Contents                                      |
-| ---------------------------------- | --------------------------------------------- |
-| `@utk09/finra-ui-finance`          | Styled React components                       |
-| `@utk09/finra-ui-finance/unstyled` | Unstyled base components                      |
-| `@utk09/finra-ui-finance/utils`    | Date/tenor/price parsing + formatting engines |
-| `@utk09/finra-ui-finance/styles`   | CSS styles                                    |
-
-## Contributing
-
-See [CONTRIBUTING.md](../../CONTRIBUTING.md) at the repository root.
+Every exported type and prop carries editor documentation, so hovering usually beats reading. Beyond that, see [Storybook](https://finra-ui.netlify.app) and the [repository](https://github.com/utk09/finra-ui).
 
 ## License
 
-[MIT](../../LICENSE)
+[Apache-2.0](LICENSE). Keep the notices and pass on the [NOTICE](NOTICE) file when redistributing.

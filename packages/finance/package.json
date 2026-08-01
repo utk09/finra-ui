@@ -27,7 +27,9 @@
     "*.css"
   ],
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "NOTICE"
   ],
   "scripts": {
     "build": "vite build",
@@ -88,7 +90,7 @@
     "url": "https://github.com/utk09/finra-ui",
     "directory": "packages/finance"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [
     "finance",
     "tenor",
