@@ -1,8 +1,21 @@
 /**
  * Framework-agnostic SVG icon data.
  *
- * Each icon is a plain object describing the SVG element and its children.
- * Consumers can render these with any framework (React, Lit, vanilla DOM).
+ * Each icon is a plain object describing the SVG element and its children, so it
+ * can be rendered by React, Lit or plain DOM without this package depending on
+ * any of them. The React wrappers in `@utk09/finra-ui-icons/react` are one
+ * consumer of this data, not a separate source of truth.
+ *
+ * Every icon strokes with `currentColor`, so it inherits the text colour of
+ * whatever contains it and needs no per-theme variant.
+ *
+ * ## Naming an icon
+ *
+ * Icons carry no `title` or `aria-label` - an icon cannot know whether it is
+ * decorative beside a text label or the sole content of a button, so naming is
+ * the consumer's decision. `IconButton` requires a label of its own.
+ *
+ * @see {@link IconData} for the shape, {@link SvgChild} for the primitives.
  */
 
 /**
@@ -66,6 +79,7 @@ export interface IconData {
 
 // 1. Core Actions
 
+/** Plus icon (Core Actions). */
 export const plusIcon: IconData = {
   name: "plus",
   viewBox: "0 0 24 24",
@@ -76,6 +90,7 @@ export const plusIcon: IconData = {
   children: [{ tag: "path", d: "M12 5v14M5 12h14" }],
 };
 
+/** Minus icon (Core Actions). */
 export const minusIcon: IconData = {
   name: "minus",
   viewBox: "0 0 24 24",
@@ -86,6 +101,7 @@ export const minusIcon: IconData = {
   children: [{ tag: "path", d: "M5 12h14" }],
 };
 
+/** Dash icon (Core Actions). */
 export const dashIcon: IconData = {
   name: "dash",
   viewBox: "0 0 24 24",
@@ -96,6 +112,7 @@ export const dashIcon: IconData = {
   children: [{ tag: "path", d: "M5 12h14" }],
 };
 
+/** Close icon (Core Actions). */
 export const closeIcon: IconData = {
   name: "close",
   viewBox: "0 0 24 24",
@@ -107,6 +124,7 @@ export const closeIcon: IconData = {
   children: [{ tag: "path", d: "M18 6 6 18M6 6l12 12" }],
 };
 
+/** Close small icon (Core Actions). */
 export const closeSmallIcon: IconData = {
   name: "close-small",
   viewBox: "0 0 24 24",
@@ -118,6 +136,7 @@ export const closeSmallIcon: IconData = {
   children: [{ tag: "path", d: "M8 8l8 8M16 8l-8 8" }],
 };
 
+/** Spinner icon (Core Actions). */
 export const spinnerIcon: IconData = {
   name: "spinner",
   viewBox: "0 0 24 24",
@@ -130,6 +149,7 @@ export const spinnerIcon: IconData = {
   ],
 };
 
+/** Download icon (Core Actions). */
 export const downloadIcon: IconData = {
   name: "download",
   viewBox: "0 0 24 24",
@@ -145,6 +165,7 @@ export const downloadIcon: IconData = {
   ],
 };
 
+/** Upload icon (Core Actions). */
 export const uploadIcon: IconData = {
   name: "upload",
   viewBox: "0 0 24 24",
@@ -160,6 +181,7 @@ export const uploadIcon: IconData = {
   ],
 };
 
+/** Edit icon (Core Actions). */
 export const editIcon: IconData = {
   name: "edit",
   viewBox: "0 0 24 24",
@@ -174,6 +196,7 @@ export const editIcon: IconData = {
   ],
 };
 
+/** Delete icon (Core Actions). */
 export const deleteIcon: IconData = {
   name: "delete",
   viewBox: "0 0 24 24",
@@ -189,6 +212,7 @@ export const deleteIcon: IconData = {
   ],
 };
 
+/** Copy icon (Core Actions). */
 export const copyIcon: IconData = {
   name: "copy",
   viewBox: "0 0 24 24",
@@ -203,6 +227,7 @@ export const copyIcon: IconData = {
   ],
 };
 
+/** Share icon (Core Actions). */
 export const shareIcon: IconData = {
   name: "share",
   viewBox: "0 0 24 24",
@@ -220,6 +245,7 @@ export const shareIcon: IconData = {
   ],
 };
 
+/** External link icon (Core Actions). */
 export const externalLinkIcon: IconData = {
   name: "external-link",
   viewBox: "0 0 24 24",
@@ -235,6 +261,7 @@ export const externalLinkIcon: IconData = {
   ],
 };
 
+/** Refresh icon (Core Actions). */
 export const refreshIcon: IconData = {
   name: "refresh",
   viewBox: "0 0 24 24",
@@ -250,6 +277,7 @@ export const refreshIcon: IconData = {
   ],
 };
 
+/** Save icon (Core Actions). */
 export const saveIcon: IconData = {
   name: "save",
   viewBox: "0 0 24 24",
@@ -265,6 +293,7 @@ export const saveIcon: IconData = {
   ],
 };
 
+/** Download cloud icon (Core Actions). */
 export const downloadCloudIcon: IconData = {
   name: "download-cloud",
   viewBox: "0 0 24 24",
@@ -280,6 +309,7 @@ export const downloadCloudIcon: IconData = {
   ],
 };
 
+/** Upload cloud icon (Core Actions). */
 export const uploadCloudIcon: IconData = {
   name: "upload-cloud",
   viewBox: "0 0 24 24",
@@ -295,6 +325,7 @@ export const uploadCloudIcon: IconData = {
   ],
 };
 
+/** Pause icon (Core Actions). */
 export const pauseIcon: IconData = {
   name: "pause",
   viewBox: "0 0 24 24",
@@ -309,6 +340,7 @@ export const pauseIcon: IconData = {
   ],
 };
 
+/** Play icon (Core Actions). */
 export const playIcon: IconData = {
   name: "play",
   viewBox: "0 0 24 24",
@@ -320,6 +352,7 @@ export const playIcon: IconData = {
   children: [{ tag: "polygon", points: "6 3 20 12 6 21 6 3" }],
 };
 
+/** Stop icon (Core Actions). */
 export const stopIcon: IconData = {
   name: "stop",
   viewBox: "0 0 24 24",
@@ -333,6 +366,7 @@ export const stopIcon: IconData = {
 
 // 2. Communication
 
+/** Mail icon (Communication). */
 export const mailIcon: IconData = {
   name: "mail",
   viewBox: "0 0 24 24",
@@ -347,6 +381,7 @@ export const mailIcon: IconData = {
   ],
 };
 
+/** Bell icon (Communication). */
 export const bellIcon: IconData = {
   name: "bell",
   viewBox: "0 0 24 24",
@@ -361,6 +396,7 @@ export const bellIcon: IconData = {
   ],
 };
 
+/** Message icon (Communication). */
 export const messageIcon: IconData = {
   name: "message",
   viewBox: "0 0 24 24",
@@ -372,6 +408,7 @@ export const messageIcon: IconData = {
   children: [{ tag: "path", d: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" }],
 };
 
+/** Send icon (Communication). */
 export const sendIcon: IconData = {
   name: "send",
   viewBox: "0 0 24 24",
@@ -388,6 +425,7 @@ export const sendIcon: IconData = {
 
 // 3. Security / User
 
+/** Lock icon (Security / User). */
 export const lockIcon: IconData = {
   name: "lock",
   viewBox: "0 0 24 24",
@@ -402,6 +440,7 @@ export const lockIcon: IconData = {
   ],
 };
 
+/** Unlock icon (Security / User). */
 export const unlockIcon: IconData = {
   name: "unlock",
   viewBox: "0 0 24 24",
@@ -416,6 +455,7 @@ export const unlockIcon: IconData = {
   ],
 };
 
+/** User icon (Security / User). */
 export const userIcon: IconData = {
   name: "user",
   viewBox: "0 0 24 24",
@@ -430,6 +470,7 @@ export const userIcon: IconData = {
   ],
 };
 
+/** Users icon (Security / User). */
 export const usersIcon: IconData = {
   name: "users",
   viewBox: "0 0 24 24",
@@ -446,6 +487,7 @@ export const usersIcon: IconData = {
   ],
 };
 
+/** Key icon (Security / User). */
 export const keyIcon: IconData = {
   name: "key",
   viewBox: "0 0 24 24",
@@ -462,6 +504,7 @@ export const keyIcon: IconData = {
   ],
 };
 
+/** Shield icon (Security / User). */
 export const shieldIcon: IconData = {
   name: "shield",
   viewBox: "0 0 24 24",
@@ -475,6 +518,7 @@ export const shieldIcon: IconData = {
 
 // 4. Status / Feedback
 
+/** Check icon (Status / Feedback). */
 export const checkIcon: IconData = {
   name: "check",
   viewBox: "0 0 24 24",
@@ -486,6 +530,7 @@ export const checkIcon: IconData = {
   children: [{ tag: "path", d: "M5 12l5 5 9-10" }],
 };
 
+/** Info icon (Status / Feedback). */
 export const infoIcon: IconData = {
   name: "info",
   viewBox: "0 0 24 24",
@@ -501,6 +546,7 @@ export const infoIcon: IconData = {
   ],
 };
 
+/** Warning icon (Status / Feedback). */
 export const warningIcon: IconData = {
   name: "warning",
   viewBox: "0 0 24 24",
@@ -519,6 +565,7 @@ export const warningIcon: IconData = {
   ],
 };
 
+/** Error icon (Status / Feedback). */
 export const errorIcon: IconData = {
   name: "error",
   viewBox: "0 0 24 24",
@@ -534,6 +581,7 @@ export const errorIcon: IconData = {
   ],
 };
 
+/** Success circle icon (Status / Feedback). */
 export const successCircleIcon: IconData = {
   name: "success-circle",
   viewBox: "0 0 24 24",
@@ -548,6 +596,7 @@ export const successCircleIcon: IconData = {
   ],
 };
 
+/** Help circle icon (Status / Feedback). */
 export const helpCircleIcon: IconData = {
   name: "help-circle",
   viewBox: "0 0 24 24",
@@ -565,6 +614,7 @@ export const helpCircleIcon: IconData = {
 
 // 5. Navigation Essentials
 
+/** Chevron down icon (Navigation Essentials). */
 export const chevronDownIcon: IconData = {
   name: "chevron-down",
   viewBox: "0 0 24 24",
@@ -576,6 +626,7 @@ export const chevronDownIcon: IconData = {
   children: [{ tag: "path", d: "M6 9l6 6 6-6" }],
 };
 
+/** Chevron left icon (Navigation Essentials). */
 export const chevronLeftIcon: IconData = {
   name: "chevron-left",
   viewBox: "0 0 24 24",
@@ -587,6 +638,7 @@ export const chevronLeftIcon: IconData = {
   children: [{ tag: "path", d: "M15 6l-6 6 6 6" }],
 };
 
+/** Chevron right icon (Navigation Essentials). */
 export const chevronRightIcon: IconData = {
   name: "chevron-right",
   viewBox: "0 0 24 24",
@@ -598,6 +650,7 @@ export const chevronRightIcon: IconData = {
   children: [{ tag: "path", d: "M9 6l6 6-6 6" }],
 };
 
+/** Chevron up icon (Navigation Essentials). */
 export const chevronUpIcon: IconData = {
   name: "chevron-up",
   viewBox: "0 0 24 24",
@@ -609,6 +662,7 @@ export const chevronUpIcon: IconData = {
   children: [{ tag: "path", d: "M6 15l6-6 6 6" }],
 };
 
+/** More horizontal icon (Navigation Essentials). */
 export const moreHorizontalIcon: IconData = {
   name: "more-horizontal",
   viewBox: "0 0 24 24",
@@ -622,6 +676,7 @@ export const moreHorizontalIcon: IconData = {
   ],
 };
 
+/** More vertical icon (Navigation Essentials). */
 export const moreVerticalIcon: IconData = {
   name: "more-vertical",
   viewBox: "0 0 24 24",
@@ -635,6 +690,7 @@ export const moreVerticalIcon: IconData = {
   ],
 };
 
+/** Arrow up icon (Navigation Essentials). */
 export const arrowUpIcon: IconData = {
   name: "arrow-up",
   viewBox: "0 0 24 24",
@@ -649,6 +705,7 @@ export const arrowUpIcon: IconData = {
   ],
 };
 
+/** Arrow down icon (Navigation Essentials). */
 export const arrowDownIcon: IconData = {
   name: "arrow-down",
   viewBox: "0 0 24 24",
@@ -663,6 +720,7 @@ export const arrowDownIcon: IconData = {
   ],
 };
 
+/** Arrow left icon (Navigation Essentials). */
 export const arrowLeftIcon: IconData = {
   name: "arrow-left",
   viewBox: "0 0 24 24",
@@ -677,6 +735,7 @@ export const arrowLeftIcon: IconData = {
   ],
 };
 
+/** Arrow right icon (Navigation Essentials). */
 export const arrowRightIcon: IconData = {
   name: "arrow-right",
   viewBox: "0 0 24 24",
@@ -691,6 +750,7 @@ export const arrowRightIcon: IconData = {
   ],
 };
 
+/** Home icon (Navigation Essentials). */
 export const homeIcon: IconData = {
   name: "home",
   viewBox: "0 0 24 24",
@@ -705,6 +765,7 @@ export const homeIcon: IconData = {
   ],
 };
 
+/** Settings icon (Navigation Essentials). */
 export const settingsIcon: IconData = {
   name: "settings",
   viewBox: "0 0 24 24",
@@ -724,6 +785,7 @@ export const settingsIcon: IconData = {
 
 // 6. Data, Forms, and Table UX
 
+/** Calendar icon (Data, Forms, and Table UX). */
 export const calendarIcon: IconData = {
   name: "calendar",
   viewBox: "0 0 24 24",
@@ -740,6 +802,7 @@ export const calendarIcon: IconData = {
   ],
 };
 
+/** Search icon (Data, Forms, and Table UX). */
 export const searchIcon: IconData = {
   name: "search",
   viewBox: "0 0 24 24",
@@ -754,6 +817,7 @@ export const searchIcon: IconData = {
   ],
 };
 
+/** Filter icon (Data, Forms, and Table UX). */
 export const filterIcon: IconData = {
   name: "filter",
   viewBox: "0 0 24 24",
@@ -765,6 +829,7 @@ export const filterIcon: IconData = {
   children: [{ tag: "polygon", points: "22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" }],
 };
 
+/** Eye icon (Data, Forms, and Table UX). */
 export const eyeIcon: IconData = {
   name: "eye",
   viewBox: "0 0 24 24",
@@ -779,6 +844,7 @@ export const eyeIcon: IconData = {
   ],
 };
 
+/** Eye off icon (Data, Forms, and Table UX). */
 export const eyeOffIcon: IconData = {
   name: "eye-off",
   viewBox: "0 0 24 24",
@@ -796,6 +862,7 @@ export const eyeOffIcon: IconData = {
   ],
 };
 
+/** Sort icon (Data, Forms, and Table UX). */
 export const sortIcon: IconData = {
   name: "sort",
   viewBox: "0 0 24 24",
@@ -810,6 +877,7 @@ export const sortIcon: IconData = {
   ],
 };
 
+/** Sort asc icon (Data, Forms, and Table UX). */
 export const sortAscIcon: IconData = {
   name: "sort-asc",
   viewBox: "0 0 24 24",
@@ -824,6 +892,7 @@ export const sortAscIcon: IconData = {
   ],
 };
 
+/** Sort desc icon (Data, Forms, and Table UX). */
 export const sortDescIcon: IconData = {
   name: "sort-desc",
   viewBox: "0 0 24 24",
@@ -838,6 +907,7 @@ export const sortDescIcon: IconData = {
   ],
 };
 
+/** Funnel off icon (Data, Forms, and Table UX). */
 export const funnelOffIcon: IconData = {
   name: "funnel-off",
   viewBox: "0 0 24 24",
@@ -852,6 +922,7 @@ export const funnelOffIcon: IconData = {
   ],
 };
 
+/** Columns icon (Data, Forms, and Table UX). */
 export const columnsIcon: IconData = {
   name: "columns",
   viewBox: "0 0 24 24",
@@ -866,6 +937,7 @@ export const columnsIcon: IconData = {
   ],
 };
 
+/** Eye open icon (Data, Forms, and Table UX). */
 export const eyeOpenIcon: IconData = {
   name: "eye-open",
   viewBox: "0 0 24 24",
@@ -880,6 +952,7 @@ export const eyeOpenIcon: IconData = {
   ],
 };
 
+/** Eye closed icon (Data, Forms, and Table UX). */
 export const eyeClosedIcon: IconData = {
   name: "eye-closed",
   viewBox: "0 0 24 24",
@@ -897,6 +970,7 @@ export const eyeClosedIcon: IconData = {
   ],
 };
 
+/** Search plus icon (Data, Forms, and Table UX). */
 export const searchPlusIcon: IconData = {
   name: "search-plus",
   viewBox: "0 0 24 24",
@@ -913,6 +987,7 @@ export const searchPlusIcon: IconData = {
   ],
 };
 
+/** Search minus icon (Data, Forms, and Table UX). */
 export const searchMinusIcon: IconData = {
   name: "search-minus",
   viewBox: "0 0 24 24",
@@ -928,6 +1003,7 @@ export const searchMinusIcon: IconData = {
   ],
 };
 
+/** Check circle icon (Data, Forms, and Table UX). */
 export const checkCircleIcon: IconData = {
   name: "check-circle",
   viewBox: "0 0 24 24",
@@ -942,6 +1018,7 @@ export const checkCircleIcon: IconData = {
   ],
 };
 
+/** X circle icon (Data, Forms, and Table UX). */
 export const xCircleIcon: IconData = {
   name: "x-circle",
   viewBox: "0 0 24 24",
@@ -956,6 +1033,7 @@ export const xCircleIcon: IconData = {
   ],
 };
 
+/** Alert triangle icon (Data, Forms, and Table UX). */
 export const alertTriangleIcon: IconData = {
   name: "alert-triangle",
   viewBox: "0 0 24 24",
@@ -974,6 +1052,7 @@ export const alertTriangleIcon: IconData = {
   ],
 };
 
+/** Calendar range icon (Data, Forms, and Table UX). */
 export const calendarRangeIcon: IconData = {
   name: "calendar-range",
   viewBox: "0 0 24 24",
@@ -991,6 +1070,7 @@ export const calendarRangeIcon: IconData = {
   ],
 };
 
+/** Clock icon (Data, Forms, and Table UX). */
 export const clockIcon: IconData = {
   name: "clock",
   viewBox: "0 0 24 24",
@@ -1005,6 +1085,7 @@ export const clockIcon: IconData = {
   ],
 };
 
+/** Minus square icon (Data, Forms, and Table UX). */
 export const minusSquareIcon: IconData = {
   name: "minus-square",
   viewBox: "0 0 24 24",
@@ -1019,6 +1100,7 @@ export const minusSquareIcon: IconData = {
   ],
 };
 
+/** Check square icon (Data, Forms, and Table UX). */
 export const checkSquareIcon: IconData = {
   name: "check-square",
   viewBox: "0 0 24 24",
@@ -1033,6 +1115,7 @@ export const checkSquareIcon: IconData = {
   ],
 };
 
+/** Circle dot icon (Data, Forms, and Table UX). */
 export const circleDotIcon: IconData = {
   name: "circle-dot",
   viewBox: "0 0 24 24",
@@ -1047,6 +1130,7 @@ export const circleDotIcon: IconData = {
   ],
 };
 
+/** Indeterminate icon (Data, Forms, and Table UX). */
 export const indeterminateIcon: IconData = {
   name: "indeterminate",
   viewBox: "0 0 24 24",
@@ -1061,6 +1145,7 @@ export const indeterminateIcon: IconData = {
   ],
 };
 
+/** Pin icon (Data, Forms, and Table UX). */
 export const pinIcon: IconData = {
   name: "pin",
   viewBox: "0 0 24 24",
@@ -1075,6 +1160,7 @@ export const pinIcon: IconData = {
   ],
 };
 
+/** Sliders icon (Data, Forms, and Table UX). */
 export const slidersIcon: IconData = {
   name: "sliders",
   viewBox: "0 0 24 24",
@@ -1098,6 +1184,7 @@ export const slidersIcon: IconData = {
 
 // 7. Finance-domain Pack
 
+/** Trending up icon (Finance-domain Pack). */
 export const trendingUpIcon: IconData = {
   name: "trending-up",
   viewBox: "0 0 24 24",
@@ -1112,6 +1199,7 @@ export const trendingUpIcon: IconData = {
   ],
 };
 
+/** Trending down icon (Finance-domain Pack). */
 export const trendingDownIcon: IconData = {
   name: "trending-down",
   viewBox: "0 0 24 24",
@@ -1126,6 +1214,7 @@ export const trendingDownIcon: IconData = {
   ],
 };
 
+/** Candlestick icon (Finance-domain Pack). */
 export const candlestickIcon: IconData = {
   name: "candlestick",
   viewBox: "0 0 24 24",
@@ -1144,6 +1233,7 @@ export const candlestickIcon: IconData = {
   ],
 };
 
+/** Chart line icon (Finance-domain Pack). */
 export const chartLineIcon: IconData = {
   name: "chart-line",
   viewBox: "0 0 24 24",
@@ -1159,6 +1249,7 @@ export const chartLineIcon: IconData = {
   ],
 };
 
+/** Percent icon (Finance-domain Pack). */
 export const percentIcon: IconData = {
   name: "percent",
   viewBox: "0 0 24 24",
@@ -1174,6 +1265,7 @@ export const percentIcon: IconData = {
   ],
 };
 
+/** Dollar icon (Finance-domain Pack). */
 export const dollarIcon: IconData = {
   name: "dollar",
   viewBox: "0 0 24 24",
@@ -1188,6 +1280,7 @@ export const dollarIcon: IconData = {
   ],
 };
 
+/** Coin icon (Finance-domain Pack). */
 export const coinIcon: IconData = {
   name: "coin",
   viewBox: "0 0 24 24",
@@ -1203,6 +1296,7 @@ export const coinIcon: IconData = {
   ],
 };
 
+/** Wallet icon (Finance-domain Pack). */
 export const walletIcon: IconData = {
   name: "wallet",
   viewBox: "0 0 24 24",
@@ -1218,6 +1312,7 @@ export const walletIcon: IconData = {
   ],
 };
 
+/** Clipboard check icon (Finance-domain Pack). */
 export const clipboardCheckIcon: IconData = {
   name: "clipboard-check",
   viewBox: "0 0 24 24",
@@ -1233,6 +1328,7 @@ export const clipboardCheckIcon: IconData = {
   ],
 };
 
+/** Clipboard x icon (Finance-domain Pack). */
 export const clipboardXIcon: IconData = {
   name: "clipboard-x",
   viewBox: "0 0 24 24",
@@ -1248,6 +1344,7 @@ export const clipboardXIcon: IconData = {
   ],
 };
 
+/** Timer icon (Finance-domain Pack). */
 export const timerIcon: IconData = {
   name: "timer",
   viewBox: "0 0 24 24",
@@ -1263,6 +1360,7 @@ export const timerIcon: IconData = {
   ],
 };
 
+/** Activity icon (Finance-domain Pack). */
 export const activityIcon: IconData = {
   name: "activity",
   viewBox: "0 0 24 24",
@@ -1274,6 +1372,7 @@ export const activityIcon: IconData = {
   children: [{ tag: "polyline", points: "22 12 18 12 15 21 9 3 6 12 2 12" }],
 };
 
+/** Target icon (Finance-domain Pack). */
 export const targetIcon: IconData = {
   name: "target",
   viewBox: "0 0 24 24",
@@ -1289,6 +1388,7 @@ export const targetIcon: IconData = {
   ],
 };
 
+/** Shield alert icon (Finance-domain Pack). */
 export const shieldAlertIcon: IconData = {
   name: "shield-alert",
   viewBox: "0 0 24 24",
@@ -1304,6 +1404,7 @@ export const shieldAlertIcon: IconData = {
   ],
 };
 
+/** Shield check icon (Finance-domain Pack). */
 export const shieldCheckIcon: IconData = {
   name: "shield-check",
   viewBox: "0 0 24 24",
@@ -1318,6 +1419,7 @@ export const shieldCheckIcon: IconData = {
   ],
 };
 
+/** File check icon (Finance-domain Pack). */
 export const fileCheckIcon: IconData = {
   name: "file-check",
   viewBox: "0 0 24 24",
@@ -1333,6 +1435,7 @@ export const fileCheckIcon: IconData = {
   ],
 };
 
+/** File warning icon (Finance-domain Pack). */
 export const fileWarningIcon: IconData = {
   name: "file-warning",
   viewBox: "0 0 24 24",
@@ -1349,6 +1452,7 @@ export const fileWarningIcon: IconData = {
   ],
 };
 
+/** Audit trail icon (Finance-domain Pack). */
 export const auditTrailIcon: IconData = {
   name: "audit-trail",
   viewBox: "0 0 24 24",
@@ -1366,6 +1470,7 @@ export const auditTrailIcon: IconData = {
   ],
 };
 
+/** Bank icon (Finance-domain Pack). */
 export const bankIcon: IconData = {
   name: "bank",
   viewBox: "0 0 24 24",
@@ -1383,6 +1488,7 @@ export const bankIcon: IconData = {
   ],
 };
 
+/** Bitcoin icon (Finance-domain Pack). */
 export const bitcoinIcon: IconData = {
   name: "bitcoin",
   viewBox: "0 0 24 24",
@@ -1402,6 +1508,7 @@ export const bitcoinIcon: IconData = {
   ],
 };
 
+/** Chart bar icon (Finance-domain Pack). */
 export const chartBarIcon: IconData = {
   name: "chart-bar",
   viewBox: "0 0 24 24",
@@ -1418,6 +1525,7 @@ export const chartBarIcon: IconData = {
   ],
 };
 
+/** Chart pie icon (Finance-domain Pack). */
 export const chartPieIcon: IconData = {
   name: "chart-pie",
   viewBox: "0 0 24 24",
@@ -1432,6 +1540,7 @@ export const chartPieIcon: IconData = {
   ],
 };
 
+/** Commodities icon (Finance-domain Pack). */
 export const commoditiesIcon: IconData = {
   name: "commodities",
   viewBox: "0 0 24 24",
@@ -1446,6 +1555,7 @@ export const commoditiesIcon: IconData = {
   ],
 };
 
+/** Credit icon (Finance-domain Pack). */
 export const creditIcon: IconData = {
   name: "credit",
   viewBox: "0 0 24 24",
@@ -1462,6 +1572,7 @@ export const creditIcon: IconData = {
   ],
 };
 
+/** Credit card icon (Finance-domain Pack). */
 export const creditCardIcon: IconData = {
   name: "credit-card",
   viewBox: "0 0 24 24",
@@ -1477,6 +1588,7 @@ export const creditCardIcon: IconData = {
   ],
 };
 
+/** Crypto icon (Finance-domain Pack). */
 export const cryptoIcon: IconData = {
   name: "crypto",
   viewBox: "0 0 24 24",
@@ -1491,6 +1603,7 @@ export const cryptoIcon: IconData = {
   ],
 };
 
+/** Derivatives icon (Finance-domain Pack). */
 export const derivativesIcon: IconData = {
   name: "derivatives",
   viewBox: "0 0 24 24",
@@ -1507,6 +1620,7 @@ export const derivativesIcon: IconData = {
   ],
 };
 
+/** Equities icon (Finance-domain Pack). */
 export const equitiesIcon: IconData = {
   name: "equities",
   viewBox: "0 0 24 24",
@@ -1524,6 +1638,7 @@ export const equitiesIcon: IconData = {
   ],
 };
 
+/** Euro icon (Finance-domain Pack). */
 export const euroIcon: IconData = {
   name: "euro",
   viewBox: "0 0 24 24",
@@ -1539,6 +1654,7 @@ export const euroIcon: IconData = {
   ],
 };
 
+/** Fx icon (Finance-domain Pack). */
 export const fxIcon: IconData = {
   name: "fx",
   viewBox: "0 0 24 24",
@@ -1555,6 +1671,7 @@ export const fxIcon: IconData = {
   ],
 };
 
+/** History icon (Finance-domain Pack). */
 export const historyIcon: IconData = {
   name: "history",
   viewBox: "0 0 24 24",
@@ -1570,6 +1687,7 @@ export const historyIcon: IconData = {
   ],
 };
 
+/** Pound icon (Finance-domain Pack). */
 export const poundIcon: IconData = {
   name: "pound",
   viewBox: "0 0 24 24",
@@ -1584,6 +1702,7 @@ export const poundIcon: IconData = {
   ],
 };
 
+/** Rates icon (Finance-domain Pack). */
 export const ratesIcon: IconData = {
   name: "rates",
   viewBox: "0 0 24 24",
@@ -1599,6 +1718,7 @@ export const ratesIcon: IconData = {
   ],
 };
 
+/** Receipt icon (Finance-domain Pack). */
 export const receiptIcon: IconData = {
   name: "receipt",
   viewBox: "0 0 24 24",
@@ -1615,6 +1735,7 @@ export const receiptIcon: IconData = {
   ],
 };
 
+/** Star icon (Finance-domain Pack). */
 export const starIcon: IconData = {
   name: "star",
   viewBox: "0 0 24 24",
@@ -1632,6 +1753,7 @@ export const starIcon: IconData = {
   ],
 };
 
+/** Yen icon (Finance-domain Pack). */
 export const yenIcon: IconData = {
   name: "yen",
   viewBox: "0 0 24 24",
@@ -1650,6 +1772,7 @@ export const yenIcon: IconData = {
 
 // 8. Utility and Brand Completeness
 
+/** File icon (Utility and Brand Completeness). */
 export const fileIcon: IconData = {
   name: "file",
   viewBox: "0 0 24 24",
@@ -1664,6 +1787,7 @@ export const fileIcon: IconData = {
   ],
 };
 
+/** File text icon (Utility and Brand Completeness). */
 export const fileTextIcon: IconData = {
   name: "file-text",
   viewBox: "0 0 24 24",
@@ -1681,6 +1805,7 @@ export const fileTextIcon: IconData = {
   ],
 };
 
+/** Paperclip icon (Utility and Brand Completeness). */
 export const paperclipIcon: IconData = {
   name: "paperclip",
   viewBox: "0 0 24 24",
@@ -1697,6 +1822,7 @@ export const paperclipIcon: IconData = {
   ],
 };
 
+/** Image icon (Utility and Brand Completeness). */
 export const imageIcon: IconData = {
   name: "image",
   viewBox: "0 0 24 24",
@@ -1712,6 +1838,7 @@ export const imageIcon: IconData = {
   ],
 };
 
+/** Download file icon (Utility and Brand Completeness). */
 export const downloadFileIcon: IconData = {
   name: "download-file",
   viewBox: "0 0 24 24",
@@ -1728,6 +1855,7 @@ export const downloadFileIcon: IconData = {
   ],
 };
 
+/** Grid icon (Utility and Brand Completeness). */
 export const gridIcon: IconData = {
   name: "grid",
   viewBox: "0 0 24 24",
@@ -1744,6 +1872,7 @@ export const gridIcon: IconData = {
   ],
 };
 
+/** List icon (Utility and Brand Completeness). */
 export const listIcon: IconData = {
   name: "list",
   viewBox: "0 0 24 24",
@@ -1762,6 +1891,7 @@ export const listIcon: IconData = {
   ],
 };
 
+/** Panel left icon (Utility and Brand Completeness). */
 export const panelLeftIcon: IconData = {
   name: "panel-left",
   viewBox: "0 0 24 24",
@@ -1776,6 +1906,7 @@ export const panelLeftIcon: IconData = {
   ],
 };
 
+/** Panel right icon (Utility and Brand Completeness). */
 export const panelRightIcon: IconData = {
   name: "panel-right",
   viewBox: "0 0 24 24",
@@ -1790,6 +1921,7 @@ export const panelRightIcon: IconData = {
   ],
 };
 
+/** Monitor icon (Utility and Brand Completeness). */
 export const monitorIcon: IconData = {
   name: "monitor",
   viewBox: "0 0 24 24",
@@ -1805,6 +1937,7 @@ export const monitorIcon: IconData = {
   ],
 };
 
+/** Mobile icon (Utility and Brand Completeness). */
 export const mobileIcon: IconData = {
   name: "mobile",
   viewBox: "0 0 24 24",
@@ -1819,6 +1952,7 @@ export const mobileIcon: IconData = {
   ],
 };
 
+/** Log in icon (Utility and Brand Completeness). */
 export const logInIcon: IconData = {
   name: "log-in",
   viewBox: "0 0 24 24",
@@ -1834,6 +1968,7 @@ export const logInIcon: IconData = {
   ],
 };
 
+/** Log out icon (Utility and Brand Completeness). */
 export const logOutIcon: IconData = {
   name: "log-out",
   viewBox: "0 0 24 24",
@@ -1849,6 +1984,7 @@ export const logOutIcon: IconData = {
   ],
 };
 
+/** Power icon (Utility and Brand Completeness). */
 export const powerIcon: IconData = {
   name: "power",
   viewBox: "0 0 24 24",
@@ -1863,6 +1999,7 @@ export const powerIcon: IconData = {
   ],
 };
 
+/** Database icon (Utility and Brand Completeness). */
 export const databaseIcon: IconData = {
   name: "database",
   viewBox: "0 0 24 24",
@@ -1878,6 +2015,7 @@ export const databaseIcon: IconData = {
   ],
 };
 
+/** Cloud icon (Utility and Brand Completeness). */
 export const cloudIcon: IconData = {
   name: "cloud",
   viewBox: "0 0 24 24",
@@ -1889,6 +2027,7 @@ export const cloudIcon: IconData = {
   children: [{ tag: "path", d: "M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" }],
 };
 
+/** Cloud off icon (Utility and Brand Completeness). */
 export const cloudOffIcon: IconData = {
   name: "cloud-off",
   viewBox: "0 0 24 24",
@@ -1906,6 +2045,7 @@ export const cloudOffIcon: IconData = {
   ],
 };
 
+/** Printer icon (Utility and Brand Completeness). */
 export const printerIcon: IconData = {
   name: "printer",
   viewBox: "0 0 24 24",

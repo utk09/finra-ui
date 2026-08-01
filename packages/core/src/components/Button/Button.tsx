@@ -75,6 +75,11 @@ export interface ButtonProps extends ButtonBaseProps, VariantProps<typeof button
   endIcon?: ReactNode;
 }
 
+/**
+ * A clickable action. `variant` sets emphasis, `sentiment` sets meaning.
+ *
+ * @see {@link ButtonProps}
+ */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, fullWidth, sentiment, startIcon, endIcon, children, ...props }, ref) => {
     return (

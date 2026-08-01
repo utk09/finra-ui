@@ -26,6 +26,12 @@ export interface NumberInputBaseProps extends Omit<InputHTMLAttributes<HTMLInput
   asChild?: boolean;
 }
 
+/**
+ * Unstyled numeric input. No steppers, clamping or formatting - the styled
+ * `NumberInput` adds those.
+ *
+ * @see {@link NumberInputBaseProps}
+ */
 export const NumberInputBase = forwardRef<HTMLInputElement, NumberInputBaseProps>(
   ({ asChild = false, ...props }, ref) => {
     // Wire into an enclosing FormField (works at any depth; no-op standalone).

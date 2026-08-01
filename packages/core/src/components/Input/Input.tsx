@@ -89,6 +89,11 @@ export interface InputProps
   fullWidth?: boolean;
 }
 
+/**
+ * A single-line text field with optional adornments and a clear button.
+ *
+ * @see {@link InputProps}
+ */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {

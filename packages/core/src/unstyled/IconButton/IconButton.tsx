@@ -23,6 +23,11 @@ export interface IconButtonBaseProps extends ButtonHTMLAttributes<HTMLButtonElem
   "aria-label": string;
 }
 
+/**
+ * Unstyled icon-only button. Requires an `aria-label`.
+ *
+ * @see {@link IconButtonBaseProps}
+ */
 export const IconButtonBase = forwardRef<HTMLButtonElement, IconButtonBaseProps>(
   ({ asChild = false, icon, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";

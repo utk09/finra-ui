@@ -28,6 +28,11 @@ export interface CheckboxProps extends Omit<CheckboxBaseProps, "className"> {
   className?: string;
 }
 
+/**
+ * A checkbox with an optional visible label and indeterminate state.
+ *
+ * @see {@link CheckboxProps}
+ */
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   ({ className, label, indeterminate, disabled, ...props }, forwardedRef) => {
     const internalRef = useRef<HTMLInputElement>(null);

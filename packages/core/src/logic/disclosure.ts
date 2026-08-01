@@ -31,6 +31,18 @@ export type DisclosureAction =
   /** Set an explicit state. A no-op that preserves identity if it already matches. */
   | { type: "set"; open: boolean; reason?: DisclosureReason };
 
+/**
+ * Pure open/close transitions.
+ *
+ * @remarks
+ * Returns the **same state object** when an action changes nothing, so a
+ * subscriber comparing by reference does not re-render for nothing. `reason` is
+ * carried on the action but never acted on here.
+ *
+ * @param state - Current state.
+ * @param action - Transition to apply.
+ * @returns The next state, or `state` itself if unchanged.
+ */
 export function disclosureReducer(
   state: DisclosureState,
   action: DisclosureAction,
@@ -52,6 +64,13 @@ export function disclosureReducer(
 /** A subscribable store wrapping {@link disclosureReducer}. */
 export type DisclosureStore = Store<DisclosureState, DisclosureAction>;
 
+/**
+ * Build a subscribable disclosure store.
+ *
+ * @param initialOpen - Starting state.
+ * @defaultValue `false`
+ * @returns A store safe to subscribe to immediately.
+ */
 export function createDisclosureStore(initialOpen = false): DisclosureStore {
   return createStore<DisclosureState, DisclosureAction>({ open: initialOpen }, disclosureReducer);
 }

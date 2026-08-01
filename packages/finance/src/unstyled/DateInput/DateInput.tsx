@@ -118,6 +118,11 @@ export interface DateInputBaseProps extends Omit<
 
 //  Component
 
+/**
+ * Unstyled DateInput. Ships no CSS; supply `classNames`.
+ *
+ * @see {@link DateInputBaseProps}
+ */
 export const DateInputBase = forwardRef<HTMLInputElement, DateInputBaseProps>(
   (
     {

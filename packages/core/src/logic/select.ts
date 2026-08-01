@@ -154,6 +154,19 @@ function openActiveIndex<T>(ctx: SelectKeyContext<T>, key: string): number {
   return key === "ArrowUp" ? lastEnabledIndex(ctx.options) : firstEnabledIndex(ctx.options);
 }
 
+/**
+ * Decide what one keypress on a Select should do.
+ *
+ * @remarks
+ * Pure - it reads the context and returns effects, touching no DOM and no
+ * framework state. Handles both the open and closed cases: typeahead and the
+ * arrows open the popup when it is shut, rather than being inert.
+ *
+ * @typeParam T - Type of an option's value.
+ * @param key - The `KeyboardEvent.key` value.
+ * @param ctx - Current open state, indices and options.
+ * @returns Whether to suppress the event, and the effects to apply.
+ */
 export function resolveSelectKey<T = string>(
   key: string,
   ctx: SelectKeyContext<T>,

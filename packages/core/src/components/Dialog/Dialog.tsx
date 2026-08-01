@@ -48,6 +48,10 @@ export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
 
 DialogContent.displayName = "DialogContent";
 
+/**
+ * The dialog's heading. Supplies its accessible name via `aria-labelledby`, so
+ * every `DialogContent` should contain one.
+ */
 export const DialogTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...rest }, ref) => (
     <DialogTitleBase
@@ -61,6 +65,9 @@ export const DialogTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHea
 
 DialogTitle.displayName = "DialogTitle";
 
+/**
+ * Supporting text under the dialog title, linked via `aria-describedby`.
+ */
 export const DialogDescription = forwardRef<
   HTMLParagraphElement,
   HTMLAttributes<HTMLParagraphElement>

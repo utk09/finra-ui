@@ -10,6 +10,11 @@ import { forwardRef, type InputHTMLAttributes } from "react";
  */
 export interface SliderBaseProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {}
 
+/**
+ * Unstyled slider - a native `type="range"` input.
+ *
+ * @see {@link SliderBaseProps}
+ */
 export const SliderBase = forwardRef<HTMLInputElement, SliderBaseProps>((props, ref) => {
   return <input ref={ref} type="range" {...props} />;
 });

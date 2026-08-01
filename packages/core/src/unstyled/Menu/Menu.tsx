@@ -99,6 +99,12 @@ export interface MenuProps {
   offset?: number;
 }
 
+/**
+ * Menu root - owns open state and placement. Renders nothing itself; compose it
+ * with `MenuTrigger`, `MenuContent` and `MenuItem`.
+ *
+ * @see {@link MenuProps}
+ */
 export function Menu({
   children,
   open,
@@ -169,6 +175,11 @@ export interface MenuTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement
   asChild?: boolean;
 }
 
+/**
+ * Opens the menu and anchors it.
+ *
+ * @see {@link MenuTriggerProps}
+ */
 export const MenuTrigger = forwardRef<HTMLButtonElement, MenuTriggerProps>(
   ({ asChild = false, onClick, onKeyDown, ...rest }, ref) => {
     const ctx = useMenuContext("Trigger");
@@ -227,6 +238,11 @@ export interface MenuContentProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
 }
 
+/**
+ * The menu surface. Portalled, with roving focus and typeahead.
+ *
+ * @see {@link MenuContentProps}
+ */
 export const MenuContent = forwardRef<HTMLDivElement, MenuContentProps>(
   ({ children, style, onKeyDown, ...rest }, ref) => {
     const ctx = useMenuContext("Content");
@@ -347,6 +363,11 @@ export interface MenuItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   asChild?: boolean;
 }
 
+/**
+ * One command in the menu.
+ *
+ * @see {@link MenuItemProps}
+ */
 export const MenuItem = forwardRef<HTMLButtonElement, MenuItemProps>(
   ({ asChild = false, onSelect, onClick, disabled, ...rest }, ref) => {
     const ctx = useMenuContext("Item");
@@ -376,6 +397,9 @@ MenuItem.displayName = "MenuItem";
 
 //  Separator
 
+/**
+ * A divider between groups of menu items. Presentational only.
+ */
 export const MenuSeparator = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   (props, ref) => <div ref={ref} role="separator" {...props} />,
 );

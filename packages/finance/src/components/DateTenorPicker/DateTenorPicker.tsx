@@ -127,6 +127,11 @@ function styledBrokenIndicator(broken: boolean) {
 
 //  Component
 
+/**
+ * One field accepting either a date or a tenor expression.
+ *
+ * @see {@link DateTenorPickerProps}
+ */
 export const DateTenorPicker = forwardRef<DateTenorPickerHandle, DateTenorPickerProps>(
   (
     {

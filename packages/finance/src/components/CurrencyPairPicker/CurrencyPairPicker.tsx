@@ -170,6 +170,11 @@ function CurrencyPairPickerRender<T extends CurrencyPair = CurrencyPair>(
   );
 }
 
+/**
+ * An instrument search that emits the whole pair, not just its id.
+ *
+ * @see {@link CurrencyPairPickerProps}
+ */
 export const CurrencyPairPicker = forwardRef(CurrencyPairPickerRender) as <
   T extends CurrencyPair = CurrencyPair,
 >(

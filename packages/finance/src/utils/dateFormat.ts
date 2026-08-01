@@ -62,14 +62,41 @@ const FORMAT_PARTS: Record<DateFormat, readonly string[]> = {
   "YYYY/MM/DD": ["YYYY", "MM", "DD"],
 };
 
+/**
+ * The separator character a format uses.
+ *
+ * @param format - The layout to inspect.
+ * @returns `"/"` or `"-"`.
+ */
 export function getFormatSeparator(format: DateFormat): string {
   return format.includes("/") ? "/" : "-";
 }
 
+/**
+ * Placeholder text for a masked field.
+ *
+ * @remarks
+ * The format string is its own placeholder - `"DD/MM/YYYY"` shows the user
+ * exactly the order the field expects, which is the whole point when the same
+ * digits mean different dates under different layouts.
+ *
+ * @param format - The layout the field accepts.
+ * @returns The placeholder to render.
+ */
 export function getFormatPlaceholder(format: DateFormat): string {
   return format;
 }
 
+/**
+ * Digit counts per segment, in the format's own order.
+ *
+ * @remarks
+ * Feeds the input mask - `autoInsertSeparators` and `getMaxLength` both take
+ * this, which is what keeps the mask and the `maxlength` attribute agreeing.
+ *
+ * @param format - The layout to decompose.
+ * @returns Lengths in render order, e.g. `[4, 2, 2]` for `YYYY-MM-DD`.
+ */
 export function getFormatSegmentLengths(format: DateFormat): readonly number[] {
   return FORMAT_PARTS[format].map((p) => p.length);
 }
@@ -86,6 +113,18 @@ function isValidCalendarDate(year: number, month: number, day: number): boolean 
   return d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day;
 }
 
+/**
+ * Render a date in the given layout, zero-padded.
+ *
+ * @remarks
+ * Reads the *local* date components, so a date built at local midnight renders
+ * as that day regardless of timezone. Not locale-aware by design - see
+ * {@link DateFormat}.
+ *
+ * @param date - The date to render.
+ * @param format - The layout to use.
+ * @returns The formatted string, e.g. `"2026-04-15"`.
+ */
 export function formatDate(date: Date, format: DateFormat): string {
   const y = date.getFullYear();
   const m = date.getMonth() + 1;
@@ -102,6 +141,20 @@ export function formatDate(date: Date, format: DateFormat): string {
   return segments.join(sep);
 }
 
+/**
+ * Parse date text in the given layout.
+ *
+ * @remarks
+ * Rejects dates that are well-formed but do not exist (31 February) rather than
+ * letting `Date` silently roll them into the next month - a wrapped date is far
+ * worse than a refused one, because it commits a value the user never typed.
+ *
+ * Applies no bounds; use {@link validateDate} for those.
+ *
+ * @param input - Text to parse, with the format's own separator.
+ * @param format - The layout to expect.
+ * @returns The parsed date, or the reason it failed.
+ */
 export function parseDate(input: string, format: DateFormat): DateParseResult {
   const sep = getFormatSeparator(format);
   const segments = input.split(sep);
@@ -136,6 +189,17 @@ export function parseDate(input: string, format: DateFormat): DateParseResult {
   return { valid: true, date: new Date(year, month - 1, day) };
 }
 
+/**
+ * Check a date against min/max bounds and an exclusion list.
+ *
+ * @remarks
+ * Compares by calendar day, so a time component on `min` or `max` does not make
+ * the boundary day itself fail.
+ *
+ * @param date - The date to test.
+ * @param constraints - Bounds and exclusions. An empty object accepts anything.
+ * @returns `valid: true` with the date, or the rule that refused it.
+ */
 export function validateDate(date: Date, constraints: DateConstraints): DateParseResult {
   const { min, max, disabledDates } = constraints;
 

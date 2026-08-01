@@ -99,6 +99,11 @@ function styledNavNext() {
 
 //  Component
 
+/**
+ * A masked date field whose popup offers both a calendar and a tenor list.
+ *
+ * @see {@link DateTenorInputProps}
+ */
 export const DateTenorInput = forwardRef<HTMLDivElement, DateTenorInputProps>(
   ({ className, variant, validationStatus, fullWidth, disabled, ...props }, ref) => {
     const classNames = useMemo<DateTenorInputClassNames>(

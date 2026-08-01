@@ -24,6 +24,11 @@ export interface ButtonGroupProps extends HTMLAttributes<HTMLDivElement> {
   orientation?: "horizontal" | "vertical";
 }
 
+/**
+ * A set of related buttons rendered as one unit.
+ *
+ * @see {@link ButtonGroupProps}
+ */
 export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(
   ({ className, orientation = "horizontal", children, ...props }, ref) => {
     return (

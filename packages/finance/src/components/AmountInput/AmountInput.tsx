@@ -65,6 +65,11 @@ export interface AmountInputProps
 
 const dataAttributes = { [FINRA_UI_ATTR]: componentIds.amountInput } as const;
 
+/**
+ * A notional field that understands trader shorthand (`10m`, `2bn`).
+ *
+ * @see {@link AmountInputProps}
+ */
 export const AmountInput = forwardRef<AmountInputHandle, AmountInputProps>(
   ({ className, variant, validationStatus, fullWidth, disabled, ...props }, ref) => {
     const classNames = useMemo<AmountInputClassNames>(

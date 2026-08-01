@@ -45,7 +45,7 @@ import type { CurrencyPairLike } from "./currencyPairPicker";
 /**
  * Data source for instruments. Everything the picker cannot compute locally.
  *
- * Deviations from the epic's sketch, both deliberate:
+ * Two choices worth calling out, both deliberate:
  * - `getById` resolves to `null` for an unknown id instead of rejecting, so a
  *   controlled `value` naming a pair the provider has never heard of renders as
  *   "nothing selected" rather than an error.

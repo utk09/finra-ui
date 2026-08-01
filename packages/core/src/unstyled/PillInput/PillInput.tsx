@@ -37,6 +37,11 @@ export interface PillInputBaseProps extends Omit<HTMLAttributes<HTMLDivElement>,
   delimiters?: string[];
 }
 
+/**
+ * Unstyled pill input.
+ *
+ * @see {@link PillInputBaseProps}
+ */
 export const PillInputBase = forwardRef<HTMLInputElement, PillInputBaseProps>(
   (
     {

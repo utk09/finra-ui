@@ -215,6 +215,11 @@ export interface TenorPickerBaseProps extends Omit<
 
 //  Component
 
+/**
+ * Unstyled TenorPicker. Ships no CSS; supply `classNames`.
+ *
+ * @see {@link TenorPickerBaseProps}
+ */
 export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProps>(
   (
     {

@@ -208,6 +208,11 @@ function defaultPrimary(format: PriceFormat): number {
 
 //  Component
 
+/**
+ * Unstyled PriceInput. Ships no CSS; supply `classNames`.
+ *
+ * @see {@link PriceInputBaseProps}
+ */
 export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
   (
     {

@@ -41,6 +41,11 @@ export interface PillInputProps extends Omit<HTMLAttributes<HTMLDivElement>, "on
   delimiters?: string[];
 }
 
+/**
+ * Free-text entry that commits each entry as a removable pill.
+ *
+ * @see {@link PillInputProps}
+ */
 export const PillInput = forwardRef<HTMLInputElement, PillInputProps>(
   (
     {

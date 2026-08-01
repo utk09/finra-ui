@@ -24,6 +24,18 @@ export interface CalendarDay {
   isDisabled: boolean;
 }
 
+/**
+ * Whether two dates fall on the same calendar day.
+ *
+ * @remarks
+ * Compares local year, month and day, ignoring the time entirely - so two
+ * instants hours apart on the same day are equal. Use this rather than
+ * comparing timestamps, which almost never does what a calendar wants.
+ *
+ * @param a - First date.
+ * @param b - Second date.
+ * @returns True if both name the same day.
+ */
 export function isSameDay(a: Date, b: Date): boolean {
   return (
     a.getFullYear() === b.getFullYear() &&
@@ -32,6 +44,17 @@ export function isSameDay(a: Date, b: Date): boolean {
   );
 }
 
+/**
+ * A copy of the date at local midnight.
+ *
+ * @remarks
+ * Normalising to midnight is what makes date comparison and range ordering
+ * total - without it, "is this day in range" depends on the time of day the
+ * value happened to be constructed with.
+ *
+ * @param date - The date to normalise. Not mutated.
+ * @returns A new Date at 00:00 local time.
+ */
 export function startOfDay(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
@@ -164,6 +187,17 @@ export function getWeekdayNames(
   return names;
 }
 
+/**
+ * A day's column index within a week that starts on `weekStartsOn`.
+ *
+ * @remarks
+ * `Date.getDay()` is always Sunday-based; a Monday-first grid needs the
+ * rotation, and getting it wrong shifts an entire month by one column.
+ *
+ * @param date - The date to place.
+ * @param weekStartsOn - First column's day: `0` Sunday, `1` Monday.
+ * @returns Zero-based column index, `0`-`6`.
+ */
 export function dayOfWeekIndex(date: Date, weekStartsOn: 0 | 1): number {
   return (date.getDay() - weekStartsOn + 7) % 7;
 }

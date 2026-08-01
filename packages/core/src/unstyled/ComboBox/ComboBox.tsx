@@ -995,6 +995,11 @@ function ComboBoxBaseRender<T = string>(
   );
 }
 
+/**
+ * Unstyled ComboBox. Ships no CSS; supply `classNames`.
+ *
+ * @see {@link ComboBoxBaseProps}
+ */
 export const ComboBoxBase = forwardRef(ComboBoxBaseRender) as <T = string>(
   props: ComboBoxBaseProps<T> & { ref?: Ref<HTMLInputElement> },
 ) => React.ReactElement | null;

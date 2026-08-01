@@ -86,6 +86,12 @@ export interface DialogProps {
   dismissOnOutside?: boolean;
 }
 
+/**
+ * Dialog root - owns open state. Renders nothing itself; compose it with
+ * `DialogTrigger`, `DialogContent`, `DialogTitle` and `DialogClose`.
+ *
+ * @see {@link DialogProps}
+ */
 export function Dialog({
   children,
   open,
@@ -138,6 +144,11 @@ export interface DialogTriggerProps extends ButtonHTMLAttributes<HTMLButtonEleme
   asChild?: boolean;
 }
 
+/**
+ * Opens the dialog. Focus returns here when it closes.
+ *
+ * @see {@link DialogTriggerProps}
+ */
 export const DialogTrigger = forwardRef<HTMLButtonElement, DialogTriggerProps>(
   ({ asChild = false, onClick, ...rest }, ref) => {
     const ctx = useDialogContext("Trigger");
@@ -178,6 +189,11 @@ export interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
 }
 
+/**
+ * The modal surface. Portalled, focus-trapped, scroll-locking.
+ *
+ * @see {@link DialogContentProps}
+ */
 export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
   ({ children, ...rest }, ref) => {
     const ctx = useDialogContext("Content");
@@ -218,6 +234,10 @@ DialogContent.displayName = "DialogContent";
 
 //  Title / Description (register presence for the dialog's a11y names)
 
+/**
+ * The dialog's heading. Supplies its accessible name via `aria-labelledby`, so
+ * every `DialogContent` should contain one.
+ */
 export const DialogTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
   ({ children, ...rest }, ref) => {
     const ctx = useDialogContext("Title");
@@ -238,6 +258,9 @@ export const DialogTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHea
 
 DialogTitle.displayName = "DialogTitle";
 
+/**
+ * Supporting text under the dialog title, linked via `aria-describedby`.
+ */
 export const DialogDescription = forwardRef<
   HTMLParagraphElement,
   HTMLAttributes<HTMLParagraphElement>
@@ -261,6 +284,9 @@ DialogDescription.displayName = "DialogDescription";
 
 //  Close
 
+/**
+ * Closes the dialog. `preventDefault()` on your own `onClick` suppresses it.
+ */
 export const DialogClose = forwardRef<HTMLButtonElement, DialogTriggerProps>(
   ({ asChild = false, onClick, ...rest }, ref) => {
     const ctx = useDialogContext("Close");

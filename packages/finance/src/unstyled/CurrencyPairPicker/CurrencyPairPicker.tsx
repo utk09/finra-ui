@@ -1291,6 +1291,11 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
   );
 }
 
+/**
+ * Unstyled CurrencyPairPicker. Ships no CSS; supply `classNames`.
+ *
+ * @see {@link CurrencyPairPickerBaseProps}
+ */
 export const CurrencyPairPickerBase = forwardRef(CurrencyPairPickerBaseRender) as <
   T extends CurrencyPair = CurrencyPair,
 >(

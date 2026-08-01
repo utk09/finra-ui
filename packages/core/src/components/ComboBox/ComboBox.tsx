@@ -290,6 +290,12 @@ function ComboBoxRender<T = string>(
   );
 }
 
+/**
+ * A text input with a filtered listbox popup. Supports groups, favourites,
+ * multi-select pills and free-text creation.
+ *
+ * @see {@link ComboBoxProps}
+ */
 export const ComboBox = forwardRef(ComboBoxRender) as <T = string>(
   props: ComboBoxProps<T> & { ref?: Ref<HTMLInputElement> },
 ) => React.ReactElement | null;

@@ -82,6 +82,11 @@ export interface TextareaProps
   fullWidth?: boolean;
 }
 
+/**
+ * A multi-line text field with optional auto-resize and character count.
+ *
+ * @see {@link TextareaProps}
+ */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
     {

@@ -90,6 +90,11 @@ function styledFavourite(active: boolean) {
 
 //  Component
 
+/**
+ * A tenor field with a grouped, filterable list and free-form entry.
+ *
+ * @see {@link TenorPickerProps}
+ */
 export const TenorPicker = forwardRef<TenorPickerHandle, TenorPickerProps>(
   (
     { className, variant, validationStatus, fullWidth, disabled, showFavourites = true, ...props },

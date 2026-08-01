@@ -36,6 +36,11 @@ export interface DividerProps extends HTMLAttributes<HTMLHRElement> {
   className?: string;
 }
 
+/**
+ * A rule separating content, decorative or semantic.
+ *
+ * @see {@link DividerProps}
+ */
 export const Divider = forwardRef<HTMLHRElement, DividerProps>(
   ({ className, orientation = "horizontal", decorative = false, ...props }, ref) => {
     return (

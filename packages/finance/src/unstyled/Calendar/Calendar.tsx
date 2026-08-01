@@ -241,6 +241,11 @@ export interface CalendarBaseProps {
 
 //  Component
 
+/**
+ * Unstyled Calendar. Ships no CSS; supply `classNames`.
+ *
+ * @see {@link CalendarBaseProps}
+ */
 export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
   (
     {

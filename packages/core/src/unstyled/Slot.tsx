@@ -57,6 +57,12 @@ export interface SlotProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode;
 }
 
+/**
+ * Renders its single child element, merging these props onto it. The primitive
+ * behind every `asChild` prop.
+ *
+ * @see {@link SlotProps}
+ */
 export const Slot = forwardRef<HTMLElement, SlotProps>(
   ({ children, ...slotProps }, forwardedRef) => {
     if (!isValidElement(children)) {

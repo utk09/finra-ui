@@ -55,6 +55,11 @@ export interface IconButtonProps
   sentiment?: IconButtonSentiment;
 }
 
+/**
+ * An icon-only button. Requires an `aria-label`.
+ *
+ * @see {@link IconButtonProps}
+ */
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   ({ className, variant, sentiment, ...props }, ref) => {
     return (

@@ -27,6 +27,11 @@ export interface RadioButtonProps extends Omit<RadioButtonBaseProps, "className"
   className?: string;
 }
 
+/**
+ * One radio in a group. Give every member the same `name`.
+ *
+ * @see {@link RadioButtonProps}
+ */
 export const RadioButton = forwardRef<HTMLInputElement, RadioButtonProps>(
   ({ className, label, disabled, ...props }, ref) => {
     return (

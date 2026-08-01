@@ -81,6 +81,11 @@ export interface FormFieldProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
+/**
+ * Label, helper text and error message, wired to the control it wraps.
+ *
+ * @see {@link FormFieldProps}
+ */
 export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
   (
     {

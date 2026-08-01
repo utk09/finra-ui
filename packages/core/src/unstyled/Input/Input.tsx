@@ -26,6 +26,11 @@ export interface InputBaseProps extends InputHTMLAttributes<HTMLInputElement> {
   asChild?: boolean;
 }
 
+/**
+ * Unstyled text input. Reads an enclosing FormField from context.
+ *
+ * @see {@link InputBaseProps}
+ */
 export const InputBase = forwardRef<HTMLInputElement, InputBaseProps>(
   ({ asChild = false, ...props }, ref) => {
     // Wire into an enclosing FormField (works at any depth; no-op standalone).

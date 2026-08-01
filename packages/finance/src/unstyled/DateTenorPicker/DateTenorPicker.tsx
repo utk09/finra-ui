@@ -278,6 +278,11 @@ export interface DateTenorPickerBaseProps extends Omit<
 
 //  Component
 
+/**
+ * Unstyled DateTenorPicker. Ships no CSS; supply `classNames`.
+ *
+ * @see {@link DateTenorPickerBaseProps}
+ */
 export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPickerBaseProps>(
   (
     {

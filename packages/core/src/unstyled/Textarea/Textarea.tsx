@@ -25,6 +25,11 @@ export interface TextareaBaseProps extends TextareaHTMLAttributes<HTMLTextAreaEl
   asChild?: boolean;
 }
 
+/**
+ * Unstyled textarea. Reads an enclosing FormField from context.
+ *
+ * @see {@link TextareaBaseProps}
+ */
 export const TextareaBase = forwardRef<HTMLTextAreaElement, TextareaBaseProps>(
   ({ asChild = false, ...props }, ref) => {
     // Wire into an enclosing FormField (works at any depth; no-op standalone).

@@ -56,6 +56,11 @@ export interface BadgeProps
   children: ReactNode;
 }
 
+/**
+ * A small inline status or count.
+ *
+ * @see {@link BadgeProps}
+ */
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant, sentiment, children, ...props }, ref) => {
     return (

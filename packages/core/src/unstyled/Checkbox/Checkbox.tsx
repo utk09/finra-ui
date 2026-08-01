@@ -23,6 +23,11 @@ export interface CheckboxBaseProps extends Omit<InputHTMLAttributes<HTMLInputEle
   indeterminate?: boolean;
 }
 
+/**
+ * Unstyled checkbox. Reads an enclosing FormField from context.
+ *
+ * @see {@link CheckboxBaseProps}
+ */
 export const CheckboxBase = forwardRef<HTMLInputElement, CheckboxBaseProps>(
   ({ indeterminate, ...props }, forwardedRef) => {
     // Wire into an enclosing FormField (works at any depth; no-op standalone).

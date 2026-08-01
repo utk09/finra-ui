@@ -22,6 +22,11 @@ export interface SwitchProps extends Omit<SwitchBaseProps, "className"> {
   className?: string;
 }
 
+/**
+ * An on/off control that takes effect immediately.
+ *
+ * @see {@link SwitchProps}
+ */
 export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
   ({ className, label, disabled, ...props }, ref) => {
     return (

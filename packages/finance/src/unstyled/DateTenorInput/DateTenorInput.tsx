@@ -148,6 +148,11 @@ export interface DateTenorInputBaseProps extends Omit<
 
 //  Component
 
+/**
+ * Unstyled DateTenorInput. Ships no CSS; supply `classNames`.
+ *
+ * @see {@link DateTenorInputBaseProps}
+ */
 export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseProps>(
   (
     {

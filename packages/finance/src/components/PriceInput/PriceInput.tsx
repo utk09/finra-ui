@@ -93,6 +93,11 @@ export interface PriceInputProps
 
 const dataAttributes = { [FINRA_UI_ATTR]: componentIds.priceInput } as const;
 
+/**
+ * A tick-aware price field for decimal, FX, bond-32nds, percent and bp quoting.
+ *
+ * @see {@link PriceInputProps}
+ */
 export const PriceInput = forwardRef<PriceInputHandle, PriceInputProps>(
   (
     { className, variant, validationStatus, fullWidth, disabled, digitHierarchy, ...props },

@@ -82,6 +82,12 @@ export interface TooltipProps {
   placement?: Placement;
 }
 
+/**
+ * Tooltip root - owns open state and hover/focus delays. Renders nothing itself;
+ * compose it with `TooltipTrigger` and `TooltipContent`.
+ *
+ * @see {@link TooltipProps}
+ */
 export function Tooltip({
   children,
   open,
@@ -164,6 +170,11 @@ export interface TooltipTriggerProps extends HTMLAttributes<HTMLElement> {
   asChild?: boolean;
 }
 
+/**
+ * The element the tooltip describes. Usually used with `asChild`.
+ *
+ * @see {@link TooltipTriggerProps}
+ */
 export const TooltipTrigger = forwardRef<HTMLElement, TooltipTriggerProps>(
   (
     {
@@ -233,6 +244,11 @@ export interface TooltipContentProps extends HTMLAttributes<HTMLDivElement> {
   offset?: number;
 }
 
+/**
+ * The tooltip bubble. Portalled and positioned; must not contain controls.
+ *
+ * @see {@link TooltipContentProps}
+ */
 export const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(
   ({ children, offset = 6, style, ...rest }, ref) => {
     const ctx = useTooltipContext("Content");

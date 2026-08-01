@@ -24,6 +24,11 @@ export interface ButtonBaseProps extends ButtonHTMLAttributes<HTMLButtonElement>
   asChild?: boolean;
 }
 
+/**
+ * Unstyled button - the bare element plus `asChild`.
+ *
+ * @see {@link ButtonBaseProps}
+ */
 export const ButtonBase = forwardRef<HTMLButtonElement, ButtonBaseProps>(
   ({ asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";

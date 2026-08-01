@@ -13,6 +13,11 @@ import { useFormField } from "../../hooks/useFormField";
  */
 export interface RadioButtonBaseProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {}
 
+/**
+ * Unstyled radio. Grouping is the browser's job - share a `name`.
+ *
+ * @see {@link RadioButtonBaseProps}
+ */
 export const RadioButtonBase = forwardRef<HTMLInputElement, RadioButtonBaseProps>((props, ref) => {
   // Wire into an enclosing FormField (works at any depth; no-op standalone).
   const fieldProps = useFormField(props);

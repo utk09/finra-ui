@@ -1,5 +1,13 @@
 import { isSameDay } from "../logic/calendar";
 
+/**
+ * The market-standard tenor set, in conventional order.
+ *
+ * @remarks
+ * Short end first (`ON`, `TN`, `SN`, `SW`), then weeks, months and years. The
+ * order is the order a picker offers them in, so it is convention rather than
+ * arbitrary. {@link StandardTenor} is derived from this.
+ */
 export const STANDARD_TENORS = [
   "ON",
   "TN",
@@ -88,6 +96,16 @@ const SPECIAL_TENORS: Record<string, { value: number; unit: TenorUnit }> = {
 
 const TENOR_REGEX = /^(\d+)([DWMY])$/i;
 
+/**
+ * Parse a simple tenor: one number and one unit, or a special code.
+ *
+ * @remarks
+ * Case-insensitive and whitespace-trimmed, but otherwise strict - it will not
+ * accept `3 months` or `1Y6M`. Use {@link parseTenorInput} for those.
+ *
+ * @param input - Text such as `"3M"`, `"10y"` or `"ON"`.
+ * @returns The canonical tenor and its parts, or the reason it failed.
+ */
 export function parseTenor(input: string): TenorParseResult {
   const normalized = input.trim().toUpperCase();
 
@@ -117,6 +135,16 @@ export function parseTenor(input: string): TenorParseResult {
   return { valid: true, tenor: `${value}${unit}`, value, unit };
 }
 
+/**
+ * Whether a string is one of the market-standard tenors.
+ *
+ * @remarks
+ * A type guard, so a `true` result narrows the value to {@link StandardTenor}.
+ * Case-insensitive.
+ *
+ * @param input - Text to test.
+ * @returns True if it names a standard tenor.
+ */
 export function isStandardTenor(input: string): input is StandardTenor {
   return (STANDARD_TENORS as readonly string[]).includes(input.toUpperCase());
 }
@@ -139,6 +167,19 @@ function addYears(date: Date, years: number): Date {
   return result;
 }
 
+/**
+ * Resolve a tenor to a date by pure calendar arithmetic.
+ *
+ * @remarks
+ * No holiday or business-day awareness, and no spot lag: `3M` from 31 January
+ * lands on 30 April because `Date` clamps the day, not because a roll
+ * convention was applied. Rolling is the consumer's job - inject a
+ * {@link TenorResolver} or apply a `BusinessCalendar` afterwards.
+ *
+ * @param tenor - Canonical or special tenor, e.g. `"3M"` or `"SN"`.
+ * @param referenceDate - The date to count from.
+ * @returns The resolved date, or `null` if the tenor is unrecognised.
+ */
 export function resolveTenor(tenor: string, referenceDate: Date): Date | null {
   const parsed = parseTenor(tenor);
   if (!parsed.valid || parsed.value == null || parsed.unit == null) return null;
@@ -158,6 +199,19 @@ export function resolveTenor(tenor: string, referenceDate: Date): Date | null {
   }
 }
 
+/**
+ * The standard tenor a date lands on, if any.
+ *
+ * @remarks
+ * The inverse of {@link resolveTenor}, and what distinguishes a standard date
+ * from a *broken* one. A `null` result is not a failure - it means the date is
+ * simply not a round tenor from the reference, which is exactly what the
+ * broken-date indicator reports.
+ *
+ * @param date - The date to identify.
+ * @param referenceDate - The date to measure from.
+ * @returns The matching standard tenor, or `null` for a broken date.
+ */
 export function dateToTenor(date: Date, referenceDate: Date): StandardTenor | null {
   for (const tenor of STANDARD_TENORS) {
     const resolved = resolveTenor(tenor, referenceDate);

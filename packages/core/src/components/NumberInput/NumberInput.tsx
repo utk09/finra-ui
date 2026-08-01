@@ -109,6 +109,11 @@ function formatValue(val: number, precision?: number): string {
   return String(val);
 }
 
+/**
+ * A spinbutton with increment and decrement controls.
+ *
+ * @see {@link NumberInputProps}
+ */
 export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
   (
     {

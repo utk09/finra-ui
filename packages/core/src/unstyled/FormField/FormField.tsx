@@ -77,6 +77,12 @@ export interface FormFieldBaseProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
 
+/**
+ * Unstyled form field. Publishes its a11y state through context and injects it
+ * into direct element children.
+ *
+ * @see {@link FormFieldBaseProps}
+ */
 export const FormFieldBase = forwardRef<HTMLDivElement, FormFieldBaseProps>(
   (
     {

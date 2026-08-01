@@ -39,6 +39,11 @@ export interface FileDropZoneProps extends Omit<HTMLAttributes<HTMLDivElement>, 
   children?: ReactNode;
 }
 
+/**
+ * A drag-and-drop file target that is also keyboard-operable.
+ *
+ * @see {@link FileDropZoneProps}
+ */
 export const FileDropZone = forwardRef<HTMLInputElement, FileDropZoneProps>(
   (
     {

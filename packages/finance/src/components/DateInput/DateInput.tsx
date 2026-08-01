@@ -76,6 +76,11 @@ function styledNavNext() {
   return <ChevronRightIcon aria-hidden="true" />;
 }
 
+/**
+ * A masked date field with a calendar popup.
+ *
+ * @see {@link DateInputProps}
+ */
 export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
   ({ className, variant, validationStatus, fullWidth, disabled, ...props }, ref) => {
     const classNames = useMemo<DateInputClassNames>(

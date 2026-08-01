@@ -15,6 +15,11 @@ export interface SwitchBaseProps extends Omit<
   "type" | "role"
 > {}
 
+/**
+ * Unstyled switch - a checkbox carrying `role="switch"`.
+ *
+ * @see {@link SwitchBaseProps}
+ */
 export const SwitchBase = forwardRef<HTMLInputElement, SwitchBaseProps>((props, ref) => {
   // Wire into an enclosing FormField (works at any depth; no-op standalone).
   const fieldProps = useFormField(props);

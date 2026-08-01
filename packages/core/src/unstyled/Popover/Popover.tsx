@@ -76,6 +76,12 @@ export interface PopoverProps {
   dismissOnOutside?: boolean;
 }
 
+/**
+ * Popover root - owns open state and placement. Non-modal: focus is not trapped.
+ * Renders nothing itself.
+ *
+ * @see {@link PopoverProps}
+ */
 export function Popover({
   children,
   open,
@@ -125,6 +131,11 @@ export interface PopoverTriggerProps extends ButtonHTMLAttributes<HTMLButtonElem
   asChild?: boolean;
 }
 
+/**
+ * Toggles the popover and anchors it.
+ *
+ * @see {@link PopoverTriggerProps}
+ */
 export const PopoverTrigger = forwardRef<HTMLButtonElement, PopoverTriggerProps>(
   ({ asChild = false, onClick, ...rest }, ref) => {
     const ctx = usePopoverContext("Trigger");
@@ -166,6 +177,11 @@ export interface PopoverContentProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
 }
 
+/**
+ * The popover panel. Portalled and positioned, but not focus-trapped.
+ *
+ * @see {@link PopoverContentProps}
+ */
 export const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
   ({ children, style, ...rest }, ref) => {
     const ctx = usePopoverContext("Content");
@@ -206,6 +222,9 @@ PopoverContent.displayName = "PopoverContent";
 
 //  Close
 
+/**
+ * Closes the popover.
+ */
 export const PopoverClose = forwardRef<HTMLButtonElement, PopoverTriggerProps>(
   ({ asChild = false, onClick, ...rest }, ref) => {
     const ctx = usePopoverContext("Close");

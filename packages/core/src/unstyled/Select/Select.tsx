@@ -123,6 +123,12 @@ export interface SelectProps {
   dismissOnOutside?: boolean;
 }
 
+/**
+ * Select root - owns value and open state. Renders nothing itself; compose it
+ * with `SelectTrigger` and `SelectContent`.
+ *
+ * @see {@link SelectProps}
+ */
 export function Select({
   children,
   options,
@@ -321,6 +327,11 @@ export interface SelectTriggerProps extends ButtonHTMLAttributes<HTMLButtonEleme
   asChild?: boolean;
 }
 
+/**
+ * The `role="combobox"` button. Renders the value and handles typeahead.
+ *
+ * @see {@link SelectTriggerProps}
+ */
 export const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
   ({ asChild = false, children, onClick, onKeyDown, ...rest }, ref) => {
     const ctx = useSelectContext("Trigger");
@@ -371,6 +382,11 @@ export interface SelectValueProps extends HTMLAttributes<HTMLSpanElement> {
   placeholder?: string;
 }
 
+/**
+ * The selected option's label, or the placeholder.
+ *
+ * @see {@link SelectValueProps}
+ */
 export const SelectValue = forwardRef<HTMLSpanElement, SelectValueProps>(
   ({ placeholder, ...rest }, ref) => {
     const ctx = useSelectContext("Value");
@@ -401,6 +417,11 @@ export interface SelectContentProps extends HTMLAttributes<HTMLDivElement> {
   renderOption?: (option: SelectOptionData, index: number) => ReactNode;
 }
 
+/**
+ * The popup listbox. Renders the root's `options` itself.
+ *
+ * @see {@link SelectContentProps}
+ */
 export const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
   ({ renderOption, style, ...rest }, ref) => {
     const ctx = useSelectContext("Content");

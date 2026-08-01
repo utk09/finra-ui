@@ -72,6 +72,11 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChang
   children?: ReactNode;
 }
 
+/**
+ * Tabs root - owns selection, orientation and activation mode.
+ *
+ * @see {@link TabsProps}
+ */
 export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
   (
     {
@@ -107,6 +112,9 @@ Tabs.displayName = "Tabs";
 
 //  List
 
+/**
+ * The `role="tablist"` strip. Owns roving focus over its tabs.
+ */
 export const TabList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ children, onKeyDown, ...rest }, ref) => {
     const ctx = useTabsContext("List");
@@ -179,6 +187,11 @@ export interface TabProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   value: string;
 }
 
+/**
+ * One tab button.
+ *
+ * @see {@link TabProps}
+ */
 export const Tab = forwardRef<HTMLButtonElement, TabProps>(
   ({ value, disabled, onClick, onKeyDown, ...rest }, ref) => {
     const ctx = useTabsContext("Tab");
@@ -234,6 +247,11 @@ export interface TabPanelProps extends HTMLAttributes<HTMLDivElement> {
   value: string;
 }
 
+/**
+ * One tab panel. Only the selected panel is rendered.
+ *
+ * @see {@link TabPanelProps}
+ */
 export const TabPanel = forwardRef<HTMLDivElement, TabPanelProps>(
   ({ value, children, ...rest }, ref) => {
     const ctx = useTabsContext("Panel");

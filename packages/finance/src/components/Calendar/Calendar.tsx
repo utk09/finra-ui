@@ -50,6 +50,11 @@ const defaultClassNames: CalendarClassNames = {
   footer: styles.footer,
 };
 
+/**
+ * A month grid for single-date or range selection.
+ *
+ * @see {@link CalendarProps}
+ */
 export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
   ({ className, classNames: userClassNames, monthYearDropdowns, renderTitle, ...props }, ref) => {
     const mergedClassNames = useMemo<CalendarClassNames>(() => {

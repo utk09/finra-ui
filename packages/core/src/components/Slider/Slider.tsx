@@ -30,6 +30,11 @@ export interface SliderProps extends Omit<SliderBaseProps, "className"> {
   className?: string;
 }
 
+/**
+ * A range input for approximate values.
+ *
+ * @see {@link SliderProps}
+ */
 export const Slider = forwardRef<HTMLInputElement, SliderProps>(
   ({ className, label, showValue, disabled, value, defaultValue, ...props }, ref) => {
     const displayValue = value ?? defaultValue ?? "";

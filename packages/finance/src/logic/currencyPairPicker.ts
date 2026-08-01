@@ -256,6 +256,13 @@ export function rankPairs<T extends CurrencyPairLike>(
  */
 export type PairSectionId = "favourites" | "recents" | "results";
 
+/**
+ * Default headings for the three result sections.
+ *
+ * @remarks
+ * Override per-instance with the picker's `sectionLabels` prop rather than
+ * mutating this.
+ */
 export const DEFAULT_PAIR_SECTION_LABELS: Record<PairSectionId, string> = {
   favourites: "Favourites",
   recents: "Recent",
