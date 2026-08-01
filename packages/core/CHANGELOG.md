@@ -1,5 +1,18 @@
 # @utk09/finra-ui
 
+## 0.3.0
+
+### Minor Changes
+
+- fix FileDropZone and PillInput discarding a consumer's `onClick`, `onKeyDown`, `onDragOver`, `onDragLeave` or `onDrop` instead of composing with their own - passing `onDrop` stopped the drop zone accepting files entirely. Consumer handlers now run first, and `preventDefault()` claims the gesture on click/keydown (never on dragover/drop, where it is the standard valid-drop-target idiom).
+- fix PriceInput, TenorPicker, DateTenorPicker, DateInput and DateTenorInput showing a value a controlled parent had rejected - the display now re-derives from the value the field actually holds, and an uncontrolled field follows formatting-prop changes
+- fix PriceInput stepping past a custom `validate`: arrow keys clamped `min`/`max` but skipped the check a typed value gets
+
+### Patch Changes
+
+- Updated dependencies
+  - @utk09/finra-ui-icons@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes
