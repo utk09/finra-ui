@@ -60,3 +60,23 @@ describe("resolveKey (default price keymap)", () => {
     expect(resolveKey({ key: "ArrowUp" }, custom)).toMatchObject({ action: { type: "primary" } });
   });
 });
+
+describe("keyChord - alt", () => {
+  it("includes alt, positioned between ctrl and shift", () => {
+    expect(keyChord({ key: "ArrowUp", altKey: true })).toBe("alt+ArrowUp");
+    expect(keyChord({ key: "ArrowUp", ctrlKey: true, altKey: true })).toBe("ctrl+alt+ArrowUp");
+    expect(keyChord({ key: "ArrowUp", altKey: true, shiftKey: true })).toBe("alt+shift+ArrowUp");
+  });
+
+  it("emits every modifier in the documented order", () => {
+    expect(keyChord({ key: "x", ctrlKey: true, altKey: true, shiftKey: true, metaKey: true })).toBe(
+      "ctrl+alt+shift+meta+x",
+    );
+  });
+
+  it("does not resolve an alt chord against an unmodified binding", () => {
+    // `alt+ArrowUp` must miss the plain `ArrowUp` entry, or a browser/OS
+    // shortcut would also step the price.
+    expect(resolveKey({ key: "ArrowUp", altKey: true }, DEFAULT_PRICE_KEYMAP)).toBeUndefined();
+  });
+});

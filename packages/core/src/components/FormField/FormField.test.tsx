@@ -181,6 +181,20 @@ describe("FormField", () => {
     expect(screen.getByRole("textbox")).toBeDisabled();
   });
 
+  it("passes a non-element child straight through", () => {
+    render(
+      <FormField label="Mixed">
+        Plain text
+        <TestInput />
+      </FormField>,
+    );
+
+    // Injection only applies to elements; a bare string has no props to merge
+    // into and must survive rather than being dropped.
+    expect(screen.getByText(/Plain text/)).toBeInTheDocument();
+    expect(screen.getByRole("textbox")).toHaveAccessibleName("Mixed");
+  });
+
   it("applies custom className", () => {
     render(
       <FormField label="Custom" className="my-class">

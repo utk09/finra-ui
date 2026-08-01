@@ -14,7 +14,7 @@ import {
 /** A crypto-flavoured registry: codes here are not ISO-4217 alpha-3. */
 const CRYPTO_CODES = ["BTC", "ETH", "USD", "USDT", "MATIC", "1INCH"];
 
-describe("parseCurrencyPair — accepted spellings", () => {
+describe("parseCurrencyPair - accepted spellings", () => {
   it.each([
     ["GBPUSD", "no separator"],
     ["GBP/USD", "slash"],
@@ -62,7 +62,7 @@ describe("parseCurrencyPair — accepted spellings", () => {
   });
 });
 
-describe("parseCurrencyPair — rejections", () => {
+describe("parseCurrencyPair - rejections", () => {
   it("rejects blank input", () => {
     expect(parseCurrencyPair("   ")).toMatchObject({ error: "empty" });
   });
@@ -109,7 +109,7 @@ describe("parseCurrencyPair — rejections", () => {
   });
 });
 
-describe("parseCurrencyPair — registry-driven splitting (crypto)", () => {
+describe("parseCurrencyPair - registry-driven splitting (crypto)", () => {
   it("splits an unseparated pair whose codes are not alpha-3", () => {
     // "BTCUSDT" is 7 characters: no 3/3 split exists.
     expect(parseCurrencyPair("BTCUSDT", { codes: CRYPTO_CODES })).toMatchObject({

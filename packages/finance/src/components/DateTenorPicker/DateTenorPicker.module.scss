@@ -237,6 +237,12 @@
   &.tenorHighlighted {
     background-color: var(--finra-actionable-accent);
     color: var(--finra-actionable-foreground);
+  }
+
+  // The committed tenor. Weight rather than background, so it composes with the
+  // highlight instead of competing with it - a row can be both, and the two
+  // states have to stay tellable apart. Matches TenorPicker's .optionSelected.
+  &.tenorSelected {
     font-weight: var(--finra-font-semibold);
   }
 

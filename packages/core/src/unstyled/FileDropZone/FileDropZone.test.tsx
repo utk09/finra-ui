@@ -193,7 +193,7 @@ describe("FileDropZoneBase", () => {
   });
 });
 
-describe("FileDropZoneBase — consumer event handlers", () => {
+describe("FileDropZoneBase - consumer event handlers", () => {
   it("still receives dropped files when a consumer passes onDrop", async () => {
     const onChange = vi.fn();
     const onDrop = vi.fn();
@@ -285,6 +285,33 @@ describe("FileDropZoneBase — consumer event handlers", () => {
     await user.click(screen.getByRole("button"));
 
     // Click and keydown keep the conventional meaning of preventDefault.
+    expect(click).not.toHaveBeenCalled();
+  });
+
+  it("lets a consumer suppress the file picker with preventDefault on keydown", async () => {
+    const user = userEvent.setup();
+    const { fileInput } = renderWithRef({
+      onKeyDown: (event) => {
+        event.preventDefault();
+      },
+    });
+    const click = vi.spyOn(fileInput, "click");
+
+    screen.getByRole("button").focus();
+    await user.keyboard("{Enter}");
+    await user.keyboard(" ");
+
+    expect(click).not.toHaveBeenCalled();
+  });
+
+  it("does not open the picker from the keyboard while disabled", () => {
+    const onKeyDown = vi.fn();
+    const { fileInput } = renderWithRef({ disabled: true, onKeyDown });
+    const click = vi.spyOn(fileInput, "click");
+
+    fireEvent.keyDown(screen.getByRole("button"), { key: "Enter" });
+
+    expect(onKeyDown).toHaveBeenCalled();
     expect(click).not.toHaveBeenCalled();
   });
 });

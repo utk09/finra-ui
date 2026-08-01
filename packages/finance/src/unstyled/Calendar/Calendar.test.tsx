@@ -833,6 +833,25 @@ describe("CalendarBase range mode", () => {
     expect(screen.getByLabelText("March 14, 2026")).toHaveAttribute("data-range-end");
   });
 
+  it("drops the hover preview when the pointer leaves the grid", () => {
+    render(
+      <CalendarBase
+        mode="range"
+        today={TODAY}
+        rangeValue={{ start: new Date(2026, 2, 10), end: null }}
+      />,
+    );
+
+    fireEvent.mouseEnter(screen.getByLabelText("March 14, 2026"));
+    expect(screen.getByLabelText("March 12, 2026")).toHaveAttribute("data-range-middle");
+
+    // Leaving the grid without clicking must clear the preview, or a range the
+    // user never picked stays painted on screen.
+    fireEvent.mouseLeave(screen.getByRole("grid"));
+    expect(screen.getByLabelText("March 12, 2026")).not.toHaveAttribute("data-range-middle");
+    expect(screen.getByLabelText("March 10, 2026")).toHaveAttribute("data-range-start");
+  });
+
   it("selects via the keyboard in range mode", () => {
     const onRangeSelect = vi.fn();
     render(<CalendarBase mode="range" today={TODAY} onRangeSelect={onRangeSelect} />);

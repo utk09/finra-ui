@@ -108,3 +108,19 @@ describe("validateTick", () => {
     expect(validateTick(1.08347, tick, "round", 5).value).toBeCloseTo(1.08345, 6);
   });
 });
+
+describe("roundWith - half-even off a tie", () => {
+  it("rounds normally when the value is not an exact half", () => {
+    // The tie branch is only for exact halves; everything else must round to
+    // nearest, not fall through to the even neighbour.
+    expect(roundWith(1.234, 2, "half-even")).toBe(1.23);
+    expect(roundWith(1.236, 2, "half-even")).toBe(1.24);
+    expect(roundWith(2.4, 0, "half-even")).toBe(2);
+    expect(roundWith(2.6, 0, "half-even")).toBe(3);
+  });
+
+  it("rounds negatives to nearest away from a tie", () => {
+    expect(roundWith(-1.234, 2, "half-even")).toBe(-1.23);
+    expect(roundWith(-2.6, 0, "half-even")).toBe(-3);
+  });
+});

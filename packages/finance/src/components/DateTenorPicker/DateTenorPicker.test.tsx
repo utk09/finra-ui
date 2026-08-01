@@ -83,4 +83,26 @@ describe("DateTenorPicker (styled)", () => {
     expect(screen.getByText("Broken")).toBeInTheDocument(); // broken badge
     expect(screen.getByText("2027-07-13")).toBeInTheDocument(); // resolved date
   });
+
+  it("gives the committed tenor a class of its own, distinct from the highlight", async () => {
+    const user = userEvent.setup();
+    render(<DateTenorPicker aria-label="Value date" referenceDate={REF} />);
+    const input = screen.getByRole("combobox");
+
+    await user.type(input, "6M");
+    await user.keyboard("{Enter}");
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowDown}"); // open
+    await user.keyboard("{ArrowDown}"); // highlight ON, which is not the value
+
+    const committed = screen.getByRole("option", { name: "6M" });
+    const highlighted = screen.getByRole("option", { name: "ON" });
+
+    // The styled layer has to actually wire the new key through to a CSS module
+    // class - a typo there would leave the ARIA correct and the screen wrong.
+    expect(committed.className).not.toBe(highlighted.className);
+    expect(committed).toHaveAttribute("aria-selected", "true");
+    expect(highlighted).toHaveAttribute("aria-selected", "false");
+  });
 });

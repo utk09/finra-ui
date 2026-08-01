@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef, useState } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -214,6 +214,27 @@ describe("PriceInputBase", () => {
     expect(input.selectionStart).toBe(0);
     expect(input.selectionEnd).toBe(input.value.length);
   });
+
+  it("steps down and treats step(0) as a single tick", () => {
+    const ref = createRef<PriceInputHandle>();
+    render(<PriceInputBase aria-label="Price" ref={ref} {...CENTS} defaultValue={1} />);
+    const input = screen.getByRole("spinbutton") as HTMLInputElement;
+
+    act(() => ref.current?.step(-3));
+    expect(input).toHaveValue("0.97");
+
+    // A zero count is meaningless as "no movement", so it reads as one tick
+    // in the positive direction.
+    act(() => ref.current?.step(0));
+    expect(input).toHaveValue("0.98");
+  });
+
+  it("reports a null value through the handle when empty", () => {
+    const ref = createRef<PriceInputHandle>();
+    render(<PriceInputBase aria-label="Price" ref={ref} {...CENTS} />);
+
+    expect(ref.current?.getValue()).toBeNull();
+  });
 });
 
 // FX-style: 4 primary decimals + 1 precision digit, 0.00005 tick.
@@ -420,7 +441,7 @@ describe("PriceInputBase v2 (engines)", () => {
   });
 });
 
-describe("PriceInputBase — consumer event handlers", () => {
+describe("PriceInputBase - consumer event handlers", () => {
   it("keeps its own keymap when a consumer passes onKeyDown", async () => {
     const user = userEvent.setup();
     const onKeyDown = vi.fn();
@@ -488,7 +509,7 @@ describe("PriceInputBase — consumer event handlers", () => {
   });
 });
 
-describe("PriceInputBase — display stays tied to the committed value", () => {
+describe("PriceInputBase - display stays tied to the committed value", () => {
   /** A parent that refuses anything above `limit`, holding its own value. */
   function Controlled({ limit }: { limit: number }) {
     const [value, setValue] = useState<number | null>(1);
@@ -563,7 +584,7 @@ describe("PriceInputBase — display stays tied to the committed value", () => {
   });
 });
 
-describe("PriceInputBase — stepping honours validate", () => {
+describe("PriceInputBase - stepping honours validate", () => {
   it("rejects a stepped price that a custom validate refuses", async () => {
     const user = userEvent.setup();
     const onValidate = vi.fn();
@@ -600,5 +621,110 @@ describe("PriceInputBase — stepping honours validate", () => {
     expect(onValidate).toHaveBeenCalledWith({ valid: true, value: 1.01 });
     expect(onChange).toHaveBeenLastCalledWith(1.01);
     expect(input).toHaveValue("1.01");
+  });
+});
+
+describe("PriceInputBase - precision defaults per format", () => {
+  // With no `precision`/`primaryPrecision` prop the format alone decides how
+  // many decimals rest on screen, so each default is a public contract.
+  it("defaults percent to 3 decimals", () => {
+    const { input } = setup({ format: "percent", defaultValue: 4.125 });
+    expect(input).toHaveValue("4.125%");
+  });
+
+  it("defaults basis-points to 2 decimals", () => {
+    const { input } = setup({ format: "basis-points", defaultValue: 15 });
+    expect(input).toHaveValue("15.00 bp");
+  });
+
+  it("defaults decimal to 5 decimals", () => {
+    const { input } = setup({ format: "decimal", defaultValue: 1.0834 });
+    expect(input).toHaveValue("1.08340");
+  });
+
+  it("lets an explicit precision override the format default", () => {
+    const { input } = setup({ format: "percent", precision: 1, defaultValue: 4.125 });
+    expect(input).toHaveValue("4.1%");
+  });
+});
+
+describe("PriceInputBase - min and max bounds", () => {
+  it("rejects a typed value below min", async () => {
+    const user = userEvent.setup();
+    const onValidate = vi.fn();
+    const { onChange, input } = setup({ ...CENTS, defaultValue: 5, min: 1, onValidate });
+
+    await user.clear(input);
+    await user.type(input, "0.50{Enter}");
+
+    expect(onValidate).toHaveBeenCalledWith({ valid: false, value: 0.5, error: "min" });
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("rejects a typed value above max", async () => {
+    const user = userEvent.setup();
+    const onValidate = vi.fn();
+    const { onChange, input } = setup({ ...CENTS, defaultValue: 5, max: 10, onValidate });
+
+    await user.clear(input);
+    await user.type(input, "12{Enter}");
+
+    expect(onValidate).toHaveBeenCalledWith({ valid: false, value: 12, error: "max" });
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("clamps a step up to max rather than rejecting it", async () => {
+    const user = userEvent.setup();
+    // A half-unit tick against a max that is not on the tick grid, so the
+    // clamped result is distinguishable from both the start and the raw step.
+    const { onChange, input } = setup({ ...CENTS, tickSize: 0.5, defaultValue: 9, max: 9.25 });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+
+    // 9.5 would exceed max, so the step lands on the bound instead of being
+    // refused - arrows walk up to the edge and stop there.
+    expect(onChange).toHaveBeenLastCalledWith(9.25);
+    await waitFor(() => expect(input).toHaveValue("9.25"));
+  });
+
+  it("clamps a step down to min rather than rejecting it", async () => {
+    const user = userEvent.setup();
+    const { onChange, input } = setup({ ...CENTS, defaultValue: 1.005, min: 1 });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowDown}");
+
+    expect(onChange).toHaveBeenLastCalledWith(1);
+    await waitFor(() => expect(input).toHaveValue("1.00"));
+  });
+
+  it("exposes the bounds to assistive tech", () => {
+    const { input } = setup({ ...CENTS, defaultValue: 5, min: 1, max: 10 });
+    expect(input).toHaveAttribute("aria-valuemin", "1");
+    expect(input).toHaveAttribute("aria-valuemax", "10");
+  });
+});
+
+describe("PriceInputBase - disabled and readOnly reject typing", () => {
+  it("ignores input events while disabled", async () => {
+    const user = userEvent.setup();
+    const { onChange, input } = setup({ ...CENTS, defaultValue: 1, disabled: true });
+
+    await user.type(input, "9");
+
+    expect(input).toHaveValue("1.00");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("ignores input events while readOnly", async () => {
+    const { onChange, input } = setup({ ...CENTS, defaultValue: 1, readOnly: true });
+
+    // readOnly inputs still receive events, so the guard is in the handler
+    // rather than left to the browser.
+    fireEvent.change(input, { target: { value: "9.99" } });
+
+    expect(input).toHaveValue("1.00");
+    expect(onChange).not.toHaveBeenCalled();
   });
 });

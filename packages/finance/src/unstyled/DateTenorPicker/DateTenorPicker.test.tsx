@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef, useState } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -149,8 +149,9 @@ describe("DateTenorPickerBase", () => {
     act(() => input.focus());
     await user.keyboard("{ArrowDown}"); // open
     await user.keyboard("{ArrowDown}"); // highlight first option (ON)
-    expect(screen.getByRole("option", { name: "ON" })).toHaveAttribute("aria-selected", "true");
-    expect(input).toHaveAttribute("aria-activedescendant");
+    expect(input.getAttribute("aria-activedescendant")).toBe(
+      screen.getByRole("option", { name: "ON" }).id,
+    );
 
     await user.keyboard("{Enter}");
     expect(onChange.mock.calls[0][0]).toMatchObject({ tenor: "ON" });
@@ -164,7 +165,9 @@ describe("DateTenorPickerBase", () => {
     await user.keyboard("{Control>} {/Control}");
 
     expect(input).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getByRole("option", { name: "ON" })).toHaveAttribute("aria-selected", "true");
+    expect(input.getAttribute("aria-activedescendant")).toBe(
+      screen.getByRole("option", { name: "ON" }).id,
+    );
   });
 
   it("fires onModeChange when the committed mode changes", async () => {
@@ -406,6 +409,311 @@ describe("DateTenorPickerBase", () => {
     expect(screen.getByText("mode:tenor")).toBeInTheDocument();
   });
 
+  it("treats a tenor resolving past maxDate as disabled", async () => {
+    const user = userEvent.setup();
+    const onInvalid = vi.fn();
+    // REF is 15 Jan 2026, so 3M lands 15 Apr - beyond the cap - while 1M does not.
+    const { onChange, input } = setup({ maxDate: new Date(2026, 1, 28), onInvalid });
+
+    await user.click(input);
+    expect(screen.getByRole("option", { name: "3M" })).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("option", { name: "1M" })).toBeEnabled();
+
+    await user.type(input, "3M");
+    await user.keyboard("{Enter}");
+    expect(onInvalid).toHaveBeenCalledWith("disabled-date");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("honours a disabledDates predicate and minDate", async () => {
+    const user = userEvent.setup();
+    const onInvalid = vi.fn();
+    const { onChange, input } = setup({
+      minDate: new Date(2026, 0, 1),
+      disabledDates: (date) => date.getMonth() === 3,
+      onInvalid,
+    });
+
+    // 3M lands in April, which the predicate rejects.
+    await user.type(input, "3M");
+    await user.keyboard("{Enter}");
+    expect(onInvalid).toHaveBeenCalledWith("disabled-date");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("rejects a calendar day whose settlement lands on a disabled date", async () => {
+    const user = userEvent.setup();
+    const onInvalid = vi.fn();
+    const { onChange, input } = setup({
+      settlementEngine: () => new Date(2030, 0, 1),
+      maxDate: new Date(2029, 11, 31),
+      onInvalid,
+    });
+
+    await user.click(input);
+    // The day itself is inside the bounds and clickable; only what it settles
+    // to is not. The check has to run after settlement, not before it.
+    await user.click(screen.getByLabelText("January 20, 2026"));
+
+    expect(onInvalid).toHaveBeenCalledWith("disabled-date");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("marks the committed tenor as selected, not the merely highlighted one", async () => {
+    const user = userEvent.setup();
+    const { input } = setup({
+      defaultValue: {
+        input: "6M",
+        display: "6M",
+        mode: "tenor",
+        tenor: "6M",
+        date: new Date(2026, 6, 15),
+      },
+    });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowDown}"); // open
+    await user.keyboard("{ArrowDown}"); // highlight the first option (ON)
+
+    // The highlight is already carried by aria-activedescendant. Reusing
+    // aria-selected for it announces an option as chosen when Enter has not
+    // been pressed, and leaves the actual value unannounced when the list
+    // reopens.
+    expect(input.getAttribute("aria-activedescendant")).toBe(
+      screen.getByRole("option", { name: "ON" }).id,
+    );
+    expect(screen.getByRole("option", { name: "ON" })).toHaveAttribute("aria-selected", "false");
+    expect(screen.getByRole("option", { name: "6M" })).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("classes the highlight and the committed tenor independently", async () => {
+    const user = userEvent.setup();
+    const { input } = setup({
+      classNames: { tenor: "t", tenorHighlighted: "t-hi", tenorSelected: "t-sel" },
+      defaultValue: {
+        input: "ON",
+        display: "ON",
+        mode: "tenor",
+        tenor: "ON",
+        date: new Date(2026, 0, 16),
+      },
+    });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowDown}"); // open
+    await user.keyboard("{ArrowDown}"); // highlight ON, which is also committed
+
+    // Both states on one row - a sighted user needs the same two facts the
+    // ARIA now carries, and they must not collapse into one look.
+    const committed = screen.getByRole("option", { name: "ON" });
+    expect(committed).toHaveClass("t", "t-hi", "t-sel");
+
+    await user.keyboard("{ArrowDown}"); // move the highlight off it
+    expect(screen.getByRole("option", { name: "ON" })).toHaveClass("t-sel");
+    expect(screen.getByRole("option", { name: "ON" })).not.toHaveClass("t-hi");
+    expect(screen.getByRole("option", { name: "TN" })).toHaveClass("t-hi");
+    expect(screen.getByRole("option", { name: "TN" })).not.toHaveClass("t-sel");
+  });
+
+  it("walks the suggestions back up with ArrowUp", async () => {
+    const user = userEvent.setup();
+    const { input } = setup();
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+    // ArrowUp does not open - only ArrowDown and Ctrl+Space do.
+    expect(input).toHaveAttribute("aria-expanded", "false");
+
+    await user.keyboard("{ArrowDown}"); // open
+    await user.keyboard("{ArrowDown}"); // ON
+    await user.keyboard("{ArrowDown}"); // TN
+    expect(input.getAttribute("aria-activedescendant")).toBe(
+      screen.getByRole("option", { name: "TN" }).id,
+    );
+
+    await user.keyboard("{ArrowUp}");
+    expect(input.getAttribute("aria-activedescendant")).toBe(
+      screen.getByRole("option", { name: "ON" }).id,
+    );
+  });
+
+  it("does not commit a disabled suggestion reached by keyboard", async () => {
+    const user = userEvent.setup();
+    const { onChange, input } = setup({ disabledTenors: ["ON"] });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowDown}"); // open
+    await user.keyboard("{ArrowDown}"); // highlights ON, which is disabled
+    expect(input.getAttribute("aria-activedescendant")).toBe(
+      screen.getByRole("option", { name: "ON" }).id,
+    );
+
+    await user.keyboard("{Enter}");
+    // The pointer route is blocked by the disabled button; roving reaches the
+    // row anyway, so the refusal has to live in the selection itself.
+    expect(onChange).not.toHaveBeenCalled();
+    expect(input).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("roves harmlessly with no suggestions to walk", async () => {
+    const ref = createRef<DateTenorPickerHandle>();
+    const user = userEvent.setup();
+    render(
+      <DateTenorPickerBase
+        aria-label="Value date"
+        referenceDate={REF}
+        ref={ref}
+        tenorOptions={[]}
+      />,
+    );
+    const input = screen.getByRole("combobox", { name: "Value date" });
+
+    act(() => ref.current?.open());
+    act(() => input.focus());
+    await user.keyboard("{ArrowDown}");
+
+    expect(screen.queryAllByRole("option")).toHaveLength(0);
+    expect(input).not.toHaveAttribute("aria-activedescendant");
+  });
+
+  it("does not commit when focus moves into the popup", async () => {
+    const user = userEvent.setup();
+    const { onChange, input } = setup();
+
+    await user.click(input);
+    await user.type(input, "3M");
+    // Reaching for a suggestion is not "leaving the field" - the option's own
+    // click is what commits, and a blur-commit first would race it.
+    fireEvent.blur(input, { relatedTarget: screen.getByRole("option", { name: "6M" }) });
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(input).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("toggles shut through the adornment it opened with", async () => {
+    const user = userEvent.setup();
+    const { input } = setup({ renderCalendarIcon: () => <span>cal</span> });
+    const toggle = screen.getByRole("button", { name: "Toggle date and tenor picker" });
+
+    await user.click(toggle);
+    expect(input).toHaveAttribute("aria-expanded", "true");
+    await user.click(toggle);
+    expect(input).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("refuses every route into the popup while readOnly", async () => {
+    const ref = createRef<DateTenorPickerHandle>();
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <DateTenorPickerBase
+        aria-label="Value date"
+        referenceDate={REF}
+        ref={ref}
+        onChange={onChange}
+        renderCalendarIcon={() => <span>cal</span>}
+        readOnly
+      />,
+    );
+    const input = screen.getByRole("combobox", { name: "Value date" });
+
+    // The adornment is not itself disabled while readOnly, so the toggle has to
+    // refuse on its own.
+    await user.click(screen.getByRole("button", { name: "Toggle date and tenor picker" }));
+    expect(input).toHaveAttribute("aria-expanded", "false");
+
+    act(() => ref.current?.open());
+    expect(input).toHaveAttribute("aria-expanded", "false");
+
+    // readOnly stops typing, but autofill and IME can still drive a change
+    // event, so the handler guards rather than trusting the DOM.
+    fireEvent.change(input, { target: { value: "3M" } });
+    expect(input).toHaveValue("");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("ignores a programmatic change while disabled", () => {
+    const onChange = vi.fn();
+    const { input } = setup({ disabled: true, onChange });
+
+    fireEvent.change(input, { target: { value: "3M" } });
+    expect(input).toHaveValue("");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("takes a named resolved-date format, or reuses the input format", async () => {
+    const user = userEvent.setup();
+    const { input, rerender } = setup({ showResolvedDate: true, resolvedDateFormat: "DD/MM/YYYY" });
+
+    await user.type(input, "3M");
+    await user.keyboard("{Enter}");
+    expect(screen.getByText("15/04/2026")).toBeInTheDocument();
+
+    // Without its own format the resolved date follows `dateFormat`, so the two
+    // readings of the same date never disagree on layout.
+    rerender(
+      <DateTenorPickerBase
+        aria-label="Value date"
+        referenceDate={REF}
+        showResolvedDate
+        dateFormat="DD-MM-YYYY"
+        defaultValue={{
+          input: "3M",
+          display: "3M",
+          mode: "tenor",
+          tenor: "3M",
+          date: new Date(2026, 3, 15),
+        }}
+      />,
+    );
+    expect(screen.getByText("15-04-2026")).toBeInTheDocument();
+  });
+
+  it("announces open and close once each, however often it is asked", async () => {
+    const ref = createRef<DateTenorPickerHandle>();
+    const user = userEvent.setup();
+    const onOpen = vi.fn();
+    const onClose = vi.fn();
+    render(
+      <DateTenorPickerBase
+        aria-label="Value date"
+        referenceDate={REF}
+        ref={ref}
+        onOpen={onOpen}
+        onClose={onClose}
+      />,
+    );
+    const input = screen.getByRole("combobox", { name: "Value date" });
+
+    // Escape on a closed popup is the user's "get me out of here" - it must
+    // reach the surrounding dialog or form rather than being swallowed here.
+    act(() => input.focus());
+    await user.keyboard("{Escape}");
+    expect(onClose).not.toHaveBeenCalled();
+
+    act(() => ref.current?.open());
+    act(() => ref.current?.open());
+    expect(onOpen).toHaveBeenCalledTimes(1);
+
+    act(() => ref.current?.close());
+    act(() => ref.current?.close());
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("falls back to today when no referenceDate is given", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(<DateTenorPickerBase aria-label="Value date" onChange={onChange} />);
+    const input = screen.getByRole("combobox", { name: "Value date" });
+
+    await user.type(input, "3M");
+    await user.keyboard("{Enter}");
+
+    // Anchored on the real today, so 3M still resolves and still reads back as
+    // the standard tenor it was typed as.
+    expect(onChange.mock.calls[0][0]).toMatchObject({ tenor: "3M", standardTenor: "3M" });
+  });
+
   it("renders the broken-date indicator only for broken dates", async () => {
     const user = userEvent.setup();
     const { input } = setup({
@@ -423,7 +731,7 @@ describe("DateTenorPickerBase", () => {
   });
 });
 
-describe("DateTenorPickerBase — display stays tied to the committed value", () => {
+describe("DateTenorPickerBase - display stays tied to the committed value", () => {
   /** A parent that only ever accepts 3M, holding its own value. */
   function Controlled() {
     const [value, setValue] = useState<DateTenorValue | null>(null);

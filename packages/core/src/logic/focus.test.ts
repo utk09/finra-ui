@@ -26,6 +26,35 @@ describe("getTabbables", () => {
     container.innerHTML = `<span>text</span><button disabled>x</button>`;
     expect(getTabbables(container)).toEqual([]);
   });
+
+  it("rejects a disabled element the selector still matches", () => {
+    // `a[href]` and `[tabindex]` carry no `:not([disabled])`, so a disabled
+    // custom control reaches the filter and must be dropped there. A focus
+    // trap that returned one would park focus on an unreachable element.
+    const container = document.createElement("div");
+    container.innerHTML = `
+      <div tabindex="0" disabled>custom</div>
+      <a href="#" disabled>link</a>
+      <button>real</button>
+    `;
+
+    const result = getTabbables(container);
+    expect(result.map((el) => el.textContent)).toEqual(["real"]);
+  });
+
+  it("rejects any negative tabindex, not just -1", () => {
+    // The selector only excludes the literal "-1"; -2 and below have the same
+    // meaning and are filtered here.
+    const container = document.createElement("div");
+    container.innerHTML = `
+      <button tabindex="-2">skip</button>
+      <div tabindex="-5">skip</div>
+      <button tabindex="0">keep</button>
+    `;
+
+    const result = getTabbables(container);
+    expect(result.map((el) => el.textContent)).toEqual(["keep"]);
+  });
 });
 
 describe("resolveTabStop", () => {

@@ -42,7 +42,7 @@ describe("normalizePairQuery", () => {
   });
 });
 
-describe("matchPairTier — the fixed tier order", () => {
+describe("matchPairTier - the fixed tier order", () => {
   it("exact canonical beats everything", () => {
     expect(matchPairTier(GBPUSD, "GBPUSD")).toBe("exact-canonical");
   });
@@ -82,6 +82,27 @@ describe("matchPairTier — the fixed tier order", () => {
     expect(matchPairTier(GBPUSD, "ZZZ")).toBeNull();
     expect(matchPairTier(GBPUSD, "   ")).toBeNull();
     expect(matchPairTier(GBPUSD, "///")).toBeNull();
+  });
+
+  it("survives a name resolver that knows nothing", () => {
+    // A consumer's resolver is allowed to return null for a code it does not
+    // recognise; that must not put an empty string in the haystack, or every
+    // query would match everything.
+    const nameOf = () => null;
+    expect(matchPairTier(GBPUSD, "GBPUSD", nameOf)).toBe("exact-canonical");
+    expect(matchPairTier(GBPUSD, "British Pound", nameOf)).toBeNull();
+    expect(matchPairTier(GBPUSD, "")).toBeNull();
+  });
+});
+
+describe("rankPairs - recents", () => {
+  it("breaks ties on the first position of a duplicated recent", () => {
+    const ranked = rankPairs("", [GBPUSD, USDJPY], {
+      recents: ["USDJPY", "GBPUSD", "USDJPY"],
+    });
+    // The repeat must not promote USDJPY past GBPUSD by re-recording it at a
+    // later index - first mention wins.
+    expect(ids(ranked)).toEqual(["USDJPY", "GBPUSD"]);
   });
 });
 
@@ -152,6 +173,17 @@ describe("rankPairs", () => {
 
 describe("buildPairSections", () => {
   const ranked = rankPairs("", ALL);
+
+  it("keeps the first position of a duplicated recent", () => {
+    // Stored recents can repeat - a desk writing the same id twice, or a merge
+    // of two devices' lists. The earliest entry is the true recency.
+    const sections = buildPairSections({
+      ranked,
+      recents: ["USDJPY", "EURGBP", "USDJPY"],
+    });
+    const recents = sections.find((s) => s.id === "recents");
+    expect(recents?.pairs.map((p) => p.id)).toEqual(["USDJPY", "EURGBP"]);
+  });
 
   it("pins favourites, then recents, then the rest", () => {
     const sections = buildPairSections({
@@ -306,6 +338,30 @@ describe("resolvePairPickerKey", () => {
     });
   });
 
+  it("ArrowDown while open only moves the highlight", () => {
+    // The ordinary case: the list is already showing and the caret must not
+    // also re-open it, which would reset the highlight to the top.
+    expect(resolvePairPickerKey("ArrowDown", ctx({ isOpen: true }))).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "moveHighlight", direction: 1 }],
+    });
+  });
+
+  it("ArrowUp while open only moves the highlight", () => {
+    expect(resolvePairPickerKey("ArrowUp", ctx({ isOpen: true }))).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "moveHighlight", direction: -1 }],
+    });
+  });
+
+  it("Alt+ArrowDown while already open steps like a plain ArrowDown", () => {
+    // Alt only has meaning as the open gesture; once open it is ignored.
+    expect(resolvePairPickerKey("ArrowDown", ctx({ isOpen: true, altKey: true }))).toEqual({
+      preventDefault: true,
+      effects: [{ kind: "moveHighlight", direction: 1 }],
+    });
+  });
+
   it("Home/End jump to the edges, and are inert while closed", () => {
     expect(resolvePairPickerKey("Home", ctx()).effects).toEqual([
       { kind: "highlightEdge", edge: "first" },
@@ -368,5 +424,16 @@ describe("resolvePairPickerKey", () => {
 
   it("a bare d types normally", () => {
     expect(resolvePairPickerKey("d", ctx())).toEqual({ preventDefault: false, effects: [] });
+  });
+
+  it("Home, End and Tab are inert while closed", () => {
+    // Home and End belong to the text field when there is no list to jump
+    // around in, and Tab must always be free to move focus.
+    for (const key of ["Home", "End", "Tab"]) {
+      expect(resolvePairPickerKey(key, ctx({ isOpen: false }))).toEqual({
+        preventDefault: false,
+        effects: [],
+      });
+    }
   });
 });

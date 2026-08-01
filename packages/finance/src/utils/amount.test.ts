@@ -14,7 +14,7 @@ const INDIAN_SUFFIXES = { L: 5, Cr: 7, KCr: 10, LCr: 12 };
 
 const MAJOR_CURRENCIES = ["USD", "EUR", "GBP", "JPY"];
 
-describe("parseAmount — magnitudes", () => {
+describe("parseAmount - magnitudes", () => {
   it.each([
     ["1k", 1_000],
     ["1K", 1_000],
@@ -55,7 +55,7 @@ describe("parseAmount — magnitudes", () => {
     expect(german).toContain("€");
   });
 
-  it("reads BN but never writes it — B is the canonical spelling of 10^9", () => {
+  it("reads BN but never writes it - B is the canonical spelling of 10^9", () => {
     expect(parseAmount("2bn").value).toBe(2_000_000_000);
     expect(formatAmount(2e9, { format: "compact", locale: "en-US" })).toBe("2B");
   });
@@ -69,7 +69,7 @@ describe("parseAmount — magnitudes", () => {
   });
 });
 
-describe("parseAmount — e notation", () => {
+describe("parseAmount - e notation", () => {
   it.each([
     ["1e5", 100_000],
     ["1E5", 100_000],
@@ -118,7 +118,7 @@ describe("parseAmount — e notation", () => {
   });
 });
 
-describe("parseAmount — expansion is exact", () => {
+describe("parseAmount - expansion is exact", () => {
   // The whole reason scaleByPowerOfTen exists: 4.1 * 10 ** 6 is 4099999.9999999995.
   it.each([
     ["4.1m", 4_100_000],
@@ -133,7 +133,7 @@ describe("parseAmount — expansion is exact", () => {
   });
 });
 
-describe("parseAmount — signs", () => {
+describe("parseAmount - signs", () => {
   it("accepts a leading minus", () => {
     expect(parseAmount("-3m").value).toBe(-3_000_000);
   });
@@ -165,7 +165,7 @@ describe("parseAmount — signs", () => {
   });
 });
 
-describe("parseAmount — grouping and decimal marks", () => {
+describe("parseAmount - grouping and decimal marks", () => {
   it("strips comma grouping", () => {
     expect(parseAmount("1,234,567.5").value).toBe(1_234_567.5);
   });
@@ -195,7 +195,7 @@ describe("parseAmount — grouping and decimal marks", () => {
   });
 });
 
-describe("parseAmount — rejections", () => {
+describe("parseAmount - rejections", () => {
   it.each([
     ["", "empty"],
     ["   ", "empty"],
@@ -222,7 +222,7 @@ describe("parseAmount — rejections", () => {
   });
 });
 
-describe("parseAmount — suffix table configuration", () => {
+describe("parseAmount - suffix table configuration", () => {
   it("merges consumer suffixes over the defaults", () => {
     const options = { suffixes: { MM: 6 } };
     expect(parseAmount("10MM", options).value).toBe(10_000_000);
@@ -255,7 +255,7 @@ describe("parseAmount — suffix table configuration", () => {
   });
 });
 
-describe("parseAmount — case sensitivity", () => {
+describe("parseAmount - case sensitivity", () => {
   it("ignores case by default", () => {
     expect(parseAmount("10m").value).toBe(10_000_000);
     expect(parseAmount("10M").value).toBe(10_000_000);
@@ -268,7 +268,7 @@ describe("parseAmount — case sensitivity", () => {
   });
 });
 
-describe("parseAmount — currency extraction", () => {
+describe("parseAmount - currency extraction", () => {
   const options = { currencyCodes: MAJOR_CURRENCIES };
 
   it.each([
@@ -480,5 +480,68 @@ describe("compactSuffixesForLocale", () => {
   it("may be sparse where a locale has no compact form for a magnitude", () => {
     // de-DE has no short compact thousand, so the table simply omits it.
     expect(compactSuffixesForLocale("de-DE")).not.toHaveProperty("K");
+  });
+});
+
+describe("parseAmount - degenerate configuration", () => {
+  it("treats an empty currencyCodes list as no currency extraction", () => {
+    const result = parseAmount("100", { currencyCodes: [] });
+    expect(result.valid).toBe(true);
+    expect(result.value).toBe(100);
+    expect(result.currency).toBeNull();
+  });
+
+  it("leaves a leading word alone when no codes are configured", () => {
+    // With an empty table nothing is a currency, so `USD 100` is not silently
+    // stripped down to 100 - it stays an invalid number.
+    expect(parseAmount("USD 100", { currencyCodes: [] }).valid).toBe(false);
+  });
+
+  it("never strips the decimal mark as a group separator", () => {
+    // A caller passing overlapping lists must not lose the decimal point.
+    const result = parseAmount("1.234,5", {
+      decimalSeparator: ",",
+      groupSeparators: [".", ","],
+    });
+    expect(result.valid).toBe(true);
+    expect(result.value).toBe(1234.5);
+  });
+});
+
+describe("formatAmount - compact suffix selection", () => {
+  it("tie-breaks equal magnitudes to the shorter spelling", () => {
+    // B and BN both stand for 10^9; B must win regardless of key order.
+    expect(formatAmount(2.5e9, { format: "compact", decimals: 1 })).toBe("2.5B");
+    expect(formatAmount(2.5e9, { format: "compact", decimals: 1, suffixes: { BN: 9 } })).toBe(
+      "2.5B",
+    );
+  });
+
+  it("ignores suffix entries at or below 10^0", () => {
+    // A zero-exponent entry would otherwise match every value and win by
+    // insertion order for small numbers.
+    expect(formatAmount(2.5e9, { format: "compact", decimals: 1, suffixes: { U: 0, D: -3 } })).toBe(
+      "2.5B",
+    );
+  });
+
+  it("picks the largest suffix that leaves the mantissa at or above 1", () => {
+    expect(formatAmount(2.5e6, { format: "compact", decimals: 1 })).toBe("2.5M");
+    expect(formatAmount(2.5e12, { format: "compact", decimals: 1 })).toBe("2.5T");
+  });
+});
+
+describe("parseAmount - numeric overflow", () => {
+  it("rejects a mantissa too large to represent", () => {
+    // The digit pattern happily matches 400 nines; Number() turns that into
+    // Infinity, which must be refused rather than propagated as a value.
+    const result = parseAmount("9".repeat(400));
+    expect(result.valid).toBe(false);
+    expect(result.error).toBe("invalid-number");
+    expect(result.value).toBeNull();
+  });
+
+  it("rejects an overflowing decimal too", () => {
+    expect(parseAmount(`${"9".repeat(400)}.5`).valid).toBe(false);
   });
 });

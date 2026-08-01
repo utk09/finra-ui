@@ -171,7 +171,7 @@ describe("PillInputBase", () => {
   });
 });
 
-describe("PillInputBase — consumer event handlers", () => {
+describe("PillInputBase - consumer event handlers", () => {
   it("still focuses the input when a consumer passes onClick", async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();

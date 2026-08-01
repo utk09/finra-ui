@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -254,6 +254,69 @@ describe("Select", () => {
     );
     await user.click(getTrigger());
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+  });
+
+  it("clears the typeahead buffer after the timeout", () => {
+    vi.useFakeTimers();
+    try {
+      renderSelect();
+      const trigger = getTrigger();
+
+      fireEvent.keyDown(trigger, { key: "d" }); // Date
+      expect(screen.getByRole("option", { name: "Date" })).toHaveAttribute("data-active", "true");
+
+      act(() => {
+        vi.advanceTimersByTime(1_000);
+      });
+
+      // Buffer reset, so "c" starts a fresh search. Without the reset the query
+      // would be "dc" and match nothing, leaving Date active.
+      fireEvent.keyDown(trigger, { key: "c" });
+      expect(screen.getByRole("option", { name: "Cherry" })).toHaveAttribute("data-active", "true");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("leaves the highlight alone when typeahead matches nothing", () => {
+    renderSelect();
+    const trigger = getTrigger();
+
+    fireEvent.keyDown(trigger, { key: "c" });
+    expect(screen.getByRole("option", { name: "Cherry" })).toHaveAttribute("data-active", "true");
+
+    // A dead-end query must not close the list or move off the last match -
+    // the user is mid-word, not asking for anything.
+    fireEvent.keyDown(trigger, { key: "z" });
+    expect(screen.getByRole("option", { name: "Cherry" })).toHaveAttribute("data-active", "true");
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("does not act on a trigger key the consumer has claimed", () => {
+    render(
+      <Select options={options} placeholder="Pick fruit">
+        <SelectTrigger aria-label="Fruit" onKeyDown={(event) => event.preventDefault()} />
+        <SelectContent aria-label="Fruit options" />
+      </Select>,
+    );
+    const trigger = getTrigger();
+
+    fireEvent.keyDown(trigger, { key: "ArrowDown" });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("does not activate a disabled option on hover", async () => {
+    const user = userEvent.setup();
+    renderSelect();
+    await user.click(getTrigger());
+
+    await user.hover(screen.getByRole("option", { name: "Banana" }));
+    // Hovering something unselectable must not move the highlight there, or
+    // Enter would land on a row that refuses.
+    expect(screen.getByRole("option", { name: "Banana" })).not.toHaveAttribute(
+      "data-active",
+      "true",
+    );
   });
 
   it("throws when a part is used outside a Select", () => {

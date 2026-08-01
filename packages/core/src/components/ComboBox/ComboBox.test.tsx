@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -890,6 +890,192 @@ describe("ComboBox", () => {
       await user.click(screen.getByRole("option", { name: "Cherry" }));
 
       expect(screen.getByRole("combobox")).toHaveFocus();
+    });
+  });
+  describe("option list composition", () => {
+    it('renders ungrouped options under an "All" heading when groups exist', async () => {
+      const user = userEvent.setup();
+      const mixed: ComboBoxOption[] = [
+        { value: "EURUSD", label: "EURUSD", group: "Major", favourite: true },
+        { value: "GBPUSD", label: "GBPUSD", group: "Major" },
+        { value: "XAUUSD", label: "XAUUSD" },
+      ];
+      render(<ComboBox options={mixed} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+      await user.click(screen.getByRole("combobox"));
+
+      // A loose option alongside grouped ones needs a heading of its own, or
+      // it reads as a member of whichever group rendered last.
+      const all = screen.getByRole("group", { name: "All" });
+      expect(all).toBeInTheDocument();
+      expect(within(all).getByRole("option", { name: "XAUUSD" })).toBeInTheDocument();
+      expect(screen.getByRole("group", { name: "Favourites" })).toBeInTheDocument();
+      expect(screen.getByRole("group", { name: "Major" })).toBeInTheDocument();
+    });
+
+    it("renders ungrouped options bare when there is nothing to group against", async () => {
+      const user = userEvent.setup();
+      render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+      await user.click(screen.getByRole("combobox"));
+
+      expect(screen.queryByRole("group")).not.toBeInTheDocument();
+      expect(screen.getAllByRole("option")).toHaveLength(options.length);
+    });
+
+    it("omits a group whose options are all favourites", async () => {
+      const user = userEvent.setup();
+      const allFav: ComboBoxOption[] = [
+        { value: "EURUSD", label: "EURUSD", group: "Major", favourite: true },
+        { value: "USDJPY", label: "USDJPY", group: "Major", favourite: true },
+        { value: "AUDUSD", label: "AUDUSD", group: "Minor" },
+      ];
+      render(<ComboBox options={allFav} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+      await user.click(screen.getByRole("combobox"));
+
+      // Both Major rows are lifted into Favourites, so an empty "Major"
+      // heading must not be left behind.
+      expect(screen.queryByRole("group", { name: "Major" })).not.toBeInTheDocument();
+      expect(screen.getByRole("group", { name: "Favourites" })).toBeInTheDocument();
+      expect(screen.getByRole("group", { name: "Minor" })).toBeInTheDocument();
+    });
+
+    it("ignores a selected value that is not in the option list", () => {
+      // Options often arrive after the value (async load); a value with no
+      // matching option must render nothing rather than throw.
+      render(
+        <ComboBox
+          options={options}
+          value="pineapple"
+          onChange={vi.fn()}
+          renderValue={(opt) => <span>{opt.label}</span>}
+          placeholder="Select"
+        />,
+      );
+      expect(screen.getByRole("combobox")).toBeInTheDocument();
+    });
+
+    it("ignores selected values that are not in the option list in multiple mode", () => {
+      render(
+        <ComboBox
+          multiple
+          options={options}
+          value={["apple", "pineapple"]}
+          onChange={vi.fn()}
+          placeholder="Select"
+        />,
+      );
+
+      // Only the value that resolves to an option gets a pill.
+      expect(screen.getAllByRole("listitem")).toHaveLength(1);
+      expect(screen.getByRole("listitem")).toHaveTextContent("Apple");
+    });
+  });
+
+  describe("typing", () => {
+    it("opens the list when text arrives while it is closed", () => {
+      render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+      const input = screen.getByRole("combobox");
+      expect(input).toHaveAttribute("aria-expanded", "false");
+
+      fireEvent.change(input, { target: { value: "ap" } });
+
+      expect(input).toHaveAttribute("aria-expanded", "true");
+      expect(screen.getByRole("option", { name: "Apple" })).toBeInTheDocument();
+    });
+
+    it("clears a single selection when the text is edited", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<ComboBox options={options} value="apple" onChange={onChange} placeholder="Select" />);
+
+      await user.click(screen.getByRole("combobox"));
+      await user.keyboard("x");
+
+      // Editing past a committed selection means the text no longer describes
+      // it, so the value cannot silently stay behind.
+      expect(onChange).toHaveBeenCalledWith(null);
+    });
+
+    it("does not clear a multiple selection when the text is edited", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(
+        <ComboBox
+          multiple
+          options={options}
+          value={["apple"]}
+          onChange={onChange}
+          placeholder="Select"
+        />,
+      );
+
+      await user.click(screen.getByRole("combobox"));
+      await user.keyboard("x");
+
+      // In multiple mode the text is a filter, not a rendering of the value.
+      expect(onChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("render props", () => {
+    it("hands renderOption the option and its state", async () => {
+      const user = userEvent.setup();
+      const seen: [string, boolean, boolean][] = [];
+      render(
+        <ComboBox
+          options={options}
+          value="banana"
+          onChange={vi.fn()}
+          placeholder="Select"
+          renderOption={(option, state) => {
+            seen.push([String(option.value), state.isSelected, state.isHighlighted]);
+            return <span>opt:{option.label}</span>;
+          }}
+        />,
+      );
+
+      await user.click(screen.getByRole("combobox"));
+
+      expect(screen.getByText("opt:Apple")).toBeInTheDocument();
+      expect(seen).toContainEqual(["banana", true, false]);
+      // The row is still an option and still selectable - the renderer supplies
+      // content, not behaviour.
+      expect(screen.getAllByRole("option")).toHaveLength(options.length);
+    });
+
+    it("uses renderValue for the resting single-mode display", () => {
+      render(
+        <ComboBox
+          options={options}
+          value="cherry"
+          onChange={vi.fn()}
+          placeholder="Select"
+          renderValue={(option) => `<${option.label}>`}
+        />,
+      );
+
+      // With a renderer in play the input must not quietly substitute the raw
+      // label - that would show two different things for one value.
+      expect(screen.getByRole("combobox")).toHaveValue("");
+      expect(screen.getByText("<Cherry>")).toBeInTheDocument();
+    });
+
+    it("uses renderValue on each pill in multiple mode", () => {
+      render(
+        <ComboBox
+          multiple
+          options={options}
+          value={["apple", "cherry"]}
+          onChange={vi.fn()}
+          placeholder="Select"
+          renderValue={(option) => `<${option.label}>`}
+        />,
+      );
+
+      expect(screen.getByText("<Apple>")).toBeInTheDocument();
+      expect(screen.getByText("<Cherry>")).toBeInTheDocument();
     });
   });
 });

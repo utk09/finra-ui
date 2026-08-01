@@ -39,6 +39,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
+    "preview:coverage": "vite preview --outDir coverage",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -164,6 +164,32 @@ describe("NumberInput", () => {
     expect(handleChange).toHaveBeenCalledWith(undefined);
   });
 
+  it("calls onChange with undefined when a filled input is cleared", () => {
+    // Distinct from the blur case above: clearing while typing must report the
+    // empty value immediately. Starting from an empty input would make the
+    // change event a no-op, so this has to begin with a value on screen.
+    const handleChange = vi.fn();
+    render(<NumberInput aria-label="Quantity" defaultValue={5} onChange={handleChange} />);
+    const input = screen.getByRole("spinbutton");
+
+    fireEvent.change(input, { target: { value: "" } });
+
+    expect(handleChange).toHaveBeenCalledWith(undefined);
+    expect(input).toHaveValue("");
+  });
+
+  it("keeps a cleared controlled input showing the parent's value", () => {
+    const handleChange = vi.fn();
+    render(<NumberInput aria-label="Quantity" value={5} onChange={handleChange} />);
+    const input = screen.getByRole("spinbutton");
+
+    fireEvent.change(input, { target: { value: "" } });
+
+    expect(handleChange).toHaveBeenCalledWith(undefined);
+    // The parent declined to move, so the display must not drift from it.
+    expect(input).toHaveValue("5");
+  });
+
   it("allows typing minus sign as partial input", () => {
     const handleChange = vi.fn();
     render(<NumberInput aria-label="Quantity" onChange={handleChange} />);
@@ -230,5 +256,68 @@ describe("NumberInput", () => {
     const input = screen.getByRole("spinbutton");
     fireEvent.change(input, { target: { value: "abc" } });
     expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it("does not move a controlled value on its own", async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<NumberInput aria-label="Quantity" value={5} step={1} onChange={handleChange} />);
+    const input = screen.getByRole("spinbutton");
+
+    // Typing, stepping and blurring all report; none of them may redraw the
+    // field, because the parent owns what it shows.
+    fireEvent.change(input, { target: { value: "8" } });
+    expect(handleChange).toHaveBeenLastCalledWith(8);
+    expect(input).toHaveValue("5");
+
+    await user.click(screen.getByRole("button", { name: /increment/i }));
+    expect(handleChange).toHaveBeenLastCalledWith(6);
+    expect(input).toHaveValue("5");
+
+    fireEvent.blur(input);
+    expect(input).toHaveValue("5");
+  });
+
+  it("clears a controlled field through the parent, never itself", () => {
+    const handleChange = vi.fn();
+    const { rerender } = render(
+      <NumberInput aria-label="Quantity" value={5} onChange={handleChange} />,
+    );
+    const input = screen.getByRole("spinbutton");
+
+    fireEvent.change(input, { target: { value: "" } });
+    expect(handleChange).toHaveBeenLastCalledWith(undefined);
+    expect(input).toHaveValue("5");
+
+    rerender(<NumberInput aria-label="Quantity" value="" onChange={handleChange} />);
+    expect(input).toHaveValue("");
+  });
+
+  it("reports an empty controlled field on blur without clearing itself", () => {
+    const handleChange = vi.fn();
+    render(<NumberInput aria-label="Quantity" value="" onChange={handleChange} />);
+    const input = screen.getByRole("spinbutton");
+
+    fireEvent.blur(input);
+    expect(handleChange).toHaveBeenCalledWith(undefined);
+    expect(input).toHaveValue("");
+  });
+
+  it("reports a controlled numeric value to assistive tech", () => {
+    render(<NumberInput aria-label="Quantity" value={42} onChange={vi.fn()} />);
+    // The value arrives as a number rather than display text, and still has to
+    // reach aria-valuenow.
+    expect(screen.getByRole("spinbutton")).toHaveAttribute("aria-valuenow", "42");
+  });
+
+  it("steps from zero when the field is empty", async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<NumberInput aria-label="Quantity" step={5} onChange={handleChange} />);
+
+    await user.click(screen.getByRole("button", { name: /increment/i }));
+    // Nothing typed, so the only sane base is zero - not NaN.
+    expect(handleChange).toHaveBeenCalledWith(5);
+    expect(screen.getByRole("spinbutton")).toHaveValue("5");
   });
 });

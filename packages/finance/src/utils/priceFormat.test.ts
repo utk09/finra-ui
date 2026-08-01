@@ -174,4 +174,62 @@ describe("segmentPrice", () => {
       { kind: "pips", text: "45" },
     ]);
   });
+
+  it("FX mode without bigFigureDigits puts the whole integer in the big figure", () => {
+    // `bigFigureDigits` is optional: omitting it means no fractional digits are
+    // promoted, so the big figure is just the integer and its point.
+    expect(segmentPrice("1.2345", { pipDigits: 2 })).toEqual([
+      { kind: "big-figure", text: "1." },
+      { kind: "pips", text: "23" },
+      { kind: "fractional-pip", text: "45" },
+    ]);
+  });
+
+  it("FX mode omits an empty pip zone", () => {
+    expect(segmentPrice("1.", { bigFigureDigits: 2, pipDigits: 2 })).toEqual([
+      { kind: "big-figure", text: "1." },
+    ]);
+  });
+
+  it("omits the integer segment for a bare fraction", () => {
+    expect(segmentPrice(".25", 2)).toEqual([
+      { kind: "separator", text: "." },
+      { kind: "primary", text: "25" },
+    ]);
+  });
+
+  it("treats an omitted primaryPrecision as none", () => {
+    // Every fractional digit is then a precision digit - the "no primary zone"
+    // reading, not a crash on undefined.
+    expect(segmentPrice("1.2345", {})).toEqual([
+      { kind: "integer", text: "1" },
+      { kind: "separator", text: "." },
+      { kind: "precision", text: "2345" },
+    ]);
+  });
+});
+
+describe("default precision by format", () => {
+  // `precision` is optional everywhere; these are the values a caller gets when
+  // they omit it, so they are part of the public contract.
+  it("formats percent to 3 decimals", () => {
+    expect(formatPrice(4.125, { format: "percent" })).toBe("4.125%");
+    expect(formatPrice(4.1, { format: "percent" })).toBe("4.100%");
+  });
+
+  it("formats basis points to 2 decimals", () => {
+    expect(formatPrice(15, { format: "basis-points" })).toBe("15.00 bp");
+    expect(formatPrice(2.5, { format: "basis-points" })).toBe("2.50 bp");
+  });
+
+  it("still honours an explicit precision over the default", () => {
+    expect(formatPrice(4.125, { format: "percent", precision: 1 })).toBe("4.1%");
+    expect(formatPrice(15, { format: "basis-points", precision: 0 })).toBe("15 bp");
+  });
+
+  it("derives the default tick from the same precision", () => {
+    // percent → 3 decimals → 0.001 tick; basis-points → 2 → 0.01.
+    expect(stepPrice(4.125, 1, { format: "percent" })).toBeCloseTo(4.126, 6);
+    expect(stepPrice(15, 1, { format: "basis-points" })).toBeCloseTo(15.01, 6);
+  });
 });

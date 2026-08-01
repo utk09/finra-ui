@@ -43,7 +43,7 @@ describe("groupOptions", () => {
   });
 });
 
-//  Keyboard resolver — mirrors the original ComboBoxBase switch branch-for-branch
+//  Keyboard resolver - mirrors the original ComboBoxBase switch branch-for-branch
 
 /** Sensible open-with-options default; override per test. */
 function ctx(overrides: Partial<ComboBoxKeyContext> = {}): ComboBoxKeyContext {
@@ -438,7 +438,7 @@ describe("nextActivePillAfterRemoval", () => {
   });
 });
 
-//  Flattening — must match the rendered listbox order
+//  Flattening - must match the rendered listbox order
 
 describe("flattenOptions", () => {
   it("orders favourites, then group non-favourites, then ungrouped non-favourites", () => {

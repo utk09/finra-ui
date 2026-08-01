@@ -116,7 +116,10 @@ export interface DateTenorPickerClassNames {
   tenorTitle?: string;
   tenorGrid?: string;
   tenor?: string;
+  /** The roving keyboard highlight - transient, follows the arrow keys. */
   tenorHighlighted?: string;
+  /** The committed tenor - persists between openings. Orthogonal to the highlight. */
+  tenorSelected?: string;
   tenorDisabled?: string;
   resolvedDate?: string;
   modeIndicator?: string;
@@ -715,31 +718,40 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
                 </div>
               ) : null}
               <div className={cn?.tenorGrid}>
-                {tenorMeta.map((meta, index) => (
-                  <button
-                    key={meta.tenor}
-                    type="button"
-                    role="option"
-                    id={optionId(index)}
-                    aria-selected={index === highlight || undefined}
-                    aria-disabled={meta.disabled || undefined}
-                    disabled={meta.disabled}
-                    className={
-                      [
-                        cn?.tenor,
-                        index === highlight && cn?.tenorHighlighted,
-                        meta.disabled && cn?.tenorDisabled,
-                      ]
-                        .filter(Boolean)
-                        .join(" ") || undefined
-                    }
-                    onMouseDown={(event) => {
-                      event.preventDefault();
-                      selectTenor(index);
-                    }}>
-                    {meta.tenor}
-                  </button>
-                ))}
+                {tenorMeta.map((meta, index) => {
+                  const isSelected = meta.tenor === currentValue?.tenor;
+                  return (
+                    <button
+                      key={meta.tenor}
+                      type="button"
+                      role="option"
+                      id={optionId(index)}
+                      // The roving highlight is carried by aria-activedescendant
+                      // on the input; aria-selected is reserved for the committed
+                      // value, as in every other picker here. Reusing it for the
+                      // highlight announces an option as chosen before Enter, and
+                      // leaves the real value unannounced when the list reopens.
+                      aria-selected={isSelected}
+                      aria-disabled={meta.disabled || undefined}
+                      disabled={meta.disabled}
+                      className={
+                        [
+                          cn?.tenor,
+                          index === highlight && cn?.tenorHighlighted,
+                          isSelected && cn?.tenorSelected,
+                          meta.disabled && cn?.tenorDisabled,
+                        ]
+                          .filter(Boolean)
+                          .join(" ") || undefined
+                      }
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                        selectTenor(index);
+                      }}>
+                      {meta.tenor}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

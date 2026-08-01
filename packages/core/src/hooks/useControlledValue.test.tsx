@@ -31,7 +31,7 @@ describe("useControlledValue", () => {
 
     act(() => result.current[1]("b"));
 
-    // parent owns the value — internal value does not change
+    // parent owns the value - internal value does not change
     expect(result.current[0]).toBe("controlled");
     expect(onChange).toHaveBeenCalledWith("b");
   });

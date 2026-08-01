@@ -168,6 +168,41 @@ describe("Dialog", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
+  it("respects preventDefault on the close button's onClick", () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent>
+          <DialogClose onClick={(event) => event.preventDefault()}>Close</DialogClose>
+        </DialogContent>
+      </Dialog>,
+    );
+
+    // A consumer confirming an unsaved-changes prompt needs to be able to stop
+    // the dismissal, not just be told about it.
+    fireEvent.click(screen.getByText("Close"));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
+  it("supports asChild on the close button", () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent>
+          <DialogClose asChild>
+            <a href="#done">Done</a>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>,
+    );
+
+    const link = screen.getByRole("link", { name: "Done" });
+    // asChild must not stamp type="button" onto an element that has no such
+    // attribute - the slot renders the consumer's tag, not a button.
+    expect(link).not.toHaveAttribute("type");
+
+    fireEvent.click(link);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
   it("throws when a part is used outside a Dialog", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     expect(() => render(<DialogTrigger>x</DialogTrigger>)).toThrow(/within a <Dialog>/);

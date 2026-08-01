@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -15,7 +15,7 @@ function setup(props: React.ComponentProps<typeof AmountInputBase> = {}) {
   return { onChange, input };
 }
 
-describe("AmountInputBase — shorthand", () => {
+describe("AmountInputBase - shorthand", () => {
   it.each([
     ["1.23M", 1_230_000, "1.23M"],
     ["10m", 10_000_000, "10M"],
@@ -74,7 +74,7 @@ describe("AmountInputBase — shorthand", () => {
   });
 });
 
-describe("AmountInputBase — focus and blur display", () => {
+describe("AmountInputBase - focus and blur display", () => {
   it("shows full digits on focus and the formatted value on blur", async () => {
     const user = userEvent.setup();
     const { input } = setup({ defaultValue: 1_230_000 });
@@ -116,7 +116,7 @@ describe("AmountInputBase — focus and blur display", () => {
   });
 });
 
-describe("AmountInputBase — stepping", () => {
+describe("AmountInputBase - stepping", () => {
   it("steps by the step prop on arrow keys", async () => {
     const user = userEvent.setup();
     const onTick = vi.fn();
@@ -227,7 +227,7 @@ describe("AmountInputBase — stepping", () => {
   });
 });
 
-describe("AmountInputBase — validation and reverting", () => {
+describe("AmountInputBase - validation and reverting", () => {
   it("reverts unparseable text on blur", async () => {
     const user = userEvent.setup();
     const { onChange, input } = setup({ defaultValue: 5_000 });
@@ -314,7 +314,7 @@ describe("AmountInputBase — validation and reverting", () => {
   });
 });
 
-describe("AmountInputBase — configuration", () => {
+describe("AmountInputBase - configuration", () => {
   it("accepts consumer suffixes alongside the defaults", async () => {
     const user = userEvent.setup();
     const { onChange, input } = setup({ suffixes: { L: 5, Cr: 7 } });
@@ -396,7 +396,7 @@ describe("AmountInputBase — configuration", () => {
   });
 });
 
-describe("AmountInputBase — controlled, disabled, read-only", () => {
+describe("AmountInputBase - controlled, disabled, read-only", () => {
   it("follows a controlled value while unfocused", () => {
     const { rerender } = render(<AmountInputBase aria-label="Amount" {...EN} value={1_000} />);
     const input = screen.getByRole("spinbutton", { name: "Amount" });
@@ -473,9 +473,23 @@ describe("AmountInputBase — controlled, disabled, read-only", () => {
     await user.type(input, "5");
     expect(onChange).not.toHaveBeenCalled();
   });
+
+  it("ignores a programmatic change while disabled or read-only", () => {
+    for (const state of [{ disabled: true }, { readOnly: true }]) {
+      const onParse = vi.fn();
+      const { input } = setup({ defaultValue: 1_000, onParse, ...state });
+
+      // The DOM refuses a typed change either way, but autofill and IME can
+      // still drive one, so the handler guards rather than trusting the flag.
+      fireEvent.change(input, { target: { value: "7m" } });
+      expect(input).toHaveValue("1,000");
+      expect(onParse).not.toHaveBeenCalled();
+      cleanup();
+    }
+  });
 });
 
-describe("AmountInputBase — consumer event handlers", () => {
+describe("AmountInputBase - consumer event handlers", () => {
   it("forwards onKeyDown for keys the keymap does not bind", async () => {
     const user = userEvent.setup();
     const onKeyDown = vi.fn();
@@ -547,7 +561,7 @@ describe("AmountInputBase — consumer event handlers", () => {
   });
 });
 
-describe("AmountInputBase — accessibility and imperative handle", () => {
+describe("AmountInputBase - accessibility and imperative handle", () => {
   it("exposes the canonical value and bounds to assistive tech", () => {
     const { input } = setup({ defaultValue: 1_230_000, min: 0, max: 5_000_000, currency: "USD" });
 
@@ -583,5 +597,103 @@ describe("AmountInputBase — accessibility and imperative handle", () => {
 
     act(() => ref.current?.focus());
     expect(input).toHaveFocus();
+  });
+
+  it("steps down, treats zero as one, and selects through the ref", () => {
+    const ref = createRef<AmountInputHandle>();
+    const onChange = vi.fn();
+    render(
+      <AmountInputBase
+        aria-label="Amount"
+        {...EN}
+        ref={ref}
+        defaultValue={1_000}
+        step={500}
+        onChange={onChange}
+      />,
+    );
+    const input = screen.getByRole("spinbutton", { name: "Amount" }) as HTMLInputElement;
+
+    act(() => ref.current?.step(-3));
+    expect(onChange).toHaveBeenLastCalledWith(-500);
+
+    // A zero step is a caller's bug, not a request to do nothing; one step is
+    // the least surprising reading.
+    act(() => ref.current?.step(0));
+    expect(onChange).toHaveBeenLastCalledWith(0);
+
+    act(() => ref.current?.select());
+    expect(input.selectionStart).toBe(0);
+    expect(input.selectionEnd).toBe(input.value.length);
+  });
+
+  it("drives a named increment through the ref", () => {
+    const ref = createRef<AmountInputHandle>();
+    const onChange = vi.fn();
+    render(
+      <AmountInputBase
+        aria-label="Amount"
+        {...EN}
+        ref={ref}
+        defaultValue={1_000_000}
+        onChange={onChange}
+      />,
+    );
+
+    // `step()` can only move by the step prop; `increment()` is the seam for a
+    // desk's own rule - here, doubling.
+    act(() => ref.current?.increment({ type: "custom", apply: (v) => v * 2 }, 1));
+    expect(onChange).toHaveBeenLastCalledWith(2_000_000);
+  });
+
+  it("steps from zero when the field is empty", async () => {
+    const user = userEvent.setup();
+    const { onChange, input } = setup({ step: 250 });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+
+    // Nothing typed and nothing committed, so the only sane base is zero - not
+    // NaN, and not a refusal to move.
+    expect(onChange).toHaveBeenLastCalledWith(250);
+  });
+
+  it("steps from the last commit when the typed text is unparseable", async () => {
+    const user = userEvent.setup();
+    const { onChange, input } = setup({ defaultValue: 1_000, step: 500 });
+
+    await user.click(input);
+    await user.clear(input);
+    await user.type(input, "abc");
+    await user.keyboard("{ArrowUp}");
+
+    // The edit cannot be stepped from, so the committed value is the fallback.
+    expect(onChange).toHaveBeenLastCalledWith(1_500);
+  });
+
+  it("keeps a live edit when the parent changes the value underneath it", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<AmountInputBase aria-label="Amount" {...EN} value={1_000} />);
+    const input = screen.getByRole("spinbutton", { name: "Amount" });
+
+    await user.click(input);
+    await user.clear(input);
+    await user.type(input, "7m");
+
+    // A genuinely different value arriving mid-edit still must not overwrite
+    // what the user is typing - only a commit re-derives the display.
+    rerender(<AmountInputBase aria-label="Amount" {...EN} value={9_999} />);
+    expect(input).toHaveValue("7m");
+  });
+
+  it("falls back to whole units for a currency the runtime rejects", async () => {
+    const user = userEvent.setup();
+    // Not a well-formed ISO code, so Intl throws and the precision lookup has
+    // nothing to report. The field must degrade rather than break.
+    const { onChange, input } = setup({ defaultValue: 1_000, step: 0.5, currency: "XX" });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+    expect(onChange).toHaveBeenLastCalledWith(1_000.5);
   });
 });

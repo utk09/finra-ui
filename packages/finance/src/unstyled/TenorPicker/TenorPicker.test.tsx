@@ -230,8 +230,12 @@ describe("TenorPickerBase", () => {
 
   it("exposes an imperative handle", async () => {
     const ref = createRef<TenorPickerHandle>();
-    const { onChange } = setup({ ref, defaultValue: "3M" });
+    const { onChange, input } = setup({ ref, defaultValue: "3M" });
     expect(ref.current?.getValue()).toBe("3M");
+
+    act(() => ref.current?.focus());
+    expect(input).toHaveFocus();
+
     // clear() commits through component state, so React must flush it.
     act(() => ref.current?.clear());
     expect(onChange).toHaveBeenCalledWith(null);
@@ -314,9 +318,164 @@ describe("TenorPickerBase", () => {
     expect(screen.queryByRole("group")).not.toBeInTheDocument();
     expect(screen.getAllByRole("option")).toHaveLength(3);
   });
+
+  it("distinguishes a malformed tenor from an out-of-range one", async () => {
+    const user = userEvent.setup();
+    const onInvalid = vi.fn();
+    const { input } = setup({ onInvalid });
+
+    // "0M" parses cleanly and is still not a tenor. Collapsing it into
+    // "unrecognized" would tell the user their typing was wrong rather than
+    // their number.
+    await user.type(input, "0M");
+    await user.keyboard("{Enter}");
+    expect(onInvalid).toHaveBeenCalledWith("invalid-value");
+  });
+
+  it("leaves ArrowUp and Escape alone while closed", async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    const { onChange, input } = setup({ onClose, defaultValue: "3M" });
+
+    input.focus();
+    await user.keyboard("{ArrowUp}");
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+
+    // Escape on a closed field belongs to whatever surrounds this one - a
+    // dialog to dismiss, a form to abandon.
+    await user.keyboard("{Escape}");
+    expect(onClose).not.toHaveBeenCalled();
+    expect(onChange).not.toHaveBeenCalled();
+    expect(input).toHaveValue("3M");
+  });
+
+  it("does not blur-commit when the text was never edited", async () => {
+    const user = userEvent.setup();
+    const { onChange, input } = setup({ defaultValue: "3M" });
+
+    await user.click(input);
+    await user.tab();
+
+    // Opening and leaving is not an edit, so there is nothing to commit and
+    // onChange must stay silent.
+    expect(onChange).not.toHaveBeenCalled();
+    expect(input).toHaveValue("3M");
+  });
+
+  it("does not blur-commit when focus moves into the popup", async () => {
+    const user = userEvent.setup();
+    const { onChange, input } = setup();
+
+    await user.click(input);
+    await user.type(input, "6m");
+    fireEvent.blur(input, { relatedTarget: screen.getByRole("listbox") });
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(input).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("does not commit a highlighted option that has since been disabled", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const { rerender } = render(
+      <TenorPickerBase aria-label="Tenor" tenors={["1M", "2M", "3M"]} onChange={onChange} />,
+    );
+    const input = screen.getByRole("combobox", { name: "Tenor" });
+
+    await user.click(input);
+    await user.keyboard("{ArrowDown}");
+    expect(input.getAttribute("aria-activedescendant")).toBe(
+      screen.getByRole("option", { name: /1M/ }).id,
+    );
+
+    // Roving skips disabled options, but a list that changes under a standing
+    // highlight can strand it on one anyway.
+    rerender(
+      <TenorPickerBase
+        aria-label="Tenor"
+        tenors={["1M", "2M", "3M"]}
+        disabledTenors={["1M"]}
+        onChange={onChange}
+      />,
+    );
+    await user.keyboard("{Enter}");
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("announces open and close once each, however often it is asked", () => {
+    const ref = createRef<TenorPickerHandle>();
+    const onOpen = vi.fn();
+    const onClose = vi.fn();
+    setup({ ref, onOpen, onClose });
+
+    act(() => ref.current?.open());
+    act(() => ref.current?.open());
+    expect(onOpen).toHaveBeenCalledTimes(1);
+
+    act(() => ref.current?.close());
+    act(() => ref.current?.close());
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("refuses the imperative open, and a programmatic change, while readOnly", () => {
+    const ref = createRef<TenorPickerHandle>();
+    const { onChange, input } = setup({ ref, readOnly: true, defaultValue: "3M" });
+
+    act(() => ref.current?.open());
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+
+    // readOnly stops typing, but autofill and IME can still drive a change
+    // event, so the handler guards rather than trusting the DOM.
+    fireEvent.change(input, { target: { value: "6M" } });
+    expect(input).toHaveValue("3M");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("refuses the imperative open while disabled", () => {
+    const ref = createRef<TenorPickerHandle>();
+    setup({ ref, disabled: true });
+
+    act(() => ref.current?.open());
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+  });
+
+  it("marks the indicator open with the supplied class", async () => {
+    const user = userEvent.setup();
+    const { input } = setup({
+      renderIndicator: (open) => (open ? "up" : "down"),
+      classNames: { indicator: "ind", indicatorOpen: "ind-open" },
+    });
+
+    expect(screen.getByText("down", { selector: ".ind" })).toBeInTheDocument();
+    await user.click(input);
+    expect(screen.getByText("up", { selector: ".ind.ind-open" })).toBeInTheDocument();
+  });
+
+  it("leaves the indicator unclassed when no classNames are supplied", () => {
+    setup({ renderIndicator: (open) => (open ? "up" : "down") });
+    // An empty join must collapse to no attribute at all rather than class="".
+    expect(screen.getByText("down")).toBeInTheDocument();
+    expect(screen.queryByText("down", { selector: "[class]" })).toBeNull();
+  });
+
+  it("marks the committed option with a check", async () => {
+    const user = userEvent.setup();
+    const { input } = setup({
+      tenors: ["1M", "3M"],
+      defaultValue: "3M",
+      renderCheck: () => <span>check</span>,
+    });
+
+    await user.click(input);
+    const checked = screen.getByRole("option", { name: /3M/ });
+    expect(checked).toHaveAttribute("aria-selected", "true");
+    expect(within(checked).getByText("check")).toBeInTheDocument();
+    expect(within(screen.getByRole("option", { name: /1M/ })).queryByText("check")).toBeNull();
+  });
 });
 
-describe("TenorPickerBase — display stays tied to the committed value", () => {
+describe("TenorPickerBase - display stays tied to the committed value", () => {
   /** A parent that only ever accepts 3M, holding its own value. */
   function Controlled() {
     const [value, setValue] = useState<string | null>("3M");

@@ -277,7 +277,7 @@ export function parseAmount(input: string, options: AmountParseOptions = {}): Am
   if (decimalSeparator !== ".") text = text.split(decimalSeparator).join(".");
 
   const shape = /^([0-9]*\.?[0-9]*)(.*)$/.exec(text);
-  /* c8 ignore next -- the pattern's groups are both optional, so it cannot fail */
+  /* istanbul ignore next -- the pattern's groups are both optional, so it cannot fail */
   if (!shape) return fail("invalid-number");
 
   const [, digits, remainder] = shape;

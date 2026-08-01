@@ -80,6 +80,18 @@ describe("buildTenorGroups", () => {
     expect(groups.map((g) => g.id)).toEqual(["years", "months", "weeks"]);
   });
 
+  it("hides a group that the order still lists", () => {
+    // The case above removes groups by omitting them from `groupOrder`, so it
+    // would pass even if `hiddenGroups` did nothing. Here the id is in the
+    // order and must be dropped by `hiddenGroups` alone.
+    const groups = buildTenorGroups({
+      tenors: DEFAULT_STANDARD_TENORS,
+      hiddenGroups: ["months"],
+      groupOrder: ["years", "months", "weeks"],
+    });
+    expect(groups.map((g) => g.id)).toEqual(["years", "weeks"]);
+  });
+
   it("applies group label overrides", () => {
     const groups = buildTenorGroups({
       tenors: ["1M"],

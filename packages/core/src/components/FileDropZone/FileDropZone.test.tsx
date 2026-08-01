@@ -206,7 +206,7 @@ describe("FileDropZone", () => {
   });
 });
 
-describe("FileDropZone — consumer event handlers", () => {
+describe("FileDropZone - consumer event handlers", () => {
   it("still receives dropped files when a consumer passes onDrop", () => {
     const onChange = vi.fn();
     const onDrop = vi.fn();
@@ -316,6 +316,40 @@ describe("FileDropZone — consumer event handlers", () => {
     await user.click(screen.getByRole("button"));
 
     // Click and keydown keep the conventional meaning of preventDefault.
+    expect(clickSpy).not.toHaveBeenCalled();
+  });
+
+  it("lets a consumer suppress the file picker with preventDefault on keydown", async () => {
+    const user = userEvent.setup();
+    render(
+      <FileDropZone
+        aria-label="Upload"
+        onKeyDown={(event) => {
+          event.preventDefault();
+        }}
+      />,
+    );
+    const fileInput = screen.getByTestId("file-drop-zone-input") as HTMLInputElement;
+    const clickSpy = vi.spyOn(fileInput, "click");
+
+    screen.getByRole("button").focus();
+    await user.keyboard("{Enter}");
+    await user.keyboard(" ");
+
+    expect(clickSpy).not.toHaveBeenCalled();
+  });
+
+  it("does not open the picker from the keyboard while disabled", () => {
+    const onKeyDown = vi.fn();
+    render(<FileDropZone aria-label="Upload" disabled onKeyDown={onKeyDown} />);
+    const fileInput = screen.getByTestId("file-drop-zone-input") as HTMLInputElement;
+    const clickSpy = vi.spyOn(fileInput, "click");
+
+    fireEvent.keyDown(screen.getByRole("button"), { key: "Enter" });
+
+    // The consumer still hears the key - only the component's own reaction is
+    // suppressed, so a disabled zone can still be instrumented.
+    expect(onKeyDown).toHaveBeenCalled();
     expect(clickSpy).not.toHaveBeenCalled();
   });
 });

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -237,6 +237,109 @@ describe("Menu", () => {
 
     fireEvent.keyDown(menu, { key: " " }); // Space -> no typeahead
     expect(screen.getByRole("menuitem", { name: "Edit" })).toHaveFocus();
+  });
+
+  it("lets a consumer claim a menu key with preventDefault", async () => {
+    const user = userEvent.setup();
+    render(
+      <Menu>
+        <MenuTrigger>Actions</MenuTrigger>
+        <MenuContent
+          aria-label="Actions"
+          onKeyDown={(event) => {
+            event.preventDefault();
+          }}>
+          <MenuItem>Edit</MenuItem>
+          <MenuItem>Duplicate</MenuItem>
+        </MenuContent>
+      </Menu>,
+    );
+    await user.click(screen.getByRole("button", { name: "Actions" }));
+    const menu = screen.getByRole("menu");
+    expect(screen.getByRole("menuitem", { name: "Edit" })).toHaveFocus();
+
+    // The consumer ran first and claimed the gesture, so neither roving focus
+    // nor typeahead may also act on it.
+    fireEvent.keyDown(menu, { key: "ArrowDown" });
+    expect(screen.getByRole("menuitem", { name: "Edit" })).toHaveFocus();
+
+    fireEvent.keyDown(menu, { key: "d" });
+    expect(screen.getByRole("menuitem", { name: "Edit" })).toHaveFocus();
+
+    // Dismissal is the layer's concern, not the content's keydown, so Escape
+    // still closes. A consumer cannot trap the user inside the menu this way.
+    fireEvent.keyDown(menu, { key: "Escape" });
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+  });
+
+  it("clears the typeahead buffer after the timeout", () => {
+    vi.useFakeTimers();
+    try {
+      render(
+        <Menu>
+          <MenuTrigger>Actions</MenuTrigger>
+          <MenuContent aria-label="Actions">
+            <MenuItem>Edit</MenuItem>
+            <MenuItem>Duplicate</MenuItem>
+            <MenuItem>Delete</MenuItem>
+          </MenuContent>
+        </Menu>,
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Actions" }));
+      const menu = screen.getByRole("menu");
+
+      fireEvent.keyDown(menu, { key: "d" });
+      expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus();
+
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
+
+      // Buffer reset, so "e" starts a fresh search. Without the reset the
+      // query would be "de" and land on Delete instead.
+      fireEvent.keyDown(menu, { key: "e" });
+      expect(screen.getByRole("menuitem", { name: "Edit" })).toHaveFocus();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("leaves focus alone when typeahead matches nothing", async () => {
+    const user = userEvent.setup();
+    renderMenu();
+    await user.click(trigger());
+    const menu = screen.getByRole("menu");
+
+    fireEvent.keyDown(menu, { key: "z" });
+    // A dead-end query must not move focus or close the menu - the user is
+    // mid-word, not asking for anything.
+    expect(item("Edit")).toHaveFocus();
+    expect(screen.getByRole("menu")).toBeInTheDocument();
+  });
+
+  it("supports asChild on a menu item", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    render(
+      <Menu defaultOpen>
+        <MenuTrigger>Actions</MenuTrigger>
+        <MenuContent aria-label="Actions">
+          <MenuItem asChild onSelect={onSelect}>
+            <a href="#edit">Edit</a>
+          </MenuItem>
+        </MenuContent>
+      </Menu>,
+    );
+
+    const link = screen.getByRole("menuitem", { name: "Edit" });
+    // asChild renders the consumer's tag, so type="button" must not be stamped
+    // onto an anchor.
+    expect(link.tagName).toBe("A");
+    expect(link).not.toHaveAttribute("type");
+
+    await user.click(link);
+    expect(onSelect).toHaveBeenCalled();
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
   });
 
   it("throws when a part is used outside a Menu", () => {

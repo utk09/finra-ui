@@ -614,12 +614,127 @@ describe("DateTenorInput", () => {
   //  Input change when disabled/readOnly
 
   it("does not process input change when disabled", () => {
-    render(<DateTenorInput dateAriaLabel="Date" disabled dateFormat="YYYY-MM-DD" />);
+    const onChange = vi.fn();
+    render(
+      <DateTenorInput dateAriaLabel="Date" disabled dateFormat="YYYY-MM-DD" onChange={onChange} />,
+    );
 
     const input = screen.getByLabelText("Date");
-    // Disabled inputs don't fire change events normally,
-    // but we confirm the input is disabled
     expect(input).toBeDisabled();
+    // The DOM refuses a typed change, but autofill and IME can still drive one,
+    // so the handler has to guard rather than trust the attribute.
+    fireEvent.change(input, { target: { value: "2026-06-11" } });
+    expect(input).toHaveValue("");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("does not process input change when readOnly", () => {
+    const onChange = vi.fn();
+    render(
+      <DateTenorInput dateAriaLabel="Date" readOnly dateFormat="YYYY-MM-DD" onChange={onChange} />,
+    );
+
+    const input = screen.getByLabelText("Date");
+    fireEvent.change(input, { target: { value: "2026-06-11" } });
+    expect(input).toHaveValue("");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("lets editing and navigation keys through while blocking the rest", () => {
+    render(<DateTenorInput dateAriaLabel="Date" dateFormat="YYYY-MM-DD" />);
+    const input = screen.getByLabelText("Date");
+
+    // The field masks itself to digits and separators, so the keys that move
+    // the caret or delete must survive that filter untouched.
+    for (const key of ["Backspace", "Delete", "ArrowLeft", "Home", "End", "Tab"]) {
+      expect(fireEvent.keyDown(input, { key })).toBe(true);
+    }
+    // A letter has no place in a date field and is swallowed.
+    expect(fireEvent.keyDown(input, { key: "a" })).toBe(false);
+  });
+
+  it("clears the text when a controlled date goes back to null", () => {
+    const { rerender } = render(
+      <DateTenorInput
+        dateAriaLabel="Date"
+        dateValue={new Date(2026, 5, 11)}
+        dateFormat="YYYY-MM-DD"
+      />,
+    );
+    expect(screen.getByDisplayValue("2026-06-11")).toBeInTheDocument();
+
+    rerender(<DateTenorInput dateAriaLabel="Date" dateValue={null} dateFormat="YYYY-MM-DD" />);
+    expect(screen.getByLabelText("Date")).toHaveValue("");
+  });
+
+  it("writes the picked date into the text while uncontrolled", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <DateTenorInput
+        dateAriaLabel="Date"
+        referenceDate={REF_DATE}
+        dateFormat="YYYY-MM-DD"
+        onChange={onChange}
+      />,
+    );
+
+    // With no value to open on, the calendar rests on the current month, so the
+    // day to click has to be derived rather than hard-coded.
+    const today = new Date();
+    const target = new Date(today.getFullYear(), today.getMonth(), 15);
+    const label = target.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+    const expected = `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, "0")}-15`;
+
+    await user.click(screen.getByLabelText("Date"));
+    fireEvent.mouseDown(screen.getByLabelText(label));
+
+    // No parent is holding the value, so the field has to show the pick itself.
+    expect(screen.getByLabelText("Date")).toHaveValue(expected);
+    expect(onChange).toHaveBeenCalled();
+  });
+
+  it("leaves the text alone on a calendar pick while controlled", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <DateTenorInput
+        dateAriaLabel="Date"
+        dateValue={new Date(2026, 5, 11)}
+        dateFormat="YYYY-MM-DD"
+        onChange={onChange}
+      />,
+    );
+
+    await user.click(screen.getByLabelText("Date"));
+    await user.click(screen.getByLabelText("June 20, 2026"));
+
+    // The pick is reported; the visible text stays what the parent last said,
+    // so a declined selection never shows as accepted.
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ date: new Date(2026, 5, 20) }));
+    expect(screen.getByLabelText("Date")).toHaveValue("2026-06-11");
+  });
+
+  it("anchors tenor resolution on today when no referenceDate is given", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(<DateTenorInput dateAriaLabel="Date" onChange={onChange} />);
+
+    await user.click(screen.getByLabelText("Date"));
+    fireEvent.mouseDown(screen.getByRole("option", { name: "3M" }));
+
+    const { date, tenor } = onChange.mock.calls[0][0];
+    expect(tenor).toBe("3M");
+    // Resolved off the real today rather than a fixed epoch, so it has to land
+    // exactly a quarter out - not in January 1970.
+    const today = new Date();
+    const months =
+      (date.getFullYear() - today.getFullYear()) * 12 + date.getMonth() - today.getMonth();
+    expect(months).toBe(3);
   });
 
   //  Calendar nav rendering via styled component
@@ -655,7 +770,7 @@ describe("DateTenorInput", () => {
   });
 });
 
-describe("DateTenorInput — display stays tied to the committed value", () => {
+describe("DateTenorInput - display stays tied to the committed value", () => {
   /** A parent that refuses every change, holding 11 Mar 2026. */
   function Declining() {
     const [date] = useState<Date | null>(REF_DATE);

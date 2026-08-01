@@ -130,6 +130,13 @@ describe("Input", () => {
     expect(screen.getByRole("textbox")).toHaveValue("");
   });
 
+  it("does not show clear button when given neither value nor defaultValue", () => {
+    render(<Input clearable />);
+    // An uncontrolled, untouched field has nothing to clear, so offering the
+    // button would be a dead control.
+    expect(screen.queryByRole("button", { name: /clear input/i })).not.toBeInTheDocument();
+  });
+
   it("does not show clear button when readOnly", () => {
     render(<Input clearable readOnly value="hello" onChange={vi.fn()} />);
     expect(screen.queryByRole("button", { name: /clear input/i })).not.toBeInTheDocument();

@@ -667,7 +667,7 @@ describe("DateInput", () => {
   });
 });
 
-describe("DateInput — display stays tied to the committed value", () => {
+describe("DateInput - display stays tied to the committed value", () => {
   /** A parent that refuses every change, holding 11 Mar 2026. */
   function Declining() {
     const [date] = useState<Date | null>(new Date(2026, 2, 11));
@@ -703,5 +703,20 @@ describe("DateInput — display stays tied to the committed value", () => {
     // the application never accepted - and unlike typed text, there is nothing
     // here for the user to "finish correcting".
     await waitFor(() => expect(input).toHaveValue("2026-03-11"));
+  });
+
+  it("ignores a programmatic change while disabled or read-only", () => {
+    for (const state of [{ disabled: true }, { readOnly: true }]) {
+      const onChange = vi.fn();
+      const { unmount } = render(<DateInput aria-label="Date" onChange={onChange} {...state} />);
+      const input = screen.getByLabelText("Date");
+
+      // The DOM refuses a typed change either way, but autofill and IME can
+      // still drive one, so the handler guards rather than trusting the flag.
+      fireEvent.change(input, { target: { value: "2026-03-11" } });
+      expect(input).toHaveValue("");
+      expect(onChange).not.toHaveBeenCalled();
+      unmount();
+    }
   });
 });

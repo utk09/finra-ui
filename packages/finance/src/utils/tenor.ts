@@ -109,6 +109,7 @@ export function resolveTenor(tenor: string, referenceDate: Date): Date | null {
       return addMonths(referenceDate, parsed.value);
     case "Y":
       return addYears(referenceDate, parsed.value);
+    /* istanbul ignore next -- TENOR_REGEX only admits [DWMY], so no input reaches this */
     default:
       return null;
   }

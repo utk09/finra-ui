@@ -14,7 +14,7 @@ function reducer(state: CounterState, action: CounterAction): CounterState {
     case "add":
       return { count: state.count + action.by };
     case "noop":
-      return state; // same reference — should not notify
+      return state; // same reference - should not notify
     default:
       return state;
   }

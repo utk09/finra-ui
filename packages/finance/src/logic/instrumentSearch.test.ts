@@ -37,6 +37,24 @@ const flush = () => Promise.resolve();
 describe("instrumentSearchReducer", () => {
   const initial = createInstrumentSearchState<CurrencyPairLike>();
 
+  it("returns the same state object for an action it does not know", () => {
+    const loaded: InstrumentSearchState<CurrencyPairLike> = {
+      ...initial,
+      status: "success",
+      query: "gbp",
+      resultsQuery: "gbp",
+      results: [GBPUSD],
+    };
+
+    // The reducer is exported and the action union will grow. An unhandled
+    // action must leave the results alone rather than dropping them, and must
+    // return the same object so a subscriber does not re-render for nothing.
+    const unknown = { type: "teleport" } as unknown as Parameters<
+      typeof instrumentSearchReducer<CurrencyPairLike>
+    >[1];
+    expect(instrumentSearchReducer(loaded, unknown)).toBe(loaded);
+  });
+
   it("keeps the previous results while loading, so the list does not flash empty", () => {
     const loaded: InstrumentSearchState<CurrencyPairLike> = {
       ...initial,
@@ -537,6 +555,43 @@ describe("createInstrumentSearch", () => {
     controller.reset();
     vi.advanceTimersByTime(1000);
     expect(search).toHaveBeenCalledTimes(1);
+  });
+
+  it("destroy ignores a rejection that arrives afterwards", async () => {
+    // The mirror of the resolve case: a provider that fails late must not
+    // push an error state into a controller nobody is listening to.
+    const pending = deferred<readonly CurrencyPairLike[]>();
+    const search = vi.fn(() => pending.promise);
+    const controller = createInstrumentSearch({ provider: stubProvider(search), debounceMs: 0 });
+
+    controller.search("gbp");
+    controller.destroy();
+
+    pending.reject(new Error("network down"));
+    await flush();
+
+    const state = controller.store.getState();
+    expect(state.status).toBe("loading");
+    expect(state.error).toBeNull();
+  });
+
+  it("destroy is idempotent", async () => {
+    const pending = deferred<readonly CurrencyPairLike[]>();
+    const controller = createInstrumentSearch({
+      provider: stubProvider(() => pending.promise),
+      debounceMs: 0,
+    });
+
+    controller.search("gbp");
+    controller.destroy();
+    expect(() => {
+      controller.destroy();
+      controller.destroy();
+    }).not.toThrow();
+
+    pending.resolve([GBPUSD]);
+    await flush();
+    expect(controller.store.getState().status).toBe("loading");
   });
 
   it("notifies subscribers on each real transition", async () => {

@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -505,6 +505,105 @@ describe("CurrencyPairPickerBase - favourites and recents", () => {
     expect(screen.queryByRole("group", { name: "Favourites" })).not.toBeInTheDocument();
     expect(screen.queryByRole("group", { name: "Recent" })).not.toBeInTheDocument();
   });
+
+  it("un-favourites on a second Ctrl+D", async () => {
+    const onFavouriteChange = vi.fn();
+    const { input, user } = setup({ onFavouriteChange, defaultFavourites: ["GBPUSD"] });
+
+    // Favourites are lifted to the top, so the first row is the pinned one.
+    input.focus();
+    await user.keyboard("{ArrowDown}");
+    await user.keyboard("{Control>}d{/Control}");
+
+    expect(onFavouriteChange).toHaveBeenCalledWith("GBPUSD", false, []);
+    expect(screen.queryByRole("group", { name: "Favourites" })).not.toBeInTheDocument();
+  });
+
+  it("toggles a favourite from the star without selecting the row", async () => {
+    const onFavouriteChange = vi.fn();
+    const { input, user, onChange } = setup({
+      onFavouriteChange,
+      renderFavourite: (on) => (on ? "★" : "☆"),
+    });
+    await user.click(input);
+
+    // The star is a decorative span, so the row's single pointer handler has to
+    // hit-test it. Pressing it must read as "favourite", never as "select".
+    const option = screen.getByRole("option", { name: /GBP\/USD/ });
+    fireEvent.mouseDown(within(option).getByText("☆"));
+
+    expect(onFavouriteChange).toHaveBeenCalledWith("GBPUSD", true, ["GBPUSD"]);
+    expect(onChange).not.toHaveBeenCalled();
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+  });
+
+  it("ignores the star hit-test when favourites are off", async () => {
+    const onFavouriteChange = vi.fn();
+    const { input, user, onChange } = setup({
+      onFavouriteChange,
+      showFavourites: false,
+      renderFavourite: (on) => (on ? "★" : "☆"),
+    });
+    await user.click(input);
+
+    // No star is rendered at all, so the whole row selects.
+    const option = screen.getByRole("option", { name: /GBP\/USD/ });
+    expect(within(option).queryByText("☆")).not.toBeInTheDocument();
+    fireEvent.mouseDown(option);
+
+    expect(onFavouriteChange).not.toHaveBeenCalled();
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: "GBPUSD" }));
+  });
+
+  it("moves an existing recent to the front instead of duplicating it", async () => {
+    const onRecentsChange = vi.fn();
+    const { input, user } = setup({
+      defaultRecents: ["GBPUSD", "EURUSD"],
+      onRecentsChange,
+    });
+    await user.click(input);
+    await user.click(screen.getByRole("option", { name: /EUR\/USD/ }));
+
+    expect(onRecentsChange).toHaveBeenCalledWith(["EURUSD", "GBPUSD"]);
+  });
+
+  it("does not move a controlled favourites list on its own", async () => {
+    const onFavouriteChange = vi.fn();
+    const { input, user } = setup({ favourites: [], onFavouriteChange });
+
+    input.focus();
+    await user.keyboard("{ArrowDown}");
+    await user.keyboard("{Control>}d{/Control}");
+
+    // Same contract as a controlled `value`: the toggle is proposed, and the
+    // consumer decides whether it sticks.
+    expect(onFavouriteChange).toHaveBeenCalledWith("GBPUSD", true, ["GBPUSD"]);
+    expect(screen.queryByRole("group", { name: "Favourites" })).not.toBeInTheDocument();
+  });
+
+  it("does not move a controlled recents list on its own", async () => {
+    const onRecentsChange = vi.fn();
+    const { input, user } = setup({ recents: [], onRecentsChange });
+
+    await user.click(input);
+    await user.click(screen.getByRole("option", { name: /EUR\/USD/ }));
+
+    expect(onRecentsChange).toHaveBeenCalledWith(["EURUSD"]);
+    expect(screen.queryByRole("group", { name: "Recent" })).not.toBeInTheDocument();
+  });
+
+  it("ignores Ctrl+D with no row highlighted", async () => {
+    const onFavouriteChange = vi.fn();
+    const { input, user } = setup({ onFavouriteChange });
+
+    // Alt+ArrowDown opens without activating a row, so there is nothing to
+    // favourite and the chord must be a no-op rather than picking a default.
+    input.focus();
+    await user.keyboard("{Alt>}{ArrowDown}{/Alt}");
+    await user.keyboard("{Control>}d{/Control}");
+
+    expect(onFavouriteChange).not.toHaveBeenCalled();
+  });
 });
 
 describe("CurrencyPairPickerBase - badges", () => {
@@ -547,6 +646,215 @@ describe("CurrencyPairPickerBase - badges", () => {
     expect(screen.getByRole("option", { name: /GBP\/USD/ }).getAttribute("aria-label")).not.toMatch(
       /Deliverable/,
     );
+  });
+
+  it("takes a badge renderer without losing the accessible name", async () => {
+    const { input, user } = setup({ renderBadge: (badge) => `[${badge}]` });
+    await user.click(input);
+
+    expect(screen.getByText("[NDF]")).toBeInTheDocument();
+    // The badges are aria-hidden decoration; the name still carries the words,
+    // so a renderer cannot accidentally mute them for a screen reader.
+    expect(screen.getByRole("option", { name: /USD\/KRW.*NDF/ })).toBeInTheDocument();
+  });
+});
+
+describe("CurrencyPairPickerBase - option renderer", () => {
+  it("hands the renderer the pair and its state, and owns the row itself", async () => {
+    const seen: [string, boolean, boolean][] = [];
+    const { input, user, onChange } = setup({
+      defaultValue: "EURUSD",
+      defaultFavourites: ["GBPUSD"],
+      renderOption: (pair, state) => {
+        seen.push([pair.id, state.isSelected, state.isFavourite]);
+        return <span>{pair.id}</span>;
+      },
+    });
+    await user.click(input);
+
+    expect(seen).toContainEqual(["EURUSD", true, false]);
+    expect(seen).toContainEqual(["GBPUSD", false, true]);
+    // The default chrome is replaced wholesale, but the row stays an option and
+    // stays selectable - the renderer supplies content, not behaviour.
+    expect(screen.getByText("USDKRW")).toBeInTheDocument();
+    await user.click(screen.getByRole("option", { name: /GBP\/USD/ }));
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: "GBPUSD" }));
+  });
+
+  it("reports selectability so a renderer can style a restricted row", async () => {
+    const { input, user } = setup({
+      renderOption: (pair, state) => (
+        <span>{state.isSelectable ? pair.id : `${pair.id} (no)`}</span>
+      ),
+    });
+    await user.click(input);
+
+    expect(screen.getByText("RUBUSD (no)")).toBeInTheDocument();
+    expect(screen.getByText("GBPUSD")).toBeInTheDocument();
+  });
+});
+
+describe("CurrencyPairPickerBase - commit and focus", () => {
+  it("refuses to select an untradable row by pointer", async () => {
+    const onInvalid = vi.fn();
+    const { input, user, onChange } = setup({ onInvalid });
+    await user.click(input);
+    await user.click(screen.getByRole("option", { name: /RUB\/USD/ }));
+
+    // The keyboard route already skips untradable rows; the pointer can still
+    // reach one, so the rejection has to live in the selection path itself.
+    expect(onInvalid).toHaveBeenCalledWith("not-tradable");
+    expect(onChange).not.toHaveBeenCalled();
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+  });
+
+  it("commits emptied text as a cleared value", async () => {
+    const { input, user, onChange } = setup({ defaultValue: "GBPUSD" });
+
+    await user.clear(input);
+    await user.keyboard("{Enter}");
+
+    expect(onChange).toHaveBeenCalledWith(null);
+    expect(input).toHaveValue("");
+  });
+
+  it("commits typed text when focus leaves the picker", async () => {
+    const onChange = vi.fn();
+    render(
+      <>
+        <CurrencyPairPickerBase aria-label="Pair" pairs={PAIRS} onChange={onChange} />
+        <button type="button">after</button>
+      </>,
+    );
+    const user = userEvent.setup();
+    const input = screen.getByRole("combobox", { name: "Pair" });
+
+    await user.click(input);
+    await user.type(input, "eurusd");
+    fireEvent.blur(input, { relatedTarget: screen.getByRole("button", { name: "after" }) });
+
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: "EURUSD" }));
+  });
+
+  it("does not commit when focus only moves inside the control", async () => {
+    const { input, user, onChange } = setup({ renderIndicator: () => "chevron" });
+    await user.click(input);
+    await user.type(input, "eurusd");
+
+    // Reaching for the indicator is still working on the same field. Treating
+    // it as a blur-commit would fire onChange behind a click the user has not
+    // finished making.
+    fireEvent.blur(input, { relatedTarget: screen.getByText("chevron") });
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(input).toHaveValue("eurusd");
+  });
+
+  it("survives the list shrinking under a highlighted row", async () => {
+    const onChange = vi.fn();
+    const onFavouriteChange = vi.fn();
+    const { rerender } = render(
+      <CurrencyPairPickerBase
+        aria-label="Pair"
+        pairs={PAIRS}
+        onChange={onChange}
+        onFavouriteChange={onFavouriteChange}
+      />,
+    );
+    const user = userEvent.setup();
+    const input = screen.getByRole("combobox", { name: "Pair" });
+
+    input.focus();
+    await user.keyboard("{ArrowDown}{ArrowDown}{ArrowDown}");
+    expect(input.getAttribute("aria-activedescendant")).toBe(
+      screen.getByRole("option", { name: /USD\/KRW/ }).id,
+    );
+
+    // A live pair list can shrink under the user - a desk feed retiring an
+    // instrument mid-session. The highlight index outlives the row it named.
+    rerender(
+      <CurrencyPairPickerBase
+        aria-label="Pair"
+        pairs={[GBPUSD]}
+        onChange={onChange}
+        onFavouriteChange={onFavouriteChange}
+      />,
+    );
+
+    await user.keyboard("{Control>}d{/Control}");
+    await user.keyboard("{Enter}");
+
+    // Neither acts on a row that is no longer there, and neither throws.
+    expect(onFavouriteChange).not.toHaveBeenCalled();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("opens with an empty message when given neither pairs nor provider", async () => {
+    const user = userEvent.setup();
+    render(<CurrencyPairPickerBase aria-label="Pair" noOptionsMessage="No pairs" />);
+
+    await user.click(screen.getByRole("combobox", { name: "Pair" }));
+    expect(screen.getByText("No pairs")).toBeInTheDocument();
+  });
+});
+
+describe("CurrencyPairPickerBase - disabled and readOnly", () => {
+  it("stays shut and inert while readOnly", async () => {
+    const ref = createRef<CurrencyPairPickerHandle>();
+    const onChange = vi.fn();
+    render(
+      <CurrencyPairPickerBase
+        ref={ref}
+        aria-label="Pair"
+        pairs={PAIRS}
+        defaultValue="GBPUSD"
+        onChange={onChange}
+        readOnly
+      />,
+    );
+    const user = userEvent.setup();
+    const input = screen.getByRole("combobox", { name: "Pair" });
+
+    await user.click(input);
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+
+    input.focus();
+    await user.keyboard("{ArrowDown}");
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+
+    // The imperative handle is the one route that bypasses the pointer and key
+    // guards, so it needs its own refusal rather than relying on them.
+    act(() => ref.current?.open());
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+
+    // readOnly on the input stops typing, but not every change event comes from
+    // a keystroke - autofill and IME can drive one - so the handler guards too.
+    fireEvent.change(input, { target: { value: "EURUSD" } });
+    expect(input).toHaveValue("GBP/USD");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("stays shut and inert while disabled", () => {
+    const ref = createRef<CurrencyPairPickerHandle>();
+    const onChange = vi.fn();
+    render(
+      <CurrencyPairPickerBase
+        ref={ref}
+        aria-label="Pair"
+        pairs={PAIRS}
+        defaultValue="GBPUSD"
+        onChange={onChange}
+        disabled
+      />,
+    );
+    const input = screen.getByRole("combobox", { name: "Pair" });
+
+    act(() => ref.current?.open());
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "EURUSD" } });
+    expect(input).toHaveValue("GBP/USD");
+    expect(onChange).not.toHaveBeenCalled();
   });
 });
 
@@ -654,9 +962,191 @@ describe("CurrencyPairPickerBase - async provider", () => {
     expect(input).not.toHaveAttribute("aria-busy");
     expect(optionNames()[0]).toContain("GBP/USD");
   });
+
+  it("seeds the Recent section from getRecent", async () => {
+    const provider = makeProvider({
+      search: () => Promise.resolve([EURUSD]),
+      getRecent: () => Promise.resolve([USDKRW]),
+    });
+    const user = userEvent.setup();
+    render(<CurrencyPairPickerBase aria-label="Pair" provider={provider} debounceMs={0} />);
+
+    await user.click(screen.getByRole("combobox", { name: "Pair" }));
+    await waitFor(() => {
+      expect(screen.getByRole("group", { name: "Recent" })).toBeInTheDocument();
+    });
+    // Absent from the search response, so only the union with the cache puts it
+    // on screen at all.
+    expect(optionNames()[0]).toContain("USD/KRW");
+  });
+
+  it("does not duplicate a pinned pair the response already carries", async () => {
+    const provider = makeProvider({
+      search: () => Promise.resolve([GBPUSD, EURUSD]),
+      getFavourites: () => Promise.resolve([GBPUSD]),
+    });
+    const user = userEvent.setup();
+    render(<CurrencyPairPickerBase aria-label="Pair" provider={provider} debounceMs={0} />);
+
+    await user.click(screen.getByRole("combobox", { name: "Pair" }));
+    await waitFor(() => {
+      expect(screen.getByRole("group", { name: "Favourites" })).toBeInTheDocument();
+    });
+    // Two rows, not three: GBPUSD is lifted into Favourites, never doubled.
+    expect(screen.getAllByRole("option")).toHaveLength(2);
+  });
+
+  it("stops injecting pinned pairs when the sections are switched off", async () => {
+    const provider = makeProvider({
+      search: () => Promise.resolve([EURUSD]),
+      getFavourites: () => Promise.resolve([GBPUSD]),
+    });
+    const user = userEvent.setup();
+    render(
+      <CurrencyPairPickerBase
+        aria-label="Pair"
+        provider={provider}
+        debounceMs={0}
+        showFavourites={false}
+      />,
+    );
+
+    await user.click(screen.getByRole("combobox", { name: "Pair" }));
+    await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(1));
+    // Turning the section off must also stop the union adding the row further
+    // down the list, or hiding the section would just move it.
+    expect(optionNames()[0]).toContain("EUR/USD");
+  });
+
+  it("drops a pinned id it has never resolved to a pair", async () => {
+    const provider = makeProvider({ search: () => Promise.resolve([EURUSD]) });
+    const user = userEvent.setup();
+    render(
+      <CurrencyPairPickerBase
+        aria-label="Pair"
+        provider={provider}
+        debounceMs={0}
+        defaultFavourites={["ZZZAAA"]}
+      />,
+    );
+
+    await user.click(screen.getByRole("combobox", { name: "Pair" }));
+    await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(1));
+    // A stored favourite the provider no longer knows must not become a phantom
+    // row the user can highlight but not price.
+    expect(optionNames()[0]).toContain("EUR/USD");
+  });
+
+  it("keeps recents out of the pool when the section is switched off", async () => {
+    const provider = makeProvider({
+      search: () => Promise.resolve([EURUSD]),
+      getRecent: () => Promise.resolve([GBPUSD]),
+    });
+    const user = userEvent.setup();
+    render(
+      <CurrencyPairPickerBase
+        aria-label="Pair"
+        provider={provider}
+        debounceMs={0}
+        showRecents={false}
+      />,
+    );
+
+    await user.click(screen.getByRole("combobox", { name: "Pair" }));
+    await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(1));
+    expect(optionNames()[0]).toContain("EUR/USD");
+  });
+
+  it("survives a failed personalisation lookup", async () => {
+    const provider = makeProvider({
+      getFavourites: () => Promise.reject(new Error("no profile")),
+      getRecent: () => Promise.resolve([USDKRW]),
+    });
+    const user = userEvent.setup();
+    render(<CurrencyPairPickerBase aria-label="Pair" provider={provider} debounceMs={0} />);
+
+    await user.click(screen.getByRole("combobox", { name: "Pair" }));
+    await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(4));
+    // Personalisation is optional. Losing it costs the pinned sections and
+    // nothing else - the picker is still a working picker.
+    expect(screen.queryByRole("group", { name: "Favourites" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "Recent" })).not.toBeInTheDocument();
+  });
+
+  it("leaves the raw id visible when getById rejects", async () => {
+    const getById = vi.fn(() => Promise.reject(new Error("lookup down")));
+    const provider = makeProvider({ getById });
+    render(<CurrencyPairPickerBase aria-label="Pair" provider={provider} value="USDKRW" />);
+
+    await waitFor(() => expect(getById).toHaveBeenCalledWith("USDKRW"));
+    // A failed resolution degrades to the id; it must never throw at render.
+    expect(screen.getByRole("combobox")).toHaveValue("USDKRW");
+  });
+
+  it("ignores a personalisation response that lands after unmount", async () => {
+    let settle: (pairs: readonly CurrencyPair[]) => void = () => undefined;
+    const provider = makeProvider({
+      getFavourites: () =>
+        new Promise<readonly CurrencyPair[]>((resolve) => {
+          settle = resolve;
+        }),
+    });
+    const { unmount } = render(<CurrencyPairPickerBase aria-label="Pair" provider={provider} />);
+    unmount();
+
+    const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    await act(async () => {
+      settle([GBPUSD]);
+    });
+    // Resolving into an unmounted tree is a no-op, not a setState warning.
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+
+  it("cancels the pending search when the listbox closes", async () => {
+    const provider = makeProvider();
+    const user = userEvent.setup();
+    render(<CurrencyPairPickerBase aria-label="Pair" provider={provider} debounceMs={5000} />);
+    const input = screen.getByRole("combobox", { name: "Pair" });
+
+    await user.click(input);
+    await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(4));
+
+    await user.type(input, "eur");
+    expect(input).toHaveAttribute("aria-busy", "true");
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    // Nothing further will be asked for, so leaving the field marked busy would
+    // strand a screen reader on a request that is never coming.
+    expect(input).not.toHaveAttribute("aria-busy");
+  });
 });
 
 describe("CurrencyPairPickerBase - imperative handle", () => {
+  it("announces open and close once each, not once per call", () => {
+    const ref = createRef<CurrencyPairPickerHandle>();
+    const onOpen = vi.fn();
+    const onClose = vi.fn();
+    render(
+      <CurrencyPairPickerBase
+        ref={ref}
+        aria-label="Pair"
+        pairs={PAIRS}
+        onOpen={onOpen}
+        onClose={onClose}
+      />,
+    );
+
+    act(() => ref.current?.open());
+    act(() => ref.current?.open());
+    expect(onOpen).toHaveBeenCalledTimes(1);
+
+    act(() => ref.current?.close());
+    act(() => ref.current?.close());
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it("exposes focus / open / close / getValue", async () => {
     const ref = createRef<CurrencyPairPickerHandle>();
     render(

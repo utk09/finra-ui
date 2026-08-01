@@ -141,6 +141,7 @@ export const DateTenorPicker = forwardRef<DateTenorPickerHandle, DateTenorPicker
         tenorGrid: styles.tenorGrid,
         tenor: styles.tenor,
         tenorHighlighted: styles.tenorHighlighted,
+        tenorSelected: styles.tenorSelected,
         tenorDisabled: styles.tenorDisabled,
         resolvedDate: styles.resolvedDate,
         modeIndicator: styles.modeIndicator,
