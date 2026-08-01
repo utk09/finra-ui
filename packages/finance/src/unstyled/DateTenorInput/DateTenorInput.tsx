@@ -286,14 +286,15 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
     const handleCalendarSelect = useCallback(
       (date: Date) => {
         const formatted = formatDate(date, dateFormat);
-        setInputText(formatted);
+        // Only ours to set while uncontrolled - see the sync effect above.
+        if (dateValue === undefined) setInputText(formatted);
         const refDate = getRefDate();
         const matchedTenor = dateToTenor(date, refDate);
         onChange?.({ date, tenor: matchedTenor });
         setIsOpen(false);
         inputRef.current?.focus();
       },
-      [dateFormat, onChange, getRefDate],
+      [dateFormat, dateValue, onChange, getRefDate],
     );
 
     //  Tenor selection
@@ -302,9 +303,9 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
       (tenor: string) => {
         const refDate = getRefDate();
         const resolvedDate = resolve(tenor, refDate);
-        if (resolvedDate) {
-          const formatted = formatDate(resolvedDate, dateFormat);
-          setInputText(formatted);
+        // Only ours to set while uncontrolled - see the sync effect above.
+        if (resolvedDate && dateValue === undefined) {
+          setInputText(formatDate(resolvedDate, dateFormat));
         }
         // If the clicked tenor is the same as the current, deselect
         if (tenor === tenorValue) {
@@ -315,7 +316,7 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
         setIsOpen(false);
         inputRef.current?.focus();
       },
-      [getRefDate, resolve, dateFormat, onChange, tenorValue],
+      [getRefDate, resolve, dateFormat, dateValue, onChange, tenorValue],
     );
 
     // Calendar display value

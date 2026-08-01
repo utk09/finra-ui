@@ -1,10 +1,14 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { createRef } from "react";
+import { createRef, useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import type { DateTenorParseResult } from "../../utils/dateTenorParse";
-import { DateTenorPickerBase, type DateTenorPickerHandle } from "./DateTenorPicker";
+import {
+  DateTenorPickerBase,
+  type DateTenorPickerHandle,
+  type DateTenorValue,
+} from "./DateTenorPicker";
 
 // Deterministic "today": Thu 15 Jan 2026.
 const REF = new Date(2026, 0, 15);
@@ -416,5 +420,56 @@ describe("DateTenorPickerBase", () => {
     await user.type(input, "2026-04-15"); // == 3M from REF → standard
     await user.keyboard("{Enter}");
     expect(screen.getByText("STD")).toBeInTheDocument();
+  });
+});
+
+describe("DateTenorPickerBase — display stays tied to the committed value", () => {
+  /** A parent that only ever accepts 3M, holding its own value. */
+  function Controlled() {
+    const [value, setValue] = useState<DateTenorValue | null>(null);
+    return (
+      <DateTenorPickerBase
+        aria-label="Value date"
+        referenceDate={REF}
+        value={value}
+        onChange={(next) => {
+          if (next?.tenor !== "3M") return;
+          setValue(next);
+        }}
+      />
+    );
+  }
+
+  it("redraws the held value when a controlled parent declines a picked tenor", async () => {
+    const user = userEvent.setup();
+    render(<Controlled />);
+    const input = screen.getByRole("combobox", { name: "Value date" });
+
+    await user.click(input);
+    await user.click(screen.getByRole("option", { name: "6M" }));
+
+    // The parent kept null. Leaving 6M on screen would report a value date the
+    // application never accepted.
+    await waitFor(() => expect(input).toHaveValue(""));
+  });
+
+  it("redraws the held value when a controlled parent declines typed text", async () => {
+    const user = userEvent.setup();
+    render(<Controlled />);
+    const input = screen.getByRole("combobox", { name: "Value date" });
+
+    await user.type(input, "6M{Enter}");
+
+    await waitFor(() => expect(input).toHaveValue(""));
+  });
+
+  it("still shows a value the controlled parent accepts", async () => {
+    const user = userEvent.setup();
+    render(<Controlled />);
+    const input = screen.getByRole("combobox", { name: "Value date" });
+
+    await user.type(input, "3M{Enter}");
+
+    await waitFor(() => expect(input).toHaveValue("3M"));
   });
 });

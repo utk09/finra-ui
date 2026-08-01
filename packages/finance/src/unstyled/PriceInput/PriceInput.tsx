@@ -217,6 +217,7 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
     forwardedRef,
   ) => {
     const inputRef = useRef<HTMLInputElement>(null);
+    const focusedRef = useRef(false);
 
     const field = useFormField({
       id,
@@ -272,10 +273,45 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
       defaultValue != null ? formatter(defaultValue, fmtOpts) : "",
     );
 
-    // Sync a controlled value → formatted text (only on committed-value change).
+    // Bumped on every commit attempt. The display sync below keys off it as well
+    // as off the value, so a commit re-derives the text even when the value it
+    // settles on is the one already held - which is exactly what a controlled
+    // parent declining the change looks like from in here.
+    const [commitNonce, setCommitNonce] = useState(0);
+
+    /** A value as display text. */
+    const renderValue = useCallback(
+      (v: number | null) => (v != null ? formatter(v, fmtOpts) : ""),
+      [formatter, fmtOpts],
+    );
+
+    /**
+     * The displayed text is derived from the value the field actually holds -
+     * never left as whatever the last interaction proposed.
+     *
+     * Two cases this exists for, both of which showed the wrong price without
+     * it:
+     *
+     * - **A controlled parent that declines the change.** `value` does not move,
+     *   so a value-keyed effect never fires, and the field would go on showing
+     *   the price the parent rejected. The commit counter is what makes the sync
+     *   happen anyway. Display text is only the field's to choose while
+     *   uncontrolled.
+     * - **A formatting prop changing while uncontrolled** - `instrument`,
+     *   `format`, `precision`, `tickSize`. `instrument` is documented as safe to
+     *   update in place, so the resting text has to follow it without waiting
+     *   for the next focus/blur cycle.
+     *
+     * Skipped while focused so a parent re-render cannot overwrite a live edit,
+     * except straight after a commit, where re-deriving is the entire point.
+     */
+    const lastSyncedCommit = useRef(commitNonce);
     useEffect(() => {
-      if (isControlled) setInputText(value != null ? formatter(value, fmtOpts) : "");
-    }, [isControlled, value, formatter, fmtOpts]);
+      const afterCommit = lastSyncedCommit.current !== commitNonce;
+      lastSyncedCommit.current = commitNonce;
+      if (focusedRef.current && !afterCommit) return;
+      setInputText(renderValue(currentValue ?? null));
+    }, [currentValue, renderValue, commitNonce]);
 
     const setCommitted = useCallback(
       (next: number | null) => {
@@ -286,8 +322,8 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
     );
 
     const revert = useCallback(() => {
-      setInputText(currentValue != null ? formatter(currentValue, fmtOpts) : "");
-    }, [currentValue, formatter, fmtOpts]);
+      setInputText(renderValue(currentValue));
+    }, [renderValue, currentValue]);
 
     const validateValue = useCallback(
       (v: number): PriceValidationResult => {
@@ -305,6 +341,12 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
     const commit = useCallback(() => {
       const result = parser(inputText, fmtOpts);
       onParse?.(result);
+      // Wakes the sync effect above even when the committed value turns out to
+      // be the one already held - which is what a controlled parent declining
+      // the change looks like from in here. The text is still set eagerly on
+      // each path: leaving it to the effect alone would leave the raw typed
+      // text on screen until passive effects flush, a visible flicker on blur.
+      setCommitNonce((n) => n + 1);
 
       if (!result.valid || result.value === null) {
         if (result.error === "empty") {
@@ -336,7 +378,7 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
         v = tv.value;
       }
 
-      setInputText(formatter(v, fmtOpts));
+      setInputText(renderValue(v));
       setCommitted(v);
       onCommit?.(v);
     }, [
@@ -350,7 +392,7 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
       tickValidation,
       effTick,
       displayDec,
-      formatter,
+      renderValue,
       setCommitted,
       onCommit,
     ]);
@@ -363,7 +405,20 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
         let next = resolveIncrement(base, direction, action, incCtx);
         if (minEff != null && next < minEff) next = minEff;
         if (maxEff != null && next > maxEff) next = maxEff;
-        setInputText(formatter(next, fmtOpts));
+
+        // Same gate the commit path applies. `min`/`max` are clamped above, but
+        // a custom `validate` can still reject the result, and a stepped price
+        // that skips the check would be a value the field would refuse if the
+        // identical number were typed.
+        const validation = validateValue(next);
+        onValidate?.(validation);
+        setCommitNonce((n) => n + 1);
+        if (!validation.valid) {
+          revert();
+          return;
+        }
+
+        setInputText(renderValue(next));
         setCommitted(next);
         onTick?.(next, direction);
       },
@@ -377,7 +432,10 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
         incCtx,
         minEff,
         maxEff,
-        formatter,
+        validateValue,
+        onValidate,
+        revert,
+        renderValue,
         setCommitted,
         onTick,
       ],
@@ -414,6 +472,7 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
 
     const handleBlur = useCallback(
       (event: FocusEvent<HTMLInputElement>) => {
+        focusedRef.current = false;
         commit();
         onBlurProp?.(event);
       },
@@ -452,6 +511,7 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
 
     const handleFocus = useCallback(
       (event: FocusEvent<HTMLInputElement>) => {
+        focusedRef.current = true;
         // Defer so it wins over the browser's own focus selection.
         if (selectOnFocus) requestAnimationFrame(() => selectGroup(selectOnFocus));
         onFocusProp?.(event);

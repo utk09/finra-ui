@@ -1,6 +1,6 @@
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { createRef } from "react";
+import { createRef, useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { TenorPickerBase, type TenorPickerHandle } from "./TenorPicker";
@@ -313,5 +313,47 @@ describe("TenorPickerBase", () => {
     await user.click(input);
     expect(screen.queryByRole("group")).not.toBeInTheDocument();
     expect(screen.getAllByRole("option")).toHaveLength(3);
+  });
+});
+
+describe("TenorPickerBase — display stays tied to the committed value", () => {
+  /** A parent that only ever accepts 3M, holding its own value. */
+  function Controlled() {
+    const [value, setValue] = useState<string | null>("3M");
+    return (
+      <TenorPickerBase
+        aria-label="Tenor"
+        value={value}
+        onChange={(next) => {
+          if (next !== "3M") return;
+          setValue(next);
+        }}
+      />
+    );
+  }
+
+  it("redraws the held tenor when a controlled parent declines a picked option", async () => {
+    const user = userEvent.setup();
+    render(<Controlled />);
+    const input = screen.getByRole("combobox", { name: "Tenor" });
+    expect(input).toHaveValue("3M");
+
+    await user.click(input);
+    await user.click(screen.getByRole("option", { name: /6M/ }));
+
+    // The parent kept 3M. Leaving 6M on screen would report a tenor the
+    // application never accepted.
+    await waitFor(() => expect(input).toHaveValue("3M"));
+  });
+
+  it("redraws the held tenor when a controlled parent declines typed text", async () => {
+    const user = userEvent.setup();
+    render(<Controlled />);
+    const input = screen.getByRole("combobox", { name: "Tenor" });
+
+    await user.clear(input);
+    await user.type(input, "6M{Enter}");
+
+    await waitFor(() => expect(input).toHaveValue("3M"));
   });
 });

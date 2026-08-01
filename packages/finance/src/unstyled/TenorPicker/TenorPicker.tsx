@@ -218,10 +218,12 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
     // Whether the user is actively typing a filter (vs. showing the committed value).
     const [filtering, setFiltering] = useState(false);
 
-    // Sync controlled value → displayed text (when not mid-filter).
+    // Keep the visible text in step with the committed value, except while the
+    // user is mid-filter. Not restricted to the controlled case: while
+    // uncontrolled the display still has to follow a formatting prop change.
     useEffect(() => {
-      if (isControlled && !filtering) setInputText(displayFor(value ?? null));
-    }, [isControlled, value, filtering, displayFor]);
+      if (!filtering) setInputText(displayFor(currentValue ?? null));
+    }, [filtering, displayFor, currentValue]);
 
     //  Favourites (controlled / uncontrolled)
 
@@ -309,9 +311,15 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
 
     const commitTenor = useCallback(
       (tenor: string | null) => {
-        if (!isControlled) setInternalValue(tenor);
+        // The displayed text is only ours to set while uncontrolled. Under a
+        // controlled `value` the consumer decides whether the selection sticks -
+        // they may reject it - so the text follows `value` through the sync
+        // effect above and never runs ahead of it.
+        if (!isControlled) {
+          setInternalValue(tenor);
+          setInputText(displayFor(tenor));
+        }
         onChange?.(tenor);
-        setInputText(displayFor(tenor));
         setFiltering(false);
       },
       [isControlled, onChange, displayFor],

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -168,5 +168,58 @@ describe("PillInputBase", () => {
   it("hides placeholder when pills exist", () => {
     render(<PillInputBase aria-label="Tags" placeholder="Add tag..." values={["react"]} />);
     expect(screen.queryByPlaceholderText("Add tag...")).not.toBeInTheDocument();
+  });
+});
+
+describe("PillInputBase — consumer event handlers", () => {
+  it("still focuses the input when a consumer passes onClick", async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    render(<PillInputBase aria-label="Tags" onClick={onClick} />);
+
+    // Clicking anywhere in the container is how the whole surface behaves like
+    // one field. A consumer observing the click must not cost you that.
+    await user.click(screen.getByRole("toolbar"));
+
+    expect(onClick).toHaveBeenCalled();
+    expect(screen.getByRole("textbox")).toHaveFocus();
+  });
+
+  it("still focuses the input on Enter when a consumer passes onKeyDown", () => {
+    const onKeyDown = vi.fn();
+    render(<PillInputBase aria-label="Tags" onKeyDown={onKeyDown} />);
+
+    fireEvent.keyDown(screen.getByRole("toolbar"), { key: "Enter" });
+
+    expect(onKeyDown).toHaveBeenCalled();
+    expect(screen.getByRole("textbox")).toHaveFocus();
+  });
+
+  it("lets a consumer suppress container focus with preventDefault on click", async () => {
+    const user = userEvent.setup();
+    render(
+      <PillInputBase
+        aria-label="Tags"
+        onClick={(event) => {
+          event.preventDefault();
+        }}
+      />,
+    );
+
+    await user.click(screen.getByRole("toolbar"));
+
+    expect(screen.getByRole("textbox")).not.toHaveFocus();
+  });
+
+  it("keeps adding pills on Enter when a consumer passes onKeyDown", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(<PillInputBase aria-label="Tags" onChange={onChange} onKeyDown={vi.fn()} />);
+
+    // The pill-creating handler lives on the inner input, so a container-level
+    // consumer handler must leave it alone.
+    await user.type(screen.getByRole("textbox"), "react{Enter}");
+
+    expect(onChange).toHaveBeenCalledWith(["react"]);
   });
 });

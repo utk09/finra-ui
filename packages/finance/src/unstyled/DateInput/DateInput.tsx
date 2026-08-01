@@ -235,14 +235,19 @@ export const DateInputBase = forwardRef<HTMLInputElement, DateInputBaseProps>(
     const handleCalendarSelect = useCallback(
       (date: Date) => {
         const formatted = formatDate(date, format);
-        setInputText(formatted);
+        // The displayed text is only ours to set while uncontrolled. Under a
+        // controlled `value` the consumer decides whether the pick sticks - they
+        // may reject it - so the text follows `value` through the sync effect
+        // above and never runs ahead of it. Typed text is deliberately left
+        // alone either way, so the user can finish correcting it.
+        if (!isControlled) setInputText(formatted);
         onInputChange?.(formatted);
         onChange?.(date);
         onValidation?.({ valid: true, date });
         setIsCalendarOpen(false);
         internalRef.current?.focus();
       },
-      [format, onChange, onInputChange, onValidation],
+      [format, isControlled, onChange, onInputChange, onValidation],
     );
 
     // Derive the displayed date for the calendar from current value or inputText

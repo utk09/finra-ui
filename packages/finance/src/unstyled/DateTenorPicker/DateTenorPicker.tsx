@@ -288,10 +288,19 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
 
     const prevModeRef = useRef<DateTenorMode | null>(defaultValue?.mode ?? null);
 
-    // Sync controlled value → displayed text.
+    // Bumped on every commit attempt, so the sync effect below keys off it as
+    // well as off the value.
+    const [commitNonce, setCommitNonce] = useState(0);
+
+    // Keep the visible text in step with the value the field actually holds.
     useEffect(() => {
-      if (isControlled) setInputText(value ? value.display : "");
-    }, [isControlled, value]);
+      // `commitNonce` is read, not just depended on, so the intent is plain: a
+      // commit that settles on the value already held - which is what a
+      // controlled parent declining the change looks like from in here - still
+      // re-derives the text instead of leaving the rejected entry on screen.
+      void commitNonce;
+      setInputText(currentValue ? currentValue.display : "");
+    }, [currentValue, commitNonce]);
 
     //  Parse context + validation
 
@@ -360,6 +369,7 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
 
     const commitValue = useCallback(
       (next: DateTenorValue | null) => {
+        setCommitNonce((n) => n + 1);
         if (!isControlled) setInternalValue(next);
         onChange?.(next);
         const nextMode = next?.mode ?? null;

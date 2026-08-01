@@ -192,3 +192,99 @@ describe("FileDropZoneBase", () => {
     expect(clickSpy).not.toHaveBeenCalled();
   });
 });
+
+describe("FileDropZoneBase — consumer event handlers", () => {
+  it("still receives dropped files when a consumer passes onDrop", async () => {
+    const onChange = vi.fn();
+    const onDrop = vi.fn();
+    render(<FileDropZoneBase onChange={onChange} onDrop={onDrop} />);
+
+    const file = createFile("report.csv", "text/csv");
+    fireEvent.drop(screen.getByRole("button"), { dataTransfer: { files: [file] } });
+
+    // A consumer handler must add to the drop zone's behaviour, never replace
+    // it - a zone that stops accepting files the moment you observe the drop is
+    // useless.
+    expect(onDrop).toHaveBeenCalled();
+    expect(onChange).toHaveBeenCalledWith([file]);
+  });
+
+  it("still opens the picker when a consumer passes onClick", async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    const { fileInput } = renderWithRef({ onClick });
+    const click = vi.spyOn(fileInput, "click");
+
+    await user.click(screen.getByRole("button"));
+
+    expect(onClick).toHaveBeenCalled();
+    expect(click).toHaveBeenCalled();
+  });
+
+  it("still opens the picker on Enter when a consumer passes onKeyDown", async () => {
+    const user = userEvent.setup();
+    const onKeyDown = vi.fn();
+    const { fileInput } = renderWithRef({ onKeyDown });
+    const click = vi.spyOn(fileInput, "click");
+
+    screen.getByRole("button").focus();
+    await user.keyboard("{Enter}");
+
+    expect(onKeyDown).toHaveBeenCalled();
+    expect(click).toHaveBeenCalled();
+  });
+
+  it("still tracks drag-over state when a consumer passes onDragOver", () => {
+    const onDragOver = vi.fn();
+    render(<FileDropZoneBase onDragOver={onDragOver} />);
+    const zone = screen.getByRole("button");
+
+    fireEvent.dragOver(zone);
+
+    expect(onDragOver).toHaveBeenCalled();
+    expect(zone).toHaveAttribute("data-drag-over", "true");
+  });
+
+  it("keeps working when a consumer calls preventDefault in a drag handler", () => {
+    const onChange = vi.fn();
+    render(
+      <FileDropZoneBase
+        onChange={onChange}
+        onDragOver={(event) => {
+          event.preventDefault();
+        }}
+        onDrop={(event) => {
+          event.preventDefault();
+        }}
+      />,
+    );
+    const zone = screen.getByRole("button");
+    const file = createFile("report.csv", "text/csv");
+
+    // On dragover/drop, `preventDefault()` is the standard way to declare a
+    // valid drop target, not a request to override. Reading it as an override
+    // would break the zone for consumers writing textbook drag-and-drop code.
+    fireEvent.dragOver(zone);
+    expect(zone).toHaveAttribute("data-drag-over", "true");
+
+    fireEvent.drop(zone, { dataTransfer: { files: [file] } });
+    expect(onChange).toHaveBeenCalledWith([file]);
+    // The drop ends the drag, so the highlight goes with it.
+    expect(zone).not.toHaveAttribute("data-drag-over");
+  });
+
+  it("lets a consumer suppress the file picker with preventDefault on click", async () => {
+    const user = userEvent.setup();
+    const { fileInput } = renderWithRef({
+      onClick: (event) => {
+        event.preventDefault();
+      },
+    });
+    const click = vi.spyOn(fileInput, "click");
+
+    await user.click(screen.getByRole("button"));
+
+    // Click and keydown keep the conventional meaning of preventDefault.
+    expect(click).not.toHaveBeenCalled();
+  });
+});

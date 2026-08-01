@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { DateTenorInput } from "./DateTenorInput";
@@ -651,5 +652,37 @@ describe("DateTenorInput", () => {
     await user.click(screen.getByLabelText("Date"));
 
     expect(screen.getByRole("listbox", { name: "Tenor" })).toBeInTheDocument();
+  });
+});
+
+describe("DateTenorInput — display stays tied to the committed value", () => {
+  /** A parent that refuses every change, holding 11 Mar 2026. */
+  function Declining() {
+    const [date] = useState<Date | null>(REF_DATE);
+    return (
+      <DateTenorInput
+        dateAriaLabel="Date"
+        referenceDate={REF_DATE}
+        dateValue={date}
+        onChange={() => {
+          /* refuses everything */
+        }}
+      />
+    );
+  }
+
+  it("redraws the held date when a controlled parent declines a picked tenor", async () => {
+    const user = userEvent.setup();
+    render(<Declining />);
+    const input = screen.getByLabelText("Date") as HTMLInputElement;
+    expect(input).toHaveValue("2026-03-11");
+
+    await user.click(input);
+    fireEvent.mouseDown(screen.getByRole("option", { name: "3M" }));
+
+    // The parent kept 11 Mar. Showing the June date it refused would report a
+    // value the application never accepted - and unlike typed text, there is
+    // nothing here for the user to "finish correcting".
+    await waitFor(() => expect(input).toHaveValue("2026-03-11"));
   });
 });

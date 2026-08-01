@@ -43,6 +43,12 @@ export const PillInput = forwardRef<HTMLInputElement, PillInputProps>(
       id,
       "aria-describedby": ariaDescribedBy,
       "aria-invalid": ariaInvalid,
+      // Pulled out of `props` and composed below. Left in, they would be
+      // spread *over* this component's own handlers rather than alongside
+      // them, and the container would stop forwarding focus to the input -
+      // the behaviour that makes the whole surface act like one field.
+      onClick: onClickProp,
+      onKeyDown: onKeyDownProp,
       ...props
     },
     forwardedRef,
@@ -112,19 +118,26 @@ export const PillInput = forwardRef<HTMLInputElement, PillInputProps>(
       [inputValue, values, delimiters, addPill, removePill],
     );
 
-    const handleContainerClick = useCallback(() => {
-      if (!isDisabled) {
+    // The consumer's handler runs first and can claim the gesture with
+    // `preventDefault()`; otherwise the container still forwards focus.
+    const handleContainerClick = useCallback(
+      (e: React.MouseEvent<HTMLDivElement>) => {
+        onClickProp?.(e);
+        if (e.defaultPrevented || isDisabled) return;
         internalRef.current?.focus();
-      }
-    }, [isDisabled]);
+      },
+      [isDisabled, onClickProp],
+    );
 
     const handleContainerKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (!isDisabled && (e.key === "Enter" || e.key === " ")) {
+        onKeyDownProp?.(e);
+        if (e.defaultPrevented || isDisabled) return;
+        if (e.key === "Enter" || e.key === " ") {
           internalRef.current?.focus();
         }
       },
-      [isDisabled],
+      [isDisabled, onKeyDownProp],
     );
 
     return (
@@ -132,9 +145,9 @@ export const PillInput = forwardRef<HTMLInputElement, PillInputProps>(
         {...{ [FINRA_UI_ATTR]: componentIds.pillInput }}
         role="toolbar"
         className={clsx(styles.pillInput, isDisabled && styles.disabled, className)}
+        {...props}
         onClick={handleContainerClick}
-        onKeyDown={handleContainerKeyDown}
-        {...props}>
+        onKeyDown={handleContainerKeyDown}>
         {values.map((pill) => (
           <span key={pill} className={styles.pill}>
             <span className={styles.pillText}>{pill}</span>

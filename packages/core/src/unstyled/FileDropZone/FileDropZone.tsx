@@ -37,6 +37,15 @@ export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBasePro
       id,
       "aria-describedby": ariaDescribedBy,
       "aria-invalid": ariaInvalid,
+      // Pulled out of `props` and composed below. Left in, they would be
+      // spread *over* this component's own handlers rather than alongside
+      // them, so a consumer merely observing a drop would silently stop the
+      // zone accepting files.
+      onClick: onClickProp,
+      onKeyDown: onKeyDownProp,
+      onDragOver: onDragOverProp,
+      onDragLeave: onDragLeaveProp,
+      onDrop: onDropProp,
       ...props
     },
     forwardedRef,
@@ -63,30 +72,44 @@ export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBasePro
       [onChange],
     );
 
+    // Drag handlers deliberately do NOT gate on `defaultPrevented`.
+    //
+    // On `dragover` and `drop`, `preventDefault()` is the required idiom for
+    // "this is a valid drop target" - every consumer following standard
+    // drag-and-drop practice calls it. Treating it as an override signal, the
+    // way `click` and `keydown` do, would break the zone for exactly the people
+    // writing correct code. The consumer is notified first; this component's
+    // own behaviour then always runs.
     const handleDragOver = useCallback(
       (e: DragEvent<HTMLDivElement>) => {
+        onDragOverProp?.(e);
         e.preventDefault();
         if (!isDisabled) {
           setIsDragOver(true);
         }
       },
-      [isDisabled],
+      [isDisabled, onDragOverProp],
     );
 
-    const handleDragLeave = useCallback((e: DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      setIsDragOver(false);
-    }, []);
+    const handleDragLeave = useCallback(
+      (e: DragEvent<HTMLDivElement>) => {
+        onDragLeaveProp?.(e);
+        e.preventDefault();
+        setIsDragOver(false);
+      },
+      [onDragLeaveProp],
+    );
 
     const handleDrop = useCallback(
       (e: DragEvent<HTMLDivElement>) => {
+        onDropProp?.(e);
         e.preventDefault();
         setIsDragOver(false);
         if (!isDisabled) {
           handleFiles(e.dataTransfer.files);
         }
       },
-      [isDisabled, handleFiles],
+      [isDisabled, handleFiles, onDropProp],
     );
 
     const handleInputChange = useCallback(
@@ -98,20 +121,28 @@ export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBasePro
       [handleFiles],
     );
 
-    const handleClick = useCallback(() => {
-      if (!isDisabled) {
+    // Click and keydown do gate on `defaultPrevented`: there it carries its
+    // conventional meaning, so it is how a consumer suppresses the file picker
+    // for a gesture it wants to own.
+    const handleClick = useCallback(
+      (e: React.MouseEvent<HTMLDivElement>) => {
+        onClickProp?.(e);
+        if (e.defaultPrevented || isDisabled) return;
         internalRef.current?.click();
-      }
-    }, [isDisabled]);
+      },
+      [isDisabled, onClickProp],
+    );
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (!isDisabled && (e.key === "Enter" || e.key === " ")) {
+        onKeyDownProp?.(e);
+        if (e.defaultPrevented || isDisabled) return;
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           internalRef.current?.click();
         }
       },
-      [isDisabled],
+      [isDisabled, onKeyDownProp],
     );
 
     return (
@@ -134,12 +165,12 @@ export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBasePro
           aria-disabled={isDisabled || undefined}
           aria-describedby={field["aria-describedby"]}
           data-drag-over={isDragOver || undefined}
+          {...props}
           onClick={handleClick}
           onKeyDown={handleKeyDown}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          {...props}>
+          onDrop={handleDrop}>
           {children ?? <span>Drop files here or click to browse</span>}
         </div>
       </>

@@ -1,6 +1,6 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { createRef } from "react";
+import { createRef, useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { DEFAULT_PRICE_KEYMAP } from "../../utils/keymap";
@@ -485,5 +485,120 @@ describe("PriceInputBase — consumer event handlers", () => {
 
     expect(onFocus).toHaveBeenCalled();
     expect(input).toHaveValue("1.00");
+  });
+});
+
+describe("PriceInputBase — display stays tied to the committed value", () => {
+  /** A parent that refuses anything above `limit`, holding its own value. */
+  function Controlled({ limit }: { limit: number }) {
+    const [value, setValue] = useState<number | null>(1);
+    return (
+      <PriceInputBase
+        aria-label="Price"
+        {...CENTS}
+        value={value}
+        onChange={(next) => {
+          if (next != null && next > limit) return;
+          setValue(next);
+        }}
+      />
+    );
+  }
+
+  it("redraws the held value when a controlled parent declines a typed change", async () => {
+    const user = userEvent.setup();
+    render(<Controlled limit={5} />);
+    const input = screen.getByRole("spinbutton", { name: "Price" }) as HTMLInputElement;
+
+    await user.clear(input);
+    await user.type(input, "9.00");
+    await user.tab();
+
+    // The parent kept 1. Showing 9.00 would tell the user a price is set that
+    // the application never accepted.
+    await waitFor(() => expect(input).toHaveValue("1.00"));
+  });
+
+  it("redraws the held value when a controlled parent declines a stepped change", async () => {
+    const user = userEvent.setup();
+    render(<Controlled limit={1} />);
+    const input = screen.getByRole("spinbutton", { name: "Price" }) as HTMLInputElement;
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+
+    await waitFor(() => expect(input).toHaveValue("1.00"));
+  });
+
+  it("reformats an uncontrolled value when a formatting prop changes", () => {
+    const { rerender } = render(
+      <PriceInputBase aria-label="Price" format="decimal" precision={2} defaultValue={1.5} />,
+    );
+    const input = screen.getByRole("spinbutton", { name: "Price" }) as HTMLInputElement;
+    expect(input).toHaveValue("1.50");
+
+    // The resting text is a function of the formatting props, so a precision
+    // control beside the field has to redraw it without a focus/blur cycle.
+    rerender(
+      <PriceInputBase aria-label="Price" format="decimal" precision={4} defaultValue={1.5} />,
+    );
+
+    expect(input).toHaveValue("1.5000");
+  });
+
+  it("does not overwrite text the user is still typing", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <PriceInputBase aria-label="Price" format="decimal" precision={2} defaultValue={1.5} />,
+    );
+    const input = screen.getByRole("spinbutton", { name: "Price" }) as HTMLInputElement;
+
+    await user.clear(input);
+    await user.type(input, "2.7");
+    rerender(
+      <PriceInputBase aria-label="Price" format="decimal" precision={4} defaultValue={1.5} />,
+    );
+
+    expect(input).toHaveValue("2.7");
+  });
+});
+
+describe("PriceInputBase — stepping honours validate", () => {
+  it("rejects a stepped price that a custom validate refuses", async () => {
+    const user = userEvent.setup();
+    const onValidate = vi.fn();
+    const { onChange, input } = setup({
+      ...CENTS,
+      defaultValue: 1,
+      validate: (v) => v <= 1,
+      onValidate,
+    });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+
+    // Stepping to 1.01 must be refused exactly as typing 1.01 would be -
+    // otherwise the arrow keys are a way around the field's own rules.
+    expect(onValidate).toHaveBeenCalledWith({ valid: false, value: 1.01, error: "custom" });
+    expect(onChange).not.toHaveBeenCalled();
+    await waitFor(() => expect(input).toHaveValue("1.00"));
+  });
+
+  it("still commits a stepped price that validate accepts", async () => {
+    const user = userEvent.setup();
+    const onValidate = vi.fn();
+    const { onChange, input } = setup({
+      ...CENTS,
+      defaultValue: 1,
+      validate: (v) => v <= 5,
+      onValidate,
+    });
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowUp}");
+
+    expect(onValidate).toHaveBeenCalledWith({ valid: true, value: 1.01 });
+    expect(onChange).toHaveBeenLastCalledWith(1.01);
+    expect(input).toHaveValue("1.01");
   });
 });

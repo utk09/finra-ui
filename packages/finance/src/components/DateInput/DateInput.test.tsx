@@ -1,5 +1,6 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { DateInput } from "./DateInput";
@@ -663,5 +664,44 @@ describe("DateInput", () => {
     const event = new KeyboardEvent("keydown", { key: "c", metaKey: true, bubbles: true });
     const prevented = !input.dispatchEvent(event);
     expect(prevented).toBe(false);
+  });
+});
+
+describe("DateInput — display stays tied to the committed value", () => {
+  /** A parent that refuses every change, holding 11 Mar 2026. */
+  function Declining() {
+    const [date] = useState<Date | null>(new Date(2026, 2, 11));
+    return (
+      <DateInput
+        aria-label="Date"
+        value={date}
+        onChange={() => {
+          /* refuses everything */
+        }}
+      />
+    );
+  }
+
+  it("redraws the held date when a controlled parent declines a calendar pick", async () => {
+    const user = userEvent.setup();
+    render(<Declining />);
+    const input = screen.getByLabelText("Date") as HTMLInputElement;
+    expect(input).toHaveValue("2026-03-11");
+
+    await user.click(screen.getByLabelText("Toggle calendar"));
+    const days = within(screen.getByRole("grid")).getAllByRole("button");
+    const other = days.find(
+      (day) =>
+        !day.hasAttribute("disabled") &&
+        day.getAttribute("aria-disabled") !== "true" &&
+        day.textContent?.trim() === "20",
+    );
+    expect(other).toBeTruthy();
+    fireEvent.mouseDown(other!);
+
+    // The parent kept 11 Mar. Showing the 20th it refused would report a date
+    // the application never accepted - and unlike typed text, there is nothing
+    // here for the user to "finish correcting".
+    await waitFor(() => expect(input).toHaveValue("2026-03-11"));
   });
 });
