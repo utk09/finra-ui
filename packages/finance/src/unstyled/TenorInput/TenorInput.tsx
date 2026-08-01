@@ -29,10 +29,8 @@ export interface TenorInputClassNames extends ComboBoxClassNames {}
  * Migration is close to a rename; the one behavioural difference is parsing,
  * since TenorPicker accepts long-form and compound tenors this rejects.
  */
-export interface TenorInputBaseProps extends Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "onChange" | "defaultValue"
-> {
+export interface TenorInputBaseProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue"> {
   /** Selected tenor value. */
   value?: string | null;
   /** Called when tenor changes. */

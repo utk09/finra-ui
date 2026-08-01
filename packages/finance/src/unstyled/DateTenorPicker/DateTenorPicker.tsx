@@ -70,11 +70,18 @@ export interface DateTenorValue {
 
 /** Why a commit was rejected. */
 export type DateTenorInvalidReason =
-  DateTenorParseError | "disabled-tenor" | "disabled-date" | "no-settlement";
+  | DateTenorParseError
+  | "disabled-tenor"
+  | "disabled-date"
+  | "no-settlement";
 
 /** Business-day roll convention passed to the calendar adapter's `adjust`. */
 export type AdjustmentConvention =
-  "none" | "following" | "modified-following" | "preceding" | "modified-preceding";
+  | "none"
+  | "following"
+  | "modified-following"
+  | "preceding"
+  | "modified-preceding";
 
 /** Adjusts the parser's raw preview date to a settlement date. Default: identity. */
 export type SettlementEngine = (previewDate: Date, result: DateTenorParseResult) => Date | null;
@@ -183,10 +190,8 @@ export interface DateTenorPickerClassNames {
  * business-day rules. The component owns the interaction, the desk owns the
  * conventions.
  */
-export interface DateTenorPickerBaseProps extends Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "onChange" | "defaultValue" | "onInvalid"
-> {
+export interface DateTenorPickerBaseProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue" | "onInvalid"> {
   /** Controlled value. */
   value?: DateTenorValue | null;
   /** Initial value (uncontrolled). */

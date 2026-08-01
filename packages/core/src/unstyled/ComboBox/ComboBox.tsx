@@ -206,10 +206,8 @@ export interface ComboBoxClassNames {
  * <ComboBoxBase options={options} value={value} onChange={setValue} aria-label="Pair" />
  * ```
  */
-export interface ComboBoxBaseProps<T = string> extends Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "onChange" | "defaultValue"
-> {
+export interface ComboBoxBaseProps<T = string>
+  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue"> {
   /** Available options. */
   options: ComboBoxOption<T>[];
 
@@ -902,7 +900,9 @@ function ComboBoxBaseRender<T = string>(
               // One Tab stop for the whole set; arrows move within it. The list
               // wraps only the pills - an <input> is not a valid list child.
               //
-              // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- roving-focus container: the handler is delegated from the focusable remove buttons inside. The list itself must stay non-focusable (a focusable role="list" would add a dead tab stop), so tabIndex is deliberately absent.
+              // The handler is delegated from the focusable remove buttons inside. The list
+              // itself must stay non-focusable: a focusable role="list" would add a dead tab
+              // stop, so tabIndex is deliberately absent.
               <div
                 ref={pillListRef}
                 role="list"

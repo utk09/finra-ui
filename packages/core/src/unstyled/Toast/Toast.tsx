@@ -1,7 +1,7 @@
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { useStore } from "../../hooks/useStore";
-import { toastController, type ToastData } from "../../logic/toast";
+import { type ToastData, toastController } from "../../logic/toast";
 import { Portal } from "../Portal/Portal";
 
 /**
@@ -12,7 +12,12 @@ import { Portal } from "../Portal/Portal";
  * is always the one nearest the edge and never displaces the one being read.
  */
 export type ToastPosition =
-  "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right";
+  | "top-left"
+  | "top-center"
+  | "top-right"
+  | "bottom-left"
+  | "bottom-center"
+  | "bottom-right";
 
 /** Per-toast controls handed to a custom `renderToast`. */
 export interface ToastControls {
@@ -53,6 +58,9 @@ export const ToastItem = forwardRef<HTMLDivElement, ToastItemProps>(
     const assertive = toast.sentiment === "danger" || toast.sentiment === "warning";
 
     return (
+      // The element does carry a role; Biome cannot resolve the conditional.
+      // Pause-on-hover stops a toast expiring while it is being read.
+      // biome-ignore lint/a11y/noStaticElementInteractions: role is set conditionally, see above
       <div
         ref={ref}
         data-finra-ui="toast"

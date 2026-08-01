@@ -54,8 +54,7 @@ const validationClasses: Record<ValidationStatus, string> = {
  * ```
  */
 export interface NumberInputProps
-  extends
-    Omit<
+  extends Omit<
       InputHTMLAttributes<HTMLInputElement>,
       "type" | "size" | "onChange" | "value" | "defaultValue" | "min" | "max" | "step"
     >,
@@ -187,7 +186,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
           return;
         }
         const num = parseFloat(raw);
-        if (!isNaN(num)) {
+        if (!Number.isNaN(num)) {
           if (!isControlled) setInternalValue(raw);
           onChange?.(num);
         }
@@ -197,7 +196,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
 
     const handleBlur = useCallback(() => {
       const num = parseFloat(displayValue as string);
-      if (isNaN(num)) {
+      if (Number.isNaN(num)) {
         if (!isControlled) setInternalValue("");
         onChange?.(undefined);
       } else {

@@ -56,8 +56,7 @@ const validationClasses: Record<ValidationStatus, string> = {
  * the field itself. Here the text is dates only and tenors come from the list.
  */
 export interface DateTenorInputProps
-  extends
-    Omit<
+  extends Omit<
       DateTenorInputBaseProps,
       | "classNames"
       | "dataAttributes"

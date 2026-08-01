@@ -6,3 +6,18 @@ storybook-static
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
+
+# Biome owns JavaScript, TypeScript and JSON: it lints and formats them, with
+# settings mirroring .prettierrc.json. Prettier keeps SCSS, Markdown, YAML and
+# HTML, which Biome cannot format yet. Listing them here stops the two tools
+# reformatting each other's files. See biome.jsonc.
+*.js
+*.jsx
+*.mjs
+*.cjs
+*.ts
+*.tsx
+*.mts
+*.cts
+*.json
+*.jsonc

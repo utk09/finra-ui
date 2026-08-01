@@ -3,11 +3,11 @@ import { clsx } from "clsx";
 import { forwardRef } from "react";
 
 import {
-  Select as SelectRoot,
   SelectContent as SelectContentBase,
   type SelectContentProps as SelectContentBaseProps,
   type SelectOptionData,
   type SelectProps,
+  Select as SelectRoot,
   SelectTrigger as SelectTriggerBase,
   type SelectTriggerProps as SelectTriggerBaseProps,
   SelectValue as SelectValueBase,

@@ -2,10 +2,10 @@ import { clsx } from "clsx";
 import { forwardRef } from "react";
 
 import {
-  Tooltip as TooltipRoot,
   TooltipContent as TooltipContentBase,
   type TooltipContentProps as TooltipContentBaseProps,
   type TooltipProps,
+  Tooltip as TooltipRoot,
   TooltipTrigger as TooltipTriggerBase,
   type TooltipTriggerProps,
 } from "../../unstyled/Tooltip/Tooltip";

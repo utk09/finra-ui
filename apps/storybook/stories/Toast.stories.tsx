@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, toast, Toaster } from "@utk09/finra-ui";
+import { Button, Toaster, toast } from "@utk09/finra-ui";
 import { expect, userEvent, within } from "storybook/test";
 
 const POSITIONS = [

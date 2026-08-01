@@ -46,8 +46,7 @@ const validationClasses: Record<ValidationStatus, string> = {
  * ```
  */
 export interface DateInputProps
-  extends
-    Omit<
+  extends Omit<
       DateInputBaseProps,
       | "classNames"
       | "dataAttributes"

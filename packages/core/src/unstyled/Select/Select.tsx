@@ -1,7 +1,7 @@
 import {
   type ButtonHTMLAttributes,
-  createContext,
   type CSSProperties,
+  createContext,
   type ElementType,
   forwardRef,
   type HTMLAttributes,
@@ -451,7 +451,7 @@ export const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
             const active = index === ctx.activeIndex;
             return (
               <div
-                key={`${index}-${option.value}`}
+                key={String(option.value)}
                 id={ctx.optionId(index)}
                 role="option"
                 tabIndex={-1}

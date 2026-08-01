@@ -107,7 +107,7 @@ describe("Dialog", () => {
     render(<Example />);
     fireEvent.click(screen.getByText("Open"));
 
-    // eslint-disable-next-line testing-library/no-node-access -- backdrop has no accessible role
+    // biome-ignore lint/plugin/no-node-access: the backdrop has no accessible role, so it cannot be queried
     const overlay = document.querySelector('[data-finra-ui="dialog-overlay"]');
     fireEvent.pointerDown(overlay as Element);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -148,7 +148,7 @@ describe("Dialog", () => {
     render(<Example dismissOnOutside={false} />);
     fireEvent.click(screen.getByText("Open"));
 
-    // eslint-disable-next-line testing-library/no-node-access -- backdrop has no accessible role
+    // biome-ignore lint/plugin/no-node-access: the backdrop has no accessible role, so it cannot be queried
     const overlay = document.querySelector('[data-finra-ui="dialog-overlay"]');
     fireEvent.pointerDown(overlay as Element);
     expect(screen.getByRole("dialog")).toBeInTheDocument();

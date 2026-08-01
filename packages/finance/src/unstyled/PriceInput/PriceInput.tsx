@@ -19,23 +19,23 @@ import {
   type IncrementAction,
   type IncrementContext,
   type NumericPrecision,
-  resolveIncrement,
   type RoundingMode,
+  resolveIncrement,
   type TickValidationMode,
   validateTick,
 } from "../../utils/increment";
 import { DEFAULT_PRICE_KEYMAP, type KeyMap, resolveKey } from "../../utils/keymap";
 import {
   formatPrice,
-  parsePrice,
   type PriceFormat,
   type PriceFormatOptions,
   type PriceFormatter,
   type PriceInstrument,
-  type PriceParser,
   type PriceParseResult,
+  type PriceParser,
   type PriceSegment,
   type PriceSegmentKind,
+  parsePrice,
   segmentPrice,
 } from "../../utils/priceFormat";
 
@@ -109,10 +109,11 @@ export interface PriceInputClassNames {
  * A no-op commit fires nothing: stepping into a bound you are already sitting
  * on reports no change, so `onChange` is never called with the current value.
  */
-export interface PriceInputBaseProps extends Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "value" | "defaultValue" | "onChange" | "min" | "max" | "type" | "className"
-> {
+export interface PriceInputBaseProps
+  extends Omit<
+    InputHTMLAttributes<HTMLInputElement>,
+    "value" | "defaultValue" | "onChange" | "min" | "max" | "type" | "className"
+  > {
   /** Controlled numeric value. */
   value?: number | null;
   /** Initial value (uncontrolled). */

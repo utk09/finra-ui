@@ -1,7 +1,7 @@
 import {
   type ButtonHTMLAttributes,
-  createContext,
   type CSSProperties,
+  createContext,
   type ElementType,
   forwardRef,
   type HTMLAttributes,
@@ -401,6 +401,10 @@ MenuItem.displayName = "MenuItem";
  * A divider between groups of menu items. Presentational only.
  */
 export const MenuSeparator = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+  // A static separator is not focusable and takes no value: aria-valuenow and
+  // focusability apply to a splitter, which this is not.
+  // biome-ignore lint/a11y/useFocusableInteractive: static separator, see above
+  // biome-ignore lint/a11y/useAriaPropsForRole: static separator, see above
   (props, ref) => <div ref={ref} role="separator" {...props} />,
 );
 

@@ -122,10 +122,8 @@ export interface TenorPickerClassNames {
  * and `90d` to canonical form. Set `allowCustom={false}` to restrict input to
  * the offered list.
  */
-export interface TenorPickerBaseProps extends Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "onChange" | "defaultValue" | "onInvalid"
-> {
+export interface TenorPickerBaseProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue" | "onInvalid"> {
   /** Controlled value (canonical tenor string). */
   value?: string | null;
   /** Initial value (uncontrolled). */

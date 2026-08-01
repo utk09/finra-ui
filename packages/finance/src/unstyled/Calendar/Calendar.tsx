@@ -489,6 +489,12 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
           data-week-numbers={showWeekNumbers || undefined}
           onKeyDown={handleKeyDown}
           onMouseLeave={isRange ? () => setHoveredDate(null) : undefined}>
+          {/* Structural grid roles (row, columnheader, rowheader, gridcell) are
+              not focusable under ARIA: focus lives on the day buttons, moved by
+              the roving tabindex this grid manages. Biome treats these roles as
+              interactive and asks for a tabIndex, which would insert dead tab
+              stops between the days. */}
+          {/* biome-ignore-start lint/a11y/useFocusableInteractive: ARIA structural grid roles, see above */}
           {/* Weekday header row */}
           <div className={cx(cn?.weekdayRow, cn?.row)} role="row">
             {showWeekNumbers ? (
@@ -513,7 +519,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
           {Array.from({ length: 6 }, (_, rowIdx) => {
             const rowDays = days.slice(rowIdx * 7, rowIdx * 7 + 7);
             return (
-              <div key={rowIdx} className={cn?.row} role="row">
+              <div key={rowDays[0].date.getTime()} className={cn?.row} role="row">
                 {showWeekNumbers ? (
                   <span className={cn?.weekNumber} role="rowheader">
                     {getISOWeek(rowDays[0].date)}
@@ -581,6 +587,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
               </div>
             );
           })}
+          {/* biome-ignore-end lint/a11y/useFocusableInteractive: end of grid structure */}
         </div>
 
         {/* Footer - static node or a render function given the footer API */}

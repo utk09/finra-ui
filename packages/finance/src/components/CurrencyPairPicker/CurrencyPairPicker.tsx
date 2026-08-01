@@ -66,8 +66,7 @@ const validationClasses: Record<ValidationStatus, string> = {
  * ```
  */
 export interface CurrencyPairPickerProps<T extends CurrencyPair = CurrencyPair>
-  extends
-    Omit<
+  extends Omit<
       CurrencyPairPickerBaseProps<T>,
       | "classNames"
       | "dataAttributes"

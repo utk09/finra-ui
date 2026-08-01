@@ -387,7 +387,7 @@ describe("PriceInputBase v2 (engines)", () => {
         aria-label="Price"
         {...FX}
         defaultValue={1.08345}
-        renderDisplay={(segs) => segs.map((s, i) => <span key={i}>{s.text}</span>)}
+        renderDisplay={(segs) => segs.map((s) => <span key={s.kind}>{s.text}</span>)}
       />,
     );
     expect(screen.getByText("0834")).toBeInTheDocument(); // primary frac
@@ -412,7 +412,7 @@ describe("PriceInputBase v2 (engines)", () => {
         pipDigits={2}
         bigFigureDigits={2}
         defaultValue={1.23456}
-        renderDisplay={(segs) => segs.map((s, i) => <span key={i}>{s.text}</span>)}
+        renderDisplay={(segs) => segs.map((s) => <span key={s.kind}>{s.text}</span>)}
       />,
     );
     expect(screen.getByText("1.23")).toBeInTheDocument();

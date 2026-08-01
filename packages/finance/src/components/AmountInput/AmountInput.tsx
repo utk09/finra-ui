@@ -52,8 +52,7 @@ const validationClasses: Record<ValidationStatus, string> = {
  * ```
  */
 export interface AmountInputProps
-  extends
-    Omit<AmountInputBaseProps, "classNames" | "dataAttributes">,
+  extends Omit<AmountInputBaseProps, "classNames" | "dataAttributes">,
     VariantProps<typeof rootVariants> {
   /** Visual validation status. */
   validationStatus?: ValidationStatus;

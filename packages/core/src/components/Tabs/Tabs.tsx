@@ -3,12 +3,12 @@ import { forwardRef, type HTMLAttributes } from "react";
 
 import {
   Tab as TabBase,
+  type TabProps as TabBaseProps,
   TabList as TabListBase,
   TabPanel as TabPanelBase,
   type TabPanelProps as TabPanelBaseProps,
-  type TabProps as TabBaseProps,
-  Tabs as TabsRoot,
   type TabsProps,
+  Tabs as TabsRoot,
 } from "../../unstyled/Tabs/Tabs";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Tabs.module.scss";

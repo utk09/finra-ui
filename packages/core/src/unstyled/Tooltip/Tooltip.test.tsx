@@ -76,13 +76,13 @@ describe("Tooltip", () => {
     render(
       <Tooltip openDelay={0}>
         <TooltipTrigger asChild>
-          <a href="#x">link</a>
+          <a href="#x">Open settings</a>
         </TooltipTrigger>
         <TooltipContent>hint</TooltipContent>
       </Tooltip>,
     );
 
-    const link = screen.getByText("link");
+    const link = screen.getByText("Open settings");
     expect(link.tagName).toBe("A");
     fireEvent.pointerEnter(link);
     act(() => vi.advanceTimersByTime(0));

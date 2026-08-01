@@ -5,8 +5,8 @@ import {
   createInstrumentSearch,
   createInstrumentSearchState,
   type InstrumentProvider,
-  instrumentSearchReducer,
   type InstrumentSearchState,
+  instrumentSearchReducer,
   isSearchEmpty,
   isSearchStale,
 } from "./instrumentSearch";

@@ -2,11 +2,11 @@ import { clsx } from "clsx";
 import { forwardRef } from "react";
 
 import {
-  Popover as PopoverRoot,
   PopoverClose as PopoverCloseBase,
   PopoverContent as PopoverContentBase,
   type PopoverContentProps as PopoverContentBaseProps,
   type PopoverProps,
+  Popover as PopoverRoot,
   PopoverTrigger as PopoverTriggerBase,
   type PopoverTriggerProps,
 } from "../../unstyled/Popover/Popover";

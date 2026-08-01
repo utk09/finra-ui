@@ -49,8 +49,8 @@ function renderSegments(segments: PriceSegment[]) {
   // (flex items would center-align instead).
   return (
     <span className={styles.line}>
-      {segments.map((seg, index) => (
-        <span key={index} className={segClass[seg.kind]}>
+      {segments.map((seg, _index) => (
+        <span key={seg.kind} className={segClass[seg.kind]}>
           {seg.text}
         </span>
       ))}
@@ -78,8 +78,7 @@ function renderSegments(segments: PriceSegment[]) {
  * ```
  */
 export interface PriceInputProps
-  extends
-    Omit<PriceInputBaseProps, "classNames" | "dataAttributes" | "renderDisplay">,
+  extends Omit<PriceInputBaseProps, "classNames" | "dataAttributes" | "renderDisplay">,
     VariantProps<typeof rootVariants> {
   /** Visual validation status. */
   validationStatus?: ValidationStatus;

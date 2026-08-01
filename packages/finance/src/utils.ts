@@ -15,37 +15,6 @@ export {
   formatAmount,
   parseAmount,
 } from "./utils/amount";
-
-// Date formatting
-export type { DateConstraints, DateFormat, DateParseResult } from "./utils/dateFormat";
-export {
-  formatDate,
-  getFormatPlaceholder,
-  getFormatSegmentLengths,
-  getFormatSeparator,
-  parseDate,
-  validateDate,
-} from "./utils/dateFormat";
-
-// Tenor utilities
-export type {
-  FlexibleTenorParseResult,
-  StandardTenor,
-  TenorInputParser,
-  TenorParseResult,
-  TenorResolver,
-  TenorTerm,
-  TenorUnit,
-} from "./utils/tenor";
-export {
-  dateToTenor,
-  isStandardTenor,
-  parseTenor,
-  parseTenorInput,
-  resolveTenor,
-  STANDARD_TENORS,
-} from "./utils/tenor";
-
 // Currency-pair parse/format (CurrencyPairPicker's pluggable-parser seam)
 export type {
   CurrencyPairFormatOptions,
@@ -64,17 +33,25 @@ export {
   pairId,
   parseCurrencyPair,
 } from "./utils/currencyPair";
-
+// Date formatting
+export type { DateConstraints, DateFormat, DateParseResult } from "./utils/dateFormat";
+export {
+  formatDate,
+  getFormatPlaceholder,
+  getFormatSegmentLengths,
+  getFormatSeparator,
+  parseDate,
+  validateDate,
+} from "./utils/dateFormat";
 // Unified date/tenor parser (DateTenorPicker's pluggable-parser seam)
 export type {
   DateTenorMode,
   DateTenorParseContext,
   DateTenorParseError,
-  DateTenorParser,
   DateTenorParseResult,
+  DateTenorParser,
 } from "./utils/dateTenorParse";
 export { parseDateTenor } from "./utils/dateTenorParse";
-
 // Decimal arithmetic that avoids binary floating-point artefacts
 export {
   addDecimal,
@@ -87,22 +64,6 @@ export {
   subtractDecimal,
   sumDecimal,
 } from "./utils/decimal";
-
-// Market-aware price parse/format/tick (PriceInput's pluggable seams)
-export type {
-  PriceFormat,
-  PriceFormatOptions,
-  PriceFormatter,
-  PriceInstrument,
-  PriceParser,
-  PriceParseResult,
-  PriceSegment,
-  PriceSegmentConfig,
-  PriceSegmentKind,
-  TickEngine,
-} from "./utils/priceFormat";
-export { formatPrice, parsePrice, segmentPrice, stepPrice } from "./utils/priceFormat";
-
 // Shared increment engine (FP-safe, keyboard-independent) + tick validation
 export type {
   IncrementAction,
@@ -113,7 +74,38 @@ export type {
   TickValidationResult,
 } from "./utils/increment";
 export { displayDecimals, resolveIncrement, roundWith, validateTick } from "./utils/increment";
-
 // Configurable keyboard action map (key+modifier → semantic action)
 export type { KeyAction, KeyEventLike, KeyMap, NavMode } from "./utils/keymap";
 export { createAmountKeymap, DEFAULT_PRICE_KEYMAP, keyChord, resolveKey } from "./utils/keymap";
+// Market-aware price parse/format/tick (PriceInput's pluggable seams)
+export type {
+  PriceFormat,
+  PriceFormatOptions,
+  PriceFormatter,
+  PriceInstrument,
+  PriceParseResult,
+  PriceParser,
+  PriceSegment,
+  PriceSegmentConfig,
+  PriceSegmentKind,
+  TickEngine,
+} from "./utils/priceFormat";
+export { formatPrice, parsePrice, segmentPrice, stepPrice } from "./utils/priceFormat";
+// Tenor utilities
+export type {
+  FlexibleTenorParseResult,
+  StandardTenor,
+  TenorInputParser,
+  TenorParseResult,
+  TenorResolver,
+  TenorTerm,
+  TenorUnit,
+} from "./utils/tenor";
+export {
+  dateToTenor,
+  isStandardTenor,
+  parseTenor,
+  parseTenorInput,
+  resolveTenor,
+  STANDARD_TENORS,
+} from "./utils/tenor";

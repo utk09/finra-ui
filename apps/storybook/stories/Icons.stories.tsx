@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as FinraIcons from "@utk09/finra-ui-icons/react";
+import type React from "react";
 import type { SVGProps } from "react";
-import React from "react";
 
 type IconComponent = (props: SVGProps<SVGSVGElement>) => React.JSX.Element;
 

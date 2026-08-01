@@ -16,7 +16,14 @@ import { parseTenorInput, type TenorInputParser } from "../utils/tenor";
  * once, not twice.
  */
 export type TenorGroupId =
-  "favourites" | "overnight" | "tomorrow" | "spot" | "weeks" | "months" | "years" | "custom";
+  | "favourites"
+  | "overnight"
+  | "tomorrow"
+  | "spot"
+  | "weeks"
+  | "months"
+  | "years"
+  | "custom";
 
 /** Default group render order (favourites is pinned separately, always first). */
 export const DEFAULT_TENOR_GROUP_ORDER: TenorGroupId[] = [

@@ -13,6 +13,9 @@ import {
 import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
+/** Filler long enough to make the dialog body scroll. */
+const SCROLL_SECTIONS = Array.from({ length: 12 }, (_, i) => `Section ${i + 1}`);
+
 const meta: Meta<typeof Dialog> = {
   title: "Components/Dialog",
   component: Dialog,
@@ -128,9 +131,9 @@ export const LongContent: Story = {
         <DialogTitle>Terms of service</DialogTitle>
         <DialogDescription>Please review before continuing.</DialogDescription>
         <div style={{ maxBlockSize: "40vh", overflowY: "auto" }}>
-          {Array.from({ length: 12 }, (_, i) => (
-            <p key={i} style={{ marginBlock: "0.5rem" }}>
-              Section {i + 1}. Trading involves risk and past performance does not guarantee future
+          {SCROLL_SECTIONS.map((section) => (
+            <p key={section} style={{ marginBlock: "0.5rem" }}>
+              {section}. Trading involves risk and past performance does not guarantee future
               results. All orders are subject to review and may be rejected at our discretion.
             </p>
           ))}

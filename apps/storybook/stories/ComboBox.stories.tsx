@@ -284,35 +284,31 @@ export const HeaderAndFooter: Story = {
 export const CurrencySelection: Story = {
   name: "Currency Selection (Full Example)",
   render: () => {
-    const allCurrencies = currencyOptions;
-    const [options, setOptions] = useState(allCurrencies);
+    const [options, setOptions] = useState(currencyOptions);
     const [value, setValue] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleLoadOptions = useCallback(
-      (input: string) => {
-        if (!input) {
-          setOptions(allCurrencies);
-          setError(null);
-          return;
-        }
-        setLoading(true);
+    const handleLoadOptions = useCallback((input: string) => {
+      if (!input) {
+        setOptions(currencyOptions);
         setError(null);
-        // Simulate async currency search
-        setTimeout(() => {
-          const results = allCurrencies.filter((o) =>
-            o.label.toLowerCase().includes(input.toLowerCase()),
-          );
-          if (results.length === 0) {
-            setError(`No currencies matching "${input}"`);
-          }
-          setOptions(results);
-          setLoading(false);
-        }, 400);
-      },
-      [allCurrencies],
-    );
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      // Simulate async currency search
+      setTimeout(() => {
+        const results = currencyOptions.filter((o) =>
+          o.label.toLowerCase().includes(input.toLowerCase()),
+        );
+        if (results.length === 0) {
+          setError(`No currencies matching "${input}"`);
+        }
+        setOptions(results);
+        setLoading(false);
+      }, 400);
+    }, []);
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>

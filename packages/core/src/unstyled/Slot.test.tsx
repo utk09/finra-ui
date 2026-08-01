@@ -105,7 +105,9 @@ describe("Slot", () => {
     it("child props override slot props for non-special keys", () => {
       render(
         <Slot aria-label="slot-label">
-          <div aria-label="child-label">content</div>
+          <div role="group" aria-label="child-label">
+            content
+          </div>
         </Slot>,
       );
       expect(screen.getByText("content")).toHaveAttribute("aria-label", "child-label");

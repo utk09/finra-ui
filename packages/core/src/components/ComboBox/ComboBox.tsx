@@ -77,8 +77,7 @@ const validationClasses: Record<string, string> = {
  * ```
  */
 export interface ComboBoxProps<T = string>
-  extends
-    Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue">,
+  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue">,
     VariantProps<typeof wrapperVariants> {
   /** Available options. Groups and favourites are derived from each option's own fields. */
   options: ComboBoxOption<T>[];

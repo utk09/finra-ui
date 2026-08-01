@@ -5,7 +5,7 @@ Thanks for contributing! This guide covers everything you need to get a change f
 ## Prerequisites
 
 - **Node 22** (`.nvmrc` is checked in - run `nvm use`)
-- **pnpm ≥ 10** (repo pins `pnpm@11.18.0` via `packageManager`)
+- **pnpm ≥ 11** (repo pins `pnpm@11.18.0` via `packageManager`). The workspace uses `allowBuilds`, which pnpm 10 does not understand - on an older pnpm the approved build scripts are skipped and the install looks fine but is not.
 
 ## Getting Started
 
@@ -26,6 +26,9 @@ packages/icons/      - @utk09/finra-ui-icons    SVG icon data + React wrappers
 apps/storybook/      - Storybook docs app (deployed to finra-ui.netlify.app)
 apps/react-example-basic/    - e-commerce demo app
 apps/react-example-advanced/ - financial dashboard demo app
+config/              - shared Vite/Vitest config used by all three packages
+plugins/             - custom GritQL lint rules (see plugins/README.md)
+scripts/             - build helpers
 ```
 
 This is a pnpm monorepo orchestrated by Turborepo. All dependency versions are centralized in the `pnpm-workspace.yaml` catalog - reference them with `"catalog:"` in package.json, never with a literal version.
@@ -39,12 +42,22 @@ This is a pnpm monorepo orchestrated by Turborepo. All dependency versions are c
 | `pnpm test` | Full test suite (includes the browser-based Storybook project) |
 | `pnpm test:coverage` | Unit tests with coverage (85% per-file threshold - a hard gate) |
 | `pnpm typecheck` | TypeScript checks |
-| `pnpm lint` / `pnpm lint:fix` | ESLint (flat config at root) / autofix + Prettier |
+| `pnpm lint` / `pnpm lint:fix` | Biome + Prettier check / autofix (see Tooling below) |
 | `pnpm verify` | `lint → typecheck → test:coverage → build` - reproduces every CI/push gate; run before pushing |
+
+## Tooling
+
+**Two formatters, split by file type.** Biome owns `.ts .tsx .js .jsx .mjs .cjs .mts .cts .json .jsonc`; Prettier owns `.scss .css .md .mdx .yml .yaml .html`. Biome has no SCSS or Markdown support, which is the only reason both are present. `.prettierignore` excludes everything Biome owns, so the two never fight over a file.
+
+Suppress a Biome rule with a single-line `// biome-ignore lint/<group>/<rule>: <reason>` immediately above the offending line - any comment in between silently breaks it, and the correct placement is per-rule (some attach to the element, some to the attribute). Custom GritQL rules use `lint/plugin/<name>`. `plugins/README.md` documents what the move from ESLint left uncovered.
+
+**Builds emit declarations with `tsc`, not a bundler plugin.** Each package runs `vite build && tsc -p tsconfig.build.json && node ../../scripts/strip-style-imports.mjs dist`. The shared `tsconfig.build.json` sets `paths: {}` on purpose, so cross-package imports resolve through `node_modules` to built types rather than a sibling's source tree. Build order matters and Turborepo's `dependsOn: ["^build"]` handles it: icons, then core, then finance.
+
+**Published output is one file per source module** (`preserveModules`). That is what makes the packages tree-shakeable - importing a single component pulls in that component, not the whole library. Anything in `dependencies` or `peerDependencies` is automatically external; do not add a package to `dependencies` and also expect it bundled.
 
 ## Git Hooks (installed automatically via husky)
 
-- **pre-commit** - lint-staged: ESLint `--fix` + Prettier on staged files.
+- **pre-commit** - lint-staged, routing by extension: `biome check --write` on JS/TS/JSON, `prettier --write` on styles/markdown/YAML.
 - **commit-msg** - commitlint enforces [Conventional Commits](https://www.conventionalcommits.org/): `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
 - **pre-push** - `pnpm test:coverage`. Coverage is enforced **per file** at 85% (statements/branches/functions/lines). A new untested branch in any file fails the push - write the covering test in the same change.
 
@@ -74,19 +87,20 @@ What you write in the PR description is what the changelog entry gets written fr
 
 ### Code
 
-- ESM only (`type: "module"`); TypeScript strict; React 19; `react`/`react-dom` are peer dependencies.
+- ESM only (`type: "module"`); TypeScript strict (TS 7, the native port); React 19; `react`/`react-dom` are peer dependencies.
 - Modern CSS: logical properties, `gap`, `clamp()`, `:user-invalid`, `prefers-reduced-motion` guards on transitions. Browser floor: Safari ≥ 16.5.
 - Follow official documentation when integrating third-party tools.
 
 ### Accessibility
 
 - Target WCAG 2.2 AA; follow [APG patterns](https://www.w3.org/WAI/ARIA/apg/patterns/) for composite widgets.
-- `jsx-a11y/interactive-supports-focus` on roving-focus containers: add `tabIndex={-1}` if the container legitimately receives focus (e.g. menu); otherwise add an eslint-disable with a one-line APG rationale. Never add `tabIndex` to a tablist.
+- Roving-focus containers trip Biome's `a11y/noNoninteractiveTabindex` and `a11y/useSemanticElements` family: add `tabIndex={-1}` if the container legitimately receives focus (e.g. menu); otherwise add a `biome-ignore` with a one-line APG rationale. Never add `tabIndex` to a tablist. A tabpanel with no focusable content is the exception - APG requires `tabIndex={0}` there, and it is suppressed deliberately.
 
 ### Testing
 
 - Vitest + Testing Library (+ user-event) in jsdom; Storybook `play` functions run in a separate real-browser project - they only execute under the full `pnpm test`, not under `--filter`ed coverage runs.
-- The test setup sets `testIdAttribute: "data-finra-ui"`, so `getByTestId("<component-id>")` addresses role-less roots. Never traverse off a queried node (`closest`, `parentElement`, `querySelector`) - `testing-library/no-node-access` is a hard error. Do not add separate `data-testid` attributes.
+- The test setup sets `testIdAttribute: "data-finra-ui"`, so `getByTestId("<component-id>")` addresses role-less roots. Never traverse off a queried node (`closest`, `parentElement`, `querySelector`) - the custom `no-node-access` GritQL rule is a hard error. Do not add separate `data-testid` attributes.
+- Pure engines under `logic/` and `utils/` still run in jsdom. Splitting them out to the `node` environment was measured and made no difference to wall clock, because files already run in parallel and the critical path is the component tests.
 - Portalled overlays with entrance animations: wrap visibility assertions in `waitFor` (real browsers race the fade).
 - Use `toBeCloseTo` / `expect.closeTo` for floating-point assertions.
 

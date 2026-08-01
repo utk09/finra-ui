@@ -1,0 +1,38 @@
+{
+  // Shared base for declaration emit. Each publishable package extends this
+  // with its own `outDir`/`rootDir`; nothing else should need to change.
+  //
+  // Declarations come from `tsc --emitDeclarationOnly` rather than a bundler
+  // plugin. Emitting types is the compiler's own job, and going direct means
+  // there is no plugin reaching for TypeScript's JavaScript Compiler API, which
+  // the native TS 7 port does not ship.
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": false,
+
+    // Resolve cross-package imports through node_modules to each package's
+    // built types, not through the source `paths` aliases used for typecheck
+    // and tests. Two reasons: a published .d.ts must not point at a sibling's
+    // source tree, and pulling sibling sources into the program would put them
+    // outside `rootDir`. Turbo's `dependsOn: ["^build"]` guarantees the
+    // dependency is built first.
+    "paths": {},
+
+    // Test-only globals are not part of the published surface.
+    "types": []
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.stories.ts",
+    "**/*.stories.tsx"
+  ]
+}

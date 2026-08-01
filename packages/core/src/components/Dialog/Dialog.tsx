@@ -2,12 +2,12 @@ import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes } from "react";
 
 import {
-  Dialog as DialogRoot,
   DialogClose as DialogCloseBase,
   DialogContent as DialogContentBase,
   type DialogContentProps as DialogContentBaseProps,
   DialogDescription as DialogDescriptionBase,
   type DialogProps,
+  Dialog as DialogRoot,
   DialogTitle as DialogTitleBase,
   DialogTrigger as DialogTriggerBase,
   type DialogTriggerProps,

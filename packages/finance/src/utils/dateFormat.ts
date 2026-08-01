@@ -10,7 +10,12 @@ import { isSameDay } from "../logic/calendar";
  * locale, or the same digits would mean different dates on different machines.
  */
 export type DateFormat =
-  "YYYY-MM-DD" | "MM/DD/YYYY" | "DD/MM/YYYY" | "DD-MM-YYYY" | "MM-DD-YYYY" | "YYYY/MM/DD";
+  | "YYYY-MM-DD"
+  | "MM/DD/YYYY"
+  | "DD/MM/YYYY"
+  | "DD-MM-YYYY"
+  | "MM-DD-YYYY"
+  | "YYYY/MM/DD";
 
 /**
  * Bounds and exclusions a date must satisfy.

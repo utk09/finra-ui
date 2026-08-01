@@ -124,6 +124,9 @@ export const TabList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>
     // Roving-tabindex fallback: a tab is tabbable only when selected, so if the
     // current value matches no tab (e.g. no default provided) nothing would be
     // reachable by keyboard. Make the first enabled tab tabbable in that case.
+    // `value` is a re-run trigger, not something the effect reads: it re-seats
+    // the roving tab stop after the selection moves.
+    // biome-ignore lint/correctness/useExhaustiveDependencies: re-run trigger, see above
     useEffect(() => {
       const tabs = getEnabledTabs(listRef.current);
       const hasTabbable = tabs.some((t) => t.tabIndex === 0);
@@ -158,7 +161,6 @@ export const TabList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>
       // APG tabs: the tablist is a non-focusable container; the tabs hold focus
       // and the roving keydown handler lives here (bubbles up from the focused
       // tab). jsx-a11y wrongly wants the container itself focusable.
-      // eslint-disable-next-line jsx-a11y/interactive-supports-focus
       <div
         ref={mergeRefs(ref, listRef)}
         role="tablist"
@@ -264,6 +266,9 @@ export const TabPanel = forwardRef<HTMLDivElement, TabPanelProps>(
         id={panelId(ctx.baseId, value)}
         aria-labelledby={tabId(ctx.baseId, value)}
         hidden={!selected}
+        // APG: a tabpanel with no focusable content must itself be reachable,
+        // so it carries tabindex=0 by design.
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: APG tabs pattern, see above
         tabIndex={0}
         data-state={selected ? "active" : "inactive"}
         {...rest}>

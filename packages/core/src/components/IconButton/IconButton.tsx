@@ -50,7 +50,8 @@ const iconButtonVariants = cva(styles.iconButton, {
  * ```
  */
 export interface IconButtonProps
-  extends IconButtonBaseProps, VariantProps<typeof iconButtonVariants> {
+  extends IconButtonBaseProps,
+    VariantProps<typeof iconButtonVariants> {
   /** Colour meaning. Orthogonal to `variant`. */
   sentiment?: IconButtonSentiment;
 }

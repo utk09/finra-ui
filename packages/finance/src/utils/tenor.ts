@@ -325,9 +325,10 @@ export function parseTenorInput(input: string): FlexibleTenorParseResult {
   const terms: TenorTerm[] = [];
   const seen = new Set<TenorUnit>();
   let consumed = 0;
-  let match: RegExpExecArray | null;
-  TERM_SCAN.lastIndex = 0;
-  while ((match = TERM_SCAN.exec(raw)) !== null) {
+  // matchAll rather than a lastIndex-driven exec loop: the regex is
+  // module-level, so a manual `lastIndex = 0` reset was the only thing stopping
+  // state leaking between calls. matchAll clones it instead.
+  for (const match of raw.matchAll(TERM_SCAN)) {
     const value = parseInt(match[1], 10);
     const unit = UNIT_WORDS[match[2].toUpperCase()];
     if (!unit) return { valid: false, tenor: null, error: "invalid-format" };

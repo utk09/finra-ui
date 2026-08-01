@@ -28,7 +28,7 @@ export function useControlledValue<T>(
 
   const wasControlled = useRef(isControlled);
   if (process.env.NODE_ENV !== "production" && wasControlled.current !== isControlled) {
-    // eslint-disable-next-line no-console -- intentional dev-only warning
+    // biome-ignore lint/suspicious/noConsole: intentional dev-only warning
     console.error(
       `A component is switching between controlled and uncontrolled. ` +
         `Decide between a controlled value (always pass one) or uncontrolled ` +

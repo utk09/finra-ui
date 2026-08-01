@@ -44,9 +44,9 @@ Operational guide for current and future maintainers of finra-ui.
 
 - All versions live in the **`pnpm-workspace.yaml` catalog**. Bump there; packages reference `"catalog:"`.
 - After bumping: `pnpm install`, then `pnpm verify` (lint → typecheck → test:coverage → build). Run the full `pnpm test` too - Storybook `play` tests run in a real browser and catch what jsdom misses.
-- Major upgrades of build-critical tools (Vite, Vitest, Storybook, TypeScript, ESLint) get their own PR, and a changelog entry at release time only if build output changes.
-- Runtime dependency additions to published packages are rare and deliberate (current set: `clsx`, `class-variance-authority`, `@floating-ui/dom`). New runtime deps need a written justification in the PR: what it buys, why it cannot be a devDependency, and its bundle cost.
-- Node version is pinned in `.nvmrc` (22) and mirrored in CI and Netlify - bump all three together.
+- Major upgrades of build-critical tools (Vite, Vitest, Storybook, TypeScript, Biome) get their own PR, and a changelog entry at release time only if build output changes.
+- Runtime dependency additions to published packages are rare and deliberate (current set: `clsx`, `class-variance-authority`, `@floating-ui/dom`). New runtime deps need a written justification in the PR: what it buys, why it cannot be a devDependency, and its bundle cost. Anything listed in `dependencies` or `peerDependencies` is externalised from the bundle automatically, so a new runtime dep becomes something the consumer installs.
+- Node version is pinned in `.nvmrc` (22) and mirrored in CI and Netlify - bump all three together. The pnpm floor is 11 (`allowBuilds` in `pnpm-workspace.yaml` is not understood by pnpm 10).
 
 ## Versioning
 
@@ -98,6 +98,7 @@ Publishing is manual, so it depends on one person's local machine and npm creden
 
 ### Post-release checklist
 
-- Verify the new versions on npm and that `npm pack --dry-run` output looked sane (no stray files).
+- Verify the new versions on npm and that `npm pack --dry-run` output looked sane (no stray files - the tarball should contain only `dist/`, `LICENSE`, `NOTICE`, `README.md`, `CHANGELOG.md` and `package.json`).
+- **A high file count is expected, not a packaging bug.** Packages build one output file per source module so consumers can tree-shake to a single component. At 0.3.0 that is roughly 184 files for core, 90 for finance and 262 for icons.
 - Smoke-test an install in a scratch app (ESM import + `/styles` import).
 - Confirm Storybook redeployed if the release changed components.

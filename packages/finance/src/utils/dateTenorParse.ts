@@ -146,9 +146,10 @@ function parseTenorExpression(
   // guard already pins the exact shape, so no second full-string test is needed.
   if (/^(\d+[DWMY]){2,}$/.test(s)) {
     const components: TenorComponent[] = [];
-    COMPONENT_RE.lastIndex = 0;
-    let m: RegExpExecArray | null;
-    while ((m = COMPONENT_RE.exec(s)) !== null) {
+    // matchAll rather than a lastIndex-driven exec loop: the regex is
+    // module-level, so a manual `lastIndex = 0` reset was the only thing
+    // stopping state leaking between calls. matchAll clones it instead.
+    for (const m of s.matchAll(COMPONENT_RE)) {
       const value = parseInt(m[1], 10);
       if (value <= 0) return null;
       components.push({ value, unit: m[2] as TenorUnit });

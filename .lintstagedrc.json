@@ -1,4 +1,4 @@
 {
-  "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"],
-  "*.{json,md,mdx,scss,css,yml,yaml}": ["prettier --write"]
+  "*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,json,jsonc}": ["biome check --write --no-errors-on-unmatched"],
+  "*.{scss,css,md,mdx,yml,yaml,html}": ["prettier --write"]
 }

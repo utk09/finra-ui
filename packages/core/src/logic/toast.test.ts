@@ -4,8 +4,8 @@ import {
   createToastStore,
   initialToastState,
   type ToastData,
-  toastReducer,
   type ToastStoreAction,
+  toastReducer,
 } from "./toast";
 
 const make = (id: string): ToastData => ({ id, sentiment: "info", duration: 0 });

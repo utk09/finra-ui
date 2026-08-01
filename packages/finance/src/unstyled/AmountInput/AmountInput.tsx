@@ -99,10 +99,11 @@ export interface AmountInputClassNames {
  * The display is tied to the committed value, not the keystrokes: editable
  * digits while focused, the formatted amount at rest.
  */
-export interface AmountInputBaseProps extends Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "value" | "defaultValue" | "onChange" | "min" | "max" | "step" | "type" | "className"
-> {
+export interface AmountInputBaseProps
+  extends Omit<
+    InputHTMLAttributes<HTMLInputElement>,
+    "value" | "defaultValue" | "onChange" | "min" | "max" | "step" | "type" | "className"
+  > {
   /** Controlled canonical value. Always the expanded number, never `"1.2M"`. */
   value?: number | null;
   /** Initial value (uncontrolled). */

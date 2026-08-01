@@ -2,12 +2,12 @@ import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes } from "react";
 
 import {
-  Menu as MenuRoot,
   MenuContent as MenuContentBase,
   type MenuContentProps as MenuContentBaseProps,
   MenuItem as MenuItemBase,
   type MenuItemProps as MenuItemBaseProps,
   type MenuProps,
+  Menu as MenuRoot,
   MenuSeparator as MenuSeparatorBase,
   MenuTrigger as MenuTriggerBase,
   type MenuTriggerProps,

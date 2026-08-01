@@ -1,6 +1,5 @@
 import { useClickOutside, useFormField } from "@utk09/finra-ui";
-import { cx } from "@utk09/finra-ui/utils";
-import { mergeRefs } from "@utk09/finra-ui/utils";
+import { cx, mergeRefs } from "@utk09/finra-ui/utils";
 import {
   type ChangeEvent,
   forwardRef,
@@ -84,10 +83,8 @@ export interface DateTenorInputClassNames {
  * and picking a date reports the standard tenor it lands on (or `null`). The
  * text field itself accepts dates only - tenors come from the list.
  */
-export interface DateTenorInputBaseProps extends Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "onChange" | "defaultValue"
-> {
+export interface DateTenorInputBaseProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue"> {
   /** Current date value. */
   dateValue?: Date | null;
   /** Current tenor value. */

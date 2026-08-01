@@ -4,7 +4,15 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "src/**", "stories/**"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "stories/**",
+        "../../config/**",
+        "../../scripts/**",
+        "../../tsconfig.base.json",
+        "../../tsconfig.build.json"
+      ],
       "outputs": ["dist/**", "storybook-static/**"]
     },
     "lint": {
@@ -13,21 +21,30 @@
         "src/**",
         "stories/**",
         ".storybook/**",
-        "../../eslint.config.ts"
+        "../../biome.jsonc",
+        "../../plugins/**",
+        "../../.prettierrc.json",
+        "../../.prettierignore"
       ]
     },
     "test": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**"]
+      "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**", "../../config/**"]
     },
     "test:coverage": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**"],
+      "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**", "../../config/**"],
       "outputs": ["coverage/**"]
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "src/**", "stories/**", ".storybook/**"]
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "stories/**",
+        ".storybook/**",
+        "../../tsconfig.base.json"
+      ]
     },
     "lint:fix": {
       "cache": false

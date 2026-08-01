@@ -22,6 +22,7 @@ import {
 import {
   buildPairSections,
   type CurrencyPairLike,
+  rankPairs as defaultRankPairs,
   flattenPairSections,
   isPairSelectable,
   movePairHighlight,
@@ -29,7 +30,6 @@ import {
   type PairSectionId,
   type PairSectionModel,
   type RankedPair,
-  rankPairs as defaultRankPairs,
   type RankPairsContext,
   resolvePairPickerKey,
 } from "../../logic/currencyPairPicker";
@@ -39,10 +39,10 @@ import {
   isSearchStale,
 } from "../../logic/instrumentSearch";
 import {
-  collectCurrencyCodes,
-  currencyDisplayName,
   type CurrencyPairParseError,
   type CurrencyPairValue,
+  collectCurrencyCodes,
+  currencyDisplayName,
   formatCurrencyPair,
   pairId,
   parseCurrencyPair,
@@ -273,10 +273,11 @@ export interface CurrencyPairRenderOptionState {
  * @typeParam T - Your own pair type, if it extends {@link CurrencyPair}. Extra
  * fields survive the round trip untouched.
  */
-export interface CurrencyPairPickerBaseProps<T extends CurrencyPair = CurrencyPair> extends Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "onChange" | "defaultValue" | "onSelect" | "onInvalid"
-> {
+export interface CurrencyPairPickerBaseProps<T extends CurrencyPair = CurrencyPair>
+  extends Omit<
+    HTMLAttributes<HTMLDivElement>,
+    "onChange" | "defaultValue" | "onSelect" | "onInvalid"
+  > {
   //  Value - a scalar in, the whole pair out
   /**
    * Controlled value: the pair's **id**, not the object.
@@ -615,7 +616,7 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
       seen.add(pair.id);
     }
     if (clashes.size > 0) {
-      // eslint-disable-next-line no-console -- intentional dev-only warning
+      // biome-ignore lint/suspicious/noConsole: intentional dev-only warning
       console.warn(
         `CurrencyPairPicker: duplicate pair id(s) ${[...clashes].join(", ")}. ` +
           "Only the last of each is shown. Give every tradable instrument its own id " +
@@ -809,7 +810,9 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
   /** Render order is the roving-highlight index space; precomputed to stay O(n). */
   const indexById = useMemo(() => {
     const map = new Map<string, number>();
-    flat.forEach((pair, index) => map.set(pair.id, index));
+    flat.forEach((pair, index) => {
+      map.set(pair.id, index);
+    });
     return map;
   }, [flat]);
 

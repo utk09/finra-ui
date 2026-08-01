@@ -65,8 +65,7 @@ const validationClasses: Record<ValidationStatus, string> = {
  * ```
  */
 export interface DateTenorPickerProps
-  extends
-    Omit<
+  extends Omit<
       DateTenorPickerBaseProps,
       | "classNames"
       | "dataAttributes"

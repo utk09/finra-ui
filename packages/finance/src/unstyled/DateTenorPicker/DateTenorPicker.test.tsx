@@ -242,10 +242,11 @@ describe("DateTenorPickerBase", () => {
 
   it("supports a replaceable parser (and falls back when it omits display/error)", async () => {
     const user = userEvent.setup();
-    const parser = vi.fn((input: string): DateTenorParseResult =>
-      input === "XX"
-        ? { valid: true, mode: "tenor", date: new Date(2027, 5, 1), tenor: "XX", display: null }
-        : { valid: false, mode: null, date: null, tenor: null, display: null },
+    const parser = vi.fn(
+      (input: string): DateTenorParseResult =>
+        input === "XX"
+          ? { valid: true, mode: "tenor", date: new Date(2027, 5, 1), tenor: "XX", display: null }
+          : { valid: false, mode: null, date: null, tenor: null, display: null },
     );
     const onInvalid = vi.fn();
     const { onChange, input } = setup({ parser, onInvalid });

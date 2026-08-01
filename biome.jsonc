@@ -1,0 +1,236 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.6/schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/build",
+      "!**/coverage",
+      "!**/storybook-static",
+      "!**/node_modules",
+      "!**/.turbo",
+      "!**/.serena",
+      "!**/.husky",
+      "!**/.changeset",
+      "!**/pnpm-lock.yaml",
+      // Prettier owns these; Biome cannot format SCSS/Markdown/YAML yet, and
+      // its HTML formatter is still experimental.
+      "!**/*.scss",
+      "!**/*.css",
+      "!**/*.html"
+    ]
+  },
+
+  // Biome formats JS, TS, TSX and JSON. It cannot yet format SCSS, Markdown or
+  // YAML, so Prettier is retained for those three. Settings below mirror
+  // .prettierrc.json exactly, so a file formatted by either tool is identical.
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "lineEnding": "lf"
+  },
+
+  "javascript": {
+    "formatter": {
+      "semicolons": "always",
+      "quoteStyle": "double",
+      "jsxQuoteStyle": "double",
+      "trailingCommas": "all",
+      "arrowParentheses": "always",
+      "bracketSpacing": true,
+      "bracketSameLine": true,
+      "quoteProperties": "asNeeded"
+    }
+  },
+
+  "json": {
+    "formatter": { "trailingCommas": "none" }
+  },
+
+  // Replaces eslint-plugin-simple-import-sort. Groups reproduce its output:
+  // node builtins, then external packages, then aliases and relative paths,
+  // each separated by a blank line.
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              [":BUN:", ":NODE:"],
+              ":BLANK_LINE:",
+              [":PACKAGE_WITH_PROTOCOL:", ":PACKAGE:"],
+              ":BLANK_LINE:",
+              [":ALIAS:", ":PATH:"]
+            ]
+          }
+        }
+      }
+    }
+  },
+
+  "linter": {
+    "enabled": true,
+    // `react` covers eslint-plugin-react-hooks; `test` covers most of
+    // @vitest/eslint-plugin.
+    "domains": { "react": "recommended", "test": "recommended" },
+    "rules": {
+      "preset": "recommended",
+
+      "correctness": {
+        "useHookAtTopLevel": "error", // was react-hooks/rules-of-hooks
+        "useExhaustiveDependencies": "warn", // was react-hooks/exhaustive-deps
+        "noUnusedVariables": {
+          "level": "warn",
+          "options": { "ignoreRestSiblings": true }
+        }
+      },
+
+      "style": {
+        "useImportType": "warn", // was @typescript-eslint/consistent-type-imports
+        "useConst": "warn",
+        "useTemplate": "warn",
+        "useShorthandAssign": "warn"
+      },
+
+      "suspicious": {
+        "noVar": "error",
+        "noDoubleEquals": { "level": "error", "options": { "ignoreNull": true } }, // was eqeqeq
+        "noDebugger": "error",
+        "noFocusedTests": "error",
+        "noSkippedTests": "warn",
+        "noDuplicateTestHooks": "warn",
+        // @typescript-eslint/no-empty-object-type was off; `{}` is a legitimate
+        // constraint in this codebase's generic signatures.
+        "noEmptyInterface": "off"
+      },
+
+      "complexity": {
+        "noBannedTypes": "off" // same reason as noEmptyInterface
+      },
+
+      "a11y": {
+        // These components each render a real <input> inside the <label>, but
+        // Biome cannot see through the component boundary to find it.
+        "noLabelWithoutControl": {
+          "level": "error",
+          "options": {
+            "inputComponents": [
+              "CheckboxBase",
+              "RadioButtonBase",
+              "SliderBase",
+              "SwitchBase",
+              "InputBase",
+              "NumberInputBase",
+              "TextareaBase"
+            ]
+          }
+        },
+        // OFF, deliberately. Wants role="grid" rewritten to <table> and
+        // role="group" to <fieldset>. Both are wrong here: the APG composite
+        // widget patterns this library implements put those roles on divs, and
+        // a ButtonGroup is not a form fieldset. jsx-a11y had no such rule, so
+        // nothing regresses by disabling it.
+        "useSemanticElements": "off"
+      },
+
+      "nursery": {
+        "noConditionalExpect": "warn", // was vitest/no-conditional-expect
+        "noIdenticalTestTitle": "warn",
+        "useConsistentTestIt": {
+          "level": "warn",
+          "options": { "function": "it", "withinDescribe": "it" }
+        },
+        "useTestHooksOnTop": "warn"
+      }
+    }
+  },
+
+  // Rebuilds the rules Biome has no equivalent for. See plugins/README.md.
+  "plugins": [
+    {
+      "path": "./plugins/no-node-access.grit",
+      // Test files only. `querySelector` and friends are legitimate inside the
+      // components themselves, and in app entry points.
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
+    }
+  ],
+
+  "overrides": [
+    {
+      // Library source hardening. Mirrors the finra-ui/library-source block of
+      // the old ESLint config.
+      "includes": ["packages/*/src/**/*.ts", "packages/*/src/**/*.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "warn", // was no-console; deliberate sites carry a suppression
+            "noAlert": "error"
+          },
+          "security": { "noGlobalEval": "error" }, // was no-eval / no-implied-eval / no-new-func
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "event": "Use the local event parameter instead.",
+                  "fdescribe": "Do not commit focused tests.",
+                  "fit": "Do not commit focused tests."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      // Icons deliberately carry no <title>. An icon cannot know whether it is
+      // decorative or the sole content of a control, so naming is the
+      // consumer's decision; IconButton requires a label of its own. Documented
+      // in packages/icons/README.md.
+      "includes": ["packages/icons/src/**"],
+      "linter": {
+        "rules": { "a11y": { "noSvgWithoutTitle": "off" } }
+      }
+    },
+    {
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx", "**/test/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off",
+            "noConsole": "off"
+          },
+          "style": { "noNonNullAssertion": "off" },
+          // Bare <button> fixtures in tests are never inside a form, so the
+          // implicit submit type cannot cause the bug this rule guards against.
+          "a11y": { "useButtonType": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.stories.ts", "**/*.stories.tsx", "apps/storybook/**"],
+      "linter": {
+        "rules": {
+          "suspicious": { "noExplicitAny": "off" },
+          "a11y": { "noSvgWithoutTitle": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.config.ts", "**/*.config.mts", "**/*.config.js", "**/*.config.mjs"],
+      "linter": {
+        "rules": {
+          "correctness": { "noNodejsModules": "off" },
+          "suspicious": { "noConsole": "off" }
+        }
+      }
+    }
+  ]
+}

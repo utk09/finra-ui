@@ -1,0 +1,43 @@
+// Rebuilds eslint-plugin-testing-library's `no-node-access`.
+//
+// Biome has no testing-library rules, and this is the one with a track record
+// here: traversing off a queried node couples a test to the DOM shape rather
+// than to what the user can perceive, so it survives real breakage and fails on
+// harmless refactors. The convention is to query again, with `within(...)` or
+// `getByTestId` (the test setup maps testIdAttribute to `data-finra-ui`).
+//
+// Scoped to test files in biome.jsonc.
+language js
+
+or {
+  // Traversal properties: el.parentElement, el.children, el.firstChild, ...
+  `$obj.$prop` where {
+    $prop <: or {
+      `parentElement`,
+      `parentNode`,
+      `firstChild`,
+      `lastChild`,
+      `firstElementChild`,
+      `lastElementChild`,
+      `nextSibling`,
+      `previousSibling`,
+      `nextElementSibling`,
+      `previousElementSibling`,
+      `childNodes`,
+      `children`
+    },
+    register_diagnostic(span=$prop, message="Avoid direct Node access. Query the element instead, with `within(...)` or `getByTestId`.", severity="error")
+  },
+  // Traversal methods: el.closest(...), el.querySelector(...), ...
+  `$obj.$method($args)` where {
+    $method <: or {
+      `closest`,
+      `querySelector`,
+      `querySelectorAll`,
+      `getElementsByTagName`,
+      `getElementsByClassName`,
+      `getElementById`
+    },
+    register_diagnostic(span=$method, message="Avoid direct Node access. Query the element instead, with `within(...)` or `getByTestId`.", severity="error")
+  }
+}

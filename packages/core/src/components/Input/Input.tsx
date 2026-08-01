@@ -61,7 +61,8 @@ const validationClasses: Record<ValidationStatus, string> = {
  * ```
  */
 export interface InputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">, VariantProps<typeof inputVariants> {
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">,
+    VariantProps<typeof inputVariants> {
   /** Validation state. `"error"` also sets `aria-invalid`. */
   validationStatus?: ValidationStatus;
   /** Decorative element before the text, inside the border. Not focusable. */

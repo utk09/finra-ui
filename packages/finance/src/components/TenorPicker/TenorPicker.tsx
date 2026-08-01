@@ -57,8 +57,7 @@ const validationClasses: Record<ValidationStatus, string> = {
  * ```
  */
 export interface TenorPickerProps
-  extends
-    Omit<
+  extends Omit<
       TenorPickerBaseProps,
       "classNames" | "dataAttributes" | "renderIndicator" | "renderFavourite" | "renderCheck"
     >,

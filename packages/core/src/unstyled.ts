@@ -1,4 +1,10 @@
 // Unstyled components
+
+// Tabs orientation / activation enums (part of the Tabs props surface)
+export type { TabsActivationMode, TabsOrientation } from "./logic/tabs";
+// Imperative toast API + queue types (framework-agnostic store)
+export type { ToastApi, ToastData, ToastInput, ToastSentiment } from "./logic/toast";
+export { toast } from "./logic/toast";
 export type { ButtonBaseProps } from "./unstyled/Button/Button";
 export { ButtonBase } from "./unstyled/Button/Button";
 export type { CheckboxBaseProps } from "./unstyled/Checkbox/Checkbox";
@@ -82,10 +88,3 @@ export type {
   TooltipTriggerProps,
 } from "./unstyled/Tooltip/Tooltip";
 export { Tooltip, TooltipContent, TooltipTrigger } from "./unstyled/Tooltip/Tooltip";
-
-// Imperative toast API + queue types (framework-agnostic store)
-export type { ToastApi, ToastData, ToastInput, ToastSentiment } from "./logic/toast";
-export { toast } from "./logic/toast";
-
-// Tabs orientation / activation enums (part of the Tabs props surface)
-export type { TabsActivationMode, TabsOrientation } from "./logic/tabs";

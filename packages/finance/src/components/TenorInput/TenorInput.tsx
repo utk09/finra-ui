@@ -26,16 +26,17 @@ import { componentIds } from "../componentIds";
  * <TenorPicker value={tenor} onChange={setTenor} grouped={false} />
  * ```
  */
-export interface TenorInputProps extends Omit<
-  ComboBoxProps<string>,
-  | "options"
-  | "multiple"
-  | "creatable"
-  | "onCreateOption"
-  | "formatCreateLabel"
-  | "value"
-  | "onChange"
-> {
+export interface TenorInputProps
+  extends Omit<
+    ComboBoxProps<string>,
+    | "options"
+    | "multiple"
+    | "creatable"
+    | "onCreateOption"
+    | "formatCreateLabel"
+    | "value"
+    | "onChange"
+  > {
   /** Selected tenor value. */
   value?: string | null;
   /** Called when tenor changes. */

@@ -49,7 +49,8 @@ const badgeVariants = cva(styles.badge, {
  * ```
  */
 export interface BadgeProps
-  extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {
+  extends HTMLAttributes<HTMLSpanElement>,
+    VariantProps<typeof badgeVariants> {
   /** Colour meaning. Omit for a neutral badge. */
   sentiment?: BadgeSentiment;
   /** Badge text. Keep it short - this is a label, not a container. */

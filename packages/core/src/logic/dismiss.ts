@@ -87,7 +87,7 @@ export function getOutsideDismissals(
 export function isPointerInsideLayer(layer: DismissLayerHandle, node: Node | null): boolean {
   if (!node) return false;
   const el = layer.getElement();
-  if (el && el.contains(node)) return true;
+  if (el?.contains(node)) return true;
   const extras = layer.getExtraElements?.() ?? [];
   return extras.some((extra) => !!extra && extra.contains(node));
 }

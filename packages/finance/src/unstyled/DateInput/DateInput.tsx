@@ -60,10 +60,8 @@ export interface DateInputClassNames {
  * separators as you type. Editing and navigation keys pass through untouched,
  * so Backspace, arrows and Home/End behave normally.
  */
-export interface DateInputBaseProps extends Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "onChange" | "defaultValue"
-> {
+export interface DateInputBaseProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue"> {
   /** Date format pattern. Determines separator and segment order. */
   format?: DateFormat;
   /** Controlled date value. */

@@ -48,8 +48,7 @@ const validationClasses: Record<ValidationStatus, string> = {
  * ```
  */
 export interface TextareaProps
-  extends
-    Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "size">,
+  extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "size">,
     VariantProps<typeof textareaVariants> {
   /** Validation state. `"error"` also sets `aria-invalid`. */
   validationStatus?: ValidationStatus;
@@ -142,6 +141,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       textarea.style.overflowY = scrollHeight > maxHeight ? "auto" : "hidden";
     }, [autoResize, minRows, maxRows, textareaRef]);
 
+    // `value` is a re-run trigger, not something adjustHeight reads. Drop it and
+    // a controlled textarea stops resizing when its value changes from outside.
+    // biome-ignore lint/correctness/useExhaustiveDependencies: re-run trigger, see above
     useEffect(() => {
       adjustHeight();
     }, [value, adjustHeight]);

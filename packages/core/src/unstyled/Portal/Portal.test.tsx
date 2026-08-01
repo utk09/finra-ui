@@ -55,7 +55,7 @@ describe("Portal", () => {
       </div>,
     );
 
-    // eslint-disable-next-line testing-library/no-node-access -- asserting portal wrapper attributes
+    // biome-ignore lint/plugin/no-node-access: the portal wrapper has no accessible role; its attributes are the assertion
     const wrapper = document.querySelector("[data-finra-ui-portal]");
     expect(wrapper).not.toBeNull();
     expect(wrapper).toHaveAttribute("data-theme", "dark");
@@ -70,7 +70,7 @@ describe("Portal", () => {
       </Portal>,
     );
 
-    // eslint-disable-next-line testing-library/no-node-access -- asserting portal wrapper attributes
+    // biome-ignore lint/plugin/no-node-access: the portal wrapper has no accessible role; its attributes are the assertion
     const wrapper = document.querySelector("[data-finra-ui-portal]");
     expect(wrapper).not.toBeNull();
     expect(wrapper).not.toHaveAttribute("data-theme");
