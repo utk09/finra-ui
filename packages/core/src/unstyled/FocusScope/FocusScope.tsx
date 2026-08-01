@@ -3,7 +3,16 @@ import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useRef } fr
 import { getTabbables, resolveTabStop } from "../../logic/focus";
 import { mergeRefs } from "../../utils/mergeRefs";
 
+/**
+ * Props for FocusScope - the focus trap behind modal surfaces.
+ *
+ * @remarks
+ * Trapping is only correct for genuinely modal content. Applying it to a
+ * non-modal layer strands keyboard users inside a panel they should be able to
+ * tab out of, so a Popover deliberately does not use it.
+ */
 export interface FocusScopeProps extends HTMLAttributes<HTMLDivElement> {
+  /** Content whose focus is managed. */
   children?: ReactNode;
   /** Trap Tab / Shift+Tab focus within the scope. Default true. */
   trapped?: boolean;

@@ -14,6 +14,12 @@ import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Popover.module.scss";
 
 export type { PopoverProps, PopoverTriggerProps };
+/**
+ * Props for the styled popover panel.
+ *
+ * @remarks
+ * Identical to the unstyled base's - the styled layer adds only CSS, no new API.
+ */
 export type PopoverContentProps = PopoverContentBaseProps;
 
 /** Popover root - controlled/uncontrolled open state, placement, dismiss options. */

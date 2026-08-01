@@ -36,6 +36,23 @@ const validationClasses: Record<ValidationStatus, string> = {
   success: styles.statusSuccess,
 };
 
+/**
+ * Props for the styled NumberInput - a spinbutton with increment and decrement
+ * controls.
+ *
+ * @remarks
+ * Partial input is allowed while typing: `"-"` and `"."` are held without
+ * reporting, so a negative or decimal number can be entered a character at a
+ * time. Bounds and precision apply on commit, never mid-keystroke.
+ *
+ * `size`, `min`, `max` and `step` are re-declared as numbers rather than the
+ * DOM's strings, so they are usable without conversion.
+ *
+ * @example
+ * ```tsx
+ * <NumberInput aria-label="Quantity" min={0} max={100} step={5} precision={0} />
+ * ```
+ */
 export interface NumberInputProps
   extends
     Omit<
@@ -43,14 +60,40 @@ export interface NumberInputProps
       "type" | "size" | "onChange" | "value" | "defaultValue" | "min" | "max" | "step"
     >,
     VariantProps<typeof numberInputVariants> {
+  /** Validation state. `"error"` also sets `aria-invalid`. */
   validationStatus?: ValidationStatus;
+  /**
+   * Controlled value. Use `""` for "deliberately empty".
+   *
+   * @remarks
+   * Controlled means controlled: typing, stepping and blurring all report
+   * through `onChange` without the field redrawing itself, so a parent that
+   * ignores the callback keeps its value.
+   */
   value?: number | "";
+  /** Initial value when uncontrolled. Ignored if `value` is set. */
   defaultValue?: number;
+  /** Lower bound. Applied on blur and on stepping, not while typing. */
   min?: number;
+  /** Upper bound. Applied on blur and on stepping, not while typing. */
   max?: number;
+  /**
+   * Amount added or removed per step.
+   *
+   * @defaultValue `1`
+   */
   step?: number;
+  /** Decimal places to format to on commit. Omit to leave the typed precision alone. */
   precision?: number;
+  /**
+   * Fired on commit - typing a valid number, stepping, or blurring.
+   *
+   * @remarks
+   * Reports `undefined`, not `NaN` or `0`, when the field is emptied, so
+   * "no value" is distinguishable from "zero".
+   */
   onChange?: (value: number | undefined) => void;
+  /** Stretch to fill the container's inline size. */
   fullWidth?: boolean;
 }
 

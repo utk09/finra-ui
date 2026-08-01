@@ -47,12 +47,24 @@ function usePopoverContext(part: string): PopoverContextValue {
 
 //  Root
 
+/**
+ * Props for the Popover root - the state owner. It renders nothing itself; the
+ * visible parts are `PopoverTrigger` and `PopoverContent`.
+ *
+ * @remarks
+ * Non-modal, unlike Dialog: it does not lock background scroll, and focus is
+ * free to leave. Use it for supplementary controls - a filter panel, a colour
+ * picker. For content the user must deal with before continuing, use Dialog;
+ * for a passive hint with no interactive content, use Tooltip.
+ */
 export interface PopoverProps {
+  /** The trigger and content parts. */
   children?: ReactNode;
   /** Controlled open state. */
   open?: boolean;
   /** Initial open state (uncontrolled). */
   defaultOpen?: boolean;
+  /** Fired whenever the popover wants to open or close, including on dismissal. */
   onOpenChange?: (open: boolean) => void;
   /** Preferred placement against the trigger. Default "bottom". */
   placement?: Placement;
@@ -101,6 +113,13 @@ Popover.displayName = "Popover";
 
 //  Trigger
 
+/**
+ * Props for the element that opens the popover. Wires `aria-haspopup`,
+ * `aria-expanded` and `aria-controls` for you.
+ *
+ * @remarks
+ * Calling `preventDefault()` in your own `onClick` suppresses the toggle.
+ */
 export interface PopoverTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Render onto the single child element instead of a <button>. */
   asChild?: boolean;
@@ -133,7 +152,17 @@ PopoverTrigger.displayName = "PopoverTrigger";
 
 //  Content
 
+/**
+ * Props for the popover panel. Portalled, positioned against the trigger, and
+ * dismissed on Escape or an outside pointer.
+ *
+ * @remarks
+ * Focus is *not* trapped - that is what makes this non-modal. Give it an
+ * `aria-label` or point `aria-labelledby` at a heading inside it, since the
+ * panel is detached from the trigger in the DOM.
+ */
 export interface PopoverContentProps extends HTMLAttributes<HTMLDivElement> {
+  /** Panel contents. May be interactive, unlike a Tooltip's. */
   children?: ReactNode;
 }
 

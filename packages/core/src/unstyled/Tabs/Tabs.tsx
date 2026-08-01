@@ -44,6 +44,16 @@ const panelId = (baseId: string, value: string): string => `${baseId}-panel-${va
 
 //  Root
 
+/**
+ * Props for the Tabs root - the state owner, and the wrapper the tab list and
+ * panels live inside.
+ *
+ * @remarks
+ * Prefer `activationMode="automatic"` (the default): APG recommends it whenever
+ * revealing a panel is cheap, because it saves keyboard users a keypress per
+ * tab. Switch to `"manual"` only when a panel is expensive to render or
+ * triggers a fetch.
+ */
 export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   /** Selected tab value (controlled). */
   value?: string;
@@ -58,6 +68,7 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChang
    * only moves focus and selects on Enter/Space or click. Default "automatic".
    */
   activationMode?: TabsActivationMode;
+  /** The tab list and panels. */
   children?: ReactNode;
 }
 
@@ -156,6 +167,13 @@ TabList.displayName = "TabList";
 
 //  Tab
 
+/**
+ * Props for one tab button.
+ *
+ * @remarks
+ * `disabled` tabs stay rendered and announced but are skipped by arrow
+ * navigation, so the roving tab stop never lands somewhere inert.
+ */
 export interface TabProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Identifies this tab and its panel. */
   value: string;
@@ -204,6 +222,13 @@ Tab.displayName = "Tab";
 
 //  Panel
 
+/**
+ * Props for one tab panel.
+ *
+ * @remarks
+ * Only the selected panel is rendered. It takes `tabIndex={0}` so keyboard
+ * users can reach panel content that contains nothing focusable of its own.
+ */
 export interface TabPanelProps extends HTMLAttributes<HTMLDivElement> {
   /** Must match the `value` of the controlling tab. */
   value: string;

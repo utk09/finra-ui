@@ -3,6 +3,14 @@ import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useRef } fr
 import { type DismissReason, registerDismissLayer } from "../../logic/dismiss";
 import { mergeRefs } from "../../utils/mergeRefs";
 
+/**
+ * Props for a layer that closes on Escape or an outside pointer.
+ *
+ * @remarks
+ * Layers stack, and Escape only reaches the topmost one - so a popover inside a
+ * dialog closes alone on the first press. Dismissal uses `pointerdown`, not
+ * `mousedown`, so touch dismissal works on iOS.
+ */
 export interface DismissableLayerProps extends HTMLAttributes<HTMLDivElement> {
   /** Called when the layer should close, with why (Escape or outside pointer). */
   onDismiss?: (reason: DismissReason) => void;
@@ -15,6 +23,7 @@ export interface DismissableLayerProps extends HTMLAttributes<HTMLDivElement> {
    * the trigger, so clicking it toggles rather than dismissing then re-opening.
    */
   excludeElements?: readonly (Element | null)[];
+  /** Layer contents. */
   children?: ReactNode;
 }
 

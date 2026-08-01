@@ -5,8 +5,20 @@ import { SwitchBase, type SwitchBaseProps } from "../../unstyled/Switch/Switch";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Switch.module.scss";
 
+/**
+ * Props for the styled Switch.
+ *
+ * @remarks
+ * A switch takes effect immediately. Use Checkbox instead when the change only
+ * applies once a form is submitted - the two look similar but promise
+ * different things about when something happens.
+ *
+ * Supply either `label` or an `aria-label`.
+ */
 export interface SwitchProps extends Omit<SwitchBaseProps, "className"> {
+  /** Visible label rendered beside the track, and wired as its accessible name. */
   label?: string;
+  /** Additional CSS class for the root wrapper. */
   className?: string;
 }
 

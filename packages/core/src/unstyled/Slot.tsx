@@ -43,7 +43,17 @@ function mergeProps(
   return merged;
 }
 
+/**
+ * Props for {@link Slot} - the primitive behind every `asChild` prop.
+ *
+ * @remarks
+ * Merges its own props onto the single child element rather than rendering a
+ * wrapper: `className` is concatenated, `style` is merged, and event handlers
+ * are chained with the child's called first. Renders `null` if `children` is
+ * not a single valid element.
+ */
 export interface SlotProps extends HTMLAttributes<HTMLElement> {
+  /** Exactly one React element. Anything else renders nothing. */
   children?: ReactNode;
 }
 

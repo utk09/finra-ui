@@ -3,7 +3,23 @@ import { forwardRef, type InputHTMLAttributes, useCallback } from "react";
 import { useFormField } from "../../hooks/useFormField";
 import { mergeRefs } from "../../utils/mergeRefs";
 
+/**
+ * Props for the unstyled checkbox.
+ *
+ * @remarks
+ * Reads an enclosing `FormField` from context at any depth, so id, describedby
+ * and invalid state are wired without prop-drilling. Standalone it is a plain
+ * checkbox.
+ */
 export interface CheckboxBaseProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
+  /**
+   * Show the mixed state - a parent controlling a partly selected set.
+   *
+   * @remarks
+   * A DOM property, not an attribute, so it is applied via a ref rather than
+   * rendered. Purely visual and ARIA: it does not change `checked`, and
+   * clicking the box resolves it to a definite state.
+   */
   indeterminate?: boolean;
 }
 

@@ -15,6 +15,14 @@ import type { ValidationStatus as _ValidationStatus } from "../../types/variants
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Input.module.scss";
 
+/**
+ * Validation state shared by every form control in the library.
+ *
+ * @remarks
+ * Only `"error"` changes ARIA - it sets `aria-invalid` on the control. The
+ * others are visual, so a field can read as warning or success without being
+ * announced as invalid.
+ */
 export type ValidationStatus = _ValidationStatus;
 
 const inputVariants = cva(styles.wrapper, {
@@ -36,13 +44,48 @@ const validationClasses: Record<ValidationStatus, string> = {
   success: styles.statusSuccess,
 };
 
+/**
+ * Props for the styled Input.
+ *
+ * @remarks
+ * `size` is deliberately omitted from the underlying input attributes - sizing
+ * comes from the density system (`data-density` on any ancestor), never from a
+ * per-component prop.
+ *
+ * Wrap in a `FormField` for a label, helper text and error wiring; the field
+ * injects the ARIA attributes automatically.
+ *
+ * @example
+ * ```tsx
+ * <Input clearable placeholder="Search" startAdornment={<SearchIcon />} />
+ * ```
+ */
 export interface InputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">, VariantProps<typeof inputVariants> {
+  /** Validation state. `"error"` also sets `aria-invalid`. */
   validationStatus?: ValidationStatus;
+  /** Decorative element before the text, inside the border. Not focusable. */
   startAdornment?: ReactNode;
+  /** Decorative element after the text, inside the border. Not focusable. */
   endAdornment?: ReactNode;
+  /**
+   * Show a clear button once the field has a value.
+   *
+   * @remarks
+   * Hidden when the field is empty, disabled or read-only, so it is never a
+   * dead control.
+   */
   clearable?: boolean;
+  /**
+   * Called instead of the built-in clear.
+   *
+   * @remarks
+   * Without it the component clears the DOM value itself and dispatches a
+   * native `input` event, so an uncontrolled field and its form both see the
+   * change. Supply this for a controlled field, and reset your own state.
+   */
   onClear?: () => void;
+  /** Stretch to fill the container's inline size. */
   fullWidth?: boolean;
 }
 

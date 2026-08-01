@@ -8,6 +8,17 @@
  * store from a ReactiveController that calls `subscribe` → `host.requestUpdate()`.
  * The behaviour (reducer) is written once and never re-implemented per framework.
  */
+/**
+ * A minimal subscribable state container: reducer in, snapshot out.
+ *
+ * @remarks
+ * Deliberately not React-specific - it is plain TypeScript with no imports, so
+ * the same store drives React today (through `useStore` and
+ * `useSyncExternalStore`) and a Lit reactive controller later.
+ *
+ * @typeParam S - State shape.
+ * @typeParam A - Action union the reducer accepts.
+ */
 export interface Store<S, A> {
   /** Current snapshot. Referentially stable until an action changes it. */
   getState(): S;

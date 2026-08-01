@@ -47,12 +47,38 @@ function useDialogContext(part: string): DialogContextValue {
 
 //  Root
 
+/**
+ * Props for the Dialog root - the state owner. It renders nothing itself; the
+ * visible parts are `DialogTrigger`, `DialogContent`, `DialogTitle`,
+ * `DialogDescription` and `DialogClose`.
+ *
+ * @remarks
+ * Modal: while open it traps focus, restores it to the trigger on close, and
+ * locks background scroll. Always include a `DialogTitle` - it becomes the
+ * dialog's accessible name.
+ *
+ * Turn off `dismissOnEscape` and `dismissOnOutside` together for a dialog the
+ * user must answer, and give them an explicit way out inside the content.
+ *
+ * @example
+ * ```tsx
+ * <Dialog>
+ *   <DialogTrigger>Close position</DialogTrigger>
+ *   <DialogContent>
+ *     <DialogTitle>Close position?</DialogTitle>
+ *     <DialogClose>Cancel</DialogClose>
+ *   </DialogContent>
+ * </Dialog>
+ * ```
+ */
 export interface DialogProps {
+  /** The trigger and content parts. */
   children?: ReactNode;
   /** Controlled open state. */
   open?: boolean;
   /** Initial open state (uncontrolled). */
   defaultOpen?: boolean;
+  /** Fired whenever the dialog wants to open or close, including on dismissal. */
   onOpenChange?: (open: boolean) => void;
   /** Dismiss on Escape. Default true. */
   dismissOnEscape?: boolean;
@@ -98,6 +124,15 @@ Dialog.displayName = "Dialog";
 
 //  Trigger
 
+/**
+ * Props for the element that opens the dialog.
+ *
+ * @remarks
+ * Focus returns here automatically when the dialog closes, so the trigger
+ * should stay mounted while the dialog is open.
+ *
+ * Calling `preventDefault()` in your own `onClick` suppresses the open.
+ */
 export interface DialogTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Render onto the single child element instead of a <button>. */
   asChild?: boolean;
@@ -130,7 +165,16 @@ DialogTrigger.displayName = "DialogTrigger";
 
 //  Content
 
+/**
+ * Props for the modal surface. Portalled, focus-trapped, and rendered over a
+ * backdrop that locks background scroll.
+ *
+ * @remarks
+ * Include a `DialogTitle` among the children - it supplies the accessible name
+ * via `aria-labelledby`, and a modal without one is announced as just "dialog".
+ */
 export interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
+  /** Dialog contents. Should include a `DialogTitle`. */
   children?: ReactNode;
 }
 

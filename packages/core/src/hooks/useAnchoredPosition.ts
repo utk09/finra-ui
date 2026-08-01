@@ -6,6 +6,15 @@ import {
   trackAnchoredPosition,
 } from "../logic/position";
 
+/**
+ * What {@link useAnchoredPosition} returns: the computed coordinates plus the
+ * ref to attach.
+ *
+ * @remarks
+ * Inherits `x`, `y` and `placement` from {@link AnchoredPosition}. Read
+ * `placement` rather than the option you passed - flip and shift may have
+ * overridden it to keep the element on screen.
+ */
 export interface UseAnchoredPositionResult extends AnchoredPosition {
   /** Ref callback for the floating element. */
   setFloating: (element: HTMLElement | null) => void;

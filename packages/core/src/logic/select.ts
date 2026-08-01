@@ -7,9 +7,22 @@
  * and a future Lit adapter drive the exact same decisions.
  */
 
+/**
+ * One option in a Select.
+ *
+ * @remarks
+ * Flat by design - a select-only combobox has no grouping in this pattern. If
+ * you need groups, favourites or free text, reach for ComboBox instead.
+ *
+ * @typeParam T - Type of the option's value. Defaults to `string`; a union of
+ * literals makes the selected value narrow automatically.
+ */
 export interface SelectOptionData<T = string> {
+  /** Identity. What a selection reports, and what equality is tested on. */
   value: T;
+  /** Human-readable text. Both the visible label and what typeahead matches. */
   label: string;
+  /** Rendered but not selectable; skipped by arrows, Home/End and typeahead. */
   disabled?: boolean;
 }
 
@@ -91,23 +104,43 @@ export function typeaheadIndex<T>(
 
 //  Keyboard resolution (key -> effects)
 
+/**
+ * A single state change the adapter should apply, emitted by
+ * {@link resolveSelectKey}.
+ *
+ * @remarks
+ * Data rather than callbacks, so the same decisions drive React today and Lit
+ * later, and so they can be asserted directly in tests.
+ */
 export type SelectEffect =
+  /** Show the popup, with `activeIndex` pre-highlighted (the selected option, or the first enabled one). */
   | { type: "open"; activeIndex: number }
+  /** Hide the popup. Does not change the selection. */
   | { type: "close" }
+  /** Move the highlight without selecting - this is `aria-activedescendant`, not a commit. */
   | { type: "setActive"; index: number }
+  /** Commit the option at `index`. The adapter also closes the popup afterwards. */
   | { type: "select"; index: number };
 
+/** Everything a Select keydown decision needs, with zero framework/DOM coupling. */
 export interface SelectKeyContext<T = string> {
+  /** Whether the popup is currently shown. Most keys mean different things when it is not. */
   open: boolean;
+  /** Index of the highlighted option, or `-1` for none. */
   activeIndex: number;
+  /** Index of the committed option, or `-1` for none. Opening highlights this first. */
   selectedIndex: number;
+  /** The full flat option list. Needed because navigation skips disabled entries. */
   options: readonly SelectOptionData<T>[];
   /** Wrap navigation past the ends. Default true. */
   loop?: boolean;
 }
 
+/** The decision for one keypress: what to suppress, and what to do. */
 export interface SelectKeyResult {
+  /** Whether the adapter should call `event.preventDefault()`. */
   preventDefault: boolean;
+  /** Effects to apply in order. Empty means the key was not handled here. */
   effects: SelectEffect[];
 }
 

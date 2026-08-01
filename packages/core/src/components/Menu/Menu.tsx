@@ -16,7 +16,19 @@ import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Menu.module.scss";
 
 export type { MenuProps, MenuTriggerProps };
+/**
+ * Props for the styled menu panel.
+ *
+ * @remarks
+ * Identical to the unstyled base's - the styled layer adds only CSS, no new API.
+ */
 export type MenuContentProps = MenuContentBaseProps;
+/**
+ * Props for a styled menu item.
+ *
+ * @remarks
+ * Identical to the unstyled base's - the styled layer adds only CSS, no new API.
+ */
 export type MenuItemProps = MenuItemBaseProps;
 
 /** Menu root - controlled/uncontrolled open state, placement. */

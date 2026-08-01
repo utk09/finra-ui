@@ -16,6 +16,13 @@ import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Dialog.module.scss";
 
 export type { DialogProps, DialogTriggerProps };
+/**
+ * Props for the styled modal panel.
+ *
+ * @remarks
+ * Identical to the unstyled base's - the styled layer adds only the backdrop
+ * and panel CSS, no new API.
+ */
 export type DialogContentProps = DialogContentBaseProps;
 
 /** Dialog root - controlled/uncontrolled open state, dismiss options. */

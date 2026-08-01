@@ -73,7 +73,27 @@ function useSelectContext(part: string): SelectContextValue {
 
 //  Root
 
+/**
+ * Props for the Select root - the state owner. It renders nothing itself; the
+ * visible parts are `SelectTrigger`, `SelectValue` and `SelectContent`.
+ *
+ * @remarks
+ * The APG "select-only combobox" pattern: a `role="combobox"` button driving a
+ * popup listbox via `aria-activedescendant`. There is no text input - for
+ * free-text filtering, groups or multi-select, use ComboBox instead.
+ *
+ * Value and open state are independently controlled or uncontrolled.
+ *
+ * @example
+ * ```tsx
+ * <Select options={options} defaultValue="a" onValueChange={setValue}>
+ *   <SelectTrigger aria-label="Fruit" />
+ *   <SelectContent aria-label="Fruit options" />
+ * </Select>
+ * ```
+ */
 export interface SelectProps {
+  /** The trigger, value and content parts. */
   children?: ReactNode;
   /** Options rendered in the listbox and used for keyboard nav / labels. */
   options: readonly SelectOptionData[];
@@ -81,10 +101,13 @@ export interface SelectProps {
   value?: string;
   /** Initial selected value (uncontrolled). */
   defaultValue?: string;
+  /** Fired on commit - click, Enter, or Space on the highlighted option. */
   onValueChange?: (value: string) => void;
   /** Controlled open state. */
   open?: boolean;
+  /** Initial open state when uncontrolled. Ignored if `open` is set. */
   defaultOpen?: boolean;
+  /** Fired whenever the listbox wants to open or close, including on selection. */
   onOpenChange?: (open: boolean) => void;
   /** Text shown on the trigger when nothing is selected. */
   placeholder?: string;
@@ -283,6 +306,16 @@ Select.displayName = "Select";
 
 //  Trigger
 
+/**
+ * Props for the button that opens the listbox and carries `role="combobox"`.
+ *
+ * @remarks
+ * Handles typeahead even while closed - typing a letter opens the list on the
+ * first match. Calling `preventDefault()` in your own `onClick` or `onKeyDown`
+ * suppresses all of it.
+ *
+ * Renders `SelectValue` automatically when given no children.
+ */
 export interface SelectTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Render onto the single child element instead of a <button>. */
   asChild?: boolean;
@@ -325,6 +358,14 @@ SelectTrigger.displayName = "SelectTrigger";
 
 //  Value (selected label / placeholder)
 
+/**
+ * Props for the element showing the selected option's label, or the
+ * placeholder.
+ *
+ * @remarks
+ * Only needed when you give `SelectTrigger` its own children - a bare trigger
+ * renders this for you. Use it to sit the value beside an icon or a prefix.
+ */
 export interface SelectValueProps extends HTMLAttributes<HTMLSpanElement> {
   /** Fallback text when nothing is selected (defaults to the Select's placeholder). */
   placeholder?: string;
@@ -346,6 +387,15 @@ SelectValue.displayName = "SelectValue";
 
 //  Content (listbox)
 
+/**
+ * Props for the popup listbox. Portalled, positioned against the trigger, and
+ * dismissed on Escape or an outside pointer.
+ *
+ * @remarks
+ * Renders the root's `options` itself - it takes no option children. Give it an
+ * `aria-label`: the popup is detached from the trigger in the DOM, so it has no
+ * accessible name of its own.
+ */
 export interface SelectContentProps extends HTMLAttributes<HTMLDivElement> {
   /** Render an option's inner content. Defaults to its label. */
   renderOption?: (option: SelectOptionData, index: number) => ReactNode;

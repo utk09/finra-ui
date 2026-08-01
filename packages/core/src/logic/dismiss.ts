@@ -11,11 +11,27 @@
  * the bug in the old `useClickOutside`.
  */
 
+/**
+ * Why a layer was dismissed.
+ *
+ * @remarks
+ * Worth distinguishing: Escape usually means "put focus back where it was",
+ * while an outside pointer means "the user is already looking somewhere else".
+ */
 export type DismissReason = "escape" | "outside";
 
+/**
+ * One registered dismissable layer.
+ *
+ * @remarks
+ * Layers form a stack, and only the topmost one reacts to Escape - so closing a
+ * popover inside a dialog does not also close the dialog. Outside-pointer
+ * detection is per-layer and uses `getElement` plus `excludeElements`.
+ */
 export interface DismissLayerHandle {
   /** The element that bounds this layer; pointers outside it dismiss it. */
   getElement: () => Element | null;
+  /** Called when this layer should close, with why. */
   onDismiss: (reason: DismissReason) => void;
   /** Ignore Escape for this layer. */
   disableEscape?: boolean;

@@ -4,9 +4,35 @@ import { forwardRef, type HTMLAttributes } from "react";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Divider.module.scss";
 
+/**
+ * Props for the Divider - a rule separating content.
+ *
+ * @remarks
+ * Renders an `<hr>`, which carries an implicit `separator` role. Decide with
+ * `decorative` whether that role is announced: a divider that only adds visual
+ * rhythm should be hidden from assistive tech, while one that genuinely marks a
+ * boundary between groups should not.
+ */
 export interface DividerProps extends HTMLAttributes<HTMLHRElement> {
+  /**
+   * Layout axis. Vertical needs a parent with a resolvable block size, since
+   * the rule stretches to fill it.
+   *
+   * @defaultValue `"horizontal"`
+   */
   orientation?: "horizontal" | "vertical";
+  /**
+   * Purely visual - hides the divider from assistive tech with
+   * `role="presentation"`.
+   *
+   * @remarks
+   * Set this when the rule is decoration. Leave it off when the separation is
+   * meaningful, so screen-reader users hear the boundary too.
+   *
+   * @defaultValue `false`
+   */
   decorative?: boolean;
+  /** Additional CSS class. */
   className?: string;
 }
 

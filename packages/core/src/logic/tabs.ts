@@ -5,16 +5,34 @@
  * helpers work purely on an index + count + orientation.
  */
 
+/**
+ * Which axis the arrow keys walk.
+ *
+ * @remarks
+ * `"horizontal"` binds Left/Right, `"vertical"` binds Up/Down - never both, so
+ * the unbound axis stays available for scrolling the page.
+ */
 export type TabsOrientation = "horizontal" | "vertical";
 
 /** When a tab receives focus, is it selected immediately or only on Enter/Space? */
 export type TabsActivationMode = "automatic" | "manual";
 
+/**
+ * A single change the adapter should apply.
+ *
+ * @remarks
+ * Only ever "move focus". Whether that focus also *selects* is the adapter's
+ * call, driven by {@link TabsActivationMode} - which is what keeps this module
+ * agnostic about it.
+ */
 export interface TabsEffect {
+  /** The only effect kind: move DOM focus. */
   type: "focus";
+  /** Destination index, within the enabled-tabs list. Already wrapped. */
   index: number;
 }
 
+/** Everything a tab-list keydown decision needs, with zero framework/DOM coupling. */
 export interface TabsKeyContext {
   /** Index of the currently focused tab within the enabled list. */
   currentIndex: number;
@@ -24,8 +42,11 @@ export interface TabsKeyContext {
   orientation: TabsOrientation;
 }
 
+/** The decision for one keypress: what to suppress, and where focus goes. */
 export interface TabsKeyResult {
+  /** Whether the adapter should call `event.preventDefault()`. */
   preventDefault: boolean;
+  /** Effects to apply in order. Empty means the key was not handled here. */
   effects: TabsEffect[];
 }
 

@@ -12,6 +12,16 @@ import { useFormField } from "../../hooks/useFormField";
 import type { AriaInvalid } from "../../logic/formField";
 import { mergeRefs } from "../../utils/mergeRefs";
 
+/**
+ * Props for the unstyled pill input - free-text entry that commits each entry
+ * as a removable pill.
+ *
+ * @remarks
+ * For arbitrary values (tags, addresses, ad-hoc codes). When the values come
+ * from a known list, use ComboBox in `multiple` mode instead.
+ *
+ * Controlled: pass `values` and handle `onChange`.
+ */
 export interface PillInputBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   /** Current list of pills (controlled). */
   values?: string[];

@@ -45,10 +45,34 @@ function useTooltipContext(part: string): TooltipContextValue {
 
 //  Root
 
+/**
+ * Props for the Tooltip root - the state owner. It renders nothing itself; the
+ * visible parts are `TooltipTrigger` and `TooltipContent`.
+ *
+ * @remarks
+ * A tooltip is supplementary: it must never be the only place information
+ * lives, and it must never contain interactive content, because it is not
+ * reachable by pointer or keyboard once shown. For anything the user needs to
+ * click, use a Popover.
+ *
+ * Shows on hover *and* focus, so keyboard users get it too.
+ *
+ * @example
+ * ```tsx
+ * <Tooltip placement="right">
+ *   <TooltipTrigger asChild><IconButton icon={<InfoIcon />} /></TooltipTrigger>
+ *   <TooltipContent>Settles T+2</TooltipContent>
+ * </Tooltip>
+ * ```
+ */
 export interface TooltipProps {
+  /** The trigger and content parts. */
   children?: ReactNode;
+  /** Controlled open state. When set, the tooltip never changes it - handle `onOpenChange`. */
   open?: boolean;
+  /** Initial open state when uncontrolled. Ignored if `open` is set. */
   defaultOpen?: boolean;
+  /** Fired whenever the tooltip wants to open or close - hover, focus, Escape or blur. */
   onOpenChange?: (open: boolean) => void;
   /** Delay before showing on hover/focus, in ms. Default 700. */
   openDelay?: number;
@@ -117,7 +141,26 @@ Tooltip.displayName = "Tooltip";
 
 //  Trigger
 
+/**
+ * Props for the element the tooltip describes.
+ *
+ * @remarks
+ * Almost always used with `asChild`, wrapping a real control - the tooltip
+ * shows on focus as well as hover, so the trigger has to be focusable or
+ * keyboard users never see it.
+ */
 export interface TooltipTriggerProps extends HTMLAttributes<HTMLElement> {
+  /**
+   * Render onto the single child element instead of the default tag, merging
+   * these props onto it.
+   *
+   * @remarks
+   * `className` is concatenated, `style` merged, and handlers chained with the
+   * child's called first. You become responsible for the child being genuinely
+   * interactive and focusable.
+   *
+   * @defaultValue `false`
+   */
   asChild?: boolean;
 }
 
@@ -174,7 +217,17 @@ TooltipTrigger.displayName = "TooltipTrigger";
 
 //  Content
 
+/**
+ * Props for the tooltip bubble. Portalled, positioned against the trigger, and
+ * carrying `role="tooltip"`.
+ *
+ * @remarks
+ * Reached by assistive tech through the trigger's `aria-describedby`, not by
+ * focus. Keep the content short and non-interactive - anything focusable in
+ * here is unreachable, because moving toward it dismisses the tooltip.
+ */
 export interface TooltipContentProps extends HTMLAttributes<HTMLDivElement> {
+  /** Bubble contents. Plain text or simple inline markup - never controls. */
   children?: ReactNode;
   /** Gap between the trigger and the tooltip, in px. Default 6. */
   offset?: number;

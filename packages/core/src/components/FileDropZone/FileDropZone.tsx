@@ -17,6 +17,15 @@ import { mergeRefs } from "../../utils/mergeRefs";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./FileDropZone.module.scss";
 
+/**
+ * Props for FileDropZone - a drag-and-drop target that is also a button.
+ *
+ * @remarks
+ * Reachable by keyboard as well as pointer: Enter and Space open the file
+ * picker, so dropping is never the only route. `accept` filters the picker's
+ * dialog but is not a validation guarantee - a determined drop can still carry
+ * anything, so re-check types in `onChange`.
+ */
 export interface FileDropZoneProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   /** Called with selected files. */
   onChange?: (files: File[]) => void;

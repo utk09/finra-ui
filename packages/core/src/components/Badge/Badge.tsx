@@ -6,6 +6,13 @@ import type { Sentiment } from "../../types/variants";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Badge.module.scss";
 
+/**
+ * Colour meaning for a badge.
+ *
+ * @remarks
+ * Orthogonal to `variant`, which sets emphasis. Leave it unset for a neutral
+ * badge - a count or a tag that carries no status of its own.
+ */
 export type BadgeSentiment = Sentiment;
 
 const sentimentClasses: Record<BadgeSentiment, string> = {
@@ -28,9 +35,24 @@ const badgeVariants = cva(styles.badge, {
   },
 });
 
+/**
+ * Props for the Badge - a small inline status or count.
+ *
+ * @remarks
+ * Renders a `<span>` with no role, so it is read as plain text in context.
+ * Colour alone must never be the only carrier of meaning: put the meaning in
+ * the text ("Restricted", not a bare red dot).
+ *
+ * @example
+ * ```tsx
+ * <Badge sentiment="danger" variant="secondary">Restricted</Badge>
+ * ```
+ */
 export interface BadgeProps
   extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {
+  /** Colour meaning. Omit for a neutral badge. */
   sentiment?: BadgeSentiment;
+  /** Badge text. Keep it short - this is a label, not a container. */
   children: ReactNode;
 }
 

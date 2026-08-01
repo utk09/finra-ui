@@ -14,7 +14,19 @@ import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Tabs.module.scss";
 
 export type { TabsProps };
+/**
+ * Props for a styled tab button.
+ *
+ * @remarks
+ * Identical to the unstyled base's - the styled layer adds only CSS, no new API.
+ */
 export type TabProps = TabBaseProps;
+/**
+ * Props for a styled tab panel.
+ *
+ * @remarks
+ * Identical to the unstyled base's - the styled layer adds only CSS, no new API.
+ */
 export type TabPanelProps = TabPanelBaseProps;
 
 /** Tabs root - controlled/uncontrolled selection, orientation, activation mode. */

@@ -13,6 +13,14 @@ import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Tooltip.module.scss";
 
 export type { TooltipProps, TooltipTriggerProps };
+/**
+ * Props for the styled tooltip bubble.
+ *
+ * @remarks
+ * Identical to the unstyled base's - the styled layer adds only CSS, no new API.
+ * Keep the content non-interactive: a tooltip cannot be reached by pointer or
+ * keyboard once shown.
+ */
 export type TooltipContentProps = TooltipContentBaseProps;
 
 /** Tooltip root - controlled/uncontrolled open state, hover/focus delays, placement. */

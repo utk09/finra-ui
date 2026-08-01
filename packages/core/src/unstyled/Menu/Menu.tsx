@@ -57,12 +57,43 @@ function useMenuContext(part: string): MenuContextValue {
 
 //  Root
 
+/**
+ * Props for the Menu root - the state owner. It renders nothing itself; the
+ * visible parts are `MenuTrigger` and `MenuContent`.
+ *
+ * @remarks
+ * Open state is controlled *or* uncontrolled: pass `open` to own it, or
+ * `defaultOpen` to let the menu manage itself. Passing both makes `open` win.
+ *
+ * @example
+ * ```tsx
+ * <Menu placement="bottom-end">
+ *   <MenuTrigger>Actions</MenuTrigger>
+ *   <MenuContent aria-label="Actions">
+ *     <MenuItem onSelect={edit}>Edit</MenuItem>
+ *   </MenuContent>
+ * </Menu>
+ * ```
+ */
 export interface MenuProps {
+  /** The trigger and content parts. */
   children?: ReactNode;
+  /** Controlled open state. When set, the menu never changes it - handle `onOpenChange`. */
   open?: boolean;
+  /** Initial open state when uncontrolled. Ignored if `open` is set. */
   defaultOpen?: boolean;
+  /**
+   * Fired whenever the menu wants to open or close - trigger click, Escape,
+   * outside pointer, or an item selection.
+   */
   onOpenChange?: (open: boolean) => void;
-  /** Preferred placement against the trigger. Default "bottom-start". */
+  /**
+   * Preferred placement against the trigger. Default "bottom-start".
+   *
+   * @remarks
+   * A preference, not a guarantee: the menu flips and shifts to stay in the
+   * viewport.
+   */
   placement?: Placement;
   /** Gap between the trigger and the menu, in px. Default 4. */
   offset?: number;
@@ -112,7 +143,29 @@ Menu.displayName = "Menu";
 
 //  Trigger
 
+/**
+ * Props for the element that opens the menu. Wires `aria-haspopup`,
+ * `aria-expanded` and `aria-controls` for you.
+ *
+ * @remarks
+ * Opens on click, Enter and Space; ArrowDown opens onto the first item and
+ * ArrowUp onto the last. Calling `preventDefault()` in your own `onClick` or
+ * `onKeyDown` suppresses all of that, which is the supported way to gate
+ * opening behind a confirmation.
+ */
 export interface MenuTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /**
+   * Render the single child element instead of a `<button>`, merging these
+   * props onto it - for turning a link, or your own Button, into the trigger.
+   *
+   * @remarks
+   * `type="button"` is only applied when this component renders its own
+   * `<button>`, so it is never stamped onto an element where the attribute is
+   * invalid. You are then responsible for the child being genuinely
+   * interactive and focusable.
+   *
+   * @defaultValue `false`
+   */
   asChild?: boolean;
 }
 
@@ -156,7 +209,21 @@ MenuTrigger.displayName = "MenuTrigger";
 
 //  Content
 
+/**
+ * Props for the popup surface. Portalled, positioned against the trigger, and
+ * dismissed on Escape or an outside pointer.
+ *
+ * @remarks
+ * Owns roving focus and typeahead over its `MenuItem` children. Calling
+ * `preventDefault()` in your own `onKeyDown` suppresses both, but **not**
+ * dismissal - Escape still closes, because that lives in the surrounding
+ * dismissable layer. A consumer cannot trap the user inside the menu.
+ *
+ * Give it an `aria-label`: the popup is detached from the trigger in the DOM,
+ * so it has no accessible name of its own.
+ */
 export interface MenuContentProps extends HTMLAttributes<HTMLDivElement> {
+  /** `MenuItem` and `MenuSeparator` children. */
   children?: ReactNode;
 }
 
@@ -253,9 +320,30 @@ MenuContent.displayName = "MenuContent";
 
 //  Item
 
+/**
+ * Props for one command in the menu.
+ *
+ * @remarks
+ * Set `disabled` to render it inert - it is then skipped by arrow navigation
+ * and typeahead rather than merely being unclickable.
+ *
+ * Calling `preventDefault()` in your own `onClick` suppresses both `onSelect`
+ * and the close, which is how you keep a menu open for a multi-step action.
+ */
 export interface MenuItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Called when the item is activated (click or Enter/Space). Closes the menu. */
   onSelect?: () => void;
+  /**
+   * Render the single child element instead of a `<button>`, merging these
+   * props onto it - for a menu item that is really a link.
+   *
+   * @remarks
+   * `type="button"` is only applied when this component renders its own
+   * `<button>`, so it is never stamped onto an element where the attribute is
+   * invalid.
+   *
+   * @defaultValue `false`
+   */
   asChild?: boolean;
 }
 

@@ -5,9 +5,28 @@ import { SliderBase, type SliderBaseProps } from "../../unstyled/Slider/Slider";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Slider.module.scss";
 
+/**
+ * Props for the styled Slider.
+ *
+ * @remarks
+ * A slider is for approximate values where the trend matters more than the
+ * digits. When the exact number matters - a price, a quantity - use
+ * NumberInput, or pair the two so the value can also be typed.
+ *
+ * Supply either `label` or an `aria-label`.
+ */
 export interface SliderProps extends Omit<SliderBaseProps, "className"> {
+  /** Visible label above the track, and the control's accessible name. */
   label?: string;
+  /**
+   * Show the current value beside the label.
+   *
+   * @remarks
+   * Visual only - the value is always announced through `aria-valuenow`
+   * regardless, so hiding it costs screen-reader users nothing.
+   */
   showValue?: boolean;
+  /** Additional CSS class for the root wrapper. */
   className?: string;
 }
 

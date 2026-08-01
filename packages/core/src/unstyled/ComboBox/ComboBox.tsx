@@ -58,23 +58,63 @@ function defaultFormatResultCount(count: number): string {
 
 //  Public Types
 
+/**
+ * One selectable option.
+ *
+ * @typeParam T - Type of the option's value. Defaults to `string`; pass a union
+ * of literals and the selected value narrows with it.
+ *
+ * @example
+ * ```tsx
+ * const options: ComboBoxOption[] = [
+ *   { value: "EURUSD", label: "EUR/USD", group: "Major", favourite: true },
+ *   { value: "RUBUSD", label: "RUB/USD", disabled: true },
+ * ];
+ * ```
+ */
 export interface ComboBoxOption<T = string> {
+  /** Identity. What `onChange` reports, and what equality is tested on. */
   value: T;
+  /** Human-readable text. Filtering matches against this, and it is the fallback display. */
   label: string;
+  /** Optional group heading. Options sharing a `group` are collected under it. */
   group?: string;
+  /** Rendered but not selectable, and skipped by keyboard navigation. */
   disabled?: boolean;
+  /**
+   * Lifts the option into a pinned section above every group.
+   *
+   * @remarks
+   * A favourited option is *moved*, not copied - it will not also appear under
+   * its own `group`.
+   */
   favourite?: boolean;
 }
 
+/**
+ * The per-option state handed to a `renderOption` callback.
+ *
+ * @remarks
+ * `isSelected` and `isHighlighted` are independent and often differ: the
+ * highlight is the transient keyboard cursor, the selection is the committed
+ * value. A row can be both, either, or neither.
+ */
 export interface ComboBoxRenderOptionState {
+  /** This option is the committed value (or one of them, in multiple mode). */
   isSelected: boolean;
+  /** This option currently holds the roving keyboard highlight. */
   isHighlighted: boolean;
+  /** Mirrors {@link ComboBoxOption.disabled}. */
   isDisabled: boolean;
+  /** Mirrors {@link ComboBoxOption.favourite}. */
   isFavourite: boolean;
 }
 
+/** A named group of options, as rendered in the listbox. */
 export interface ComboBoxGroup<T = string> {
+  /** The heading, taken from the members' {@link ComboBoxOption.group}. */
   label: string;
+  /** Members, in source order. */
   options: ComboBoxOption<T>[];
 }
 
@@ -83,8 +123,11 @@ export interface ComboBoxGroup<T = string> {
  * Every key is optional - when absent, no className is applied.
  */
 export interface ComboBoxClassNames {
+  /** Outermost element. */
   root?: string;
+  /** The control shell holding the value(s), input and indicator. */
   wrapper?: string;
+  /** Container for the pills plus the input, in multiple mode. */
   multiValueContainer?: string;
   /**
    * The `role="list"` wrapper around the selected pills. Layout-neutral in the
@@ -92,32 +135,77 @@ export interface ComboBoxClassNames {
    * of the multi-value container.
    */
   pillList?: string;
+  /** One selected-value pill. */
   pill?: string;
+  /** The label span inside a pill. */
   pillText?: string;
+  /** A pill's remove button. Keyboard-reachable via the pill roving tab group. */
   pillRemove?: string;
+  /** The rendered value in single mode, when `renderValue` replaces the input text. */
   singleValue?: string;
+  /** The text input. */
   input?: string;
+  /** Applied to the input when a `renderValue` result is shown in its place. */
   inputHidden?: string;
+  /** The open/close affordance. */
   indicator?: string;
+  /** Applied to the indicator *in addition to* `indicator` while open. */
   indicatorOpen?: string;
+  /** The portalled popup panel - border, shadow, elevation. */
   listbox?: string;
+  /** Optional slot rendered above the options, inside the panel. */
   header?: string;
+  /** Optional slot rendered below the options, inside the panel. */
   footer?: string;
+  /** The scroll container inside the panel, so its chrome does not scroll away. */
   options?: string;
+  /** One option row. */
   option?: string;
+  /** Added to the option holding the roving keyboard highlight. */
   optionHighlighted?: string;
+  /** Added to the committed option. Orthogonal to `optionHighlighted` - a row may carry both. */
   optionSelected?: string;
+  /** Added to a disabled option. */
   optionDisabled?: string;
+  /** The "create «query»" affordance shown when `allowCreate` is on. */
   optionCreate?: string;
+  /** The label span inside an option. */
   optionLabel?: string;
+  /** The tick shown on a selected option, when `renderCheckIcon` supplies one. */
   checkIcon?: string;
+  /** A group wrapper. */
   group?: string;
+  /** A group's heading. */
   groupLabel?: string;
+  /** The row shown while `loading` is true. */
   loading?: string;
+  /** The spinner inside the loading row. */
   spinner?: string;
+  /** The row shown when nothing matches - carries `noOptionsMessage`. */
   empty?: string;
 }
 
+/**
+ * Props for the unstyled ComboBox. The styled `ComboBox` wraps this and fills
+ * in `classNames` plus its icon render props.
+ *
+ * @remarks
+ * Ships no CSS of its own - supply {@link ComboBoxClassNames} (or none, and
+ * style via the `data-*` hooks). The listbox is portalled, so it escapes
+ * ancestor `overflow: hidden` and stacking contexts.
+ *
+ * Controlled only: `value` and `onChange` are required, and the component never
+ * moves the value itself. It reports; the consumer decides.
+ *
+ * @typeParam T - Type of an option's value. Note that `value` is `T | T[]`
+ * depending on {@link ComboBoxBaseProps.multiple}.
+ *
+ * @example
+ * ```tsx
+ * const [value, setValue] = useState<string | null>(null);
+ * <ComboBoxBase options={options} value={value} onChange={setValue} aria-label="Pair" />
+ * ```
+ */
 export interface ComboBoxBaseProps<T = string> extends Omit<
   HTMLAttributes<HTMLDivElement>,
   "onChange" | "defaultValue"

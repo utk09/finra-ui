@@ -13,6 +13,15 @@ import { useFormField } from "../../hooks/useFormField";
 import type { AriaInvalid } from "../../logic/formField";
 import { mergeRefs } from "../../utils/mergeRefs";
 
+/**
+ * Props for the unstyled drop zone.
+ *
+ * @remarks
+ * Reachable by keyboard as well as pointer: Enter and Space open the file
+ * picker, so dropping is never the only route. `accept` filters the picker's
+ * dialog but is not a validation guarantee - a drop can still carry anything,
+ * so re-check types in `onChange`.
+ */
 export interface FileDropZoneBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   /** Called with selected files. */
   onChange?: (files: File[]) => void;

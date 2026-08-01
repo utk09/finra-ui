@@ -1,5 +1,26 @@
+/**
+ * The data attribute every finra-ui component stamps onto its root element.
+ *
+ * @remarks
+ * A stable styling and test hook that survives CSS-module hashing and minified
+ * class names - `[data-finra-ui="button"]` works in a consumer's stylesheet,
+ * and `getByTestId` finds it in tests without needing a `data-testid`.
+ */
 export const FINRA_UI_ATTR = "data-finra-ui" as const;
 
+/**
+ * The registry of {@link FINRA_UI_ATTR} values, one per component or named part.
+ *
+ * @remarks
+ * Central so that ids stay unique and greppable. Sub-parts get their own entry
+ * (`inputField`, `textareaCount`) so a consumer can target the inner element
+ * without relying on the DOM shape, which is not part of the public contract.
+ *
+ * @example
+ * ```css
+ * [data-finra-ui="input-field"] { font-variant-numeric: tabular-nums; }
+ * ```
+ */
 export const componentIds = {
   // Button family
   button: "button",
@@ -102,4 +123,11 @@ export const componentIds = {
   divider: "divider",
 } as const;
 
+/**
+ * Every value {@link componentIds} can produce.
+ *
+ * @remarks
+ * Derived from the registry rather than declared separately, so adding an entry
+ * there widens this automatically and the two can never drift apart.
+ */
 export type ComponentId = (typeof componentIds)[keyof typeof componentIds];

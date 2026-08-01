@@ -19,20 +19,43 @@ export interface FormFieldState {
   errorId: string;
   /** Space-separated ids for `aria-describedby` (error and/or helper present). */
   describedBy?: string;
+  /** Whether the field is in an error state. Drives `aria-invalid` on the control. */
   invalid: boolean;
+  /** Whether the field is required. Drives `aria-required` on the control. */
   required: boolean;
+  /** Whether the field is disabled. Propagated to the control it wraps. */
   disabled: boolean;
 }
 
 /** The React `aria-invalid` value union (boolean or token). */
+/**
+ * Every value `aria-invalid` accepts, including the string forms.
+ *
+ * @remarks
+ * `"grammar"` and `"spelling"` are real ARIA values, not typos - both mean
+ * "invalid", so {@link isAriaInvalid} treats them as such. Note that the string
+ * `"false"` is falsy in ARIA terms but truthy in JavaScript, which is exactly
+ * the trap that helper exists to avoid.
+ */
 export type AriaInvalid = boolean | "false" | "true" | "grammar" | "spelling";
 
 /** The a11y props a control spreads onto its DOM node. Absent keys are omitted. */
 export interface FormFieldControlA11y {
+  /** The field's generated id, unless the control supplied its own. */
   id?: string;
+  /** Points at the helper text, the error message, or both. */
   "aria-describedby"?: string;
+  /** Present only when the field is actually invalid. */
   "aria-invalid"?: AriaInvalid;
+  /**
+   * Present only when the field is required.
+   *
+   * @remarks
+   * Role-restricted: invalid on a div-rooted composite, so it is deliberately
+   * *not* injected into arbitrary children - a composite absorbs it itself.
+   */
   "aria-required"?: boolean;
+  /** Mirrors the field's disabled state onto the control. */
   disabled?: boolean;
 }
 
@@ -42,9 +65,13 @@ export interface FormFieldControlA11y {
  * object directly.
  */
 export interface FormFieldOwnA11y {
+  /** The control's own id. Wins over the field's generated one. */
   id?: string;
+  /** The control's own describedby. Merged with the field's, not replaced. */
   "aria-describedby"?: string;
+  /** The control's own invalid state. Wins over the field's. */
   "aria-invalid"?: AriaInvalid;
+  /** The control's own disabled state. ORed with the field's - either disables. */
   disabled?: boolean;
 }
 

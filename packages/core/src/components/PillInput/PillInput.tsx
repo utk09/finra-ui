@@ -15,6 +15,17 @@ import { mergeRefs } from "../../utils/mergeRefs";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./PillInput.module.scss";
 
+/**
+ * Props for PillInput - free-text entry that commits each entry as a removable
+ * pill.
+ *
+ * @remarks
+ * For arbitrary values (tags, email addresses, ad-hoc codes). When the values
+ * come from a known list, use ComboBox in `multiple` mode instead - it gives
+ * filtering and prevents typos.
+ *
+ * Controlled: pass `values` and handle `onChange`.
+ */
 export interface PillInputProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   /** Current list of pills (controlled). */
   values?: string[];

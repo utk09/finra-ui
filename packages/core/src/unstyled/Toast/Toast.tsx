@@ -4,20 +4,46 @@ import { useStore } from "../../hooks/useStore";
 import { toastController, type ToastData } from "../../logic/toast";
 import { Portal } from "../Portal/Portal";
 
+/**
+ * Which corner (or edge centre) the toast region stacks in.
+ *
+ * @remarks
+ * `top-*` positions stack downwards and `bottom-*` upwards, so the newest toast
+ * is always the one nearest the edge and never displaces the one being read.
+ */
 export type ToastPosition =
   "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right";
 
 /** Per-toast controls handed to a custom `renderToast`. */
 export interface ToastControls {
+  /** Dismiss this toast now and cancel its auto-dismiss timer. */
   dismiss: () => void;
+  /**
+   * Freeze the auto-dismiss countdown.
+   *
+   * @remarks
+   * Call on pointer enter and on focus. A toast that expires while being read -
+   * or while its action button holds focus - is a genuine accessibility
+   * failure, not just an annoyance.
+   */
   pause: () => void;
+  /** Restart the countdown with the toast's remaining duration. Pairs with `pause`. */
   resume: () => void;
 }
 
 //  Item
 
+/**
+ * Props for one rendered toast.
+ *
+ * @remarks
+ * You rarely construct these - `Toaster` supplies them. They matter when you
+ * pass your own `renderToast`, which receives exactly this shape.
+ */
 export interface ToastItemProps extends HTMLAttributes<HTMLDivElement> {
+  /** The toast to render, with every default already resolved. */
   toast: ToastData;
+  /** Dismiss/pause/resume for this toast. Wire `pause`/`resume` to hover and focus. */
   controls: ToastControls;
 }
 
@@ -67,6 +93,22 @@ ToastItem.displayName = "ToastItem";
 
 //  Region
 
+/**
+ * Props for the toast region - the single mount point that renders the shared
+ * queue.
+ *
+ * @remarks
+ * Mount exactly one `Toaster` near the root of the app. It subscribes to the
+ * shared {@link toastController}, so anything calling `toast()` anywhere reaches
+ * it without prop-drilling. Two mounted at once means every toast renders twice.
+ *
+ * @example
+ * ```tsx
+ * <Toaster position="top-right" />
+ * // …anywhere else, with no import of the Toaster itself:
+ * toast.success("Order filled");
+ * ```
+ */
 export interface ToasterProps {
   /** Corner to stack toasts in. Default "bottom-right". */
   position?: ToastPosition;

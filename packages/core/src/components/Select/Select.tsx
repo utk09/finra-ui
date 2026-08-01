@@ -16,7 +16,20 @@ import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Select.module.scss";
 
 export type { SelectOptionData, SelectProps };
+/**
+ * Props for the styled trigger.
+ *
+ * @remarks
+ * Identical to the unstyled base's. The styled layer renders the value and a
+ * chevron for you, so leave `children` unset unless you want to replace both.
+ */
 export type SelectTriggerProps = SelectTriggerBaseProps;
+/**
+ * Props for the styled listbox panel.
+ *
+ * @remarks
+ * Identical to the unstyled base's - the styled layer adds only CSS, no new API.
+ */
 export type SelectContentProps = SelectContentBaseProps;
 
 /** Select root - controlled/uncontrolled value + open state, options, placement. */

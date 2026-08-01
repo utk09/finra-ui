@@ -18,6 +18,14 @@ export type { Placement } from "@floating-ui/dom";
  * presets so overlay components don't each re-derive middleware.
  */
 
+/**
+ * How to place a floating element against its anchor.
+ *
+ * @remarks
+ * Every option is a *preference*. Flip and shift may override `placement` to
+ * keep the element on screen, which is why {@link AnchoredPosition} reports the
+ * placement actually used rather than echoing this one back.
+ */
 export interface AnchoredPositionOptions {
   /** Preferred side. Default "bottom". */
   placement?: Placement;
@@ -33,9 +41,20 @@ export interface AnchoredPositionOptions {
   arrowElement?: Element | null;
 }
 
+/** A computed position, ready to apply as `position: absolute` coordinates. */
 export interface AnchoredPosition {
+  /** Left offset in px, relative to the positioning container. */
   x: number;
+  /** Top offset in px, relative to the positioning container. */
   y: number;
+  /**
+   * The placement actually used.
+   *
+   * @remarks
+   * May differ from the one requested, because flip and shift override it to
+   * keep the element in view. Read this - not your own option - when styling a
+   * side-dependent effect such as an entry animation or an arrow.
+   */
   placement: Placement;
   /** Arrow offset, present only when `arrowElement` was supplied. */
   arrow?: { x?: number; y?: number };

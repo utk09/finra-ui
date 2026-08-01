@@ -7,6 +7,13 @@ import { IconButtonBase, type IconButtonBaseProps } from "../../unstyled/IconBut
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./IconButton.module.scss";
 
+/**
+ * Colour meaning for an icon button.
+ *
+ * @remarks
+ * Orthogonal to `variant`, which sets emphasis - a tertiary danger icon button
+ * is a quiet destructive action.
+ */
 export type IconButtonSentiment = Sentiment;
 
 const sentimentClasses: Record<IconButtonSentiment, string> = {
@@ -29,8 +36,22 @@ const iconButtonVariants = cva(styles.iconButton, {
   },
 });
 
+/**
+ * Props for the styled icon-only button.
+ *
+ * @remarks
+ * `aria-label` is required by the base type. An icon-only control has no text
+ * to name it, so the compiler enforces one rather than leaving it to review.
+ * Describe the action ("Close"), not the glyph ("X").
+ *
+ * @example
+ * ```tsx
+ * <IconButton icon={<TrashIcon />} aria-label="Delete order" sentiment="danger" />
+ * ```
+ */
 export interface IconButtonProps
   extends IconButtonBaseProps, VariantProps<typeof iconButtonVariants> {
+  /** Colour meaning. Orthogonal to `variant`. */
   sentiment?: IconButtonSentiment;
 }
 

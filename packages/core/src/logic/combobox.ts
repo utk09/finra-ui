@@ -3,16 +3,47 @@
  * Used by React ComboBoxBase and future Lit finra-combobox.
  */
 
+/**
+ * The minimum an option must provide for this module to filter, group and
+ * navigate it.
+ *
+ * @remarks
+ * Deliberately structural rather than a class, so a consumer's own option type
+ * satisfies it without conversion. The rendering layer's `ComboBoxOption` is
+ * this shape plus presentation concerns.
+ *
+ * @typeParam T - Type of the option's value. Defaults to `string`; use a union
+ * of literals to have TypeScript narrow what a selection can be.
+ */
 export interface ComboBoxOptionLike<T = string> {
+  /** Identity. What `onChange` reports, and what equality is tested on. */
   value: T;
+  /** Human-readable text. Filtering and typeahead both match against this. */
   label: string;
+  /**
+   * Optional group heading. Options sharing a `group` are collected under it;
+   * options without one fall into the ungrouped bucket.
+   *
+   * @see {@link groupOptions}
+   */
   group?: string;
+  /** Rendered but not selectable, and skipped by keyboard navigation. */
   disabled?: boolean;
+  /**
+   * Lifts the option into a pinned "favourites" section above every group.
+   *
+   * @remarks
+   * A favourited option is *moved*, not copied - it will not also appear under
+   * its own `group`.
+   */
   favourite?: boolean;
 }
 
+/** One named group of options, as returned by {@link groupOptions}. */
 export interface ComboBoxGroupResult<T = string> {
+  /** The heading, taken verbatim from the members' {@link ComboBoxOptionLike.group}. */
   label: string;
+  /** Members, in the order they appeared in the source list. */
   options: ComboBoxOptionLike<T>[];
 }
 
@@ -145,16 +176,23 @@ export type ComboBoxKeyEffect =
 
 /** Everything a keydown decision needs, with zero framework/DOM coupling. */
 export interface ComboBoxKeyContext {
+  /** Whether the listbox popup is currently shown. Most keys mean different things when it is not. */
   isOpen: boolean;
+  /** When true every key is swallowed and no effects are produced. */
   disabled: boolean;
+  /** Index of the active option, or `-1` for "nothing highlighted yet". */
   highlightedIndex: number;
   /** Options + the create affordance - the modulo base for wrap-around. */
   totalNavigable: number;
   /** Length of the flat option list (create affordance sits at this index). */
   flatOptionsLength: number;
+  /** Whether a "create «query»" row is currently offered at the end of the list. */
   showCreateOption: boolean;
+  /** Multi-select mode. Enables the pill behaviours: Backspace-to-remove and ArrowLeft-to-pills. */
   multiple: boolean;
+  /** Whether the text field is empty - the precondition for Backspace removing a pill. */
   inputValueEmpty: boolean;
+  /** How many values are currently selected. Zero suppresses the pill behaviours entirely. */
   selectedCount: number;
   /**
    * Alt modifier. APG combobox: Alt+ArrowDown opens the popup *without* moving
@@ -169,9 +207,18 @@ export interface ComboBoxKeyContext {
   caretAtStart?: boolean;
 }
 
+/**
+ * The decision for one keypress: what to suppress, and what to do.
+ *
+ * @remarks
+ * Deliberately data, not callbacks. The adapter (React today, Lit later)
+ * executes the effects against its own state, which is what lets this whole
+ * module stay framework-free and directly unit-testable.
+ */
 export interface ComboBoxKeyResult {
   /** Whether the adapter should call `event.preventDefault()`. */
   preventDefault: boolean;
+  /** Effects to apply in order. Empty means the key was not handled here. */
   effects: ComboBoxKeyEffect[];
 }
 
@@ -318,6 +365,15 @@ export type ComboBoxPillEffect =
   /** Leave the pill list and put focus back in the text input. */
   | { kind: "focusInput" };
 
+/**
+ * Context for a keypress that lands on a selected-value pill rather than the
+ * text input.
+ *
+ * @remarks
+ * Pills form their own roving tab group (the React Aria TagGroup model): one
+ * tab stop for the whole list, arrows to move within it. Without this, removing
+ * a value would be pointer-only.
+ */
 export interface ComboBoxPillKeyContext {
   /** Index of the pill currently holding the roving tab stop. */
   activeIndex: number;
@@ -327,8 +383,11 @@ export interface ComboBoxPillKeyContext {
   rtl?: boolean;
 }
 
+/** The decision for one keypress inside the pill list. @see {@link ComboBoxKeyResult} */
 export interface ComboBoxPillKeyResult {
+  /** Whether the adapter should call `event.preventDefault()`. */
   preventDefault: boolean;
+  /** Effects to apply in order. Empty means the key was not handled here. */
   effects: ComboBoxPillEffect[];
 }
 

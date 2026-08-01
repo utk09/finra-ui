@@ -1,7 +1,19 @@
 import { type ReactNode, useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
+/**
+ * Props for {@link Portal}.
+ *
+ * @remarks
+ * Exists so overlays escape ancestor `overflow: hidden`, `z-index` stacking
+ * contexts and `transform` containing blocks - all of which clip or mis-place a
+ * popup that renders inline.
+ *
+ * SSR-safe: renders nothing until mounted, since there is no `document` to
+ * portal into on the server.
+ */
 export interface PortalProps {
+  /** Content to render into the container. */
   children: ReactNode;
   /**
    * Where to render the portalled content. Defaults to `document.body`.

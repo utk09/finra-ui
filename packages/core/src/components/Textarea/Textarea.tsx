@@ -34,16 +34,51 @@ const validationClasses: Record<ValidationStatus, string> = {
   success: styles.statusSuccess,
 };
 
+/**
+ * Props for the styled Textarea.
+ *
+ * @remarks
+ * `size` is deliberately omitted - sizing comes from the density system
+ * (`data-density` on any ancestor), and the field's height from `minRows` /
+ * `maxRows`.
+ *
+ * @example
+ * ```tsx
+ * <Textarea autoResize minRows={3} maxRows={10} maxLength={500} showCharCount />
+ * ```
+ */
 export interface TextareaProps
   extends
     Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "size">,
     VariantProps<typeof textareaVariants> {
+  /** Validation state. `"error"` also sets `aria-invalid`. */
   validationStatus?: ValidationStatus;
+  /**
+   * Show a "used / limit" counter below the field.
+   *
+   * @remarks
+   * Needs `maxLength` to render a limit. The counter is a live region, so it is
+   * announced as it changes rather than only on blur.
+   */
   showCharCount?: boolean;
+  /**
+   * Fraction of `maxLength` at which the counter turns warning-coloured, as
+   * `0`-`1`.
+   *
+   * @remarks
+   * Colour is not the only signal - the counter's text carries the numbers
+   * regardless.
+   *
+   * @defaultValue `0.9`
+   */
   warningThreshold?: number;
+  /** Grow the field with its content, between `minRows` and `maxRows`. */
   autoResize?: boolean;
+  /** Smallest height in rows, and the initial height when `autoResize` is on. */
   minRows?: number;
+  /** Largest height in rows before the field starts scrolling instead of growing. */
   maxRows?: number;
+  /** Stretch to fill the container's inline size. */
   fullWidth?: boolean;
 }
 

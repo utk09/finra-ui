@@ -7,8 +7,24 @@ import { mergeRefs } from "../../utils/mergeRefs";
 import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Checkbox.module.scss";
 
+/**
+ * Props for the styled Checkbox.
+ *
+ * @remarks
+ * Supply either `label` or an `aria-label` - a checkbox with neither is
+ * announced as unnamed. Set `indeterminate` for a parent controlling a partly
+ * selected set; it is a visual and ARIA state only, and does not change
+ * `checked`.
+ *
+ * @example
+ * ```tsx
+ * <Checkbox label="Include expired" indeterminate={someSelected} />
+ * ```
+ */
 export interface CheckboxProps extends Omit<CheckboxBaseProps, "className"> {
+  /** Visible label rendered beside the box, and wired as its accessible name. */
   label?: string;
+  /** Additional CSS class for the root wrapper. */
   className?: string;
 }
 
