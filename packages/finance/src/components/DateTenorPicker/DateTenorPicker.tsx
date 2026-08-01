@@ -43,6 +43,27 @@ const validationClasses: Record<ValidationStatus, string> = {
 
 //  Props
 
+/**
+ * Props for the styled DateTenorPicker - one field accepting either a date or a
+ * tenor expression.
+ *
+ * @remarks
+ * The most flexible of the date components: `3M`, `SPOT+1W`, `1Y6M` and literal
+ * dates all resolve through the same field, and the committed value records
+ * which `mode` was used. Settlement and business-day adjustment are injected
+ * (`settlementEngine`, `calendar`) rather than assumed, because holiday
+ * calendars are desk-specific and cannot be known here.
+ *
+ * A committed value also carries `standardTenor` - the tenor a date lands on,
+ * or `null` for a broken date - which is what drives the broken-date indicator.
+ *
+ * @example
+ * ```tsx
+ * <DateTenorPicker aria-label="Value date" referenceDate={today}
+ *   calendar={{ isBusinessDay, adjust }} adjustmentConvention="following"
+ *   onChange={(value) => setValueDate(value?.date ?? null)} />
+ * ```
+ */
 export interface DateTenorPickerProps
   extends
     Omit<

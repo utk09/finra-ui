@@ -115,14 +115,29 @@ export interface CalendarTitleApi {
   monthNames: string[];
 }
 
+/**
+ * CSS class overrides the styled layer injects into the unstyled base.
+ *
+ * @remarks
+ * Every key is optional - when absent, no className is applied at all (not an
+ * empty `class` attribute).
+ */
 export interface CalendarClassNames {
+  /** Outermost element. */
   root?: string;
+  /** The month/year title row with its nav buttons. */
   header?: string;
+  /** Previous/next month buttons. */
   navButton?: string;
+  /** The month + year title. A live region, so paging is announced. */
   title?: string;
+  /** The weekday-abbreviation header row. */
   weekdayRow?: string;
+  /** One weekday abbreviation. Carries the full name as its accessible label. */
   weekday?: string;
+  /** The `role="grid"` container. */
   grid?: string;
+  /** One `role="row"`, a single week. */
   row?: string;
   /**
    * The `role="gridcell"` wrapper around each day button. Layout-neutral by
@@ -130,16 +145,40 @@ export interface CalendarClassNames {
    * grid item; unstyled consumers styling `.row` as a grid must do the same.
    */
   dayCell?: string;
+  /** One day button. */
   day?: string;
+  /** Added to today's cell. Visual only - it is not a selection. */
   dayToday?: string;
+  /** Added to the selected day, or to a range endpoint. */
   daySelected?: string;
+  /** Added to a day failing min/max, the disabled list, or the business-day test. */
   dayDisabled?: string;
+  /** Added to the padding days belonging to the neighbouring months. */
   dayOutside?: string;
+  /** Added to the day holding the roving keyboard focus. Orthogonal to `daySelected`. */
   dayHighlighted?: string;
+  /** The ISO week-number cell, shown when `showWeekNumbers` is on. */
   weekNumber?: string;
+  /** The footer slot, when a `footer` render prop is supplied. */
   footer?: string;
 }
 
+/**
+ * Props for the unstyled Calendar.
+ *
+ * @remarks
+ * Ships no CSS - supply {@link CalendarClassNames}, or style via the `data-*`
+ * hooks.
+ *
+ * Single-date or range selection, chosen with `mode`. The grid is a proper
+ * `role="grid"` with roving focus: arrows move by day, PageUp/PageDown by month,
+ * Home/End to the week's ends.
+ *
+ * Month and weekday names come from `Intl`, so they follow `locale` - but note
+ * that this is display only. Month-name *parsing* elsewhere in this package
+ * stays English on purpose, because a trader typing `15 Jan 2027` means January
+ * whatever their UI locale says.
+ */
 export interface CalendarBaseProps {
   /** Selection mode. Default "single". */
   mode?: "single" | "range";

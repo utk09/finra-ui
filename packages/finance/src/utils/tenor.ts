@@ -22,18 +22,61 @@ export const STANDARD_TENORS = [
   "30Y",
 ] as const;
 
+/**
+ * The market-standard tenor set, as a literal union.
+ *
+ * @remarks
+ * Derived from {@link STANDARD_TENORS} rather than declared separately, so the
+ * two can never drift. A tenor outside this set is a *broken* date - still
+ * valid, just not standard.
+ */
 export type StandardTenor = (typeof STANDARD_TENORS)[number];
 
+/**
+ * The four time units a tenor can be expressed in.
+ *
+ * @remarks
+ * The special codes are not units: `ON`, `TN` and `SN` resolve to days, `SW` to
+ * one week. Business-day and holiday rules are deliberately absent - resolution
+ * here is pure calendar arithmetic, and rolling is the consumer's job.
+ */
 export type TenorUnit = "D" | "W" | "M" | "Y";
 
+/**
+ * The result of parsing a simple tenor (`3M`, `ON`, `10Y`).
+ *
+ * @remarks
+ * Strict: one number and one unit, or a special code. For long-form and
+ * compound input (`3 months`, `1Y6M`) use {@link parseTenorInput}, which
+ * returns {@link FlexibleTenorParseResult}.
+ */
 export interface TenorParseResult {
+  /** Whether the input parsed. */
   valid: boolean;
+  /** Canonical form (`"3M"`), or `null` when invalid. */
   tenor: string | null;
+  /** The numeric part. Absent when invalid. */
   value?: number;
+  /** The unit. Absent when invalid. */
   unit?: TenorUnit;
+  /**
+   * Why it failed. `"invalid-format"` means it is not a tenor at all;
+   * `"invalid-value"` means it parsed but the number is out of range (`0M`).
+   */
   error?: "invalid-format" | "invalid-value";
 }
 
+/**
+ * Resolves a tenor to a date. Injectable so a desk can substitute its own
+ * conventions.
+ *
+ * @remarks
+ * The default ({@link resolveTenor}) is pure calendar arithmetic with no
+ * holiday or business-day awareness. Replace it when spot lag or a roll
+ * convention has to be applied during resolution rather than afterwards.
+ *
+ * @returns The resolved date, or `null` when the tenor is unrecognised.
+ */
 export type TenorResolver = (tenor: string, referenceDate: Date) => Date | null;
 
 const SPECIAL_TENORS: Record<string, { value: number; unit: TenorUnit }> = {
@@ -129,11 +172,23 @@ export function dateToTenor(date: Date, referenceDate: Date): StandardTenor | nu
 
 /** One decomposed leg of a (possibly compound) tenor, e.g. `{ value: 6, unit: "M" }`. */
 export interface TenorTerm {
+  /** The count. Always positive. */
   value: number;
+  /** The unit this count is in. */
   unit: TenorUnit;
 }
 
+/**
+ * The result of parsing free-form tenor input.
+ *
+ * @remarks
+ * Accepts what a trader actually types - `3 months`, `1y6m`, `90d`, `ON` - and
+ * normalises it to canonical form. A compound tenor decomposes into `terms` in
+ * descending unit magnitude; a special code sets `special` and leaves `terms`
+ * empty.
+ */
 export interface FlexibleTenorParseResult {
+  /** Whether the input parsed. */
   valid: boolean;
   /** Canonical tenor string (e.g. `"18M"`, `"1Y6M"`, `"ON"`), or `null` when invalid. */
   tenor: string | null;
@@ -141,6 +196,10 @@ export interface FlexibleTenorParseResult {
   terms?: TenorTerm[];
   /** Special tenor code when the input resolved to one (`ON`/`TN`/`SN`/`SW`). */
   special?: string;
+  /**
+   * Why it failed. `"invalid-format"` means it is not a tenor at all;
+   * `"invalid-value"` means it parsed but a number is out of range.
+   */
   error?: "invalid-format" | "invalid-value";
 }
 

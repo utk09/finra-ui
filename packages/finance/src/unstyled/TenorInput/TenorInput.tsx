@@ -7,8 +7,28 @@ import { forwardRef, type HTMLAttributes, type ReactNode, useCallback, useMemo }
 
 import { parseTenor, STANDARD_TENORS } from "../../utils/tenor";
 
+/**
+ * CSS class overrides for the deprecated flat tenor combo box.
+ *
+ * @deprecated Use `TenorPickerClassNames` with {@link TenorPickerBase} instead.
+ *
+ * @remarks
+ * Identical to `ComboBoxClassNames` - this component is a thin wrapper over
+ * core's ComboBox and adds no parts of its own.
+ */
 export interface TenorInputClassNames extends ComboBoxClassNames {}
 
+/**
+ * Props for the deprecated unstyled flat tenor combo box.
+ *
+ * @deprecated Use {@link TenorPickerBase} instead - a strict superset
+ * (`grouped={false}` reproduces this flat list) that adds grouping, favourites
+ * and flexible parsing. Will be removed in a future release.
+ *
+ * @remarks
+ * Migration is close to a rename; the one behavioural difference is parsing,
+ * since TenorPicker accepts long-form and compound tenors this rejects.
+ */
 export interface TenorInputBaseProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
   "onChange" | "defaultValue"
@@ -23,19 +43,29 @@ export interface TenorInputBaseProps extends Omit<
   allowedTenors?: string[];
   /** Allow free-text tenor input (e.g. "4M"). */
   allowCustom?: boolean;
+  /** Placeholder for the text field. */
   placeholder?: string;
+  /** Disable the whole control. */
   disabled?: boolean;
 
   // Open state
+  /** Controlled open state of the listbox. */
   open?: boolean;
+  /** Fired whenever the listbox wants to open or close. */
   onOpenChange?: (open: boolean) => void;
 
   // Style injection (same pattern as ComboBox)
+  /** CSS class names injected by the styled layer. */
   classNames?: TenorInputClassNames;
+  /** data-* attributes injected by the styled layer. */
   dataAttributes?: Record<string, string>;
+  /** Render the tick shown on the selected option. */
   renderCheckIcon?: () => ReactNode;
+  /** Render the open/close affordance. Receives the current open state. */
   renderIndicator?: (isOpen: boolean) => ReactNode;
+  /** Render a pill's remove glyph. Unused here - this control is single-select. */
   renderPillRemoveIcon?: () => ReactNode;
+  /** Render the row shown while options are loading. */
   renderLoading?: () => ReactNode;
 }
 

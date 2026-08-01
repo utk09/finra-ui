@@ -1,3 +1,13 @@
+/**
+ * The registry of `data-finra-ui` values for finance components, one per
+ * component or named part.
+ *
+ * @remarks
+ * Separate from core's registry but sharing the same attribute, so
+ * `[data-finra-ui]` selects across both packages. Sub-parts get their own entry
+ * (`dateInputField`, `calendarIcon`) so a consumer can target the inner element
+ * without depending on the DOM shape, which is not part of the public contract.
+ */
 export const componentIds = {
   // AmountInput
   amountInput: "amount-input",
@@ -36,4 +46,11 @@ export const componentIds = {
   currencyPairBadge: "currency-pair-badge",
 } as const;
 
+/**
+ * Every value this package's {@link componentIds} can produce.
+ *
+ * @remarks
+ * Derived from the registry rather than declared separately, so adding an entry
+ * there widens this automatically and the two can never drift apart.
+ */
 export type FinanceComponentId = (typeof componentIds)[keyof typeof componentIds];

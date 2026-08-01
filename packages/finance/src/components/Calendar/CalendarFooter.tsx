@@ -7,6 +7,14 @@ import styles from "./Calendar.module.scss";
 
 //  Today button
 
+/**
+ * Props for the prebuilt "go to today" footer button.
+ *
+ * @remarks
+ * Decide with `navigateOnly` whether pressing it *selects* today or merely
+ * *navigates* to today's month. Navigating is the safer default for a range
+ * picker, where an accidental selection would restart the range.
+ */
 export interface CalendarTodayButtonProps {
   /** Footer API injected by `Calendar`'s function `footer`. */
   api: CalendarFooterApi;
@@ -35,6 +43,13 @@ export function CalendarTodayButton({
 
 //  Tenor shortcuts
 
+/**
+ * One shortcut button: a label and the forward tenor it resolves to.
+ *
+ * @remarks
+ * Resolved against *today*, not against the currently displayed month - so "1M"
+ * always means one month from now, however far the user has paged.
+ */
 export interface CalendarShortcut {
   /** Button text, e.g. "1M". */
   label: string;
@@ -42,6 +57,24 @@ export interface CalendarShortcut {
   tenor: string;
 }
 
+/**
+ * Props for a prebuilt row of relative-date shortcut buttons.
+ *
+ * @remarks
+ * The quick way to offer "1W / 1M / 3M" beneath a date picker. Each button
+ * selects `today + tenor` directly, skipping the paging a distant date would
+ * otherwise need.
+ *
+ * @example
+ * ```tsx
+ * <Calendar footer={(api) => (
+ *   <CalendarShortcuts api={api} shortcuts={[
+ *     { label: "1W", tenor: "1w" },
+ *     { label: "1M", tenor: "1m" },
+ *   ]} />
+ * )} />
+ * ```
+ */
 export interface CalendarShortcutsProps {
   /** Footer API injected by `Calendar`'s function `footer`. */
   api: CalendarFooterApi;

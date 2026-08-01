@@ -27,15 +27,39 @@ import { CalendarBase } from "../Calendar/Calendar";
 
 //  Types
 
+/**
+ * CSS class overrides the styled layer injects into the unstyled base.
+ *
+ * @remarks
+ * Every key is optional - when absent, no className is applied at all (not an
+ * empty `class` attribute).
+ */
 export interface DateInputClassNames {
+  /** Outermost element. */
   root?: string;
+  /** Applied to the root *in addition to* `root` while the calendar is open. */
   calendarOpen?: string;
+  /** The masked text field. */
   input?: string;
+  /** The calendar-icon toggle button beside the field. */
   adornment?: string;
+  /** The calendar popup panel. */
   popup?: string;
+  /** Passed through to the embedded Calendar. */
   calendar?: CalendarClassNames;
 }
 
+/**
+ * Props for the unstyled DateInput.
+ *
+ * @remarks
+ * Ships no CSS - supply {@link DateInputClassNames}, or style via the `data-*`
+ * hooks.
+ *
+ * The field masks itself to digits and the format's separator, inserting
+ * separators as you type. Editing and navigation keys pass through untouched,
+ * so Backspace, arrows and Home/End behave normally.
+ */
 export interface DateInputBaseProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
   "onChange" | "defaultValue"

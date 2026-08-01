@@ -31,25 +31,59 @@ import { CalendarBase } from "../Calendar/Calendar";
 
 //  Types
 
+/**
+ * CSS class overrides the styled layer injects into the unstyled base.
+ *
+ * @remarks
+ * Every key is optional - when absent, no className is applied at all (not an
+ * empty `class` attribute).
+ */
 export interface DateTenorInputClassNames {
+  /** Outermost element. */
   root?: string;
+  /** The control shell holding the field, badge and buttons. */
   trigger?: string;
+  /** Applied to the shell *in addition to* `trigger` while the popup is open. */
   triggerOpen?: string;
+  /** The masked date field. */
   dateInput?: string;
+  /** The badge showing the selected tenor beside the date. */
   tenorBadge?: string;
+  /** The calendar-icon toggle button. */
   calendarButton?: string;
+  /** The open/close affordance. */
   indicator?: string;
+  /** Applied to the indicator *in addition to* `indicator` while open. */
   indicatorOpen?: string;
+  /** The popup panel holding both the calendar and the tenor list. */
   popup?: string;
+  /** The calendar half of the popup. */
   calendarSection?: string;
+  /** The tenor-list half of the popup. */
   tenorSection?: string;
+  /** The tenor list's heading. */
   tenorTitle?: string;
+  /** The tenor list container. */
   tenorGrid?: string;
+  /** One tenor option. */
   tenor?: string;
+  /** Added to the selected tenor. */
   tenorSelected?: string;
+  /** Passed through to the embedded Calendar. */
   calendar?: CalendarClassNames;
 }
 
+/**
+ * Props for the unstyled DateTenorInput.
+ *
+ * @remarks
+ * Ships no CSS - supply {@link DateTenorInputClassNames}, or style via the
+ * `data-*` hooks.
+ *
+ * Reports `{ date, tenor }` together: picking a tenor resolves it to a date,
+ * and picking a date reports the standard tenor it lands on (or `null`). The
+ * text field itself accepts dates only - tenors come from the list.
+ */
 export interface DateTenorInputBaseProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
   "onChange" | "defaultValue"

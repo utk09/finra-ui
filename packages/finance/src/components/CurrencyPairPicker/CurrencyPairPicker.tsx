@@ -37,6 +37,34 @@ const validationClasses: Record<ValidationStatus, string> = {
 
 //  Props
 
+/**
+ * Props for the styled CurrencyPairPicker - an instrument search that emits the
+ * whole pair, not just its id.
+ *
+ * @remarks
+ * Emitting the full object is the point: the carried metadata (`pricing`,
+ * `settlementStyle`, `requiresTenor`) is what seeds a downstream PriceInput or
+ * tenor field, and reducing it to an id would throw that away.
+ *
+ * Two data sources. Pass `pairs` for a static list searched locally, or
+ * `provider` for an async source - and note the value is always a scalar **id**
+ * either way, so it survives a form library, a URL and a page reload. The
+ * component resolves it back to a pair itself, through the cache then
+ * `provider.getById`.
+ *
+ * One currency pair can be several tradable instruments (USDINR onshore vs NDF
+ * price and settle differently). Give each its own `id`; typing the shared
+ * symbol then reports `"ambiguous"` through `onInvalid` rather than guessing.
+ *
+ * @typeParam T - Your own pair type, if it extends {@link CurrencyPair} with
+ * extra fields. `onChange` hands them straight back to you.
+ *
+ * @example
+ * ```tsx
+ * <CurrencyPairPicker aria-label="Pair" provider={instrumentProvider}
+ *   value={pairId} onChange={(pair) => setPricing(pair?.pricing)} />
+ * ```
+ */
 export interface CurrencyPairPickerProps<T extends CurrencyPair = CurrencyPair>
   extends
     Omit<

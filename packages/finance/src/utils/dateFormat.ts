@@ -1,17 +1,55 @@
 import { isSameDay } from "../logic/calendar";
 
+/**
+ * The date layouts this package can format and parse.
+ *
+ * @remarks
+ * A closed set on purpose - each maps to a fixed segment order the masked input
+ * relies on for auto-inserting separators. It is *not* locale-derived: a field
+ * displaying `DD/MM/YYYY` must keep doing so regardless of the user's browser
+ * locale, or the same digits would mean different dates on different machines.
+ */
 export type DateFormat =
   "YYYY-MM-DD" | "MM/DD/YYYY" | "DD/MM/YYYY" | "DD-MM-YYYY" | "MM-DD-YYYY" | "YYYY/MM/DD";
 
+/**
+ * Bounds and exclusions a date must satisfy.
+ *
+ * @remarks
+ * All three are combined with AND - a date passes only if it is in range *and*
+ * not excluded. Comparison is by calendar day, so a time component on `min` or
+ * `max` does not make the boundary day itself fail.
+ */
 export interface DateConstraints {
+  /** Earliest allowed date, inclusive. */
   min?: Date;
+  /** Latest allowed date, inclusive. */
   max?: Date;
+  /**
+   * Specific excluded dates, or a predicate.
+   *
+   * @remarks
+   * A predicate is the right form for holiday calendars and weekends, where
+   * enumerating every excluded day is impractical.
+   */
   disabledDates?: Date[] | ((date: Date) => boolean);
 }
 
+/** The result of parsing and validating date text. */
 export interface DateParseResult {
+  /** Whether the input parsed *and* satisfied its constraints. */
   valid: boolean;
+  /** The parsed date at local midnight, or `null` when invalid. */
   date: Date | null;
+  /**
+   * Why it failed.
+   *
+   * @remarks
+   * Worth distinguishing when reporting to the user: `"invalid-format"` means
+   * the shape is wrong, `"invalid-date"` that the shape is right but the date
+   * does not exist (31 February), and the other two that a real date was
+   * refused by the constraints.
+   */
   error?: "invalid-format" | "invalid-date" | "out-of-range" | "disabled-date";
 }
 

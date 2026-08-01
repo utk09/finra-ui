@@ -5,6 +5,15 @@
  * Consumers can render these with any framework (React, Lit, vanilla DOM).
  */
 
+/**
+ * One drawable primitive inside an icon, as data rather than markup.
+ *
+ * @remarks
+ * The discriminant is `tag`, matching the SVG element it becomes, so a renderer
+ * is a single switch. Keeping icons as data is what makes this package
+ * framework-agnostic: the React wrappers in `@utk09/finra-ui-icons/react` are
+ * one consumer of it, and a Lit or plain-DOM renderer needs no new source.
+ */
 export type SvgChild =
   | { tag: "path"; d: string }
   | { tag: "rect"; x: number; y: number; width: number; height: number; rx?: number; ry?: number }
@@ -14,14 +23,44 @@ export type SvgChild =
   | { tag: "polygon"; points: string }
   | { tag: "ellipse"; cx: number; cy: number; rx: number; ry: number };
 
+/**
+ * A complete icon: the `<svg>` attributes plus the shapes to draw inside it.
+ *
+ * @remarks
+ * Presentation only - there is no `title` or `aria-label` here on purpose. An
+ * icon cannot know whether it is decorative beside a text label or the sole
+ * content of a button, so naming is the consumer's decision. The React wrappers
+ * default to `aria-hidden`, and `IconButton` requires a label of its own.
+ *
+ * @example
+ * ```ts
+ * import { SearchIcon } from "@utk09/finra-ui-icons";
+ * SearchIcon.viewBox;  // "0 0 24 24"
+ * SearchIcon.children; // [{ tag: "circle", … }, { tag: "line", … }]
+ * ```
+ */
 export interface IconData {
+  /** Icon name, matching its export identifier. */
   name: string;
+  /** SVG user-space viewport, e.g. `"0 0 24 24"`. */
   viewBox: string;
+  /** Default fill. Usually `"none"` - these are stroke-drawn outline icons. */
   fill: string;
+  /**
+   * Default stroke.
+   *
+   * @remarks
+   * `"currentColor"`, so an icon inherits the text colour of whatever contains
+   * it and needs no per-theme variant.
+   */
   stroke: string;
+  /** Stroke width in user-space units. Consistent across the set for visual weight. */
   strokeWidth: number;
+  /** Stroke end-cap style. */
   strokeLinecap?: "round" | "butt" | "square";
+  /** Stroke corner style. */
   strokeLinejoin?: "round" | "miter" | "bevel";
+  /** The shapes to draw, in paint order - later entries render on top. */
   children: SvgChild[];
 }
 

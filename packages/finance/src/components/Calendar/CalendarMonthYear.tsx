@@ -4,6 +4,15 @@ import type { ReactNode } from "react";
 import type { CalendarTitleApi } from "../../unstyled/Calendar/Calendar";
 import styles from "./Calendar.module.scss";
 
+/**
+ * Props for the prebuilt month + year dropdown header.
+ *
+ * @remarks
+ * Turn it on with the Calendar's `monthYearDropdowns` prop rather than wiring
+ * this by hand; render it through `renderTitle` only when you need to place it
+ * yourself. Worth enabling whenever users pick dates far from today - paging a
+ * month at a time to reach a maturity two years out is painful.
+ */
 export interface CalendarMonthYearProps {
   /** Title API injected by `Calendar`'s `renderTitle` (or the `monthYearDropdowns` prop). */
   api: CalendarTitleApi;

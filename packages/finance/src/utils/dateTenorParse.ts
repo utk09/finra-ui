@@ -22,10 +22,20 @@ import { parseTenor } from "./tenor";
  * - **spot-relative** resolves from `spotDate` (defaults to `referenceDate`).
  */
 
+/**
+ * How a committed date/tenor input was interpreted.
+ *
+ * @remarks
+ * Recorded on the value so a consumer can tell "the user asked for 3M" from
+ * "the user asked for 15 April" even when both resolve to the same date - which
+ * matters when the reference date later moves.
+ */
 export type DateTenorMode = "date" | "tenor" | "spot-relative" | "keyword";
 
+/** Why a date/tenor expression could not be interpreted. */
 export type DateTenorParseError = "empty" | "unrecognized" | "invalid-tenor" | "invalid-date";
 
+/** The result of parsing a date-or-tenor expression. */
 export interface DateTenorParseResult {
   /** True when the input was recognised and a preview date resolved. */
   valid: boolean;
@@ -41,6 +51,15 @@ export interface DateTenorParseResult {
   error?: DateTenorParseError;
 }
 
+/**
+ * The anchors an expression resolves against.
+ *
+ * @remarks
+ * `referenceDate` is "today" for plain tenors and keywords; `spotDate` is the
+ * base for spot-relative expressions and defaults to it. Supplying both
+ * explicitly is what makes parsing deterministic in tests and consistent across
+ * a session that crosses midnight.
+ */
 export interface DateTenorParseContext {
   /** "Today" reference for keywords and plain tenors. Defaults to now (midnight). */
   referenceDate?: Date;

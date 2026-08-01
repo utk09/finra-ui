@@ -6,10 +6,25 @@ import { parseTenor, STANDARD_TENORS } from "../../utils/tenor";
 import { componentIds } from "../componentIds";
 
 /**
+ * Props for the deprecated flat tenor combo box.
+ *
  * @deprecated Use {@link TenorPicker} instead - it is a strict superset
  * (`grouped={false}` gives the same flat list) and adds grouping, favourites,
  * and flexible parsing (`3 months`, `1y6m`). `TenorInput` will be removed in a
  * future release.
+ *
+ * @remarks
+ * Migration is close to a rename. The one behavioural difference worth checking
+ * is parsing: TenorPicker accepts long-form and compound tenors that this
+ * component rejects, so input previously refused may now commit.
+ *
+ * @example
+ * ```tsx
+ * // before
+ * <TenorInput value={tenor} onChange={setTenor} />
+ * // after - same flat list, same callback shape
+ * <TenorPicker value={tenor} onChange={setTenor} grouped={false} />
+ * ```
  */
 export interface TenorInputProps extends Omit<
   ComboBoxProps<string>,

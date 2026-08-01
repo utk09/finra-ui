@@ -250,7 +250,9 @@ export interface ComboBoxBaseProps<T = string> extends Omit<
   footer?: ReactNode;
 
   //  Display
+  /** Placeholder for the text input. */
   placeholder?: string;
+  /** Disable the whole control - no opening, no typing, no pill removal. */
   disabled?: boolean;
   /** Message shown when no options match. */
   noOptionsMessage?: string | ReactNode;

@@ -31,6 +31,26 @@ const validationClasses: Record<ValidationStatus, string> = {
   success: styles.statusSuccess,
 };
 
+/**
+ * Props for the styled AmountInput - a notional entry field that understands
+ * trader shorthand.
+ *
+ * @remarks
+ * Accepts `10m`, `2bn`, `1.5k`, `(2m)` for negative, and plain grouped digits,
+ * committing a **scalar number**. Currency is a separate concern: it selects
+ * precision and the resting symbol, but never becomes part of the value - so
+ * the number your form submits is just a number.
+ *
+ * The display is tied to the committed value, not the keystrokes: the field
+ * shows editable digits while focused and the formatted amount at rest.
+ *
+ * @example
+ * ```tsx
+ * <AmountInput aria-label="Notional" currency="USD" step={1_000_000}
+ *   onChange={(value) => setNotional(value)} />
+ * // typing "10m" then blurring reports 10000000 and rests as "$10M"
+ * ```
+ */
 export interface AmountInputProps
   extends
     Omit<AmountInputBaseProps, "classNames" | "dataAttributes">,

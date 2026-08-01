@@ -8,6 +8,14 @@
  * rounding strategy, so `0.1 + 0.2` never surfaces as `0.30000000000000004`.
  */
 
+/**
+ * How to resolve a value sitting exactly between two representable ones.
+ *
+ * @remarks
+ * `half-even` (banker's rounding) is the one to reach for on money: rounding
+ * halves consistently upward biases a large book of prices, whereas half-even
+ * alternates and cancels out.
+ */
 export type RoundingMode = "half-up" | "half-even" | "floor" | "ceil";
 
 /**
@@ -16,6 +24,12 @@ export type RoundingMode = "half-up" | "half-even" | "floor" | "ceil";
  * fractional-precision tail (e.g. 1 for the trailing pip fraction `…5`).
  */
 export interface NumericPrecision {
+  /**
+   * Decimals in the primary block, e.g. 4 for FX `1.0834`.
+   *
+   * @remarks
+   * The only required field - everything else derives from it by default.
+   */
   primaryPrecision: number;
   /** Extra fractional-precision digits beyond the primary block. Default 0. */
   precisionDigits?: number;
@@ -37,7 +51,9 @@ export type IncrementAction =
   | { type: "tick"; ticks?: number }
   | { type: "custom"; apply: (value: number, direction: 1 | -1) => number };
 
+/** What {@link resolveIncrement} needs to turn an action into a new value. */
 export interface IncrementContext {
+  /** Decimal layout. Determines both the rounding applied and the default tick. */
   precision: NumericPrecision;
   /** Tick size for `{ type: "tick" }`. Falls back to one display unit. */
   tickSize?: number;
@@ -116,6 +132,13 @@ export function resolveIncrement(
 /** How an off-tick value is handled. */
 export type TickValidationMode = "reject" | "warn" | "round" | "snap";
 
+/**
+ * Whether a value sits on the tick grid, and where the nearest valid ticks are.
+ *
+ * @remarks
+ * Reports rather than corrects, so a caller can choose between refusing the
+ * value and snapping it.
+ */
 export interface TickValidationResult {
   /** False only when `mode === "reject"` and the value is off-tick. */
   valid: boolean;

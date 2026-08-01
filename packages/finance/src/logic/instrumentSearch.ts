@@ -71,14 +71,37 @@ export interface InstrumentProvider<T extends CurrencyPairLike = CurrencyPairLik
   getFavourites?(): Promise<readonly T[]>;
 }
 
+/**
+ * Where a search currently stands.
+ *
+ * @remarks
+ * Do not derive a busy affordance from `"loading"` alone - it misses the
+ * debounce window, during which the visible results already fail to answer what
+ * the user has typed. Use {@link isSearchStale}, which covers both.
+ */
 export type InstrumentSearchStatus = "idle" | "loading" | "success" | "error";
 
+/**
+ * A snapshot of the search.
+ *
+ * @remarks
+ * The `query` / `resultsQuery` split is the important part: it is what lets the
+ * list keep showing the previous results while a new request is in flight,
+ * rather than flashing empty on every keystroke, and what makes staleness
+ * detectable without a separate flag.
+ */
 export interface InstrumentSearchState<T extends CurrencyPairLike = CurrencyPairLike> {
+  /** Where the search stands. See {@link isSearchStale} before showing a spinner. */
   status: InstrumentSearchStatus;
   /** The query last asked for. */
   query: string;
   /** The query `results` actually belong to. Differs from `query` only while loading. */
   resultsQuery: string;
+  /**
+   * What is currently on screen. Retained across a new request - and
+   * deliberately cleared on error, so results the user can see typed past are
+   * never left with no affordance explaining them.
+   */
   results: readonly T[];
   /** Set only in the `error` status; cleared by any later transition. */
   error: Error | null;
@@ -89,6 +112,14 @@ export interface InstrumentSearchState<T extends CurrencyPairLike = CurrencyPair
   requestId: number;
 }
 
+/**
+ * Every transition the search understands.
+ *
+ * @remarks
+ * Sequence numbers are supplied by the caller, never generated in the reducer,
+ * which is what keeps the out-of-order guard deterministic and testable without
+ * a driver. A settled response whose `requestId` is not current is discarded.
+ */
 export type InstrumentSearchAction<T extends CurrencyPairLike = CurrencyPairLike> =
   /**
    * The query was typed but not yet sent - the debounce window. Carries no
@@ -96,8 +127,11 @@ export type InstrumentSearchAction<T extends CurrencyPairLike = CurrencyPairLike
    * admit that what is on screen no longer answers what was typed.
    */
   | { type: "query-changed"; query: string }
+  /** A request was sent. Previous results stay visible until it settles. */
   | { type: "search-start"; query: string; requestId: number }
+  /** A request returned. Ignored unless `requestId` is the current one. */
   | { type: "search-success"; requestId: number; results: readonly T[] }
+  /** A request failed. Clears results, so nothing stale is left unexplained. */
   | { type: "search-error"; requestId: number; error: Error }
   /** Invalidate the in-flight request but keep the results already shown. */
   | { type: "cancel"; requestId: number }
@@ -208,7 +242,9 @@ export function isSearchStale(state: InstrumentSearchState): boolean {
 /** Milliseconds of quiet before a keystroke reaches the provider. */
 export const DEFAULT_INSTRUMENT_SEARCH_DEBOUNCE_MS = 250;
 
+/** Configuration for {@link createInstrumentSearch}. */
 export interface InstrumentSearchOptions<T extends CurrencyPairLike> {
+  /** The data source. Only `search` and `getById` are required of it. */
   provider: InstrumentProvider<T>;
   /**
    * Quiet period after the last {@link InstrumentSearch.search} call.
@@ -222,6 +258,16 @@ export interface InstrumentSearchOptions<T extends CurrencyPairLike> {
   minQueryLength?: number;
 }
 
+/**
+ * A debounced, race-safe search controller over an {@link InstrumentProvider}.
+ *
+ * @remarks
+ * Stateful by necessity - timers and sequence numbers cannot live in a pure
+ * reducer - but framework-free, so React and Lit share one implementation.
+ *
+ * Call {@link InstrumentSearch.destroy} when the owner unmounts. Responses that
+ * land afterwards are dropped rather than updating a dead store.
+ */
 export interface InstrumentSearch<T extends CurrencyPairLike = CurrencyPairLike> {
   /** Observable state. Feed to `useStore`, or `subscribe` from a Lit controller. */
   store: Store<InstrumentSearchState<T>, InstrumentSearchAction<T>>;

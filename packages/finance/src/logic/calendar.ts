@@ -3,11 +3,24 @@
  * Used by React CalendarBase and future Lit finra-calendar.
  */
 
+/**
+ * One cell in a month grid, with everything a renderer needs already resolved.
+ *
+ * @remarks
+ * A grid always contains whole weeks, so the leading and trailing cells belong
+ * to the neighbouring months - check `isCurrentMonth` before styling a cell as
+ * part of the month on display.
+ */
 export interface CalendarDay {
+  /** The day this cell represents, at local midnight. */
   date: Date;
+  /** False for the padding days that complete the first and last weeks. */
   isCurrentMonth: boolean;
+  /** Matches the `today` the grid was built with, not necessarily the real today. */
   isToday: boolean;
+  /** Matches the current selection (or a range endpoint). */
   isSelected: boolean;
+  /** Fails min/max, an explicit disabled list, or a business-day predicate. */
   isDisabled: boolean;
 }
 
@@ -77,6 +90,14 @@ export function getISOWeek(date: Date): number {
 //  Locale-aware names (Intl) - display only; parsing stays English by design
 
 /** Display width for weekday column headers. */
+/**
+ * How much of a weekday name to render in the header row.
+ *
+ * @remarks
+ * `"narrow"` can be ambiguous in English (T for both Tuesday and Thursday), so
+ * the header carries the full name as an `aria-label` regardless of what is
+ * shown - a screen reader always hears the unambiguous form.
+ */
 export type WeekdayWidth = "narrow" | "short" | "long";
 
 /**
@@ -277,8 +298,21 @@ export function isMonthDisabled(year: number, monthIndex: number, min?: Date, ma
 //  Range selection - framework-agnostic
 
 /** A date range selection. Either end may be null while selecting. */
+/**
+ * A selected range, either endpoint of which may be missing.
+ *
+ * @remarks
+ * `start` set with `end` null is the *half-open* state - the user has clicked
+ * once and is choosing the other end. That is a normal working state, not an
+ * error, and it is what drives the hover preview.
+ *
+ * Endpoints are always ordered: clicking backwards swaps them rather than
+ * producing a reversed range.
+ */
 export interface DateRange {
+  /** First endpoint, or `null` when nothing is selected. */
   start: Date | null;
+  /** Second endpoint, or `null` while the range is still half-open. */
   end: Date | null;
 }
 
@@ -313,8 +347,18 @@ export function getEffectiveRange(
   return { start: range.start, end: range.start };
 }
 
+/**
+ * Where one day sits relative to the selected range.
+ *
+ * @remarks
+ * The three flags are mutually exclusive, which is what lets a renderer round
+ * the ends and square the middle. A single-day range sets both `isRangeStart`
+ * and `isRangeEnd`.
+ */
 export interface DayRangeState {
+  /** This day is the first endpoint. */
   isRangeStart: boolean;
+  /** This day is the second endpoint. */
   isRangeEnd: boolean;
   /** Strictly between the endpoints. */
   isInRange: boolean;
@@ -367,9 +411,11 @@ export interface CalendarKeyContext {
   shiftKey?: boolean;
 }
 
+/** The decision for one keypress in the day grid. */
 export interface CalendarKeyResult {
   /** Whether the adapter should call `event.preventDefault()`. */
   preventDefault: boolean;
+  /** Effects to apply in order. Empty means the key was not handled here. */
   effects: CalendarKeyEffect[];
 }
 

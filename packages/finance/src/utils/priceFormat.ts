@@ -15,8 +15,24 @@
  * swappable via a component prop; these are the defaults.
  */
 
+/**
+ * How a price is quoted.
+ *
+ * @remarks
+ * Determines parsing, formatting *and* the default tick: `bond32` reads
+ * `101-16` as 101 and 16/32nds and ticks by 1/32, while the others tick by one
+ * display unit. Percent and basis points are the same number scaled
+ * differently, so they are distinct formats rather than a display flag.
+ */
 export type PriceFormat = "decimal" | "bond32" | "percent" | "basis-points";
 
+/**
+ * Formatting and tick options.
+ *
+ * @remarks
+ * Every field has a format-derived default, so `{}` is valid and yields
+ * sensible decimal behaviour.
+ */
 export interface PriceFormatOptions {
   /** Quotation format. Default "decimal". */
   format?: PriceFormat;
@@ -28,9 +44,13 @@ export interface PriceFormatOptions {
   bondSeparator?: string;
 }
 
+/** The result of parsing price text. */
 export interface PriceParseResult {
+  /** Whether the input parsed. */
   valid: boolean;
+  /** The numeric value, or `null` when invalid. Always the plain number, never the notation. */
   value: number | null;
+  /** Why it failed. `"empty"` is separated from `"invalid"` so clearing a field is not an error. */
   error?: "empty" | "invalid";
 }
 
@@ -51,6 +71,7 @@ export type TickEngine = (value: number, steps: number, opts?: PriceFormatOption
  * describing an instrument, not just by a rendered field.
  */
 export interface PriceInstrument {
+  /** Quotation format. Default `"decimal"`. */
   format?: PriceFormat;
   /** Primary decimals (e.g. 4 for FX `1.0834`). Alias: `precision`. */
   primaryPrecision?: number;
@@ -60,9 +81,13 @@ export interface PriceInstrument {
   displayPrecision?: number;
   /** Legacy single-precision alias for `primaryPrecision`. */
   precision?: number;
+  /** Smallest price movement. Defaults to 1/32 for bonds, else one display unit. */
   tickSize?: number;
+  /** Separator emitted when formatting bonds (`-` or `'`). Default "-". */
   bondSeparator?: string;
+  /** Lower bound. Enforced on commit and when stepping, not while typing. */
   min?: number;
+  /** Upper bound. Enforced on commit and when stepping, not while typing. */
   max?: number;
 }
 
@@ -162,6 +187,16 @@ export function formatPrice(value: number, opts: PriceFormatOptions = {}): strin
 
 //  Digit-level segmentation (visual hierarchy)
 
+/**
+ * The semantic role of one run of characters in a formatted price.
+ *
+ * @remarks
+ * Two schemes, chosen by the segmentation config rather than mixed: the
+ * 2-tier `primary`/`precision` split for general decimals, and the FX 3-zone
+ * `big-figure`/`pips`/`fractional-pip` split where the pips are the focal
+ * digits traders read first. `sign`, `integer`, `separator` and `unit` are
+ * common to both.
+ */
 export type PriceSegmentKind =
   | "sign"
   | "integer"
@@ -176,8 +211,11 @@ export type PriceSegmentKind =
   | "unit";
 
 /** A contiguous run of a formatted price, tagged by its semantic role. */
+/** A contiguous run of a formatted price, tagged by its semantic role. */
 export interface PriceSegment {
+  /** What this run means - drives the visual weight it is given. */
   kind: PriceSegmentKind;
+  /** The characters themselves. Concatenating every segment reproduces the input. */
   text: string;
 }
 

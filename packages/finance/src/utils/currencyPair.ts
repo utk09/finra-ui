@@ -9,8 +9,19 @@
  */
 
 /** A parsed pair, independent of how it was typed or how it will be shown. */
+/**
+ * A parsed pair's two legs, without any instrument identity.
+ *
+ * @remarks
+ * Deliberately not a `CurrencyPair`: this is what typing `GBP/JPY` yields when
+ * the registry has never seen it. It is reported through `onCommitUnknown`
+ * rather than `onChange`, so a consumer is never handed a metadata-less pair
+ * they would have to defend against.
+ */
 export interface CurrencyPairValue {
+  /** ISO code of the base (left) leg. */
   baseCurrency: string;
+  /** ISO code of the quote (right) leg. */
   quoteCurrency: string;
 }
 
@@ -24,6 +35,14 @@ export const DEFAULT_PAIR_SEPARATORS = ["/", "\\", ",", " "] as const;
  */
 export const OPTIONAL_PAIR_SEPARATORS = ["-", "_", ":"] as const;
 
+/**
+ * Why pair text could not be interpreted.
+ *
+ * @remarks
+ * Worth surfacing distinctly: `"ambiguous"` in particular means the input was
+ * *well-formed* and matched more than one valid split, so the right response is
+ * to show the candidates rather than report an error.
+ */
 export type CurrencyPairParseError =
   /** Blank input. */
   | "empty"
@@ -40,15 +59,28 @@ export type CurrencyPairParseError =
   /** Base and quote are the same currency. */
   | "same-currency";
 
+/** The result of parsing pair text. */
 export interface CurrencyPairParseResult {
+  /** Whether the input parsed. */
   valid: boolean;
+  /** The base (left) leg, or `null` when invalid. */
   baseCurrency: string | null;
+  /** The quote (right) leg, or `null` when invalid. */
   quoteCurrency: string | null;
   /** Canonical identity, e.g. `"GBPUSD"`. Null when invalid. */
   id: string | null;
+  /** Why it failed. Absent when `valid` is true. */
   error?: CurrencyPairParseError;
 }
 
+/**
+ * Options for {@link parseCurrencyPair}.
+ *
+ * @remarks
+ * Note `strictCodes`: with a registry supplied, an unseparated six-character
+ * input can often be split more than one way, and the parser refuses to guess -
+ * it returns `"ambiguous"` rather than picking one.
+ */
 export interface CurrencyPairParseOptions {
   /**
    * Accepted separators. Extend rather than replace to keep the defaults:
@@ -84,6 +116,7 @@ export interface CurrencyPairParseOptions {
   strictCodes?: boolean;
 }
 
+/** Options for {@link formatCurrencyPair}. */
 export interface CurrencyPairFormatOptions {
   /** Separator to render between the codes. `""` yields `"GBPUSD"`. Default `"/"`. */
   separator?: string;

@@ -28,14 +28,29 @@ import { parseTenorInput, type TenorInputParser } from "../../utils/tenor";
 //  Types
 
 /** Why a commit was rejected. */
+/**
+ * Why a typed commit was rejected.
+ *
+ * @remarks
+ * The three are worth distinguishing to the user: `"unrecognized"` means the
+ * text is not a tenor at all, `"invalid-value"` that it parsed but the number
+ * is out of range (`0M`), and `"disabled-tenor"` that it is a real tenor this
+ * field does not offer. Collapsing them would tell someone their typing was
+ * wrong when it was really their number.
+ */
 export type TenorPickerInvalidReason = "unrecognized" | "invalid-value" | "disabled-tenor";
 
 /** Imperative handle exposed via `ref`. */
 export interface TenorPickerHandle {
+  /** Move DOM focus to the text field. */
   focus: () => void;
+  /** Commit `null`. Fires `onChange`, exactly as clearing by hand would. */
   clear: () => void;
+  /** Open the popup. A no-op while disabled or read-only. */
   open: () => void;
+  /** Close the popup and drop any highlight. */
   close: () => void;
+  /** The committed tenor in canonical form, or null. */
   getValue: () => string | null;
 }
 
@@ -46,20 +61,41 @@ export interface TenorPickerHandle {
  */
 const FAVOURITE_ATTR = "data-tenor-favourite";
 
+/**
+ * CSS class overrides the styled layer injects into the unstyled base.
+ *
+ * @remarks
+ * Every key is optional - when absent, no className is applied at all (not an
+ * empty `class` attribute).
+ */
 export interface TenorPickerClassNames {
+  /** Outermost element. */
   root?: string;
+  /** Applied to the root *in addition to* `root` while the popup is open. */
   rootOpen?: string;
+  /** The text field carrying `role="combobox"`. */
   input?: string;
+  /** The open/close affordance. */
   indicator?: string;
+  /** Applied to the indicator *in addition to* `indicator` while open. */
   indicatorOpen?: string;
+  /** The popup panel. */
   popup?: string;
+  /** A group wrapper (Favourites / Weeks / Months / …). */
   group?: string;
+  /** A group's heading. */
   groupLabel?: string;
+  /** One option row. */
   option?: string;
+  /** Added to the row holding the roving keyboard highlight. */
   optionHighlighted?: string;
+  /** Added to the committed row. Orthogonal to `optionHighlighted` - a row may carry both. */
   optionSelected?: string;
+  /** Added to a disabled row. */
   optionDisabled?: string;
+  /** Added to a favourited row. */
   optionFavourite?: string;
+  /** The label span inside a row. */
   optionLabel?: string;
   /**
    * The star affordance. Renamed from `favouriteButton`: it is no longer a
@@ -67,11 +103,25 @@ export interface TenorPickerClassNames {
    * descendants (axe `nested-interactive`).
    */
   favouriteToggle?: string;
+  /** Added to the star *in addition to* `favouriteToggle` when the tenor is favourited. */
   favouriteActive?: string;
+  /** The tick shown on the committed row, when `renderCheck` supplies one. */
   check?: string;
+  /** The row shown when nothing matches the current filter. */
   empty?: string;
 }
 
+/**
+ * Props for the unstyled TenorPicker.
+ *
+ * @remarks
+ * Ships no CSS - supply {@link TenorPickerClassNames}, or style via the
+ * `data-*` hooks.
+ *
+ * Accepts free-form entry as well as selection, normalising `3 months`, `1y6m`
+ * and `90d` to canonical form. Set `allowCustom={false}` to restrict input to
+ * the offered list.
+ */
 export interface TenorPickerBaseProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
   "onChange" | "defaultValue" | "onInvalid"
@@ -120,28 +170,46 @@ export interface TenorPickerBaseProps extends Omit<
   favouriteHint?: string;
 
   //  State
+  /** Disable the whole control - no opening, no typing, no favouriting. */
   disabled?: boolean;
+  /** Show the committed value but refuse edits. The popup stays shut. */
   readOnly?: boolean;
+  /** Placeholder for the text field. */
   placeholder?: string;
   /** Shown when no options match the filter. */
   noOptionsMessage?: string;
 
   //  Style injection
+  /** CSS class names injected by the styled layer. */
   classNames?: TenorPickerClassNames;
+  /** data-* attributes injected by the styled layer. */
   dataAttributes?: Record<string, string>;
+  /** Render the open/close affordance. Receives the current open state. */
   renderIndicator?: (isOpen: boolean) => ReactNode;
+  /**
+   * Render the favourite star. Omit it and no star is rendered at all, which
+   * also disables the pointer route to favouriting.
+   */
   renderFavourite?: (active: boolean) => ReactNode;
+  /** Render the tick shown on the committed option. */
   renderCheck?: () => ReactNode;
 
   //  Events
+  /** Fired when a typed commit is rejected, with which rule refused it. */
   onInvalid?: (reason: TenorPickerInvalidReason) => void;
+  /** Fired when the popup opens. Not fired again while it is already open. */
   onOpen?: () => void;
+  /** Fired when the popup closes. Not fired again while it is already closed. */
   onClose?: () => void;
 
   //  a11y / FormField
+  /** Explicit control id. Auto-generated, or taken from an enclosing FormField, if omitted. */
   id?: string;
+  /** Ids of describing elements. Merged with any an enclosing FormField supplies. */
   "aria-describedby"?: string;
+  /** Marks the control invalid. An enclosing FormField sets this from its own validation status. */
   "aria-invalid"?: boolean;
+  /** Accessible name. Required unless an enclosing FormField or a visible label supplies one. */
   "aria-label"?: string;
 }
 

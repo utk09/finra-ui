@@ -76,6 +76,7 @@ function defaultGroupSeparators(decimalSeparator: string): readonly string[] {
   return [".", ...DEFAULT_GROUP_SEPARATORS.filter((s) => s !== decimalSeparator)];
 }
 
+/** Why amount text could not be interpreted. */
 export type AmountParseError =
   /** Blank input. */
   | "empty"
@@ -88,7 +89,9 @@ export type AmountParseError =
   /** Parsed cleanly but overflowed float64, or fell outside `min`/`max`. */
   | "out-of-range";
 
+/** The result of parsing amount text. */
 export interface AmountParseResult {
+  /** Whether the input parsed and satisfied `min`/`max`. */
   valid: boolean;
   /** Canonical expanded value. Null when invalid. */
   value: number | null;
@@ -101,9 +104,18 @@ export interface AmountParseResult {
    * any `e` notation. `0` for a plain number, `6` for `4.1m`, `11` for `1e5m`.
    */
   exponent: number;
+  /** Why it failed. Absent when `valid` is true. */
   error?: AmountParseError;
 }
 
+/**
+ * Options for {@link parseAmount}.
+ *
+ * @remarks
+ * Separators are configured, never inferred from the ambient locale: the same
+ * typed string must mean the same number on every machine, or `1,234` is
+ * ambiguous between one thousand and one-point-two-three-four.
+ */
 export interface AmountParseOptions {
   /**
    * Extra suffixes, **merged over** {@link DEFAULT_AMOUNT_SUFFIXES}. Pass
@@ -324,6 +336,14 @@ export function parseAmount(input: string, options: AmountParseOptions = {}): Am
   return { valid: true, value, currency, suffix, exponent };
 }
 
+/**
+ * How an amount is rendered at rest.
+ *
+ * @remarks
+ * `"compact"` abbreviates only when that costs no precision - `1230000` rests
+ * as `1.23M`, but `1500123` stays in full rather than becoming a misleading
+ * `1.5M`.
+ */
 export type AmountFormat =
   /** Grouped digits, e.g. `10,000,000`. */
   | "full"
@@ -334,6 +354,7 @@ export type AmountFormat =
   /** Ungrouped canonical digits - what an input shows while being edited. */
   | "plain";
 
+/** Options for {@link formatAmount}. */
 export interface AmountFormatOptions {
   /** Default `"full"`. */
   format?: AmountFormat;

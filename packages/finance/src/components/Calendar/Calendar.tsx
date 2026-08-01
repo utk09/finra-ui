@@ -8,6 +8,18 @@ import { componentIds } from "../componentIds";
 import styles from "./Calendar.module.scss";
 import { CalendarMonthYear } from "./CalendarMonthYear";
 
+/**
+ * Props for the styled Calendar.
+ *
+ * @remarks
+ * Single-date or range selection, driven by the base's `mode`. The grid is a
+ * proper `role="grid"` with roving focus, so arrows move by day, PageUp/PageDown
+ * by month, and Home/End to the week's ends.
+ *
+ * Prebuilt footer and header pieces live alongside this component -
+ * `CalendarTodayButton`, `CalendarShortcuts` and `CalendarMonthYear` - each
+ * wired through a render prop rather than a boolean, so you can replace them.
+ */
 export interface CalendarProps extends CalendarBaseProps {
   /** Additional CSS class on the root element. */
   className?: string;

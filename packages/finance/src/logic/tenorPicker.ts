@@ -3,6 +3,18 @@ import { parseTenorInput, type TenorInputParser } from "../utils/tenor";
 //  Groups
 
 /** Semantic buckets a tenor can fall into. */
+/**
+ * The bucket a tenor falls into.
+ *
+ * @remarks
+ * Derived from the tenor itself, not configured: `ON`/`TN`/`SN`/`SW` map to
+ * their named groups, single-unit tenors to `weeks`/`months`/`years`, and
+ * anything else - day counts, compounds like `1Y6M` - to `custom`.
+ *
+ * `favourites` is different from the rest: it is pinned first and populated by
+ * *lifting* options out of their home groups, so a favourited tenor appears
+ * once, not twice.
+ */
 export type TenorGroupId =
   "favourites" | "overnight" | "tomorrow" | "spot" | "weeks" | "months" | "years" | "custom";
 
@@ -80,6 +92,14 @@ export function classifyTenor(
 
 //  Models
 
+/**
+ * One tenor as the picker renders it, with grouping and state resolved.
+ *
+ * @remarks
+ * Produced by {@link buildTenorGroups}; you do not construct these. Note that
+ * `group` is the tenor's *home* group even when it has been lifted into
+ * favourites.
+ */
 export interface TenorOptionModel {
   /** Canonical tenor string. */
   tenor: string;
@@ -93,12 +113,30 @@ export interface TenorOptionModel {
   group: TenorGroupId;
 }
 
+/**
+ * One rendered group of tenors.
+ *
+ * @remarks
+ * Empty groups are dropped rather than rendered as bare headings, so a filtered
+ * list never shows a heading with nothing under it.
+ */
 export interface TenorGroupModel {
+  /** Which bucket this is. */
   id: TenorGroupId;
+  /** Heading text, after any `groupLabels` override. */
   label: string;
+  /** Members, in the order the roving highlight walks them. */
   options: TenorOptionModel[];
 }
 
+/**
+ * Inputs to {@link buildTenorGroups}.
+ *
+ * @remarks
+ * `hiddenGroups` and `groupOrder` are independent filters and it is easy to
+ * conflate them: omitting a group from `groupOrder` also removes it, so a test
+ * or config that does both proves nothing about `hiddenGroups`.
+ */
 export interface BuildTenorGroupsParams {
   /** Tenors to show (canonical strings). */
   tenors: readonly string[];

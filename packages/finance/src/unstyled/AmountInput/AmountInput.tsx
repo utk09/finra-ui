@@ -31,8 +31,11 @@ import { createAmountKeymap, type KeyMap, resolveKey } from "../../utils/keymap"
 
 /** Result of value-level validation (after a successful parse). */
 export interface AmountValidationResult {
+  /** Whether the value may be committed. */
   valid: boolean;
+  /** The parsed value that was tested, whether or not it passed. */
   value: number;
+  /** Which rule rejected it. Absent when `valid` is true. */
   error?: "min" | "max" | "custom";
 }
 
@@ -47,22 +50,55 @@ export type AmountFormatter = (value: number | null, options: AmountFormatOption
 
 /** Imperative handle exposed via `ref`. */
 export interface AmountInputHandle {
+  /** Move DOM focus to the field. */
   focus: () => void;
+  /** Focus and select the whole text - the "replace what is there" gesture. */
   select: () => void;
+  /** Commit the current text as if the user had blurred or pressed Enter. */
   commit: () => void;
+  /** Discard the current edit and redraw the committed value. */
   revert: () => void;
-  /** Step by `steps` increments of `step` (sign = direction). */
+  /**
+   * Step by `steps` increments of `step` (sign = direction).
+   *
+   * @remarks
+   * `0` is treated as one step, not as a no-op - a zero step is a caller's bug,
+   * and moving once is the least surprising reading.
+   */
   step: (steps: number) => void;
   /** Apply any increment action programmatically. */
   increment: (action: IncrementAction, direction: 1 | -1) => void;
+  /** The committed value, or null. Reads through immediately after `commit`. */
   getValue: () => number | null;
 }
 
+/**
+ * CSS class overrides the styled layer injects into the unstyled base.
+ *
+ * @remarks
+ * Every key is optional - when absent, no className is applied at all.
+ */
 export interface AmountInputClassNames {
+  /** Outermost element. */
   root?: string;
+  /** The text field. */
   input?: string;
 }
 
+/**
+ * Props for the unstyled AmountInput.
+ *
+ * @remarks
+ * Ships no CSS - supply {@link AmountInputClassNames}, or style via the
+ * `data-*` hooks.
+ *
+ * The value is always a scalar number, never a `{ amount, currency }` pair.
+ * Currency selects precision and the resting symbol only, so consumers are
+ * never forced to unpack an object before doing arithmetic.
+ *
+ * The display is tied to the committed value, not the keystrokes: editable
+ * digits while focused, the formatted amount at rest.
+ */
 export interface AmountInputBaseProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "value" | "defaultValue" | "onChange" | "min" | "max" | "step" | "type" | "className"
@@ -128,6 +164,7 @@ export interface AmountInputBaseProps extends Omit<
   /** Select the whole value on focus, so typing replaces it. Default false. */
   selectOnFocus?: boolean;
 
+  /** Disable the control - no typing, no stepping. */
   disabled?: boolean;
   /** Read-only: increment keys are inert and typing is ignored. */
   readOnly?: boolean;
@@ -143,9 +180,13 @@ export interface AmountInputBaseProps extends Omit<
   classNames?: AmountInputClassNames;
   /** data-* attributes injected by the styled layer. */
   dataAttributes?: Record<string, string>;
+  /** Explicit control id. Auto-generated, or taken from an enclosing FormField, if omitted. */
   id?: string;
+  /** Ids of describing elements. Merged with any an enclosing FormField supplies. */
   "aria-describedby"?: string;
+  /** Marks the control invalid. An enclosing FormField sets this from its own validation status. */
   "aria-invalid"?: boolean;
+  /** Accessible name. Required unless an enclosing FormField or a visible label supplies one. */
   "aria-label"?: string;
 }
 

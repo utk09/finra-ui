@@ -84,7 +84,22 @@ export type SettlementEngine = (previewDate: Date, result: DateTenorParseResult)
  * (holiday/business-day roll) is delegated to the consumer per market rules.
  */
 export interface BusinessCalendar {
+  /**
+   * Whether the date is a business day. Non-business days render disabled and
+   * are refused on commit.
+   *
+   * @remarks
+   * Holiday calendars are desk- and currency-specific, so this is injected
+   * rather than assumed. Omit it and every calendar day is selectable.
+   */
   isBusinessDay?: (date: Date) => boolean;
+  /**
+   * Roll a date onto a business day under the given convention.
+   *
+   * @remarks
+   * Applied *after* settlement, and only when `adjustmentConvention` is set to
+   * something other than `"none"`.
+   */
   adjust?: (date: Date, convention: AdjustmentConvention) => Date;
 }
 
@@ -96,37 +111,78 @@ export type DateTenorParserFn = (
 
 /** Imperative handle exposed via `ref`. */
 export interface DateTenorPickerHandle {
+  /** Move DOM focus to the text field. */
   focus: () => void;
+  /** Commit `null`. Fires `onChange`, exactly as clearing by hand would. */
   clear: () => void;
+  /** Open the popup. A no-op while disabled or read-only. */
   open: () => void;
+  /** Close the popup and drop any highlight. */
   close: () => void;
+  /** The committed value, or null. Carries date, tenor, mode and standard tenor. */
   getValue: () => DateTenorValue | null;
 }
 
+/**
+ * CSS class overrides the styled layer injects into the unstyled base.
+ *
+ * @remarks
+ * Every key is optional - when absent, no className is applied at all (not an
+ * empty `class` attribute).
+ */
 export interface DateTenorPickerClassNames {
+  /** Outermost element. */
   root?: string;
+  /** Applied to the root *in addition to* `root` while the popup is open. */
   rootOpen?: string;
+  /** The text field. */
   input?: string;
+  /** The calendar-icon toggle button beside the field. */
   adornment?: string;
+  /** The open/close affordance. */
   indicator?: string;
+  /** Applied to the indicator *in addition to* `indicator` while open. */
   indicatorOpen?: string;
+  /** The popup panel holding both the calendar and the tenor list. */
   popup?: string;
+  /** The calendar half of the popup. */
   calendarSection?: string;
+  /** The tenor-list half of the popup. */
   tenorSection?: string;
+  /** The tenor list's heading. */
   tenorTitle?: string;
+  /** The tenor list container. */
   tenorGrid?: string;
+  /** One tenor option. */
   tenor?: string;
   /** The roving keyboard highlight - transient, follows the arrow keys. */
   tenorHighlighted?: string;
   /** The committed tenor - persists between openings. Orthogonal to the highlight. */
   tenorSelected?: string;
+  /** Added to a tenor whose resolved date is unavailable. */
   tenorDisabled?: string;
+  /** The resolved-date badge in the field row, shown when `showResolvedDate` is on. */
   resolvedDate?: string;
+  /** The mode badge (Date / Tenor / Spot) in the field row. */
   modeIndicator?: string;
+  /** The broken-date badge in the field row. */
   brokenIndicator?: string;
+  /** Passed through to the embedded Calendar. */
   calendar?: CalendarClassNames;
 }
 
+/**
+ * Props for the unstyled DateTenorPicker.
+ *
+ * @remarks
+ * Ships no CSS - supply {@link DateTenorPickerClassNames}, or style via the
+ * `data-*` hooks.
+ *
+ * Everything market-specific is injected rather than assumed: `parser` for the
+ * expression grammar, `settlementEngine` for spot lag, `calendar` for
+ * business-day rules. The component owns the interaction, the desk owns the
+ * conventions.
+ */
 export interface DateTenorPickerBaseProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
   "onChange" | "defaultValue" | "onInvalid"
@@ -212,8 +268,11 @@ export interface DateTenorPickerBaseProps extends Omit<
   onClose?: () => void;
   /** id for the input element. */
   id?: string;
+  /** Ids of describing elements. Merged with any an enclosing FormField supplies. */
   "aria-describedby"?: string;
+  /** Marks the control invalid. An enclosing FormField sets this from its own validation status. */
   "aria-invalid"?: boolean;
+  /** Accessible name. Required unless an enclosing FormField or a visible label supplies one. */
   "aria-label"?: string;
 }
 

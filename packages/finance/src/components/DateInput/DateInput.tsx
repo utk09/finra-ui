@@ -29,6 +29,22 @@ const validationClasses: Record<ValidationStatus, string> = {
   success: styles.statusSuccess,
 };
 
+/**
+ * Props for the styled DateInput - a masked date field with a calendar popup.
+ *
+ * @remarks
+ * The text field masks itself to digits and the format's separator, inserting
+ * separators as you type, so `20260415` becomes `2026-04-15` without the user
+ * reaching for punctuation. Editing and navigation keys stay untouched.
+ *
+ * For a field that also accepts tenors (`3M`, `SPOT+1W`), use DateTenorPicker.
+ *
+ * @example
+ * ```tsx
+ * <DateInput aria-label="Value date" format="DD/MM/YYYY"
+ *   minDate={today} onChange={(result) => result.valid && setDate(result.date)} />
+ * ```
+ */
 export interface DateInputProps
   extends
     Omit<

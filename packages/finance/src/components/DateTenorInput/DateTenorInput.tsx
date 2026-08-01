@@ -43,6 +43,18 @@ const validationClasses: Record<ValidationStatus, string> = {
 
 //  Props
 
+/**
+ * Props for the styled DateTenorInput - a masked date field with a popup
+ * offering both a calendar and a tenor list.
+ *
+ * @remarks
+ * Reports `{ date, tenor }` together: picking a tenor resolves it to a date,
+ * and picking a date reports the standard tenor it lands on (or `null` for a
+ * broken date). So a consumer never has to re-derive one from the other.
+ *
+ * Distinct from DateTenorPicker, which parses tenor *expressions* typed into
+ * the field itself. Here the text is dates only and tenors come from the list.
+ */
 export interface DateTenorInputProps
   extends
     Omit<

@@ -36,6 +36,26 @@ const validationClasses: Record<ValidationStatus, string> = {
 
 //  Props
 
+/**
+ * Props for the styled TenorPicker - a tenor field with a grouped, filterable
+ * list.
+ *
+ * @remarks
+ * Accepts free-form entry as well as selection: `3 months`, `1y6m` and `90d`
+ * all normalise to canonical form. Set `allowCustom={false}` to restrict input
+ * to the offered list.
+ *
+ * Options are grouped by unit (overnight, spot, weeks, months, years) with
+ * favourites pinned above them; `grouped={false}` gives a flat list instead.
+ *
+ * Supersedes the deprecated `TenorInput`.
+ *
+ * @example
+ * ```tsx
+ * <TenorPicker aria-label="Tenor" favourites={["3M", "1Y"]}
+ *   onChange={(tenor) => setTenor(tenor)} />
+ * ```
+ */
 export interface TenorPickerProps
   extends
     Omit<

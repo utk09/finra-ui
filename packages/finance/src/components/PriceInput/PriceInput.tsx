@@ -58,6 +58,25 @@ function renderSegments(segments: PriceSegment[]) {
   );
 }
 
+/**
+ * Props for the styled PriceInput - a tick-aware price field.
+ *
+ * @remarks
+ * Handles the notations desks actually use: decimal, FX big-figure/pips,
+ * bond 32nds (`101-16`, `101-16+`), percent and basis points. Arrow keys step by
+ * the instrument's tick rather than by `1`, snapping an off-tick value onto the
+ * grid first.
+ *
+ * `digitHierarchy` renders the primary digits larger than the precision digits -
+ * the pips-are-the-focal-point view traders read prices by.
+ *
+ * @example
+ * ```tsx
+ * <PriceInput aria-label="Rate" format="decimal"
+ *   precision={{ primaryPrecision: 4, precisionDigits: 1 }}
+ *   tickSize={0.00005} digitHierarchy />
+ * ```
+ */
 export interface PriceInputProps
   extends
     Omit<PriceInputBaseProps, "classNames" | "dataAttributes" | "renderDisplay">,

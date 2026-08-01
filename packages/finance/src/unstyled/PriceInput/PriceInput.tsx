@@ -43,8 +43,11 @@ import {
 
 /** Result of value-level validation (after a successful parse). */
 export interface PriceValidationResult {
+  /** Whether the value may be committed. */
   valid: boolean;
+  /** The parsed value that was tested, whether or not it passed. */
   value: number;
+  /** Which rule rejected it. `"tick"` means it is off the tick grid. */
   error?: "min" | "max" | "custom" | "tick";
 }
 
@@ -53,25 +56,59 @@ export type PriceValidator = (value: number) => boolean | string;
 
 /** Imperative handle exposed via `ref`. */
 export interface PriceInputHandle {
+  /** Move DOM focus to the field. */
   focus: () => void;
+  /** Focus and select the whole text - the "replace what is there" gesture. */
   select: () => void;
+  /** Commit the current text as if the user had blurred or pressed Enter. */
   commit: () => void;
+  /** Discard the current edit and redraw the committed value. */
   revert: () => void;
-  /** Step by `steps` ticks (sign = direction). */
+  /**
+   * Step by `steps` ticks (sign = direction).
+   *
+   * @remarks
+   * Snaps an off-tick value onto the grid first, so `0` is a meaningful call -
+   * it rounds in place rather than doing nothing.
+   */
   step: (steps: number) => void;
   /** Apply any increment action programmatically. */
   increment: (action: IncrementAction, direction: 1 | -1) => void;
   /** Select the first segment of the given kind (e.g. "precision"). */
   selectGroup: (kind: PriceSegmentKind) => void;
+  /** The committed value, or null. Reads through immediately after `commit`. */
   getValue: () => number | null;
 }
 
+/**
+ * CSS class overrides the styled layer injects into the unstyled base.
+ *
+ * @remarks
+ * Every key is optional - when absent, no className is applied at all.
+ */
 export interface PriceInputClassNames {
+  /** Outermost element. */
   root?: string;
+  /** The text field. */
   input?: string;
+  /** The resting segmented display shown over the field when unfocused. */
   display?: string;
 }
 
+/**
+ * Props for the unstyled PriceInput.
+ *
+ * @remarks
+ * Ships no CSS - supply {@link PriceInputClassNames}, or style via the `data-*`
+ * hooks.
+ *
+ * Understands the notations desks use: decimal, FX big-figure/pips, bond 32nds
+ * (`101-16`, `101-16+`), percent and basis points. Arrows step by tick rather
+ * than by `1`, snapping an off-tick value onto the grid first.
+ *
+ * A no-op commit fires nothing: stepping into a bound you are already sitting
+ * on reports no change, so `onChange` is never called with the current value.
+ */
 export interface PriceInputBaseProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "value" | "defaultValue" | "onChange" | "min" | "max" | "type" | "className"
@@ -145,9 +182,13 @@ export interface PriceInputBaseProps extends Omit<
   classNames?: PriceInputClassNames;
   /** data-* attributes injected by the styled layer. */
   dataAttributes?: Record<string, string>;
+  /** Explicit control id. Auto-generated, or taken from an enclosing FormField, if omitted. */
   id?: string;
+  /** Ids of describing elements. Merged with any an enclosing FormField supplies. */
   "aria-describedby"?: string;
+  /** Marks the control invalid. An enclosing FormField sets this from its own validation status. */
   "aria-invalid"?: boolean;
+  /** Accessible name. Required unless an enclosing FormField or a visible label supplies one. */
   "aria-label"?: string;
 }
 

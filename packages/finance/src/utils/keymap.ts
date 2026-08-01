@@ -18,14 +18,34 @@ export type KeyAction =
   | { kind: "commit" }
   | { kind: "revert" };
 
+/**
+ * The subset of a keyboard event this module reads.
+ *
+ * @remarks
+ * Structural rather than the DOM type, so the keymap stays framework-free and
+ * can be driven from a plain object in tests or from a Lit adapter.
+ */
 export interface KeyEventLike {
+  /** The `KeyboardEvent.key` value, e.g. `"ArrowUp"` or `"d"`. Case matters for letters. */
   key: string;
+  /** Shift held. */
   shiftKey?: boolean;
+  /** Control held. */
   ctrlKey?: boolean;
+  /** Alt (Option) held. */
   altKey?: boolean;
+  /** Meta (Command / Windows) held. */
   metaKey?: boolean;
 }
 
+/**
+ * A binding table from key chord to action.
+ *
+ * @remarks
+ * Data, not a switch, so a desk can rebind keys without forking the component.
+ * Chords are built by {@link keyChord} in a fixed modifier order
+ * (`ctrl+alt+shift+meta+Key`), so a table's keys must follow it to match.
+ */
 export type KeyMap = Record<string, KeyAction>;
 
 /** Normalize an event to a deterministic chord: `ctrl+alt+shift+meta+<key>`. */

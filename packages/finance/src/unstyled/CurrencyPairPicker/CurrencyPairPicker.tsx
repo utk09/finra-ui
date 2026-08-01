@@ -103,6 +103,7 @@ export interface CurrencyPair extends CurrencyPairLike {
    * to end instead of relying on a hand-copied shape.
    */
   pricing?: PriceInstrument;
+  /** Where a non-deliverable pair's rate is fixed. Informational; never interpreted here. */
   fixing?: CurrencyPairFixing;
   /** Currency the trade settles in - differs from `quoteCurrency` for NDFs. */
   settlementCurrency?: string;
@@ -119,10 +120,23 @@ export interface CurrencyPair extends CurrencyPairLike {
 /** Why a typed commit was rejected. */
 export type CurrencyPairInvalidReason = CurrencyPairParseError | "not-tradable";
 
+/**
+ * Imperative handle for driving the picker from outside React state.
+ *
+ * @remarks
+ * For the cases props cannot express - focusing the field after a blotter row
+ * is chosen, or clearing it when a ticket resets. Every method routes through
+ * the same paths the user's own gestures do, so a controlled consumer still
+ * hears `onChange` and can still refuse.
+ */
 export interface CurrencyPairPickerHandle {
+  /** Move DOM focus to the text field. */
   focus: () => void;
+  /** Commit `null`. Fires `onChange`, exactly as clearing by hand would. */
   clear: () => void;
+  /** Open the listbox. A no-op while disabled or read-only. */
   open: () => void;
+  /** Close the listbox and drop any pending search. */
   close: () => void;
   /** The committed pair id, or null. */
   getValue: () => string | null;
@@ -150,50 +164,115 @@ const SR_ONLY: CSSProperties = {
 
 /**
  * Stand-in data source for static mode, so the search store can be created and
- * subscribed to unconditionally. It is never driven when `provider` is absent.
+ * subscribed to unconditionally.
+ *
+ * @remarks
+ * Never driven when `provider` is absent: every call into the search controller
+ * is gated on a provider existing, so these two methods are unreachable by
+ * design rather than merely untested. They exist only to satisfy
+ * {@link InstrumentProvider}, because `useStore` is a hook and cannot be called
+ * conditionally.
  */
+/* istanbul ignore next -- unreachable: static mode never drives the search */
 const EMPTY_PROVIDER: InstrumentProvider<never> = {
   search: () => Promise.resolve([]),
   getById: () => Promise.resolve(null),
 };
 
+/**
+ * CSS class overrides the styled layer injects into the unstyled base.
+ *
+ * @remarks
+ * Every key is optional - when absent, no className is applied at all (not an
+ * empty `class` attribute).
+ */
 export interface CurrencyPairPickerClassNames {
+  /** Outermost element. */
   root?: string;
+  /** Applied to the root *in addition to* `root` while the listbox is open. */
   rootOpen?: string;
+  /** The control shell holding the input and indicator. */
   control?: string;
+  /** The text input carrying `role="combobox"`. */
   input?: string;
+  /** The open/close affordance. */
   indicator?: string;
+  /** Applied to the indicator *in addition to* `indicator` while open. */
   indicatorOpen?: string;
   /** The portalled panel - border, shadow, elevation. */
   listbox?: string;
   /** The scroll container inside it, so the panel's chrome does not scroll away. */
   options?: string;
+  /** A section wrapper (Favourites / Recent / results). */
   section?: string;
+  /** A section's heading. */
   sectionLabel?: string;
+  /** One option row. */
   option?: string;
+  /** Added to the row holding the roving keyboard highlight. */
   optionHighlighted?: string;
+  /** Added to the committed row. Orthogonal to `optionHighlighted` - a row may carry both. */
   optionSelected?: string;
+  /** Added to an untradable row. */
   optionDisabled?: string;
+  /** Added to a favourited row. */
   optionFavourite?: string;
+  /** The formatted pair symbol inside a row, e.g. `EUR/USD`. */
   optionSymbol?: string;
+  /** The pair's display name inside a row. */
   optionName?: string;
+  /** The badge container inside a row. Hidden from assistive tech. */
   badges?: string;
+  /** One badge. */
   badge?: string;
+  /** The star affordance. A decorative span - a `role="option"` may own no interactive descendant. */
   favouriteToggle?: string;
+  /** Added to the star *in addition to* `favouriteToggle` when the pair is favourited. */
   favouriteActive?: string;
+  /** The row shown when nothing matches - carries `noOptionsMessage`. */
   empty?: string;
+  /** The row shown while a provider search is in flight. */
   loading?: string;
+  /** The row shown when a provider search failed. */
   error?: string;
 }
 
+/**
+ * The per-option state handed to a `renderOption` callback.
+ *
+ * @remarks
+ * `isSelected` and `isHighlighted` are independent and often differ: the
+ * highlight is the transient keyboard cursor, the selection is the committed
+ * value. A row can be both, either, or neither.
+ */
 export interface CurrencyPairRenderOptionState {
+  /** This pair is the committed value. */
   isSelected: boolean;
+  /** This row currently holds the roving keyboard highlight. */
   isHighlighted: boolean;
+  /** False for untradable pairs - style them as unavailable, not merely dim. */
   isSelectable: boolean;
+  /** Whether the pair is currently favourited. */
   isFavourite: boolean;
+  /** Resolved badge text, e.g. `["NDF", "Restricted"]`. Already derived from the model. */
   badges: readonly string[];
 }
 
+/**
+ * Props for the unstyled CurrencyPairPicker.
+ *
+ * @remarks
+ * Ships no CSS - supply {@link CurrencyPairPickerClassNames}, or style via the
+ * `data-*` hooks. The listbox is portalled, so it escapes ancestor
+ * `overflow: hidden` and stacking contexts.
+ *
+ * The value is a scalar **id**, not the pair object, so it survives a form
+ * library, a URL and a page reload. `onChange` still hands back the whole pair,
+ * because the carried metadata is the point.
+ *
+ * @typeParam T - Your own pair type, if it extends {@link CurrencyPair}. Extra
+ * fields survive the round trip untouched.
+ */
 export interface CurrencyPairPickerBaseProps<T extends CurrencyPair = CurrencyPair> extends Omit<
   HTMLAttributes<HTMLDivElement>,
   "onChange" | "defaultValue" | "onSelect" | "onInvalid"
@@ -251,7 +330,16 @@ export interface CurrencyPairPickerBaseProps<T extends CurrencyPair = CurrencyPa
   favourites?: readonly string[];
   /** Initial favourite ids (uncontrolled). */
   defaultFavourites?: readonly string[];
+  /**
+   * Fired when a favourite is toggled, with the id, its new state, and the whole
+   * proposed list.
+   *
+   * @remarks
+   * The picker proposes; storage is yours. A controlled `favourites` list will
+   * not move unless you move it.
+   */
   onFavouriteChange?: (id: string, favourite: boolean, favourites: string[]) => void;
+  /** Show the pinned Favourites section. Turning it off also disables the Ctrl+D chord. */
   showFavourites?: boolean;
   /** Appended to a favourited option's accessible name. */
   favouriteHint?: string;
@@ -269,6 +357,7 @@ export interface CurrencyPairPickerBaseProps<T extends CurrencyPair = CurrencyPa
    * workflow the picker cannot know.
    */
   onRecentsChange?: (recents: string[]) => void;
+  /** Show the pinned Recent section. */
   showRecents?: boolean;
 
   //  Ranking
@@ -282,12 +371,16 @@ export interface CurrencyPairPickerBaseProps<T extends CurrencyPair = CurrencyPa
    * the pairs it is given.
    */
   rankPairs?: (
+    /** Normalised query text. Empty when the list was opened without typing. */
     query: string,
+    /** Candidates to rank - the search response unioned with pinned pairs. */
     pairs: readonly T[],
+    /** Favourites, recents and the currency-name lookup, for tie-breaking. */
     context: RankPairsContext,
   ) => readonly RankedPair<T>[];
 
   //  Presentation
+  /** Section heading overrides. Defaults to Favourites / Recent / All pairs. */
   sectionLabels?: Partial<Record<PairSectionId, string>>;
   /**
    * Badges for a pair. Defaults to deriving them from the model
@@ -296,16 +389,34 @@ export interface CurrencyPairPickerBaseProps<T extends CurrencyPair = CurrencyPa
    * on one row without pretending they are the same kind of thing.
    */
   getBadges?: (pair: T) => readonly string[];
+  /**
+   * Render a row's inner content.
+   *
+   * @remarks
+   * Replaces the contents, not the row: it stays a `role="option"` and stays
+   * selectable.
+   */
   renderOption?: (pair: T, state: CurrencyPairRenderOptionState) => ReactNode;
+  /** Render the open/close affordance. Receives the current open state. */
   renderIndicator?: (isOpen: boolean) => ReactNode;
+  /**
+   * Render the favourite star. Omit it and no star is rendered at all, which
+   * also disables the pointer route to favouriting.
+   */
   renderFavourite?: (active: boolean) => ReactNode;
+  /** Render one badge. The badge text is already derived from the pair. */
   renderBadge?: (badge: string, pair: T) => ReactNode;
 
   //  State
+  /** Disable the whole control - no opening, no typing, no favouriting. */
   disabled?: boolean;
+  /** Show the committed value but refuse edits. The listbox stays shut. */
   readOnly?: boolean;
+  /** Placeholder for the text field. */
   placeholder?: string;
+  /** Shown when nothing matches the current query. */
   noOptionsMessage?: string;
+  /** Shown while a provider search is in flight. */
   loadingMessage?: string;
   /** Formats a provider error for display. */
   formatError?: (error: Error) => ReactNode;
@@ -313,7 +424,9 @@ export interface CurrencyPairPickerBaseProps<T extends CurrencyPair = CurrencyPa
   formatResultCount?: (count: number) => string;
 
   //  Style injection
+  /** CSS class names injected by the styled layer. */
   classNames?: CurrencyPairPickerClassNames;
+  /** data-* attributes injected by the styled layer, applied to the root. */
   dataAttributes?: Record<string, string>;
   /** Applied to the control shell, so a styled layer can address it separately. */
   controlDataAttributes?: Record<string, string>;
@@ -325,14 +438,21 @@ export interface CurrencyPairPickerBaseProps<T extends CurrencyPair = CurrencyPa
   badgeDataAttributes?: Record<string, string>;
 
   //  Events
+  /** Fired when a typed commit is rejected, with which rule refused it. */
   onInvalid?: (reason: CurrencyPairInvalidReason) => void;
+  /** Fired when the listbox opens. Not fired again while it is already open. */
   onOpen?: () => void;
+  /** Fired when the listbox closes. Not fired again while it is already closed. */
   onClose?: () => void;
 
   //  a11y / FormField
+  /** Explicit control id. Auto-generated, or taken from an enclosing FormField, if omitted. */
   id?: string;
+  /** Ids of describing elements. Merged with any an enclosing FormField supplies. */
   "aria-describedby"?: string;
+  /** Marks the control invalid. An enclosing FormField sets this from its own validation status. */
   "aria-invalid"?: boolean;
+  /** Accessible name. Required unless an enclosing FormField or a visible label supplies one. */
   "aria-label"?: string;
 }
 
