@@ -5,7 +5,7 @@ Thanks for contributing! This guide covers everything you need to get a change f
 ## Prerequisites
 
 - **Node 22** (`.nvmrc` is checked in - run `nvm use`)
-- **pnpm ≥ 10** (repo pins `pnpm@10.32.1` via `packageManager`)
+- **pnpm ≥ 10** (repo pins `pnpm@11.18.0` via `packageManager`)
 
 ## Getting Started
 
