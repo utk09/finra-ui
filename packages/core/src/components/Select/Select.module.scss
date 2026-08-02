@@ -57,12 +57,12 @@
 }
 
 .listbox {
-  z-index: var(--finra-z-overlay, 1000);
+  z-index: var(--finra-z-overlay);
   display: flex;
   flex-direction: column;
   inline-size: max-content;
   min-inline-size: var(--_select-anchor-width, 8rem);
-  max-block-size: 16rem;
+  max-block-size: var(--finra-popup-max-block-size);
   padding: var(--finra-spacing-1);
   overflow-y: auto;
   background-color: var(--finra-color-background);

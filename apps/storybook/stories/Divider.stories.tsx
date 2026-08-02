@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Divider } from "@utk09/finra-ui";
 import { expect, within } from "storybook/test";
 
+import { inDark, Stack, TokenScope } from "./_shared";
+
 const meta: Meta<typeof Divider> = {
   title: "Components/Divider",
   component: Divider,
@@ -114,3 +116,33 @@ export const VerticalInToolbar: Story = {
     </div>
   ),
 };
+
+/**
+ * The rule paints with `--finra-color-border`, so one declaration on an
+ * ancestor restyles every divider in a region.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-color-border: #7c3aed;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: () => (
+    <Stack gap="1.25rem">
+      <div>
+        <p style={{ margin: "0 0 0.5rem" }}>Default</p>
+        <Divider />
+      </div>
+      <TokenScope tokens={{ "--finra-color-border": "#7c3aed" }}>
+        <div style={{ inlineSize: "100%" }}>
+          <p style={{ margin: "0 0 0.5rem" }}>Overridden</p>
+          <Divider />
+        </div>
+      </TokenScope>
+    </Stack>
+  ),
+};
+
+/** Dark-mode counterpart of `Horizontal`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Horizontal);

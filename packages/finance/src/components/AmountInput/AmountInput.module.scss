@@ -6,7 +6,7 @@
   align-items: center;
   block-size: var(--finra-density-size-base);
   padding-inline: var(--finra-density-input-padding-x);
-  font-family: var(--finra-font-mono, var(--finra-font-sans));
+  font-family: var(--finra-font-mono);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
   font-variant-numeric: tabular-nums;
@@ -56,12 +56,12 @@
   cursor: var(--finra-cursor-disabled);
 
   &.root {
-    background-color: var(--finra-color-neutral-50);
-    border-color: var(--finra-color-neutral-200);
+    background-color: var(--finra-container-disabled-background);
+    border-color: var(--finra-container-disabled-border);
   }
 
   .input {
-    color: var(--finra-color-neutral-300);
+    color: var(--finra-container-disabled-foreground);
     cursor: var(--finra-cursor-disabled);
   }
 }
@@ -85,6 +85,6 @@
   }
 
   &::placeholder {
-    color: var(--finra-color-neutral-400);
+    color: var(--finra-container-foreground-muted);
   }
 }

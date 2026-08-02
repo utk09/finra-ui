@@ -1,5 +1,5 @@
 import { MinusIcon, PlusIcon } from "@utk09/finra-ui-icons/react";
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import {
   type ChangeEvent,
@@ -12,8 +12,9 @@ import {
   useState,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
+import type { Variant } from "../../types/variants";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./NumberInput.module.scss";
 
@@ -55,10 +56,20 @@ const validationClasses: Record<ValidationStatus, string> = {
  */
 export interface NumberInputProps
   extends Omit<
-      InputHTMLAttributes<HTMLInputElement>,
-      "type" | "size" | "onChange" | "value" | "defaultValue" | "min" | "max" | "step"
-    >,
-    VariantProps<typeof numberInputVariants> {
+    InputHTMLAttributes<HTMLInputElement>,
+    "type" | "size" | "onChange" | "value" | "defaultValue" | "min" | "max" | "step"
+  > {
+  /**
+   * Visual emphasis of the field chrome.
+   *
+   * @remarks
+   * Changes the weight of the border and background only. It does not signal
+   * validity - that is `validationStatus`, which is orthogonal and takes over
+   * the border colour when set.
+   *
+   * @defaultValue "primary"
+   */
+  variant?: Variant;
   /** Validation state. `"error"` also sets `aria-invalid`. */
   validationStatus?: ValidationStatus;
   /**

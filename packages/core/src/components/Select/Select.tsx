@@ -2,6 +2,7 @@ import { ChevronDownIcon } from "@utk09/finra-ui-icons/react";
 import { clsx } from "clsx";
 import { forwardRef } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import {
   SelectContent as SelectContentBase,
   type SelectContentProps as SelectContentBaseProps,
@@ -12,7 +13,6 @@ import {
   type SelectTriggerProps as SelectTriggerBaseProps,
   SelectValue as SelectValueBase,
 } from "../../unstyled/Select/Select";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Select.module.scss";
 
 export type { SelectOptionData, SelectProps };
@@ -43,8 +43,15 @@ export const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
       {...{ [FINRA_UI_ATTR]: componentIds.selectTrigger }}
       className={clsx(styles.trigger, className)}
       {...rest}>
-      <SelectValueBase className={styles.value} />
-      <ChevronDownIcon className={styles.chevron} aria-hidden="true" />
+      <SelectValueBase
+        {...{ [FINRA_UI_ATTR]: componentIds.selectValue }}
+        className={styles.value}
+      />
+      <ChevronDownIcon
+        {...{ [FINRA_UI_ATTR]: componentIds.selectIndicator }}
+        className={styles.chevron}
+        aria-hidden="true"
+      />
       {children}
     </SelectTriggerBase>
   ),

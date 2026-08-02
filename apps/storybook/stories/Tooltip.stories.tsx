@@ -3,6 +3,7 @@ import { Button, IconButton, Tooltip, TooltipContent, TooltipTrigger } from "@ut
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { EditIcon, TrashIcon } from "./_icons";
+import { darkModeOpen } from "./_shared";
 
 const PLACEMENTS = [
   "top",
@@ -36,10 +37,10 @@ const meta: Meta<typeof Tooltip> = {
       options: PLACEMENTS,
       table: { defaultValue: { summary: "top" } },
     },
-    children: { table: { disable: true } },
-    open: { table: { disable: true } },
-    defaultOpen: { table: { disable: true } },
-    onOpenChange: { table: { disable: true } },
+    children: { control: { disable: true } },
+    open: { control: { disable: true } },
+    defaultOpen: { control: { disable: true } },
+    onOpenChange: { control: { disable: true } },
   },
   args: {
     openDelay: 0,
@@ -134,4 +135,14 @@ export const RichContent: Story = {
       </TooltipContent>
     </Tooltip>
   ),
+};
+
+/** The tooltip left visible in dark mode. Tooltips are the easiest surface to get wrong on a dark background. */
+export const DarkModeOpen: Story = {
+  ...darkModeOpen,
+  play: async () => {
+    await userEvent.tab();
+    const tip = await within(document.body).findByRole("tooltip");
+    await waitFor(() => expect(tip).toBeVisible());
+  },
 };

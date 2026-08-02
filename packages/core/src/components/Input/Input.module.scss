@@ -27,7 +27,7 @@
   &.disabled {
     opacity: var(--finra-opacity-disabled);
     cursor: var(--finra-cursor-disabled);
-    background-color: var(--finra-color-neutral-50);
+    background-color: var(--finra-container-disabled-background);
   }
 
   //  Full width
@@ -87,7 +87,7 @@
   }
 
   &::placeholder {
-    color: var(--finra-color-neutral-400);
+    color: var(--finra-container-foreground-muted);
   }
 
   &:disabled {
@@ -100,7 +100,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   flex-shrink: 0;
 
   > svg {
@@ -117,7 +117,7 @@
   padding: 0;
   border: none;
   background: transparent;
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
   cursor: var(--finra-cursor-pointer);
   border-radius: var(--finra-radius-full);
   flex-shrink: 0;

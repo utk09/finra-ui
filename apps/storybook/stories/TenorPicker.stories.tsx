@@ -3,6 +3,8 @@ import { TenorPicker } from "@utk09/finra-ui-finance";
 import { useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 
+import { inDark } from "./_shared";
+
 const meta: Meta<typeof TenorPicker> = {
   title: "Finance/TenorPicker",
   component: TenorPicker,
@@ -137,3 +139,6 @@ export const Validation: Story = {
 export const Disabled: Story = {
   args: { disabled: true, value: "3M" },
 };
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

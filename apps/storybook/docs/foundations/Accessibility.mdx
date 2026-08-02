@@ -1,0 +1,62 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { FormField, Input } from "@utk09/finra-ui";
+
+import { Note, Sampler, Support } from "../_components";
+
+<Meta title="Foundations/Accessibility" />
+
+# Accessibility
+
+The target is WCAG 2.1 AA. Components follow the [ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) patterns, so your users meet the same interaction model they already know.
+
+## What you get
+
+- **Roles and ARIA wiring.** `aria-expanded`, `aria-controls`, `aria-activedescendant`, `aria-selected` and the rest, set for you.
+- **Keyboard support.** Arrow-key roving focus, `Home` and `End`, typeahead, `Escape` to dismiss, `Enter` and `Space` to activate.
+- **Focus management.** Overlays trap focus while open and return it to the trigger on close.
+- **Visible focus.** Rings use `:focus-visible`, so keyboard users see them and pointer users do not. They are never removed.
+- **Reduced motion.** Transitions collapse under `prefers-reduced-motion`.
+- **Contrast.** Token colours are checked against both the light and the dark surface.
+
+Every story is checked with [axe](https://github.com/dequelabs/axe-core) on each run, and a violation fails the build.
+
+## What you supply
+
+**A label for every control.** `FormField` is the easiest route. It owns the `id`, wires up helper and error text, and sets `aria-invalid` and `aria-required`.
+
+```tsx
+<FormField label="Notional" helperText="Whole lots only" required>
+  <AmountInput currency="USD" />
+</FormField>
+```
+
+<Unstyled>
+  <Sampler align="flex-end">
+    <FormField label="Notional" helperText="Whole lots only" required>
+      <Input placeholder="0.00" />
+    </FormField>
+  </Sampler>
+</Unstyled>
+
+Standalone controls take `aria-label` or `aria-labelledby`. A placeholder is not a label.
+
+**Contrast for anything you restyle.** The tokens ship at AA, but an override is yours to check.
+
+<Unstyled>
+  <Note kind="warning" title="Check both themes">
+    A colour that reads well on a dark surface can fail on white. `--finra-color-neutral-400` is
+    6.80:1 on the dark background and 2.54:1 on white.
+  </Note>
+</Unstyled>
+
+## What is not supported
+
+- **Long option lists in ComboBox.** There is no virtualization, so a few thousand options will be slow for everyone.
+- **Touch targets at high density.** Controls are `1.75rem`, roughly 28px, below the 44x44px in WCAG 2.2 Success Criterion 2.5.8. Use medium or low density on touch surfaces. See [Density](?path=/docs/foundations-density--docs).
+- **Real-device testing.** Pointer and outside-click behaviour is covered by unit tests in jsdom, not on hardware.
+
+<Unstyled>
+  <Support>
+    Accessibility problems are treated as bugs, including ones this page does not mention.
+  </Support>
+</Unstyled>

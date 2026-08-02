@@ -1,13 +1,23 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Checkbox } from "@utk09/finra-ui";
+import { CheckboxBase } from "@utk09/finra-ui/unstyled";
 import { useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
+
+import { inDark, Row, Stack, TokenScope } from "./_shared";
 
 const meta: Meta<typeof Checkbox> = {
   title: "Components/Checkbox",
   component: Checkbox,
   parameters: {
     layout: "centered",
+    // Picks up `indeterminate`, which is declared on the base rather than here.
+    docs: {
+      inheritsFrom: CheckboxBase,
+      // Mirrors the `Omit` on the styled props: these are the styled layer's
+      // own injection points, not consumer API.
+      inheritedOmit: ["className"],
+    },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -149,3 +159,33 @@ export const AllStates: Story = {
     </div>
   ),
 };
+
+/**
+ * The checked indicator reads `--finra-actionable-accent`, so one declaration
+ * on an ancestor retints every checkbox in a region.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-accent: #b45309;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: () => (
+    <Stack gap="1.25rem">
+      <Row>
+        <span style={{ minInlineSize: "6rem" }}>Default</span>
+        <Checkbox label="Confirmed" defaultChecked />
+        <Checkbox label="Indeterminate" indeterminate />
+      </Row>
+      <TokenScope tokens={{ "--finra-actionable-accent": "#b45309" }}>
+        <span style={{ minInlineSize: "6rem" }}>Overridden</span>
+        <Checkbox label="Confirmed" defaultChecked />
+        <Checkbox label="Indeterminate" indeterminate />
+      </TokenScope>
+    </Stack>
+  ),
+};
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

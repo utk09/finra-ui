@@ -6,8 +6,11 @@ import {
   type InstrumentProvider,
   PriceInput,
 } from "@utk09/finra-ui-finance";
+import { CurrencyPairPickerBase } from "@utk09/finra-ui-finance/unstyled";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+
+import { darkModeOpen, inDark } from "./_shared";
 
 /**
  * A small book covering every axis the model has to carry: deliverable G10,
@@ -100,6 +103,21 @@ const meta: Meta<typeof CurrencyPairPicker> = {
   component: CurrencyPairPicker,
   parameters: {
     layout: "centered",
+    // Docgen does not follow `extends` across modules, so the base's props are
+    // otherwise missing from the table.
+    docs: {
+      inheritsFrom: CurrencyPairPickerBase,
+      // Mirrors the `Omit` on the styled props: these are the styled layer's
+      // own injection points, not consumer API.
+      inheritedOmit: [
+        "classNames",
+        "dataAttributes",
+        "controlDataAttributes",
+        "badgeDataAttributes",
+        "renderIndicator",
+        "renderFavourite",
+      ],
+    },
   },
   // The favourite star is decorative (click it, or Ctrl+D), so options contain
   // no nested interactive controls and the a11y gate applies.
@@ -417,5 +435,59 @@ export const ComposedTicket: Story = {
       await expect(canvas.getByRole("combobox", { name: "Fixing date" })).toBeInTheDocument();
     });
     await expect(canvas.getByRole("spinbutton", { name: "Rate" })).toBeInTheDocument();
+  },
+};
+
+/** Closed, in dark mode. */
+export const DarkMode: Story = inDark(WithValue);
+
+/**
+ * Everything here is scoped to one wrapper, including the popup.
+ *
+ * The listbox is portalled to `document.body` by default, so nothing in your
+ * tree is its ancestor and a token set there cannot reach it. Pass `container`
+ * to portal it into a node you own.
+ *
+ * ```tsx
+ * const [scope, setScope] = useState<HTMLDivElement | null>(null);
+ *
+ * <div ref={setScope} className="brand-region">
+ *   <CurrencyPairPicker container={scope} ... />
+ * </div>
+ * ```
+ */
+export const Overrides: Story = {
+  render: function Render(args) {
+    const [scope, setScope] = useState<HTMLDivElement | null>(null);
+    return (
+      <div
+        ref={setScope}
+        style={
+          {
+            "--finra-actionable-accent": "#0f766e",
+            "--finra-actionable-accent-subtle": "#ccfbf1",
+            "--finra-actionable-emphasis": "#14b8a6",
+          } as React.CSSProperties
+        }>
+        <div style={{ inlineSize: 320 }}>
+          <CurrencyPairPicker {...args} container={scope} />
+        </div>
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("combobox", { name: "Currency pair" }));
+    await canvas.findByRole("listbox");
+  },
+};
+
+export const DarkModeOpen: Story = {
+  ...darkModeOpen,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("combobox", { name: "Currency pair" }));
+    const listbox = await within(document.body).findByRole("listbox");
+    await waitFor(() => expect(listbox).toBeVisible());
   },
 };

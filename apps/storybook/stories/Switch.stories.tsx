@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Switch } from "@utk09/finra-ui";
 import { expect, fn, userEvent, within } from "storybook/test";
 
+import { inDark } from "./_shared";
+
 const meta: Meta<typeof Switch> = {
   title: "Components/Switch",
   component: Switch,
@@ -90,3 +92,6 @@ export const AllStates: Story = {
     </div>
   ),
 };
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

@@ -1,0 +1,105 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Button, FormField, Input } from "@utk09/finra-ui";
+
+import { Command, Note, Sampler, Support } from "./_components";
+
+<Meta title="Getting Started" />
+
+# Getting Started
+
+## Install
+
+Core covers buttons, fields, forms and overlays.
+
+<Unstyled>
+  <Command>npm install @utk09/finra-ui</Command>
+</Unstyled>
+
+The finance components peer-depend on core and icons, so install all three:
+
+<Unstyled>
+  <Command>npm install @utk09/finra-ui-finance @utk09/finra-ui @utk09/finra-ui-icons</Command>
+</Unstyled>
+
+## Import the stylesheets
+
+Once, at your app root. Each package ships its own.
+
+```ts
+import "@utk09/finra-ui/styles";
+import "@utk09/finra-ui-finance/styles"; // only if you use finance components
+```
+
+<Unstyled>
+  <Note kind="warning" title="Components look unstyled?">
+    This import is what is missing. The component modules do not reference the CSS, so no bundler
+    will pull it in for you. That keeps stylesheets out of every code-split chunk, and lets
+    `/unstyled` consumers take the behaviour with no CSS at all.
+  </Note>
+</Unstyled>
+
+## Use it
+
+```tsx
+import { Button, FormField, Input } from "@utk09/finra-ui";
+
+export function Example() {
+  return (
+    <form>
+      <FormField label="Client">
+        <Input placeholder="Search" />
+      </FormField>
+      <Button variant="primary">Send</Button>
+    </form>
+  );
+}
+```
+
+<Unstyled>
+  <Sampler align="flex-end">
+    <FormField label="Client">
+      <Input placeholder="Search" />
+    </FormField>
+    <Button variant="primary">Send</Button>
+  </Sampler>
+</Unstyled>
+
+## Theme and density
+
+Two attributes, on any ancestor. No provider, nothing to wrap your tree in.
+
+```tsx
+<div data-theme="dark" data-density="high">
+  <Button variant="primary">Send</Button>
+</div>
+```
+
+Light is the absence of `data-theme`. Density defaults to `medium`. See [Theming](?path=/docs/foundations-theming--docs) and [Density](?path=/docs/foundations-density--docs).
+
+## Entry points
+
+| Import                     | What it gives you                                   |
+| -------------------------- | --------------------------------------------------- |
+| `@utk09/finra-ui`          | Styled components. Start here.                      |
+| `@utk09/finra-ui/unstyled` | Same behaviour, keyboard handling and ARIA, no CSS. |
+| `@utk09/finra-ui/utils`    | Pure helpers. No React, no DOM.                     |
+| `@utk09/finra-ui/styles`   | The stylesheet. Side-effect import only.            |
+
+`@utk09/finra-ui-finance` mirrors all four. Icons split differently: `@utk09/finra-ui-icons` is the SVG data, `@utk09/finra-ui-icons/react` the React wrappers.
+
+Nothing is re-exported between entry points, so each component has exactly one import path.
+
+## Supported
+
+|            |                                                          |
+| ---------- | -------------------------------------------------------- |
+| React      | 18 and later                                             |
+| Modules    | ESM only. There is no CommonJS build.                    |
+| TypeScript | Types ship with each package                             |
+| Browsers   | Chrome and Edge 111+, Firefox 121+, Safari and iOS 16.5+ |
+
+Older browsers are not tested and not supported. The components use modern CSS, including logical properties, `:user-invalid` and `color-mix`.
+
+<Unstyled>
+  <Support />
+</Unstyled>

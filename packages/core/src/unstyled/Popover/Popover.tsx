@@ -13,6 +13,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useAnchoredPosition } from "../../hooks/useAnchoredPosition";
 import { useDisclosure } from "../../hooks/useDisclosure";
 import type { Placement } from "../../logic/position";
@@ -146,6 +147,7 @@ export const PopoverTrigger = forwardRef<HTMLButtonElement, PopoverTriggerProps>
         ref={mergeRefs(ref, ctx.setReferenceEl)}
         {...(asChild ? {} : { type: "button" as const })}
         id={ctx.triggerId}
+        {...{ [FINRA_UI_ATTR]: componentIds.popoverTrigger }}
         aria-haspopup="dialog"
         aria-expanded={ctx.open}
         aria-controls={ctx.open ? ctx.contentId : undefined}
@@ -173,6 +175,15 @@ PopoverTrigger.displayName = "PopoverTrigger";
  * panel is detached from the trigger in the DOM.
  */
 export interface PopoverContentProps extends HTMLAttributes<HTMLDivElement> {
+  /**
+   * Where the content is portalled. Defaults to `document.body`.
+   *
+   * @remarks
+   * Pass a node you own to bring it back inside your subtree, so a token
+   * override or a scoped rule declared on an ancestor reaches it. The default
+   * escapes ancestor `overflow: hidden`, `z-index` and `transform` contexts.
+   */
+  container?: Element | null;
   /** Panel contents. May be interactive, unlike a Tooltip's. */
   children?: ReactNode;
 }
@@ -183,7 +194,7 @@ export interface PopoverContentProps extends HTMLAttributes<HTMLDivElement> {
  * @see {@link PopoverContentProps}
  */
 export const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
-  ({ children, style, ...rest }, ref) => {
+  ({ children, style, container, ...rest }, ref) => {
     const ctx = usePopoverContext("Content");
     const { setFloating, x, y } = useAnchoredPosition(ctx.referenceEl, {
       placement: ctx.placement,
@@ -195,7 +206,7 @@ export const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
     const positionStyle: CSSProperties = { position: "absolute", top: y, left: x, ...style };
 
     return (
-      <Portal>
+      <Portal container={container}>
         <FocusScope trapped focusOnMount restoreFocus>
           <DismissableLayer
             onDismiss={() => ctx.setOpen(false)}
@@ -234,6 +245,7 @@ export const PopoverClose = forwardRef<HTMLButtonElement, PopoverTriggerProps>(
       <Comp
         ref={ref}
         {...(asChild ? {} : { type: "button" as const })}
+        {...{ [FINRA_UI_ATTR]: componentIds.popoverClose }}
         onClick={(event: MouseEvent<HTMLButtonElement>) => {
           onClick?.(event);
           if (!event.defaultPrevented) ctx.setOpen(false);

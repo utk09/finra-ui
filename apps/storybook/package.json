@@ -28,6 +28,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitest/browser-playwright": "catalog:",
+    "remark-gfm": "catalog:",
     "storybook": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"

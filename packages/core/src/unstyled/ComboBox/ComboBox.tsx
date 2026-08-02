@@ -14,6 +14,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useAnchoredPosition } from "../../hooks/useAnchoredPosition";
 import { useControlledValue } from "../../hooks/useControlledValue";
 import { useFormField } from "../../hooks/useFormField";
@@ -147,10 +148,6 @@ export interface ComboBoxClassNames {
   input?: string;
   /** Applied to the input when a `renderValue` result is shown in its place. */
   inputHidden?: string;
-  /** The open/close affordance. */
-  indicator?: string;
-  /** Applied to the indicator *in addition to* `indicator` while open. */
-  indicatorOpen?: string;
   /** The portalled popup panel - border, shadow, elevation. */
   listbox?: string;
   /** Optional slot rendered above the options, inside the panel. */
@@ -171,16 +168,12 @@ export interface ComboBoxClassNames {
   optionCreate?: string;
   /** The label span inside an option. */
   optionLabel?: string;
-  /** The tick shown on a selected option, when `renderCheckIcon` supplies one. */
-  checkIcon?: string;
   /** A group wrapper. */
   group?: string;
   /** A group's heading. */
   groupLabel?: string;
   /** The row shown while `loading` is true. */
   loading?: string;
-  /** The spinner inside the loading row. */
-  spinner?: string;
   /** The row shown when nothing matches - carries `noOptionsMessage`. */
   empty?: string;
 }
@@ -282,6 +275,16 @@ export interface ComboBoxBaseProps<T = string>
   onOpenChange?: (open: boolean) => void;
 
   //  Style injection
+  /**
+   * Where the popup is portalled. Defaults to `document.body`.
+   *
+   * @remarks
+   * Pass a node you own to bring the popup back inside your subtree, so a token
+   * override or a scoped rule declared on an ancestor reaches it. Portalling to
+   * the body is the default because it escapes ancestor `overflow: hidden`,
+   * `z-index` and `transform` contexts.
+   */
+  container?: Element | null;
   /** CSS class overrides injected by the styled layer. */
   classNames?: ComboBoxClassNames;
   /** Root element data attributes. */
@@ -326,6 +329,7 @@ function ComboBoxBaseRender<T = string>(
     open: controlledOpen,
     onOpenChange,
     classNames: cn,
+    container,
     dataAttributes,
     controlDataAttributes,
     "aria-label": ariaLabel,
@@ -671,6 +675,7 @@ function ComboBoxBaseRender<T = string>(
         data-highlighted={state.isHighlighted || undefined}
         data-selected={state.isSelected || undefined}
         data-disabled={state.isDisabled || undefined}
+        {...{ [FINRA_UI_ATTR]: componentIds.comboBoxOption }}
         className={cx(
           cn?.option,
           state.isHighlighted && cn?.optionHighlighted,
@@ -686,7 +691,11 @@ function ComboBoxBaseRender<T = string>(
           renderOption(opt, state)
         ) : (
           <>
-            <span className={cn?.optionLabel}>{opt.label}</span>
+            <span
+              className={cn?.optionLabel}
+              {...{ [FINRA_UI_ATTR]: componentIds.comboBoxOptionLabel }}>
+              {opt.label}
+            </span>
             {state.isSelected && renderCheckIcon ? renderCheckIcon() : null}
           </>
         )}
@@ -706,12 +715,20 @@ function ComboBoxBaseRender<T = string>(
       const opt = options.find((o) => o.value === val);
       if (!opt) return null;
       return (
-        <span key={String(val)} className={cn?.pill} data-combobox-pill role="listitem">
-          <span className={cn?.pillText}>{renderValue ? renderValue(opt) : opt.label}</span>
+        <span
+          key={String(val)}
+          className={cn?.pill}
+          {...{ [FINRA_UI_ATTR]: componentIds.comboBoxPill }}
+          data-combobox-pill
+          role="listitem">
+          <span className={cn?.pillText} {...{ [FINRA_UI_ATTR]: componentIds.comboBoxPillText }}>
+            {renderValue ? renderValue(opt) : opt.label}
+          </span>
           {!isDisabled ? (
             <button
               type="button"
               className={cn?.pillRemove}
+              {...{ [FINRA_UI_ATTR]: componentIds.comboBoxPillRemove }}
               data-pill-index={index}
               tabIndex={index === effectiveActivePill ? 0 : -1}
               aria-label={`Remove ${opt.label}`}
@@ -747,7 +764,11 @@ function ComboBoxBaseRender<T = string>(
     if (multiple || isOpen || value == null || !renderValue) return null;
     const opt = options.find((o) => o.value === value);
     if (!opt) return null;
-    return <span className={cn?.singleValue}>{renderValue(opt)}</span>;
+    return (
+      <span className={cn?.singleValue} {...{ [FINRA_UI_ATTR]: componentIds.comboBoxSingleValue }}>
+        {renderValue(opt)}
+      </span>
+    );
   }, [multiple, isOpen, value, options, renderValue, cn?.singleValue]);
 
   //  Build option list sections
@@ -762,8 +783,13 @@ function ComboBoxBaseRender<T = string>(
         role="group"
         aria-label="Favourites"
         className={cn?.group}
+        {...{ [FINRA_UI_ATTR]: componentIds.comboBoxGroup }}
         data-combobox-group="favourites">
-        <div className={cn?.groupLabel} data-combobox-group-label aria-hidden="true">
+        <div
+          className={cn?.groupLabel}
+          {...{ [FINRA_UI_ATTR]: componentIds.comboBoxGroupLabel }}
+          data-combobox-group-label
+          aria-hidden="true">
           Favourites
         </div>
         {favourites.map((opt) => {
@@ -785,8 +811,13 @@ function ComboBoxBaseRender<T = string>(
         role="group"
         aria-label={group.label}
         className={cn?.group}
+        {...{ [FINRA_UI_ATTR]: componentIds.comboBoxGroup }}
         data-combobox-group={group.label}>
-        <div className={cn?.groupLabel} data-combobox-group-label aria-hidden="true">
+        <div
+          className={cn?.groupLabel}
+          {...{ [FINRA_UI_ATTR]: componentIds.comboBoxGroupLabel }}
+          data-combobox-group-label
+          aria-hidden="true">
           {group.label}
         </div>
         {nonFavOpts.map((opt) => {
@@ -808,8 +839,13 @@ function ComboBoxBaseRender<T = string>(
           role="group"
           aria-label="All"
           className={cn?.group}
+          {...{ [FINRA_UI_ATTR]: componentIds.comboBoxGroup }}
           data-combobox-group="all">
-          <div className={cn?.groupLabel} data-combobox-group-label aria-hidden="true">
+          <div
+            className={cn?.groupLabel}
+            {...{ [FINRA_UI_ATTR]: componentIds.comboBoxGroupLabel }}
+            data-combobox-group-label
+            aria-hidden="true">
             All
           </div>
           {ungroupedNonFav.map((opt) => {
@@ -840,6 +876,7 @@ function ComboBoxBaseRender<T = string>(
         aria-selected={false}
         data-highlighted={highlightedIndex === createIdx || undefined}
         data-combobox-create
+        {...{ [FINRA_UI_ATTR]: componentIds.comboBoxOption }}
         className={cx(
           cn?.option,
           cn?.optionCreate,
@@ -895,7 +932,9 @@ function ComboBoxBaseRender<T = string>(
         data-disabled={isDisabled || undefined}
         {...controlDataAttributes}>
         {multiple ? (
-          <div className={cn?.multiValueContainer}>
+          <div
+            className={cn?.multiValueContainer}
+            {...{ [FINRA_UI_ATTR]: componentIds.comboBoxMultiValue }}>
             {selectedValues.length > 0 ? (
               // One Tab stop for the whole set; arrows move within it. The list
               // wraps only the pills - an <input> is not a valid list child.
@@ -907,6 +946,7 @@ function ComboBoxBaseRender<T = string>(
                 ref={pillListRef}
                 role="list"
                 className={cn?.pillList}
+                {...{ [FINRA_UI_ATTR]: componentIds.comboBoxPillList }}
                 onKeyDown={handlePillKeyDown}>
                 {renderSelectedPills()}
               </div>
@@ -914,6 +954,7 @@ function ComboBoxBaseRender<T = string>(
             <input
               ref={mergeRefs(forwardedRef, inputRef)}
               className={cn?.input}
+              {...{ [FINRA_UI_ATTR]: componentIds.comboBoxInput }}
               {...inputProps}
               value={currentInputValue}
               placeholder={selectedValues.length === 0 ? placeholder : undefined}
@@ -925,6 +966,7 @@ function ComboBoxBaseRender<T = string>(
             <input
               ref={mergeRefs(forwardedRef, inputRef)}
               className={cx(cn?.input, singleValueNode ? cn?.inputHidden : undefined)}
+              {...{ [FINRA_UI_ATTR]: componentIds.comboBoxInput }}
               {...inputProps}
               value={singleDisplayValue}
               placeholder={placeholder}
@@ -940,10 +982,11 @@ function ComboBoxBaseRender<T = string>(
         inside scrollable panels and table cells.
       */}
       {isOpen ? (
-        <Portal>
+        <Portal container={container}>
           <DismissableLayer
             ref={setFloating}
             className={cn?.listbox}
+            {...{ [FINRA_UI_ATTR]: componentIds.comboBoxListbox }}
             style={{
               position: "absolute",
               top: y,
@@ -955,7 +998,11 @@ function ComboBoxBaseRender<T = string>(
             // The control holds the input and indicator; pointing at either
             // must not count as "outside" or the click would close then reopen.
             excludeElements={[controlEl]}>
-            {header ? <div className={cn?.header}>{header}</div> : null}
+            {header ? (
+              <div className={cn?.header} {...{ [FINRA_UI_ATTR]: componentIds.comboBoxHeader }}>
+                {header}
+              </div>
+            ) : null}
 
             <div
               ref={listRef}
@@ -963,13 +1010,22 @@ function ComboBoxBaseRender<T = string>(
               role="listbox"
               aria-multiselectable={multiple || undefined}
               className={cn?.options}
+              {...{ [FINRA_UI_ATTR]: componentIds.comboBoxOptions }}
               tabIndex={-1}>
               {loading ? (
-                <div role="presentation" className={cn?.loading} aria-live="polite">
+                <div
+                  role="presentation"
+                  className={cn?.loading}
+                  {...{ [FINRA_UI_ATTR]: componentIds.comboBoxLoading }}
+                  aria-live="polite">
                   {renderLoading ? renderLoading() : "Loading..."}
                 </div>
               ) : !hasOptions ? (
-                <div role="presentation" className={cn?.empty} aria-live="polite">
+                <div
+                  role="presentation"
+                  className={cn?.empty}
+                  {...{ [FINRA_UI_ATTR]: componentIds.comboBoxEmpty }}
+                  aria-live="polite">
                   {noOptionsMessage}
                 </div>
               ) : (
@@ -977,7 +1033,11 @@ function ComboBoxBaseRender<T = string>(
               )}
             </div>
 
-            {footer ? <div className={cn?.footer}>{footer}</div> : null}
+            {footer ? (
+              <div className={cn?.footer} {...{ [FINRA_UI_ATTR]: componentIds.comboBoxFooter }}>
+                {footer}
+              </div>
+            ) : null}
           </DismissableLayer>
         </Portal>
       ) : null}

@@ -1,4 +1,4 @@
-import { useControlledValue } from "@utk09/finra-ui";
+import { FINRA_UI_ATTR, useControlledValue } from "@utk09/finra-ui";
 import { cx } from "@utk09/finra-ui/utils";
 import {
   type CSSProperties,
@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds } from "../../componentIds";
 import {
   type CalendarDay,
   type DateRange,
@@ -455,17 +456,28 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
     const weekdayLong = getWeekdayNames(locale, weekStartsOn, "long");
 
     return (
-      <div ref={ref} {...dataAttributes} className={cn?.root}>
+      // The root stamps its own id, so a calendar embedded in a date field is
+      // reachable by the same selector as a standalone one. `dataAttributes`
+      // follows, and so can still replace it.
+      <div
+        ref={ref}
+        {...{ [FINRA_UI_ATTR]: componentIds.calendar }}
+        {...dataAttributes}
+        className={cn?.root}>
         {/* Header: nav + month/year */}
-        <div className={cn?.header}>
+        <div className={cn?.header} {...{ [FINRA_UI_ATTR]: componentIds.calendarHeader }}>
           <button
             type="button"
             className={cn?.navButton}
+            {...{ [FINRA_UI_ATTR]: componentIds.calendarNavButton }}
             onClick={goToPrevMonth}
             aria-label="Previous month">
             {renderNavPrev ? renderNavPrev() : "\u25C0"}
           </button>
-          <div className={cn?.title} aria-live={renderTitle ? undefined : "polite"}>
+          <div
+            className={cn?.title}
+            {...{ [FINRA_UI_ATTR]: componentIds.calendarTitle }}
+            aria-live={renderTitle ? undefined : "polite"}>
             {renderTitle
               ? renderTitle(titleApi)
               : formatMonthYear(displayYear, displayMonthIndex, locale)}
@@ -473,6 +485,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
           <button
             type="button"
             className={cn?.navButton}
+            {...{ [FINRA_UI_ATTR]: componentIds.calendarNavButton }}
             onClick={goToNextMonth}
             aria-label="Next month">
             {renderNavNext ? renderNavNext() : "\u25B6"}
@@ -483,6 +496,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
         <div
           ref={gridRef}
           className={cn?.grid}
+          {...{ [FINRA_UI_ATTR]: componentIds.calendarGrid }}
           role="grid"
           tabIndex={-1}
           aria-label={formatMonthYear(displayYear, displayMonthIndex, locale)}
@@ -496,9 +510,15 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
               stops between the days. */}
           {/* biome-ignore-start lint/a11y/useFocusableInteractive: ARIA structural grid roles, see above */}
           {/* Weekday header row */}
-          <div className={cx(cn?.weekdayRow, cn?.row)} role="row">
+          <div
+            className={cx(cn?.weekdayRow, cn?.row)}
+            {...{ [FINRA_UI_ATTR]: componentIds.calendarWeekdayRow }}
+            role="row">
             {showWeekNumbers ? (
-              <span className={cn?.weekNumber} role="columnheader">
+              <span
+                className={cn?.weekNumber}
+                {...{ [FINRA_UI_ATTR]: componentIds.calendarWeekNumber }}
+                role="columnheader">
                 <span style={SR_ONLY}>Week</span>
               </span>
             ) : null}
@@ -508,6 +528,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
               <span
                 key={weekdayLong[i]}
                 className={cn?.weekday}
+                {...{ [FINRA_UI_ATTR]: componentIds.calendarWeekday }}
                 role="columnheader"
                 aria-label={weekdayLong[i]}>
                 {label}
@@ -519,9 +540,16 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
           {Array.from({ length: 6 }, (_, rowIdx) => {
             const rowDays = days.slice(rowIdx * 7, rowIdx * 7 + 7);
             return (
-              <div key={rowDays[0].date.getTime()} className={cn?.row} role="row">
+              <div
+                key={rowDays[0].date.getTime()}
+                className={cn?.row}
+                {...{ [FINRA_UI_ATTR]: componentIds.calendarRow }}
+                role="row">
                 {showWeekNumbers ? (
-                  <span className={cn?.weekNumber} role="rowheader">
+                  <span
+                    className={cn?.weekNumber}
+                    {...{ [FINRA_UI_ATTR]: componentIds.calendarWeekNumber }}
+                    role="rowheader">
                     {getISOWeek(rowDays[0].date)}
                   </span>
                 ) : null}
@@ -548,9 +576,11 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
                       key={day.date.getTime()}
                       role="gridcell"
                       aria-selected={ariaSelected || undefined}
-                      className={cn?.dayCell}>
+                      className={cn?.dayCell}
+                      {...{ [FINRA_UI_ATTR]: componentIds.calendarDayCell }}>
                       <button
                         type="button"
+                        {...{ [FINRA_UI_ATTR]: componentIds.calendarDay }}
                         data-day={dayKey(day.date)}
                         tabIndex={isFocused ? 0 : -1}
                         aria-label={formatDayLabel(day.date, locale)}
@@ -592,7 +622,7 @@ export const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
 
         {/* Footer - static node or a render function given the footer API */}
         {footer ? (
-          <div className={cn?.footer}>
+          <div className={cn?.footer} {...{ [FINRA_UI_ATTR]: componentIds.calendarFooter }}>
             {typeof footer === "function" ? footer(footerApi) : footer}
           </div>
         ) : null}

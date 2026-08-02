@@ -22,4 +22,10 @@
   --finra-leading-tight: 1.25;
   --finra-leading-normal: 1.5;
   --finra-leading-relaxed: 1.625;
+
+  // Letter spacing. `wide` is the small uppercase treatment used by section
+  // headings inside popups, where the extra tracking is what makes capitals
+  // legible at that size.
+  --finra-tracking-normal: 0;
+  --finra-tracking-wide: 0.05em;
 }

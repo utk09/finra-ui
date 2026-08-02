@@ -1,14 +1,14 @@
 .panel {
-  z-index: var(--finra-z-overlay, 1000);
+  z-index: var(--finra-z-overlay);
   display: flex;
   flex-direction: column;
   gap: var(--finra-spacing-3);
   inline-size: max-content;
-  max-inline-size: min(92vw, 20rem);
+  max-inline-size: min(var(--finra-overlay-max-viewport), 20rem);
   padding: var(--finra-spacing-4);
   color: var(--finra-container-foreground);
   background: var(--finra-container-background);
-  border: 1px solid var(--finra-container-border);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
   border-radius: var(--finra-radius-lg);
   box-shadow: var(--finra-shadow-lg);
   animation: finra-popover-in var(--finra-duration-fast) ease-out;

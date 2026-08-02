@@ -38,7 +38,7 @@
   &.disabled {
     opacity: var(--finra-opacity-disabled);
     cursor: var(--finra-cursor-disabled);
-    background-color: var(--finra-color-neutral-50);
+    background-color: var(--finra-container-disabled-background);
   }
 
   // The listbox is portalled and floats with a gap, so the control keeps its
@@ -99,7 +99,7 @@
   }
 
   &::placeholder {
-    color: var(--finra-color-neutral-400);
+    color: var(--finra-container-foreground-muted);
   }
 
   &:disabled {
@@ -170,7 +170,7 @@
   padding: 0;
   border: none;
   background: transparent;
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
   cursor: var(--finra-cursor-pointer);
   border-radius: var(--finra-radius-full);
   flex-shrink: 0;
@@ -188,8 +188,8 @@
   }
 
   > svg {
-    inline-size: 0.75rem;
-    block-size: 0.75rem;
+    inline-size: var(--finra-icon-size-sm);
+    block-size: var(--finra-icon-size-sm);
   }
 }
 
@@ -198,7 +198,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
   flex-shrink: 0;
   transition: transform var(--finra-duration-fast) ease-in-out;
 
@@ -222,7 +222,7 @@
 // `inset-inline-end: 0` would stretch it across the viewport). It is no longer
 // visually joined to the control, hence the full border and radius.
 .listbox {
-  z-index: 50;
+  z-index: var(--finra-z-popup);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -235,7 +235,7 @@
 
 //  Options scroll container
 .options {
-  max-block-size: 16rem;
+  max-block-size: var(--finra-popup-max-block-size);
   overflow-y: auto;
   scrollbar-gutter: stable;
 }
@@ -307,9 +307,9 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-xs);
   font-weight: var(--finra-font-semibold);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--finra-tracking-wide);
   user-select: none;
 }
 
@@ -320,7 +320,7 @@
   padding-block: calc(var(--finra-density-gap) * 0.75);
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-xs);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   border-block-end: var(--finra-border-thin) solid var(--finra-color-neutral-100);
 }
 
@@ -338,7 +338,7 @@
   padding-block: var(--finra-density-gap);
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
 }
 
 .spinner {
@@ -367,6 +367,6 @@
   padding-block: var(--finra-density-gap);
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
   text-align: center;
 }

@@ -1,5 +1,5 @@
-import { useClickOutside, useFormField } from "@utk09/finra-ui";
-import { mergeRefs } from "@utk09/finra-ui/utils";
+import { FINRA_UI_ATTR, useClickOutside, useFormField } from "@utk09/finra-ui";
+import { cx, mergeRefs } from "@utk09/finra-ui/utils";
 import {
   type ChangeEvent,
   forwardRef,
@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds } from "../../componentIds";
 import { autoInsertSeparators, getMaxLength } from "../../logic/dateInput";
 import type { DateFormat, DateParseResult } from "../../utils/dateFormat";
 import {
@@ -290,15 +291,12 @@ export const DateInputBase = forwardRef<HTMLInputElement, DateInputBaseProps>(
       <div
         ref={containerRef}
         {...dataAttributes}
-        className={
-          [classNames?.root, isCalendarOpen && classNames?.calendarOpen]
-            .filter(Boolean)
-            .join(" ") || undefined
-        }
+        className={cx(classNames?.root, isCalendarOpen && classNames?.calendarOpen)}
         {...props}>
         <input
           ref={mergeRefs(forwardedRef, internalRef)}
           className={classNames?.input}
+          {...{ [FINRA_UI_ATTR]: componentIds.dateInputField }}
           type="text"
           inputMode="numeric"
           id={field.id}
@@ -320,6 +318,7 @@ export const DateInputBase = forwardRef<HTMLInputElement, DateInputBaseProps>(
           <button
             type="button"
             className={classNames?.adornment}
+            {...{ [FINRA_UI_ATTR]: componentIds.dateInputAdornment }}
             onClick={toggleCalendar}
             tabIndex={-1}
             aria-label="Toggle calendar"
@@ -329,7 +328,7 @@ export const DateInputBase = forwardRef<HTMLInputElement, DateInputBaseProps>(
         ) : null}
 
         {isCalendarOpen ? (
-          <div className={classNames?.popup}>
+          <div className={classNames?.popup} {...{ [FINRA_UI_ATTR]: componentIds.dateInputPopup }}>
             <CalendarBase
               value={calendarValue}
               onSelect={handleCalendarSelect}

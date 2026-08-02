@@ -1,4 +1,5 @@
-import { useClickOutside, useFormField } from "@utk09/finra-ui";
+import { FINRA_UI_ATTR, useClickOutside, useFormField } from "@utk09/finra-ui";
+import { cx } from "@utk09/finra-ui/utils";
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -15,6 +16,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds } from "../../componentIds";
 import {
   buildTenorGroups,
   DEFAULT_STANDARD_TENORS,
@@ -554,6 +556,7 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
           key={option.tenor}
           role="option"
           id={optionId(index)}
+          {...{ [FINRA_UI_ATTR]: componentIds.tenorPickerOption }}
           // Roving highlight via aria-activedescendant on the input; options
           // are not in the tab sequence but must be programmatically focusable.
           tabIndex={-1}
@@ -564,17 +567,13 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
           aria-label={
             showFavourites && option.favourite ? `${option.label}, ${favouriteHint}` : undefined
           }
-          className={
-            [
-              cn?.option,
-              index === highlight && cn?.optionHighlighted,
-              selected && cn?.optionSelected,
-              option.disabled && cn?.optionDisabled,
-              option.favourite && cn?.optionFavourite,
-            ]
-              .filter(Boolean)
-              .join(" ") || undefined
-          }
+          className={cx(
+            cn?.option,
+            index === highlight && cn?.optionHighlighted,
+            selected && cn?.optionSelected,
+            option.disabled && cn?.optionDisabled,
+            option.favourite && cn?.optionFavourite,
+          )}
           // One handler for the whole option. Hit-testing the star here (rather
           // than giving it its own handler) keeps the star a plain element:
           // a listbox `option` may not contain interactive descendants, and a
@@ -591,9 +590,16 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
             }
             selectOption(option);
           }}>
-          <span className={cn?.optionLabel}>{option.label}</span>
+          <span
+            className={cn?.optionLabel}
+            {...{ [FINRA_UI_ATTR]: componentIds.tenorPickerOptionLabel }}>
+            {option.label}
+          </span>
           {selected && renderCheck ? (
-            <span className={cn?.check} aria-hidden="true">
+            <span
+              className={cn?.check}
+              aria-hidden="true"
+              {...{ [FINRA_UI_ATTR]: componentIds.tenorPickerCheck }}>
               {renderCheck()}
             </span>
           ) : null}
@@ -601,13 +607,9 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
             // Decorative: the favourite state is carried by the option's own
             // accessible name, so announcing the star again would be noise.
             <span
-              {...{ [FAVOURITE_ATTR]: "" }}
+              {...{ [FAVOURITE_ATTR]: "", [FINRA_UI_ATTR]: componentIds.tenorPickerFavourite }}
               aria-hidden="true"
-              className={
-                [cn?.favouriteToggle, option.favourite && cn?.favouriteActive]
-                  .filter(Boolean)
-                  .join(" ") || undefined
-              }>
+              className={cx(cn?.favouriteToggle, option.favourite && cn?.favouriteActive)}>
               {renderFavourite(option.favourite)}
             </span>
           ) : null}
@@ -618,10 +620,11 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
     return (
       <div
         ref={containerRef}
-        className={[cn?.root, isOpen && cn?.rootOpen].filter(Boolean).join(" ") || undefined}
+        className={cx(cn?.root, isOpen && cn?.rootOpen)}
         {...dataAttributes}
         {...props}>
         <input
+          {...{ [FINRA_UI_ATTR]: componentIds.tenorPickerInput }}
           ref={inputRef}
           className={cn?.input}
           type="text"
@@ -650,24 +653,39 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
 
         {renderIndicator ? (
           <span
-            className={
-              [cn?.indicator, isOpen && cn?.indicatorOpen].filter(Boolean).join(" ") || undefined
-            }
-            aria-hidden="true">
+            className={cx(cn?.indicator, isOpen && cn?.indicatorOpen)}
+            aria-hidden="true"
+            {...{ [FINRA_UI_ATTR]: componentIds.tenorPickerIndicator }}>
             {renderIndicator(isOpen)}
           </span>
         ) : null}
 
         {isOpen ? (
-          <div className={cn?.popup} id={popupId} role="listbox" aria-label={ariaLabel}>
+          <div
+            className={cn?.popup}
+            {...{ [FINRA_UI_ATTR]: componentIds.tenorPickerPopup }}
+            id={popupId}
+            role="listbox"
+            aria-label={ariaLabel}>
             {flat.length === 0 ? (
-              <div className={cn?.empty} role="presentation">
+              <div
+                className={cn?.empty}
+                role="presentation"
+                {...{ [FINRA_UI_ATTR]: componentIds.tenorPickerEmpty }}>
                 {noOptionsMessage}
               </div>
             ) : grouped ? (
               groups.map((group) => (
-                <div key={group.id} className={cn?.group} role="group" aria-label={group.label}>
-                  <div className={cn?.groupLabel} aria-hidden="true">
+                <div
+                  key={group.id}
+                  className={cn?.group}
+                  role="group"
+                  aria-label={group.label}
+                  {...{ [FINRA_UI_ATTR]: componentIds.tenorPickerGroup }}>
+                  <div
+                    className={cn?.groupLabel}
+                    aria-hidden="true"
+                    {...{ [FINRA_UI_ATTR]: componentIds.tenorPickerGroupLabel }}>
                     {group.label}
                   </div>
                   {group.options.map(renderOption)}

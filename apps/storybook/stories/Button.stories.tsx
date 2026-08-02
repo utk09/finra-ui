@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button } from "@utk09/finra-ui";
+import { ButtonBase } from "@utk09/finra-ui/unstyled";
 import { expect, fn, userEvent, within } from "storybook/test";
 
 import {
@@ -13,12 +14,16 @@ import {
   SearchIcon,
   TrashIcon,
 } from "./_icons";
+import { inDark, Row, Stack, TokenScope } from "./_shared";
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
   component: Button,
   parameters: {
     layout: "centered",
+    // `ButtonProps extends ButtonBaseProps`, and docgen does not follow
+    // `extends` across modules. Without this the base's own props are absent.
+    docs: { inheritsFrom: ButtonBase },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -322,3 +327,45 @@ export const WithAccessibility: Story = {
     "aria-pressed": false,
   },
 };
+
+/**
+ * Restyling without a class name. The wrapper redeclares the actionable tokens
+ * and every button inside follows, hover and active states included. The
+ * `danger` sentiment reads the status tokens instead, so it is unaffected.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-accent: #7c3aed;
+ *   --finra-actionable-accent-hover: #6d28d9;
+ *   --finra-actionable-accent-active: #5b21b6;
+ *   --finra-actionable-accent-subtle: #ede9fe;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: () => (
+    <Stack gap="1.25rem">
+      <Row>
+        <span style={{ minInlineSize: "6rem" }}>Default</span>
+        <Button>Primary</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button sentiment="danger">Danger</Button>
+      </Row>
+      <TokenScope
+        tokens={{
+          "--finra-actionable-accent": "#7c3aed",
+          "--finra-actionable-accent-hover": "#6d28d9",
+          "--finra-actionable-accent-active": "#5b21b6",
+          "--finra-actionable-accent-subtle": "#ede9fe",
+        }}>
+        <span style={{ minInlineSize: "6rem" }}>Overridden</span>
+        <Button>Primary</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button sentiment="danger">Danger</Button>
+      </TokenScope>
+    </Stack>
+  ),
+};
+
+/** Dark-mode counterpart of `Primary`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Primary);

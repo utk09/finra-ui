@@ -3,6 +3,8 @@ import { PillInput } from "@utk09/finra-ui";
 import { useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 
+import { inDark } from "./_shared";
+
 const meta: Meta<typeof PillInput> = {
   title: "Components/PillInput",
   component: PillInput,
@@ -137,3 +139,38 @@ export const AllStates: Story = {
     </div>
   ),
 };
+
+/**
+ * The pills and the focus ring both read the actionable tokens, so one
+ * declaration on an ancestor retints the whole field.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-accent: #b45309;
+ *   --finra-actionable-accent-subtle: #fef3c7;
+ *   --finra-actionable-emphasis: #d97706;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: (args) => (
+    <div
+      style={
+        {
+          "--finra-actionable-accent": "#b45309",
+          "--finra-actionable-accent-subtle": "#fef3c7",
+          "--finra-actionable-emphasis": "#d97706",
+        } as React.CSSProperties
+      }>
+      <div style={{ inlineSize: 320 }}>
+        <PillInput {...args} aria-label="Overridden tags" values={["EURUSD", "GBPUSD"]} />
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    within(canvasElement).getByRole("textbox", { name: "Overridden tags" }).focus();
+  },
+};
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

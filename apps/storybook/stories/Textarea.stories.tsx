@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Textarea } from "@utk09/finra-ui";
 import { expect, userEvent, within } from "storybook/test";
 
+import { inDark } from "./_shared";
+
 const meta: Meta<typeof Textarea> = {
   title: "Components/Textarea",
   component: Textarea,
@@ -284,3 +286,6 @@ export const AllVariations: Story = {
     </div>
   ),
 };
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

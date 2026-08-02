@@ -9,6 +9,7 @@ import {
   useId,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { FormFieldContext } from "../../context/FormFieldContext";
 import {
   computeDescribedBy,
@@ -17,7 +18,6 @@ import {
   type FormFieldState,
   mergeControlA11y,
 } from "../../logic/formField";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./FormField.module.scss";
 

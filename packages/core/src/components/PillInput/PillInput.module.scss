@@ -25,9 +25,9 @@
 
   &.disabled {
     cursor: var(--finra-cursor-disabled);
-    background-color: var(--finra-color-neutral-50);
-    color: var(--finra-color-neutral-500);
-    border-color: var(--finra-color-neutral-200);
+    background-color: var(--finra-container-disabled-background);
+    color: var(--finra-container-disabled-foreground);
+    border-color: var(--finra-container-disabled-border);
   }
 }
 
@@ -60,7 +60,7 @@
   padding: 0;
   border: none;
   background: transparent;
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
   cursor: var(--finra-cursor-pointer);
   border-radius: var(--finra-radius-full);
   flex-shrink: 0;
@@ -70,8 +70,8 @@
   }
 
   > svg {
-    inline-size: 0.75rem;
-    block-size: 0.75rem;
+    inline-size: var(--finra-icon-size-sm);
+    block-size: var(--finra-icon-size-sm);
   }
 }
 
@@ -91,7 +91,7 @@
   }
 
   &::placeholder {
-    color: var(--finra-color-neutral-400);
+    color: var(--finra-container-foreground-muted);
   }
 
   &:disabled {

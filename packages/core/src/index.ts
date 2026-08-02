@@ -1,5 +1,7 @@
 // Component identifiers (for CSS overrides)
 
+export type { ComponentId } from "./componentIds";
+export { componentIds, FINRA_UI_ATTR } from "./componentIds";
 // Badge
 export type { BadgeProps, BadgeSentiment } from "./components/Badge/Badge";
 export { Badge } from "./components/Badge/Badge";
@@ -20,8 +22,6 @@ export type {
   ComboBoxRenderOptionState,
 } from "./components/ComboBox/ComboBox";
 export { ComboBox } from "./components/ComboBox/ComboBox";
-export type { ComponentId } from "./components/componentIds";
-export { componentIds, FINRA_UI_ATTR } from "./components/componentIds";
 // Dialog
 export type {
   DialogContentProps,
@@ -119,6 +119,8 @@ export { useStore } from "./hooks/useStore";
 export type { TabsActivationMode, TabsOrientation } from "./logic/tabs";
 export type { ToastApi, ToastData, ToastInput, ToastSentiment } from "./logic/toast";
 export { toast } from "./logic/toast";
+// Cross-cutting design axes (shared by core and the finance package)
+export type { Sentiment, Variant } from "./types/variants";
 
 // Import styles
 import "./styles/global.scss";

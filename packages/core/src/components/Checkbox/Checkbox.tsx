@@ -2,9 +2,9 @@ import { CheckIcon, DashIcon } from "@utk09/finra-ui-icons/react";
 import { clsx } from "clsx";
 import { forwardRef, useEffect, useRef } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { CheckboxBase, type CheckboxBaseProps } from "../../unstyled/Checkbox/Checkbox";
 import { mergeRefs } from "../../utils/mergeRefs";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Checkbox.module.scss";
 
 /**
@@ -49,6 +49,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         className={clsx(styles.checkbox, disabled && styles.disabled, className)}>
         <CheckboxBase
           ref={mergeRefs(forwardedRef, internalRef)}
+          {...{ [FINRA_UI_ATTR]: componentIds.checkboxInput }}
           className={styles.input}
           disabled={disabled}
           data-indeterminate={indeterminate || undefined}

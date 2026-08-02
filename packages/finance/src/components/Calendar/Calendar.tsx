@@ -2,9 +2,9 @@ import { FINRA_UI_ATTR } from "@utk09/finra-ui";
 import { clsx } from "clsx";
 import { forwardRef, useMemo } from "react";
 
+import { componentIds } from "../../componentIds";
 import type { CalendarBaseProps, CalendarClassNames } from "../../unstyled/Calendar/Calendar";
 import { CalendarBase } from "../../unstyled/Calendar/Calendar";
-import { componentIds } from "../componentIds";
 import styles from "./Calendar.module.scss";
 import { CalendarMonthYear } from "./CalendarMonthYear";
 

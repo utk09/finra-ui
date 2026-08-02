@@ -3,6 +3,8 @@ import { TenorInput } from "@utk09/finra-ui-finance";
 import { useState } from "react";
 import { fn } from "storybook/test";
 
+import { inDark } from "./_shared";
+
 const meta: Meta<typeof TenorInput> = {
   title: "Finance/TenorInput",
   component: TenorInput,
@@ -154,3 +156,6 @@ export const AllStates: Story = {
     </div>
   ),
 };
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

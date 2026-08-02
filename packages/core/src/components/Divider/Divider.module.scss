@@ -10,7 +10,11 @@
   }
 
   &.vertical {
-    block-size: 100%;
+    // `min-block-size` rather than `block-size`: an explicit cross size stops
+    // `align-self: stretch` applying, so inside a flex or grid parent of
+    // content height the rule collapsed to nothing. As a minimum it stays out
+    // of stretch's way, while still filling a block parent of known height.
+    min-block-size: 100%;
     inline-size: var(--finra-border-thin);
     align-self: stretch;
   }

@@ -1,4 +1,4 @@
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import {
   type ChangeEvent,
@@ -10,8 +10,9 @@ import {
   useState,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
+import type { Variant } from "../../types/variants";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./Textarea.module.scss";
 
@@ -47,9 +48,18 @@ const validationClasses: Record<ValidationStatus, string> = {
  * <Textarea autoResize minRows={3} maxRows={10} maxLength={500} showCharCount />
  * ```
  */
-export interface TextareaProps
-  extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "size">,
-    VariantProps<typeof textareaVariants> {
+export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "size"> {
+  /**
+   * Visual emphasis of the field chrome.
+   *
+   * @remarks
+   * Changes the weight of the border and background only. It does not signal
+   * validity - that is `validationStatus`, which is orthogonal and takes over
+   * the border colour when set.
+   *
+   * @defaultValue "primary"
+   */
+  variant?: Variant;
   /** Validation state. `"error"` also sets `aria-invalid`. */
   validationStatus?: ValidationStatus;
   /**

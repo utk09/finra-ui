@@ -1,14 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { AmountInput } from "@utk09/finra-ui-finance";
+import { AmountInputBase } from "@utk09/finra-ui-finance/unstyled";
 import { compactSuffixesForLocale } from "@utk09/finra-ui-finance/utils";
 import { useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
+
+import { inDark, TokenScope } from "./_shared";
 
 const meta: Meta<typeof AmountInput> = {
   title: "Finance/AmountInput",
   component: AmountInput,
   parameters: {
     layout: "centered",
+    // Docgen does not follow `extends` across modules, so the base's props are
+    // otherwise missing from the table.
+    docs: {
+      inheritsFrom: AmountInputBase,
+      // Mirrors the `Omit` on the styled props: these are the styled layer's
+      // own injection points, not consumer API.
+      inheritedOmit: ["classNames", "dataAttributes"],
+    },
   },
   // Autodocs only for now, matching PriceInput: spinbutton ARIA value semantics
   // vary by empty state, so a11y-test waits until those are verified against axe.
@@ -70,7 +81,7 @@ export const Shorthand: Story = {
  * The same field, driven end to end: `2bn` in, `2000000000` held, `$2B` at
  * rest.
  *
- * Kept apart from {@link Shorthand} because a story carrying an interaction
+ * Kept apart from `Shorthand` because a story carrying an interaction
  * replays it on every visit - the field types itself, which is useful to watch
  * once and distracting when you opened the page to look at the component.
  */
@@ -323,3 +334,43 @@ export const Variants: Story = {
     </div>
   ),
 };
+
+/**
+ * The field takes its focus ring from `--finra-actionable-emphasis` and its
+ * error state from `--finra-status-danger-accent`.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-emphasis: #7c3aed;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: (args) => (
+    <TokenScope
+      align="flex-start"
+      tokens={{
+        "--finra-actionable-emphasis": "#7c3aed",
+        "--finra-status-danger-accent": "#9f1239",
+      }}>
+      <div style={{ inlineSize: 200 }}>
+        <AmountInput {...args} aria-label="Focus me" currency="USD" defaultValue={1_230_000} />
+      </div>
+      <div style={{ inlineSize: 200 }}>
+        <AmountInput
+          {...args}
+          aria-label="Rejected"
+          currency="USD"
+          validationStatus="error"
+          defaultValue={1_230_000}
+        />
+      </div>
+    </TokenScope>
+  ),
+  play: async ({ canvasElement }) => {
+    within(canvasElement).getByRole("spinbutton", { name: "Focus me" }).focus();
+  },
+};
+
+/** Dark-mode counterpart of `Shorthand`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Shorthand);

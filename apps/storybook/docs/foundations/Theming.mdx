@@ -1,0 +1,111 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Button } from "@utk09/finra-ui";
+
+import { Note, Sampler, Support, Swatch, SwatchGrid } from "../_components";
+
+<Meta title="Foundations/Theming" />
+
+# Theming
+
+Set one attribute. No provider, no context, no JavaScript.
+
+```tsx
+<div data-theme="dark">{/* everything inside is dark */}</div>
+```
+
+Put it on `<html>`, on a layout wrapper, or on a single panel. It nests, so a light panel inside a dark shell is another `data-theme` further down. Being plain CSS, it renders the same on the server and does not need every micro-frontend on the page to agree on a provider version.
+
+<Unstyled>
+  <Sampler>
+    <div style={{ display: "flex", gap: "0.75rem", padding: "1rem", borderRadius: "8px" }}>
+      <Button variant="primary">Light</Button>
+      <Button variant="secondary">Light</Button>
+    </div>
+    <div
+      data-theme="dark"
+      style={{
+        display: "flex",
+        gap: "0.75rem",
+        padding: "1rem",
+        borderRadius: "8px",
+        background: "var(--finra-container-background)",
+      }}>
+      <Button variant="primary">Dark</Button>
+      <Button variant="secondary">Dark</Button>
+    </div>
+  </Sampler>
+</Unstyled>
+
+There is no `data-theme="light"`. Light is the base declaration; dark is the override.
+
+## What dark mode changes
+
+Only the [semantic tier](?path=/docs/foundations-design-tokens--docs). The raw palette does not move: `--finra-color-primary-600` is `#2563eb` in both themes.
+
+Dark mode points the semantic aliases at different steps of the same fixed scale.
+
+| Token                                   | Light         | Dark          |
+| --------------------------------------- | ------------- | ------------- |
+| `--finra-actionable-accent`             | `primary-600` | `primary-300` |
+| `--finra-actionable-accent-subtle`      | `primary-50`  | `primary-900` |
+| `--finra-actionable-foreground`         | `white`       | `neutral-900` |
+| `--finra-container-disabled-background` | `neutral-50`  | `neutral-800` |
+| `--finra-container-foreground-muted`    | `neutral-500` | `neutral-400` |
+
+Three raw tokens flip too, because they describe the page rather than a colour: `--finra-color-background`, `--finra-color-foreground` and `--finra-color-border`.
+
+Note the direction on `container-disabled-background`. A recessed surface is darker than a white page and lighter than a `neutral-900` one. Stepping the same way in both modes gives you an invisible control.
+
+<Unstyled>
+  <SwatchGrid>
+    <Swatch token="--finra-actionable-accent" />
+    <Swatch token="--finra-container-background" />
+    <Swatch token="--finra-container-foreground" />
+    <Swatch token="--finra-container-foreground-muted" />
+  </SwatchGrid>
+</Unstyled>
+
+Switch the **Theme** control in the toolbar and these four move.
+
+## Retheming
+
+Override the semantic tier. One declaration retints everything that means the same thing.
+
+```css
+:root {
+  --finra-actionable-accent: #7c3aed;
+  --finra-actionable-accent-hover: #6d28d9;
+}
+
+[data-theme="dark"] {
+  /* Repeat every alias that should differ in dark. */
+  --finra-actionable-accent: #c4b5fd;
+  --finra-actionable-accent-hover: #ddd6fe;
+}
+```
+
+<Unstyled>
+  <Note kind="warning" title="An alias on :root alone will not flip">
+    A custom property's `var()` is substituted **at the element carrying the declaration**. Write
+    `--finra-container-foreground: var(--finra-color-foreground)` on `:root` only, and it resolves
+    there against the light palette; everything below inherits that fixed value, including the
+    subtree under `[data-theme="dark"]`. Surface and text then land on the same colour. Repeat any
+    alias that should differ inside the dark block.
+  </Note>
+</Unstyled>
+
+Check overrides in both themes. A colour picked against white is not automatically legible on `neutral-900`, and the reverse holds too.
+
+## Portals
+
+Overlay content is portalled to `document.body`, outside your `data-theme` element. The library's `Portal` re-applies `data-theme` and `data-density`, and restates `color`, which is inherited from `document.body` and would otherwise carry light ink onto a dark surface. Use the exported `Portal` and this is handled.
+
+## What is not supported
+
+- **Only light and dark ship.** Anything else means overriding the semantic tier yourself.
+- **No automatic OS detection.** The library never sets `data-theme` for you. Read `prefers-color-scheme` in your app if you want that.
+- **No runtime theme API.** Themes are CSS. There is nothing to call.
+
+<Unstyled>
+  <Support />
+</Unstyled>

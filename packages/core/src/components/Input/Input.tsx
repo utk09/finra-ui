@@ -1,5 +1,5 @@
 import { CloseIcon } from "@utk09/finra-ui-icons/react";
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import {
   forwardRef,
@@ -10,9 +10,9 @@ import {
   useRef,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
-import type { ValidationStatus as _ValidationStatus } from "../../types/variants";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
+import type { ValidationStatus as _ValidationStatus, Variant } from "../../types/variants";
 import styles from "./Input.module.scss";
 
 /**
@@ -60,9 +60,18 @@ const validationClasses: Record<ValidationStatus, string> = {
  * <Input clearable placeholder="Search" startAdornment={<SearchIcon />} />
  * ```
  */
-export interface InputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">,
-    VariantProps<typeof inputVariants> {
+export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
+  /**
+   * Visual emphasis of the field chrome.
+   *
+   * @remarks
+   * Changes the weight of the border and background only. It does not signal
+   * validity - that is `validationStatus`, which is orthogonal and takes over
+   * the border colour when set.
+   *
+   * @defaultValue "primary"
+   */
+  variant?: Variant;
   /** Validation state. `"error"` also sets `aria-invalid`. */
   validationStatus?: ValidationStatus;
   /** Decorative element before the text, inside the border. Not focusable. */
@@ -153,7 +162,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           fullWidth && styles.fullWidth,
           className,
         )}>
-        {startAdornment ? <span className={styles.adornment}>{startAdornment}</span> : null}
+        {startAdornment ? (
+          <span
+            className={styles.adornment}
+            {...{ [FINRA_UI_ATTR]: componentIds.inputStartAdornment }}>
+            {startAdornment}
+          </span>
+        ) : null}
         <input
           ref={inputRef}
           {...{ [FINRA_UI_ATTR]: componentIds.inputField }}
@@ -168,13 +183,20 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <button
             type="button"
             className={styles.clearButton}
+            {...{ [FINRA_UI_ATTR]: componentIds.inputClearButton }}
             onClick={handleClear}
             aria-label="Clear input"
             tabIndex={-1}>
             <CloseIcon />
           </button>
         ) : null}
-        {endAdornment ? <span className={styles.adornment}>{endAdornment}</span> : null}
+        {endAdornment ? (
+          <span
+            className={styles.adornment}
+            {...{ [FINRA_UI_ATTR]: componentIds.inputEndAdornment }}>
+            {endAdornment}
+          </span>
+        ) : null}
       </div>
     );
   },

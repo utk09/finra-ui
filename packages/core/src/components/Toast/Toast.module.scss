@@ -1,11 +1,11 @@
 .region {
   position: fixed;
-  z-index: var(--finra-z-toast, 1100);
+  z-index: var(--finra-z-toast);
   display: flex;
   flex-direction: column;
   gap: var(--finra-spacing-2);
   inline-size: max-content;
-  max-inline-size: min(92vw, 24rem);
+  max-inline-size: min(var(--finra-overlay-max-viewport), 24rem);
   padding: var(--finra-spacing-4);
   pointer-events: none; // let clicks through the gaps; toasts opt back in below
 }
@@ -63,7 +63,7 @@
   font-family: var(--finra-font-sans);
   color: var(--finra-container-foreground);
   background-color: var(--finra-container-background);
-  border: 1px solid var(--finra-container-border);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
   border-inline-start: 3px solid var(--_toast-accent);
   border-radius: var(--finra-radius-md);
   box-shadow: var(--finra-shadow-lg);
@@ -91,8 +91,7 @@
 [data-finra-ui="toast-description"] {
   grid-column: 1;
   font-size: var(--finra-text-sm);
-  color: var(--finra-container-foreground);
-  opacity: 0.85;
+  color: var(--finra-container-foreground-muted);
 }
 
 [data-finra-ui="toast-action"] {
@@ -123,16 +122,15 @@
   padding: 0;
   font-size: var(--finra-text-base);
   line-height: 1;
-  color: var(--finra-container-foreground);
+  color: var(--finra-container-foreground-muted);
   background: none;
   border: none;
   border-radius: var(--finra-radius-sm);
   cursor: var(--finra-cursor-pointer);
-  opacity: 0.6;
 }
 
 [data-finra-ui="toast-close"]:hover {
-  opacity: 1;
+  color: var(--finra-container-foreground);
 }
 
 @keyframes finra-toast-in {

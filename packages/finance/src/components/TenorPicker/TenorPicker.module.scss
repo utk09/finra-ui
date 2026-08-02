@@ -66,17 +66,17 @@
   cursor: var(--finra-cursor-disabled);
 
   &.root {
-    background-color: var(--finra-color-neutral-50);
-    border-color: var(--finra-color-neutral-200);
+    background-color: var(--finra-container-disabled-background);
+    border-color: var(--finra-container-disabled-border);
   }
 
   .input {
-    color: var(--finra-color-neutral-300);
+    color: var(--finra-container-disabled-foreground);
     cursor: var(--finra-cursor-disabled);
   }
 
   .indicator {
-    color: var(--finra-color-neutral-200);
+    color: var(--finra-container-disabled-foreground);
   }
 }
 
@@ -96,7 +96,7 @@
   }
 
   &::placeholder {
-    color: var(--finra-color-neutral-400);
+    color: var(--finra-container-foreground-muted);
   }
 }
 
@@ -106,7 +106,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
   transition: transform var(--finra-duration-fast) ease-in-out;
 
   @media (prefers-reduced-motion: reduce) {
@@ -126,11 +126,11 @@
 //  Popup - grouped tenor listbox
 .popup {
   position: absolute;
-  z-index: 50;
+  z-index: var(--finra-z-popup);
   inset-inline-start: 0;
   inset-block-start: 100%;
   inline-size: 100%;
-  max-block-size: 20rem;
+  max-block-size: var(--finra-popup-max-block-size);
   overflow-y: auto;
   scrollbar-gutter: stable;
   padding-block: calc(var(--finra-density-gap) * 0.5);
@@ -159,9 +159,9 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-xs);
   font-weight: var(--finra-font-semibold);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--finra-tracking-wide);
   user-select: none;
 }
 
@@ -201,7 +201,7 @@
   }
 
   &.optionDisabled {
-    color: var(--finra-color-neutral-300);
+    color: var(--finra-container-disabled-foreground);
     cursor: var(--finra-cursor-disabled);
   }
 }
@@ -238,7 +238,7 @@
   flex-shrink: 0;
   font-size: var(--finra-text-base);
   line-height: 1;
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
   cursor: var(--finra-cursor-pointer);
   transition: color var(--finra-duration-fast) ease-in-out;
 
@@ -265,6 +265,6 @@
   padding-block: calc(var(--finra-density-gap) * 0.75);
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-sm);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   user-select: none;
 }

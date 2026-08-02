@@ -1,10 +1,10 @@
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import { forwardRef, type ReactNode } from "react";
 
-import type { Sentiment } from "../../types/variants";
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
+import type { Sentiment, Variant } from "../../types/variants";
 import { ButtonBase, type ButtonBaseProps } from "../../unstyled/Button/Button";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Button.module.scss";
 
 /**
@@ -60,7 +60,26 @@ const buttonVariants = cva(styles.button, {
  * </Button>
  * ```
  */
-export interface ButtonProps extends ButtonBaseProps, VariantProps<typeof buttonVariants> {
+export interface ButtonProps extends ButtonBaseProps {
+  /**
+   * Visual emphasis - how loud the button is.
+   *
+   * @remarks
+   * Orthogonal to `sentiment`, which changes hue rather than emphasis. Use one
+   * `primary` button per view for the action you want taken.
+   *
+   * @defaultValue "primary"
+   */
+  variant?: Variant;
+  /**
+   * Stretch to fill the inline size of the container.
+   *
+   * @remarks
+   * Useful in narrow columns and on mobile. The label stays centred.
+   *
+   * @defaultValue false
+   */
+  fullWidth?: boolean;
   /** Colour meaning. Orthogonal to `variant` - it changes hue, not emphasis. */
   sentiment?: ButtonSentiment;
   /**
@@ -93,9 +112,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           className,
         )}
         {...props}>
-        {startIcon ? <span className={styles.icon}>{startIcon}</span> : null}
+        {startIcon ? (
+          <span className={styles.icon} {...{ [FINRA_UI_ATTR]: componentIds.buttonStartIcon }}>
+            {startIcon}
+          </span>
+        ) : null}
         {children}
-        {endIcon ? <span className={styles.icon}>{endIcon}</span> : null}
+        {endIcon ? (
+          <span className={styles.icon} {...{ [FINRA_UI_ATTR]: componentIds.buttonEndIcon }}>
+            {endIcon}
+          </span>
+        ) : null}
       </ButtonBase>
     );
   },

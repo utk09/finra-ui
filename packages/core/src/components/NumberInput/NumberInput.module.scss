@@ -23,7 +23,7 @@
   &.disabled {
     opacity: var(--finra-opacity-disabled);
     cursor: var(--finra-cursor-disabled);
-    background-color: var(--finra-color-neutral-50);
+    background-color: var(--finra-container-disabled-background);
   }
 
   &.fullWidth {
@@ -89,7 +89,7 @@
   }
 
   &::placeholder {
-    color: var(--finra-color-neutral-400);
+    color: var(--finra-container-foreground-muted);
   }
 
   &:disabled {

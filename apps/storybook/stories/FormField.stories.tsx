@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Checkbox, FormField, Input, Switch, Textarea } from "@utk09/finra-ui";
 import { expect, within } from "storybook/test";
 
+import { inDark, Stack, TokenScope } from "./_shared";
+
 const meta: Meta<typeof FormField> = {
   title: "Components/FormField",
   component: FormField,
@@ -188,3 +190,40 @@ export const AllStates: Story = {
     </div>
   ),
 };
+
+/**
+ * Helper text reads `--finra-container-foreground-muted` and the error state
+ * reads `--finra-status-danger-accent`, so both move with a token override.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-container-foreground-muted: #7c3aed;
+ *   --finra-status-danger-accent: #9f1239;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: () => (
+    <Stack gap="1.25rem">
+      <FormField label="Default" helperText="Helper text">
+        <Input placeholder="Value" />
+      </FormField>
+      <TokenScope
+        align="flex-start"
+        tokens={{
+          "--finra-container-foreground-muted": "#7c3aed",
+          "--finra-status-danger-accent": "#9f1239",
+        }}>
+        <FormField label="Overridden" helperText="Helper text">
+          <Input placeholder="Value" />
+        </FormField>
+        <FormField label="Overridden error" validationStatus="error" errorMessage="Required">
+          <Input placeholder="Value" />
+        </FormField>
+      </TokenScope>
+    </Stack>
+  ),
+};
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

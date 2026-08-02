@@ -1,8 +1,9 @@
-import { FINRA_UI_ATTR, type ValidationStatus } from "@utk09/finra-ui";
-import { cva, type VariantProps } from "class-variance-authority";
+import { FINRA_UI_ATTR, type ValidationStatus, type Variant } from "@utk09/finra-ui";
+import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import { forwardRef, useMemo } from "react";
 
+import { componentIds } from "../../componentIds";
 import type {
   PriceInputBaseProps,
   PriceInputClassNames,
@@ -10,7 +11,6 @@ import type {
 } from "../../unstyled/PriceInput/PriceInput";
 import { PriceInputBase } from "../../unstyled/PriceInput/PriceInput";
 import type { PriceSegment, PriceSegmentKind } from "../../utils/priceFormat";
-import { componentIds } from "../componentIds";
 import styles from "./PriceInput.module.scss";
 
 const rootVariants = cva(styles.root, {
@@ -44,13 +44,28 @@ const segClass: Record<PriceSegmentKind, string> = {
   unit: styles.segUnit,
 };
 
+const segId: Record<PriceSegmentKind, string> = {
+  sign: componentIds.priceInputSign,
+  integer: componentIds.priceInputInteger,
+  separator: componentIds.priceInputSeparator,
+  primary: componentIds.priceInputPrimary,
+  precision: componentIds.priceInputPrecision,
+  "big-figure": componentIds.priceInputBigFigure,
+  pips: componentIds.priceInputPips,
+  "fractional-pip": componentIds.priceInputFractionalPip,
+  unit: componentIds.priceInputUnit,
+};
+
 function renderSegments(segments: PriceSegment[]) {
   // One inline line so the mixed-size segments share a text baseline
   // (flex items would center-align instead).
   return (
-    <span className={styles.line}>
-      {segments.map((seg, _index) => (
-        <span key={seg.kind} className={segClass[seg.kind]}>
+    <span className={styles.line} {...{ [FINRA_UI_ATTR]: componentIds.priceInputSegments }}>
+      {segments.map((seg) => (
+        <span
+          key={seg.kind}
+          className={segClass[seg.kind]}
+          {...{ [FINRA_UI_ATTR]: segId[seg.kind] }}>
           {seg.text}
         </span>
       ))}
@@ -78,8 +93,18 @@ function renderSegments(segments: PriceSegment[]) {
  * ```
  */
 export interface PriceInputProps
-  extends Omit<PriceInputBaseProps, "classNames" | "dataAttributes" | "renderDisplay">,
-    VariantProps<typeof rootVariants> {
+  extends Omit<PriceInputBaseProps, "classNames" | "dataAttributes" | "renderDisplay"> {
+  /**
+   * Visual emphasis of the field chrome.
+   *
+   * @remarks
+   * Changes the weight of the border and background only. It does not signal
+   * validity - that is `validationStatus`, which is orthogonal and takes over
+   * the border colour when set.
+   *
+   * @defaultValue "primary"
+   */
+  variant?: Variant;
   /** Visual validation status. */
   validationStatus?: ValidationStatus;
   /** Stretch to fill the container width. */

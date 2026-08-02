@@ -13,12 +13,17 @@ import {
 import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
+import { darkModeOpen } from "./_shared";
+
 /** Filler long enough to make the dialog body scroll. */
 const SCROLL_SECTIONS = Array.from({ length: 12 }, (_, i) => `Section ${i + 1}`);
 
 const meta: Meta<typeof Dialog> = {
   title: "Components/Dialog",
   component: Dialog,
+  // Without these the page documents only the root's two props, and the parts
+  // a consumer actually renders are undocumented.
+  subcomponents: { DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogClose },
   parameters: {
     layout: "centered",
   },
@@ -26,10 +31,10 @@ const meta: Meta<typeof Dialog> = {
   argTypes: {
     dismissOnEscape: { control: "boolean", table: { defaultValue: { summary: "true" } } },
     dismissOnOutside: { control: "boolean", table: { defaultValue: { summary: "true" } } },
-    children: { table: { disable: true } },
-    open: { table: { disable: true } },
-    defaultOpen: { table: { disable: true } },
-    onOpenChange: { table: { disable: true } },
+    children: { control: { disable: true } },
+    open: { control: { disable: true } },
+    defaultOpen: { control: { disable: true } },
+    onOpenChange: { control: { disable: true } },
   },
   args: {
     dismissOnEscape: true,
@@ -168,5 +173,72 @@ export const Controlled: Story = {
         </Dialog>
       </>
     );
+  },
+};
+
+/**
+ * Everything here is scoped to one wrapper, including the panel and backdrop.
+ *
+ * They are portalled to `document.body` by default, so nothing in your tree is
+ * their ancestor and a token set there cannot reach them. Pass `container` to
+ * portal them into a node you own.
+ *
+ * ```tsx
+ * const [scope, setScope] = useState<HTMLDivElement | null>(null);
+ *
+ * <div ref={setScope} className="brand-region">
+ *   <DialogContent container={scope}>...</DialogContent>
+ * </div>
+ * ```
+ */
+export const Overrides: Story = {
+  render: function Render(args) {
+    const [scope, setScope] = useState<HTMLDivElement | null>(null);
+    return (
+      <div
+        ref={setScope}
+        style={
+          {
+            "--finra-container-background": "#1e1b4b",
+            "--finra-container-foreground": "#e0e7ff",
+            "--finra-container-foreground-muted": "#c7d2fe",
+            "--finra-container-border": "#4338ca",
+          } as React.CSSProperties
+        }>
+        <Dialog {...args}>
+          <DialogTrigger asChild>
+            <Button>Open branded dialog</Button>
+          </DialogTrigger>
+          <DialogContent container={scope}>
+            <DialogTitle>Confirm order</DialogTitle>
+            <DialogDescription>
+              The panel and its backdrop follow the tokens on the wrapper.
+            </DialogDescription>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <DialogClose asChild>
+                <Button>Close</Button>
+              </DialogClose>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    // Open it, so the restyled surface is what the story shows.
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Open branded dialog" }));
+    await canvas.findByRole("dialog");
+  },
+};
+
+/** The dialog left open in dark mode, so axe audits the portalled surface and its backdrop. */
+export const DarkModeOpen: Story = {
+  ...darkModeOpen,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Open dialog" }));
+    const dialog = await within(document.body).findByRole("dialog");
+    await waitFor(() => expect(dialog).toBeVisible());
   },
 };

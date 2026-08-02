@@ -1,16 +1,16 @@
-import { FINRA_UI_ATTR, type ValidationStatus } from "@utk09/finra-ui";
+import { FINRA_UI_ATTR, type ValidationStatus, type Variant } from "@utk09/finra-ui";
 import { CheckIcon, ChevronDownIcon } from "@utk09/finra-ui-icons/react";
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import { forwardRef, useMemo } from "react";
 
+import { componentIds } from "../../componentIds";
 import type {
   TenorPickerBaseProps,
   TenorPickerClassNames,
   TenorPickerHandle,
 } from "../../unstyled/TenorPicker/TenorPicker";
 import { TenorPickerBase } from "../../unstyled/TenorPicker/TenorPicker";
-import { componentIds } from "../componentIds";
 import styles from "./TenorPicker.module.scss";
 
 //  Root variants
@@ -58,10 +58,20 @@ const validationClasses: Record<ValidationStatus, string> = {
  */
 export interface TenorPickerProps
   extends Omit<
-      TenorPickerBaseProps,
-      "classNames" | "dataAttributes" | "renderIndicator" | "renderFavourite" | "renderCheck"
-    >,
-    VariantProps<typeof rootVariants> {
+    TenorPickerBaseProps,
+    "classNames" | "dataAttributes" | "renderIndicator" | "renderFavourite" | "renderCheck"
+  > {
+  /**
+   * Visual emphasis of the field chrome.
+   *
+   * @remarks
+   * Changes the weight of the border and background only. It does not signal
+   * validity - that is `validationStatus`, which is orthogonal and takes over
+   * the border colour when set.
+   *
+   * @defaultValue "primary"
+   */
+  variant?: Variant;
   /** Visual validation status. */
   validationStatus?: ValidationStatus;
   /** Stretch to fill the container width. */

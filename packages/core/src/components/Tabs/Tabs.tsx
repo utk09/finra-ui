@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import {
   Tab as TabBase,
   type TabProps as TabBaseProps,
@@ -10,7 +11,6 @@ import {
   type TabsProps,
   Tabs as TabsRoot,
 } from "../../unstyled/Tabs/Tabs";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Tabs.module.scss";
 
 export type { TabsProps };

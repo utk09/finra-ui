@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
+import { postcssFinraLayer } from "../../config/postcss-layer.mjs";
 import { libraryBuild } from "../../config/vite-library.mjs";
 
 export default defineConfig({
@@ -20,5 +21,8 @@ export default defineConfig({
     modules: {
       localsConvention: "camelCase",
     },
+    // Everything the package emits goes in one cascade layer, so a consumer
+    // override wins without needing a doubled selector or `!important`.
+    postcss: { plugins: [postcssFinraLayer()] },
   },
 });

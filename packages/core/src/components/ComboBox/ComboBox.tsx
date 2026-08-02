@@ -4,7 +4,7 @@ import {
   CloseSmallIcon,
   SpinnerIcon,
 } from "@utk09/finra-ui-icons/react";
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import {
   type ForwardedRef,
@@ -15,13 +15,14 @@ import {
   useMemo,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
+import type { Variant } from "../../types/variants";
 import {
   ComboBoxBase,
   type ComboBoxClassNames,
   type ComboBoxOption,
   type ComboBoxRenderOptionState,
 } from "../../unstyled/ComboBox/ComboBox";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./ComboBox.module.scss";
 
@@ -77,8 +78,18 @@ const validationClasses: Record<string, string> = {
  * ```
  */
 export interface ComboBoxProps<T = string>
-  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue">,
-    VariantProps<typeof wrapperVariants> {
+  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue"> {
+  /**
+   * Visual emphasis of the field chrome.
+   *
+   * @remarks
+   * Changes the weight of the border and background only. It does not signal
+   * validity - that is `validationStatus`, which is orthogonal and takes over
+   * the border colour when set.
+   *
+   * @defaultValue "primary"
+   */
+  variant?: Variant;
   /** Available options. Groups and favourites are derived from each option's own fields. */
   options: ComboBoxOption<T>[];
   /** Selected value; an array in `multiple` mode. `null` means nothing selected. */
@@ -170,6 +181,15 @@ export interface ComboBoxProps<T = string>
   /** Render a selected value - the resting single-mode display, or each pill. */
   renderValue?: (option: ComboBoxOption<T>) => ReactNode;
 
+  /**
+   * Where the listbox is portalled. Defaults to `document.body`.
+   *
+   * @remarks
+   * Pass a node you own to bring the popup back inside your subtree, so a token
+   * override declared on an ancestor reaches it. The default escapes ancestor
+   * `overflow: hidden`, `z-index` and `transform` contexts.
+   */
+  container?: Element | null;
   /** Controlled open state of the listbox. */
   open?: boolean;
   /** Fired whenever the listbox wants to open or close. */
@@ -179,14 +199,21 @@ export interface ComboBoxProps<T = string>
 //  Module-level stable render callbacks
 
 function styledRenderCheckIcon(): ReactNode {
-  return <CheckIcon className={styles.checkIcon} aria-hidden="true" />;
+  return (
+    <CheckIcon
+      {...{ [FINRA_UI_ATTR]: componentIds.comboBoxOptionCheck }}
+      className={styles.checkIcon}
+      aria-hidden="true"
+    />
+  );
 }
 
 function styledRenderIndicator(isCurrentOpen: boolean): ReactNode {
   return (
     <span
       className={clsx(styles.indicator, isCurrentOpen && styles.indicatorOpen)}
-      aria-hidden="true">
+      aria-hidden="true"
+      {...{ [FINRA_UI_ATTR]: componentIds.comboBoxIndicator }}>
       <ChevronDownIcon />
     </span>
   );
@@ -199,7 +226,11 @@ function styledRenderPillRemoveIcon(): ReactNode {
 function styledRenderLoading(): ReactNode {
   return (
     <>
-      <SpinnerIcon className={styles.spinner} aria-hidden="true" />
+      <SpinnerIcon
+        {...{ [FINRA_UI_ATTR]: componentIds.comboBoxSpinner }}
+        className={styles.spinner}
+        aria-hidden="true"
+      />
       Loading...
     </>
   );
@@ -250,8 +281,6 @@ function ComboBoxRender<T = string>(
       singleValue: styles.singleValue,
       input: styles.input,
       inputHidden: styles.inputHidden,
-      indicator: styles.indicator,
-      indicatorOpen: styles.indicatorOpen,
       listbox: styles.listbox,
       header: styles.header,
       footer: styles.footer,
@@ -262,11 +291,9 @@ function ComboBoxRender<T = string>(
       optionDisabled: styles.optionDisabled,
       optionCreate: styles.optionCreate,
       optionLabel: styles.optionLabel,
-      checkIcon: styles.checkIcon,
       group: styles.group,
       groupLabel: styles.groupLabel,
       loading: styles.loading,
-      spinner: styles.spinner,
       empty: styles.empty,
     }),
     [className, variant, validationStatus, fullWidth, disabled, open],

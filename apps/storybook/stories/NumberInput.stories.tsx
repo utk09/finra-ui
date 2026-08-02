@@ -1,12 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { NumberInput } from "@utk09/finra-ui";
+import { NumberInputBase } from "@utk09/finra-ui/unstyled";
 import { expect, fn, userEvent, within } from "storybook/test";
+
+import { inDark } from "./_shared";
 
 const meta: Meta<typeof NumberInput> = {
   title: "Components/NumberInput",
   component: NumberInput,
   parameters: {
     layout: "centered",
+    // Docgen does not follow `extends` across modules, so the base's props are
+    // otherwise missing from the table.
+    docs: { inheritsFrom: NumberInputBase },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -284,3 +290,41 @@ export const AllVariations: Story = {
     </div>
   ),
 };
+
+/**
+ * A token set on a wrapper reaches the focus ring, the stepper buttons and the
+ * error state. Click the first field to see the ring.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-emphasis: #7c3aed;
+ *   --finra-status-danger-accent: #9f1239;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: (args) => (
+    <div
+      style={
+        {
+          "--finra-actionable-emphasis": "#7c3aed",
+          "--finra-status-danger-accent": "#9f1239",
+        } as React.CSSProperties
+      }>
+      <div style={{ display: "flex", gap: "1rem" }}>
+        <div style={{ inlineSize: 200 }}>
+          <NumberInput {...args} aria-label="Focus me" defaultValue={42} />
+        </div>
+        <div style={{ inlineSize: 180 }}>
+          <NumberInput {...args} aria-label="Rejected" validationStatus="error" defaultValue={42} />
+        </div>
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    within(canvasElement).getByRole("spinbutton", { name: "Focus me" }).focus();
+  },
+};
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

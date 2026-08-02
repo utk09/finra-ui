@@ -7,7 +7,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   background-color: var(--finra-color-background);
   border: var(--finra-border-medium) dashed var(--finra-color-border);
   border-radius: var(--finra-radius-lg);
@@ -67,9 +67,9 @@
 .icon {
   inline-size: 2rem;
   block-size: 2rem;
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
 }
 
 .text {
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
 }

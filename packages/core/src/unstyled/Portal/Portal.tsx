@@ -41,6 +41,15 @@ export interface PortalProps {
  * The snapshot is taken on mount; a theme toggled while the portal is open is
  * not tracked (overlays are typically short-lived). Wrap long-lived portalled
  * UI in its own `data-theme` if that matters.
+ *
+ * Re-applying the attributes is necessary but not sufficient. `color` is an
+ * inherited property, and the portalled subtree inherits it from
+ * `document.body` rather than from where it was declared. With `data-theme` set
+ * on an inner element - which the docs explicitly allow, "any ancestor" - body
+ * keeps the light ink, so anything in an overlay that does not set its own
+ * colour renders dark-on-dark. The wrapper therefore restates the themed
+ * foreground. The `inherit` fallback means that a consumer using `/unstyled`
+ * without the library stylesheet gets exactly the previous behaviour.
  */
 export function Portal({ children, container, disabled }: PortalProps): ReactNode {
   // Ref callback (not useRef) so the layout effect re-runs once the anchor
@@ -67,7 +76,8 @@ export function Portal({ children, container, disabled }: PortalProps): ReactNod
         <div
           data-finra-ui-portal=""
           data-theme={theme ?? undefined}
-          data-density={density ?? undefined}>
+          data-density={density ?? undefined}
+          style={{ color: "var(--finra-container-foreground, inherit)" }}>
           {children}
         </div>,
         target,

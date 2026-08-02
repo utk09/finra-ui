@@ -1,0 +1,81 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+
+import { Note, Support } from "../_components";
+import { TokenOverrideTemplate, TokenReference } from "../_tokens";
+
+<Meta title="Foundations/Design Tokens" />
+
+# Design Tokens
+
+Every value the components paint with is a CSS custom property under `--finra-`. No Sass variables in the public surface, no JavaScript theme object. What you override in a stylesheet is what the components read.
+
+The reference below is parsed from the library's own `tokens/*.scss`, so it cannot fall out of date.
+
+## Three tiers
+
+| Tier | Example | Yours to override |
+| --- | --- | --- |
+| 1. Raw palette | `--finra-color-primary-600` | Yes, to change the palette. Same value in light and dark. |
+| 2. Semantic | `--finra-actionable-accent` | **Yes, start here.** This is the tier themes remap. |
+| 3. Component internals | `--_btn-accent` | No. Private, renamed without notice. |
+
+Components read tier 2 and never reach past it to a raw scale step. That is what makes dark mode work.
+
+Only three raw tokens change with the theme: `--finra-color-background`, `--finra-color-foreground` and `--finra-color-border`.
+
+<Unstyled>
+  <Note kind="warning" title="The neutral scale does not change with the theme">
+    `--finra-color-neutral-50` is near-white in both themes. Use it as a recessed surface and you
+    get a near-white panel on a dark page, carrying the dark theme's near-white text. Use
+    `--finra-container-disabled-background` and `--finra-container-foreground-muted` instead. They
+    are tier 2, so they flip.
+  </Note>
+</Unstyled>
+
+## Reference
+
+One table per source file. The columns are whichever selector blocks that file declares, so dark and density overrides sit next to the value they replace. Chips paint with `var()`, so they follow the **Theme** control in the toolbar.
+
+<Unstyled>
+  <TokenReference />
+</Unstyled>
+
+## Overriding
+
+Redeclare on any ancestor. Tier 2 retints everything that means the same thing at once.
+
+```css
+:root {
+  --finra-actionable-accent: #7c3aed;
+  --finra-actionable-accent-hover: #6d28d9;
+}
+```
+
+<Unstyled>
+  <Note kind="warning" title="An alias on :root alone will not flip">
+    A custom property's `var()` is substituted at the element carrying the declaration. An alias
+    written once on `:root` resolves there against the light palette, and everything below inherits
+    that fixed value, including the subtree under `[data-theme="dark"]`. Repeat any override that
+    should differ inside the dark block. See [Theming](?path=/docs/foundations-theming--docs).
+  </Note>
+</Unstyled>
+
+### Every token, ready to paste
+
+Copy this into your own stylesheet and edit down. Generated from the same source as the tables above.
+
+<Unstyled>
+  <TokenOverrideTemplate />
+</Unstyled>
+
+## What is not supported
+
+- **Tier 3 (`--_*`) as an override point.** It is internal to one component's cascade and carries no compatibility promise.
+- **Importing tokens as JavaScript.** They are CSS only. There is no JS export of the palette.
+- **Tokens without the component styles.** `@utk09/finra-ui/styles` is a single file.
+
+<Unstyled>
+  <Support>
+    A token that seems missing, or one you had to work around, is worth telling us about.
+  </Support>
+</Unstyled>

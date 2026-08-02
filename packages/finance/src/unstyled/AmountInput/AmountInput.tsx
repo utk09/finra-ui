@@ -1,4 +1,4 @@
-import { useFormField } from "@utk09/finra-ui";
+import { FINRA_UI_ATTR, useFormField } from "@utk09/finra-ui";
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -13,6 +13,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds } from "../../componentIds";
 import {
   type AmountFormat,
   type AmountFormatOptions,
@@ -587,6 +588,7 @@ export const AmountInputBase = forwardRef<AmountInputHandle, AmountInputBaseProp
         <input
           ref={inputRef}
           className={cn?.input}
+          {...{ [FINRA_UI_ATTR]: componentIds.amountInputField }}
           type="text"
           inputMode="decimal"
           role="spinbutton"

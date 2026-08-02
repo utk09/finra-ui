@@ -2,8 +2,8 @@ import { ComboBox, type ComboBoxOption, type ComboBoxProps, FINRA_UI_ATTR } from
 import { clsx } from "clsx";
 import { forwardRef, useCallback, useMemo } from "react";
 
+import { componentIds } from "../../componentIds";
 import { parseTenor, STANDARD_TENORS } from "../../utils/tenor";
-import { componentIds } from "../componentIds";
 
 /**
  * Props for the deprecated flat tenor combo box.

@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, Toaster, toast } from "@utk09/finra-ui";
 import { expect, userEvent, within } from "storybook/test";
 
+import { darkModeOpen } from "./_shared";
+
 const POSITIONS = [
   "top-left",
   "top-center",
@@ -25,8 +27,8 @@ const meta: Meta<typeof Toaster> = {
       table: { defaultValue: { summary: "bottom-right" } },
     },
     label: { control: "text", table: { defaultValue: { summary: "Notifications" } } },
-    className: { table: { disable: true } },
-    renderToast: { table: { disable: true } },
+    className: { control: { disable: true } },
+    renderToast: { control: { disable: true } },
   },
   args: {
     position: "bottom-right",
@@ -152,5 +154,16 @@ export const CustomAppearance: Story = {
         </button>
       </div>
     ),
+  },
+};
+
+/** A toast left on screen in dark mode, so axe audits the portalled notification. */
+export const DarkModeOpen: Story = {
+  ...darkModeOpen,
+  play: async ({ canvasElement }) => {
+    toast.clear();
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Success" }));
+    await within(document.body).findByRole("status");
   },
 };

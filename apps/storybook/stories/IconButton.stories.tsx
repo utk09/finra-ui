@@ -12,6 +12,7 @@ import {
   SearchIcon,
   TrashIcon,
 } from "./_icons";
+import { inDark, Row, Stack, TokenScope } from "./_shared";
 
 const meta: Meta<typeof IconButton> = {
   title: "Components/IconButton",
@@ -235,3 +236,39 @@ export const AllSentiments: Story = {
     </div>
   ),
 };
+
+/**
+ * Restyled by redeclaring the actionable tokens. The `danger` sentiment reads
+ * the status tokens instead, so it is unaffected.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-accent: #7c3aed;
+ *   --finra-actionable-accent-hover: #6d28d9;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: () => (
+    <Stack gap="1.25rem">
+      <Row>
+        <span style={{ minInlineSize: "6rem" }}>Default</span>
+        <IconButton icon={<PlusIcon />} aria-label="Add" />
+        <IconButton icon={<TrashIcon />} aria-label="Delete" sentiment="danger" />
+      </Row>
+      <TokenScope
+        tokens={{
+          "--finra-actionable-accent": "#7c3aed",
+          "--finra-actionable-accent-hover": "#6d28d9",
+          "--finra-actionable-accent-active": "#5b21b6",
+        }}>
+        <span style={{ minInlineSize: "6rem" }}>Overridden</span>
+        <IconButton icon={<PlusIcon />} aria-label="Add branded" />
+        <IconButton icon={<TrashIcon />} aria-label="Delete branded" sentiment="danger" />
+      </TokenScope>
+    </Stack>
+  ),
+};
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

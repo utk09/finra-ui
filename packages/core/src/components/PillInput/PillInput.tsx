@@ -9,10 +9,10 @@ import {
   useState,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
 import type { AriaInvalid } from "../../logic/formField";
 import { mergeRefs } from "../../utils/mergeRefs";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./PillInput.module.scss";
 
 /**
@@ -165,12 +165,20 @@ export const PillInput = forwardRef<HTMLInputElement, PillInputProps>(
         onClick={handleContainerClick}
         onKeyDown={handleContainerKeyDown}>
         {values.map((pill) => (
-          <span key={pill} className={styles.pill}>
-            <span className={styles.pillText}>{pill}</span>
+          <span
+            key={pill}
+            className={styles.pill}
+            {...{ [FINRA_UI_ATTR]: componentIds.pillInputPill }}>
+            <span
+              className={styles.pillText}
+              {...{ [FINRA_UI_ATTR]: componentIds.pillInputPillText }}>
+              {pill}
+            </span>
             {!isDisabled ? (
               <button
                 type="button"
                 className={styles.pillRemove}
+                {...{ [FINRA_UI_ATTR]: componentIds.pillInputPillRemove }}
                 onClick={(e) => {
                   e.stopPropagation();
                   removePill(values.indexOf(pill));
@@ -185,6 +193,7 @@ export const PillInput = forwardRef<HTMLInputElement, PillInputProps>(
         <input
           ref={mergeRefs(forwardedRef, internalRef)}
           className={styles.input}
+          {...{ [FINRA_UI_ATTR]: componentIds.pillInputField }}
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}

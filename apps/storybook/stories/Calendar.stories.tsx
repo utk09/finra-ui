@@ -5,10 +5,16 @@ import {
   CalendarTodayButton,
   DateInput,
 } from "@utk09/finra-ui-finance";
-import type { CalendarFooterApi, DateRange } from "@utk09/finra-ui-finance/unstyled";
+import {
+  CalendarBase,
+  type CalendarFooterApi,
+  type DateRange,
+} from "@utk09/finra-ui-finance/unstyled";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
+
+import { inDark, TokenScope } from "./_shared";
 
 // Footer variants. Storybook Controls can't hold a function, so the select maps
 // a label to a render function via `argTypes.footer.mapping`.
@@ -44,6 +50,9 @@ const meta = {
   component: Calendar,
   parameters: {
     layout: "centered",
+    // `CalendarProps extends CalendarBaseProps`, and docgen does not follow
+    // `extends` across modules. Without this the base's own props are absent.
+    docs: { inheritsFrom: CalendarBase },
   },
   // Day cells follow the APG grid pattern, so the a11y gate applies.
   tags: ["autodocs", "a11y-test"],
@@ -59,18 +68,19 @@ const meta = {
     monthYearDropdowns: { control: "boolean" },
     showWeekNumbers: { control: "boolean" },
     footer: { control: "select", options: Object.keys(footers), mapping: footers },
-    // Not useful as interactive controls.
-    month: { table: { disable: true } },
-    onSelect: { table: { disable: true } },
-    onMonthChange: { table: { disable: true } },
-    disabledDates: { table: { disable: true } },
-    highlightedDates: { table: { disable: true } },
-    today: { table: { disable: true } },
-    classNames: { table: { disable: true } },
-    className: { table: { disable: true } },
-    dataAttributes: { table: { disable: true } },
-    renderNavPrev: { table: { disable: true } },
-    renderNavNext: { table: { disable: true } },
+    // No interactive control, but they stay in the table: a consumer needs to
+    // know they exist.
+    month: { control: { disable: true } },
+    onSelect: { control: { disable: true } },
+    onMonthChange: { control: { disable: true } },
+    disabledDates: { control: { disable: true } },
+    highlightedDates: { control: { disable: true } },
+    today: { control: { disable: true } },
+    classNames: { control: { disable: true } },
+    className: { control: { disable: true } },
+    dataAttributes: { control: { disable: true } },
+    renderNavPrev: { control: { disable: true } },
+    renderNavNext: { control: { disable: true } },
   },
   args: {
     weekStartsOn: 1,
@@ -202,3 +212,30 @@ export const InDateInput: Story = {
     await expect(canvas.getByText(/\w+ \d{4}/)).toBeVisible();
   },
 };
+
+/**
+ * The selected day and the focus ring read the actionable tokens, so a calendar
+ * can be brought into a host application's palette without touching its CSS.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-accent: #0f766e;
+ *   --finra-actionable-accent-subtle: #ccfbf1;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: () => (
+    <TokenScope
+      align="flex-start"
+      tokens={{
+        "--finra-actionable-accent": "#0f766e",
+        "--finra-actionable-accent-subtle": "#ccfbf1",
+      }}>
+      <Calendar mode="single" value={new Date(2026, 7, 12)} onSelect={() => {}} />
+    </TokenScope>
+  ),
+};
+
+/** Dark-mode counterpart of `Playground`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Playground);

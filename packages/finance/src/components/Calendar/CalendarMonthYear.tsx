@@ -1,6 +1,7 @@
-import { Select, SelectContent, SelectTrigger } from "@utk09/finra-ui";
+import { FINRA_UI_ATTR, Select, SelectContent, SelectTrigger } from "@utk09/finra-ui";
 import type { ReactNode } from "react";
 
+import { componentIds } from "../../componentIds";
 import type { CalendarTitleApi } from "../../unstyled/Calendar/Calendar";
 import styles from "./Calendar.module.scss";
 
@@ -31,7 +32,7 @@ export function CalendarMonthYear({ api }: CalendarMonthYearProps): ReactNode {
   const yearOptions = api.years.map((year) => ({ value: String(year), label: String(year) }));
 
   return (
-    <div className={styles.monthYear}>
+    <div className={styles.monthYear} {...{ [FINRA_UI_ATTR]: componentIds.calendarMonthYear }}>
       <Select
         options={monthOptions}
         value={String(api.monthIndex)}

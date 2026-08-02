@@ -1,4 +1,4 @@
-import { useFormField } from "@utk09/finra-ui";
+import { FINRA_UI_ATTR, useFormField } from "@utk09/finra-ui";
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -14,6 +14,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds } from "../../componentIds";
 import {
   displayDecimals,
   type IncrementAction,
@@ -587,6 +588,7 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
         <input
           ref={inputRef}
           className={cn?.input}
+          {...{ [FINRA_UI_ATTR]: componentIds.priceInputField }}
           type="text"
           inputMode="decimal"
           role="spinbutton"
@@ -610,7 +612,10 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
           onKeyDown={handleKeyDown}
         />
         {renderDisplay ? (
-          <span className={cn?.display} aria-hidden="true">
+          <span
+            className={cn?.display}
+            aria-hidden="true"
+            {...{ [FINRA_UI_ATTR]: componentIds.priceInputDisplay }}>
             {renderDisplay(segments, inputText)}
           </span>
         ) : null}

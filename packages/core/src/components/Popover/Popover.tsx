@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import { forwardRef } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import {
   PopoverClose as PopoverCloseBase,
   PopoverContent as PopoverContentBase,
@@ -10,7 +11,6 @@ import {
   PopoverTrigger as PopoverTriggerBase,
   type PopoverTriggerProps,
 } from "../../unstyled/Popover/Popover";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Popover.module.scss";
 
 export type { PopoverProps, PopoverTriggerProps };

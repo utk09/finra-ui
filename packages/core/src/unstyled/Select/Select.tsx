@@ -17,6 +17,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useAnchoredPosition } from "../../hooks/useAnchoredPosition";
 import { useDisclosure } from "../../hooks/useDisclosure";
 import type { Placement } from "../../logic/position";
@@ -413,6 +414,15 @@ SelectValue.displayName = "SelectValue";
  * accessible name of its own.
  */
 export interface SelectContentProps extends HTMLAttributes<HTMLDivElement> {
+  /**
+   * Where the content is portalled. Defaults to `document.body`.
+   *
+   * @remarks
+   * Pass a node you own to bring it back inside your subtree, so a token
+   * override or a scoped rule declared on an ancestor reaches it. The default
+   * escapes ancestor `overflow: hidden`, `z-index` and `transform` contexts.
+   */
+  container?: Element | null;
   /** Render an option's inner content. Defaults to its label. */
   renderOption?: (option: SelectOptionData, index: number) => ReactNode;
 }
@@ -423,7 +433,7 @@ export interface SelectContentProps extends HTMLAttributes<HTMLDivElement> {
  * @see {@link SelectContentProps}
  */
 export const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
-  ({ renderOption, style, ...rest }, ref) => {
+  ({ renderOption, style, container, ...rest }, ref) => {
     const ctx = useSelectContext("Content");
     const { setFloating, x, y } = useAnchoredPosition(ctx.referenceEl, {
       placement: ctx.placement,
@@ -435,7 +445,7 @@ export const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
     const positionStyle: CSSProperties = { position: "absolute", top: y, left: x, ...style };
 
     return (
-      <Portal>
+      <Portal container={container}>
         <DismissableLayer
           ref={mergeRefs(ref, setFloating)}
           role="listbox"
@@ -457,7 +467,7 @@ export const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                 tabIndex={-1}
                 aria-selected={selected}
                 aria-disabled={option.disabled || undefined}
-                data-finra-ui="select-option"
+                {...{ [FINRA_UI_ATTR]: componentIds.selectOption }}
                 data-active={active || undefined}
                 data-selected={selected || undefined}
                 data-disabled={option.disabled || undefined}

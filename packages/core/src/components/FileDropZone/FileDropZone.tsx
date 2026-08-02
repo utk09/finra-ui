@@ -11,10 +11,10 @@ import {
   useState,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
 import type { AriaInvalid } from "../../logic/formField";
 import { mergeRefs } from "../../utils/mergeRefs";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./FileDropZone.module.scss";
 
 /**
@@ -198,9 +198,17 @@ export const FileDropZone = forwardRef<HTMLInputElement, FileDropZoneProps>(
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}>
           {children ?? (
-            <div className={styles.content}>
-              <UploadIcon className={styles.icon} aria-hidden="true" />
-              <span className={styles.text}>Drop files here or click to browse</span>
+            <div
+              className={styles.content}
+              {...{ [FINRA_UI_ATTR]: componentIds.fileDropZoneContent }}>
+              <UploadIcon
+                className={styles.icon}
+                aria-hidden="true"
+                {...{ [FINRA_UI_ATTR]: componentIds.fileDropZoneIcon }}
+              />
+              <span className={styles.text} {...{ [FINRA_UI_ATTR]: componentIds.fileDropZoneText }}>
+                Drop files here or click to browse
+              </span>
             </div>
           )}
         </div>

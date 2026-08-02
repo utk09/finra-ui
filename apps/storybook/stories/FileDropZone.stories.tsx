@@ -3,6 +3,8 @@ import { FileDropZone } from "@utk09/finra-ui";
 import { useState } from "react";
 import { expect, fn, within } from "storybook/test";
 
+import { inDark, Stack, TokenScope } from "./_shared";
+
 const meta: Meta<typeof FileDropZone> = {
   title: "Components/FileDropZone",
   component: FileDropZone,
@@ -146,3 +148,38 @@ export const AllStates: Story = {
     </div>
   ),
 };
+
+/**
+ * The drop zone reads the actionable tokens for its border and its drag-over
+ * state, and `--finra-container-foreground-muted` for the placeholder text.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-emphasis: #0f766e;
+ *   --finra-container-foreground-muted: #0f766e;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: () => (
+    <Stack gap="1.25rem">
+      <div style={{ inlineSize: 360 }}>
+        <FileDropZone aria-label="Default upload" />
+      </div>
+      <TokenScope
+        align="flex-start"
+        tokens={{
+          "--finra-actionable-emphasis": "#0f766e",
+          "--finra-actionable-emphasis-subtle": "#5eead4",
+          "--finra-container-foreground-muted": "#0f766e",
+        }}>
+        <div style={{ inlineSize: 360 }}>
+          <FileDropZone aria-label="Overridden upload" />
+        </div>
+      </TokenScope>
+    </Stack>
+  ),
+};
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

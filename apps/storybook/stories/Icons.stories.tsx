@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Badge, Input } from "@utk09/finra-ui";
 import * as FinraIcons from "@utk09/finra-ui-icons/react";
 import type React from "react";
-import type { SVGProps } from "react";
+import { type SVGProps, useMemo, useState } from "react";
 
 type IconComponent = (props: SVGProps<SVGSVGElement>) => React.JSX.Element;
 
@@ -162,14 +163,38 @@ const meta: Meta<IconsStoryArgs> = {
   title: "Icons",
   parameters: {
     layout: "padded",
+    docs: {
+      description: {
+        component: [
+          "127 icons, shipped two ways from one source.",
+          "",
+          "`@utk09/finra-ui-icons` exports each icon as **plain data** - a name, a viewBox and a path list - with no framework attached. `@utk09/finra-ui-icons/react` exports the same set as React components. The data entry is what makes a future Web Component or server-rendered build possible without redrawing anything.",
+          "",
+          "```tsx",
+          'import { SearchIcon, TrendingUpIcon } from "@utk09/finra-ui-icons/react";',
+          "",
+          "<Button startIcon={<SearchIcon />}>Search</Button>;",
+          "```",
+          "",
+          "Every icon takes the full `SVGProps<SVGSVGElement>` surface, so `width`, `height`, `strokeWidth`, `className` and the rest pass straight through. Colour is **not** a prop: icons paint with `currentColor` and inherit from their container, which is what lets one icon work in a primary button, a danger badge and a dark-mode menu without variants.",
+          "",
+          "Icons are decorative by default. Pair one with a visible label, or give the *control* an `aria-label`. `IconButton` requires one.",
+        ].join("\n"),
+      },
+    },
   },
   tags: ["autodocs"],
   argTypes: {
     size: {
       control: { type: "number", min: 12, max: 64, step: 2 },
+      description: "Rendered width and height in px. Maps to the SVG `width`/`height` attributes.",
+      table: { category: "Gallery controls", defaultValue: { summary: "24" } },
     },
     strokeWidth: {
       control: { type: "number", min: 1, max: 3, step: 0.25 },
+      description:
+        "Stroke weight. The set is drawn on a 24px grid at 1.5, so other sizes may want a nudge.",
+      table: { category: "Gallery controls", defaultValue: { summary: "1.5" } },
     },
   },
   args: {
@@ -181,8 +206,70 @@ const meta: Meta<IconsStoryArgs> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Render Helper for Icon Cards
-function renderIconGrid(names: string[], size: number, strokeWidth: number) {
+/**
+ * One icon tile.
+ *
+ * A real `<button>` rather than a styled div: the tile is clickable (it copies
+ * the JSX import) so it has to be reachable by keyboard and announced as an
+ * action. Colours come from tokens only - an earlier version hardcoded a white
+ * background against `currentColor` icons, which rendered the entire gallery
+ * white-on-white in dark mode.
+ */
+function IconTile({
+  name,
+  size,
+  strokeWidth,
+}: {
+  name: string;
+  size: number;
+  strokeWidth: number;
+}) {
+  const [copied, setCopied] = useState(false);
+  const Icon = iconMap.get(name);
+  if (!Icon) return null;
+
+  const copy = () => {
+    void navigator.clipboard?.writeText(`<${name} />`);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1200);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      title={`Copy <${name} />`}
+      style={{
+        border: "1px solid var(--finra-container-border)",
+        borderRadius: "0.5rem",
+        padding: "0.75rem",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "0.5rem",
+        textAlign: "center",
+        background: "var(--finra-container-background)",
+        color: "var(--finra-container-foreground)",
+        font: "inherit",
+        cursor: "pointer",
+      }}>
+      <Icon width={size} height={size} strokeWidth={strokeWidth} aria-hidden="true" />
+      <span style={{ fontSize: "0.75rem", lineHeight: 1.3, wordBreak: "break-word" }}>
+        {copied ? "Copied" : name}
+      </span>
+    </button>
+  );
+}
+
+function IconGrid({
+  names,
+  size,
+  strokeWidth,
+}: {
+  names: string[];
+  size: number;
+  strokeWidth: number;
+}) {
   return (
     <div
       style={{
@@ -190,64 +277,71 @@ function renderIconGrid(names: string[], size: number, strokeWidth: number) {
         gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
         gap: "0.75rem",
       }}>
-      {names.map((name) => {
-        const Icon = iconMap.get(name);
-        if (!Icon) return null;
+      {names.map((name) => (
+        <IconTile key={name} name={name} size={size} strokeWidth={strokeWidth} />
+      ))}
+    </div>
+  );
+}
 
-        return (
-          <div
-            key={name}
-            style={{
-              border: "1px solid #E2E8F0",
-              borderRadius: "0.5rem",
-              padding: "0.75rem",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "0.5rem",
-              textAlign: "center",
-              background: "#FFFFFF",
-            }}>
-            <Icon width={size} height={size} strokeWidth={strokeWidth} aria-hidden="true" />
-            <span style={{ fontSize: "0.75rem", lineHeight: 1.3 }}>{name}</span>
-          </div>
-        );
-      })}
+function SearchableGallery({ size, strokeWidth }: IconsStoryArgs) {
+  const [query, setQuery] = useState("");
+
+  const matches = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return iconEntries.map(([name]) => name);
+    return iconEntries.filter(([name]) => name.toLowerCase().includes(q)).map(([name]) => name);
+  }, [query]);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+        <Input
+          aria-label="Filter icons by name"
+          placeholder="Filter icons, e.g. chart"
+          value={query}
+          clearable
+          onClear={() => setQuery("")}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <Badge variant="secondary">
+          {matches.length} of {iconEntries.length}
+        </Badge>
+      </div>
+      {matches.length > 0 ? (
+        <IconGrid names={matches} size={size} strokeWidth={strokeWidth} />
+      ) : (
+        <p style={{ color: "var(--finra-container-foreground)" }}>
+          No icon name contains "{query}".
+        </p>
+      )}
     </div>
   );
 }
 
 export const AllIcons: Story = {
-  render: ({ size, strokeWidth }) => (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-        gap: "0.75rem",
-      }}>
-      {iconEntries.map(([name, Icon]) => (
-        <div
-          key={name}
-          style={{
-            border: "1px solid #E2E8F0",
-            borderRadius: "0.5rem",
-            padding: "0.75rem",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "0.5rem",
-            textAlign: "center",
-            background: "#FFFFFF",
-          }}>
-          <Icon width={size} height={size} strokeWidth={strokeWidth} aria-hidden="true" />
-          <span style={{ fontSize: "0.75rem", lineHeight: 1.3 }}>{name}</span>
-        </div>
-      ))}
-    </div>
-  ),
+  name: "All icons",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "The complete set, alphabetically. Filter by name, and click any tile to copy its JSX to the clipboard. Use the `size` and `strokeWidth` controls to check a weight before committing to it.",
+      },
+    },
+  },
+  render: ({ size, strokeWidth }) => <SearchableGallery size={size} strokeWidth={strokeWidth} />,
 };
 
 export const CategoryIcons: Story = {
+  name: "By category",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "The same 127 icons grouped by what they are for. Useful when you know the job but not the name. Every icon appears in exactly one group, so the counts sum to the full set.",
+      },
+    },
+  },
   render: ({ size, strokeWidth }) => (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
       {Object.entries(categories).map(([categoryName, iconNames]) => (
@@ -258,25 +352,21 @@ export const CategoryIcons: Story = {
               alignItems: "center",
               gap: "0.5rem",
               marginBottom: "1rem",
-              borderBottom: "2px solid #E2E8F0",
+              borderBottom: "2px solid var(--finra-container-border)",
               paddingBottom: "0.5rem",
             }}>
-            <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 600, color: "#0F172A" }}>
+            <h3
+              style={{
+                margin: 0,
+                fontSize: "1.1rem",
+                fontWeight: 600,
+                color: "var(--finra-container-foreground)",
+              }}>
               {categoryName}
             </h3>
-            <span
-              style={{
-                fontSize: "0.75rem",
-                background: "#F1F5F9",
-                color: "#475569",
-                padding: "0.15rem 0.5rem",
-                borderRadius: "1rem",
-                fontWeight: 500,
-              }}>
-              {iconNames.length}
-            </span>
+            <Badge variant="secondary">{iconNames.length}</Badge>
           </div>
-          {renderIconGrid(iconNames, size, strokeWidth)}
+          <IconGrid names={iconNames} size={size} strokeWidth={strokeWidth} />
         </section>
       ))}
     </div>

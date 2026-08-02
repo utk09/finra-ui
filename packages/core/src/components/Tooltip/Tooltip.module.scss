@@ -1,5 +1,5 @@
 .tooltip {
-  z-index: var(--finra-z-overlay, 1000);
+  z-index: var(--finra-z-overlay);
   max-inline-size: 18rem;
   padding: var(--finra-spacing-1) var(--finra-spacing-2);
   font-size: var(--finra-text-sm);

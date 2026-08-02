@@ -5,9 +5,12 @@ import {
   DateTenorPicker,
   type DateTenorValue,
 } from "@utk09/finra-ui-finance";
+import { DateTenorPickerBase } from "@utk09/finra-ui-finance/unstyled";
 import { formatDate, parseDateTenor } from "@utk09/finra-ui-finance/utils";
 import { useEffect, useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
+
+import { inDark, TokenScope } from "./_shared";
 
 // Set to the real current date so tenors resolve to sensible forward dates (4M → +4 months).
 const REF = new Date(2026, 6, 18);
@@ -17,6 +20,23 @@ const meta: Meta<typeof DateTenorPicker> = {
   component: DateTenorPicker,
   parameters: {
     layout: "centered",
+    // Docgen does not follow `extends` across modules, so without this the
+    // props the base declares are missing from the table.
+    docs: {
+      inheritsFrom: DateTenorPickerBase,
+      // Mirrors the `Omit` on the styled props: these are the styled layer's
+      // own injection points, not consumer API.
+      inheritedOmit: [
+        "classNames",
+        "dataAttributes",
+        "renderCalendarIcon",
+        "renderIndicator",
+        "renderCalendarNavPrev",
+        "renderCalendarNavNext",
+        "renderModeIndicator",
+        "renderBrokenIndicator",
+      ],
+    },
   },
   // The Calendar popup meets the APG grid pattern, so the a11y gate applies.
   tags: ["autodocs", "a11y-test"],
@@ -244,3 +264,34 @@ export const WithResolvedDate: Story = {
     },
   },
 };
+
+/**
+ * The field, the popup and the calendar inside it all read the same tokens, so
+ * one override on an ancestor retints the whole control.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-accent: #0f766e;
+ *   --finra-actionable-accent-subtle: #ccfbf1;
+ *   --finra-actionable-emphasis: #14b8a6;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: (args) => (
+    <TokenScope
+      align="flex-start"
+      tokens={{
+        "--finra-actionable-accent": "#0f766e",
+        "--finra-actionable-accent-subtle": "#ccfbf1",
+        "--finra-actionable-emphasis": "#14b8a6",
+      }}>
+      <div style={{ minInlineSize: 360 }}>
+        <DateTenorPicker {...args} />
+      </div>
+    </TokenScope>
+  ),
+};
+
+/** Dark-mode counterpart of `Empty`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Empty);

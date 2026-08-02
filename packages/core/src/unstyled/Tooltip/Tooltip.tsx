@@ -238,6 +238,15 @@ TooltipTrigger.displayName = "TooltipTrigger";
  * here is unreachable, because moving toward it dismisses the tooltip.
  */
 export interface TooltipContentProps extends HTMLAttributes<HTMLDivElement> {
+  /**
+   * Where the content is portalled. Defaults to `document.body`.
+   *
+   * @remarks
+   * Pass a node you own to bring it back inside your subtree, so a token
+   * override or a scoped rule declared on an ancestor reaches it. The default
+   * escapes ancestor `overflow: hidden`, `z-index` and `transform` contexts.
+   */
+  container?: Element | null;
   /** Bubble contents. Plain text or simple inline markup - never controls. */
   children?: ReactNode;
   /** Gap between the trigger and the tooltip, in px. Default 6. */
@@ -250,7 +259,7 @@ export interface TooltipContentProps extends HTMLAttributes<HTMLDivElement> {
  * @see {@link TooltipContentProps}
  */
 export const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(
-  ({ children, offset = 6, style, ...rest }, ref) => {
+  ({ children, offset = 6, style, container, ...rest }, ref) => {
     const ctx = useTooltipContext("Content");
     const { setFloating, x, y } = useAnchoredPosition(ctx.referenceEl, {
       placement: ctx.placement,
@@ -262,7 +271,7 @@ export const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(
     const positionStyle: CSSProperties = { position: "absolute", top: y, left: x, ...style };
 
     return (
-      <Portal>
+      <Portal container={container}>
         <div
           ref={mergeRefs(ref, setFloating)}
           role="tooltip"

@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ComboBox, type ComboBoxOption } from "@utk09/finra-ui";
+import { ComboBoxBase } from "@utk09/finra-ui/unstyled";
 import { useCallback, useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+
+import { inDark } from "./_shared";
 
 const fruitOptions: ComboBoxOption[] = [
   { value: "apple", label: "Apple" },
@@ -32,6 +35,9 @@ const meta: Meta<typeof ComboBox> = {
   component: ComboBox,
   parameters: {
     layout: "centered",
+    // Docgen does not follow `extends` across modules, so without this the
+    // props the base declares are missing from the table.
+    docs: { inheritsFrom: ComboBoxBase },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -429,3 +435,74 @@ export const AllStates: Story = {
     </div>
   ),
 };
+
+/**
+ * Disabled, in dark mode.
+ *
+ * The disabled surface used to come from the neutral scale, which is
+ * mode-invariant, so it stayed near-white while the text took the dark-mode
+ * foreground. This story is the regression guard for that.
+ */
+export const DarkModeDisabled: Story = inDark(Disabled);
+
+/**
+ * Everything here is scoped to one wrapper, including the popup.
+ *
+ * The listbox is portalled to `document.body` by default, so nothing in your
+ * tree is its ancestor and a token set there cannot reach it. Pass `container`
+ * to portal it into a node you own, and the override applies to the whole
+ * control.
+ *
+ * ```tsx
+ * const [scope, setScope] = useState<HTMLDivElement | null>(null);
+ *
+ * <div ref={setScope} className="brand-region">
+ *   <ComboBox container={scope} ... />
+ * </div>
+ * ```
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-accent: #7c3aed;
+ *   --finra-actionable-accent-subtle: #ede9fe;
+ *   --finra-actionable-emphasis: #8b5cf6;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: function Render() {
+    const [scope, setScope] = useState<HTMLDivElement | null>(null);
+    return (
+      <div
+        ref={setScope}
+        style={
+          {
+            "--finra-actionable-accent": "#7c3aed",
+            "--finra-actionable-accent-subtle": "#ede9fe",
+            "--finra-actionable-emphasis": "#8b5cf6",
+          } as React.CSSProperties
+        }>
+        <div style={{ inlineSize: 260 }}>
+          <ComboBox
+            options={fruitOptions}
+            value="cherry"
+            placeholder="Select a fruit..."
+            container={scope}
+          />
+        </div>
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    // Open it, so the popup is on screen and visibly inside the scope.
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("combobox"));
+    await canvas.findByRole("listbox");
+  },
+};
+
+/** The listbox left open in dark mode, so axe audits the portalled options. */
+export const DarkModeOpen: Story = inDark(
+  Default,
+  "The listbox left open in dark mode. The options are portalled to `<body>`, so a closed-trigger story tells the accessibility check nothing about them.",
+);

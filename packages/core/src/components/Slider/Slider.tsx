@@ -1,8 +1,8 @@
 import { clsx } from "clsx";
 import { forwardRef } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { SliderBase, type SliderBaseProps } from "../../unstyled/Slider/Slider";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Slider.module.scss";
 
 /**
@@ -45,12 +45,21 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
         className={clsx(styles.slider, disabled && styles.disabled, className)}>
         {label || showValue ? (
           <span className={styles.header} {...{ [FINRA_UI_ATTR]: componentIds.sliderHeader }}>
-            {label ? <span className={styles.label}>{label}</span> : null}
-            {showValue ? <span className={styles.value}>{displayValue}</span> : null}
+            {label ? (
+              <span className={styles.label} {...{ [FINRA_UI_ATTR]: componentIds.sliderLabel }}>
+                {label}
+              </span>
+            ) : null}
+            {showValue ? (
+              <span className={styles.value} {...{ [FINRA_UI_ATTR]: componentIds.sliderValue }}>
+                {displayValue}
+              </span>
+            ) : null}
           </span>
         ) : null}
         <SliderBase
           ref={ref}
+          {...{ [FINRA_UI_ATTR]: componentIds.sliderInput }}
           className={styles.input}
           disabled={disabled}
           value={value}

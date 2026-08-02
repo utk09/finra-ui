@@ -1,5 +1,6 @@
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useStore } from "../../hooks/useStore";
 import { type ToastData, toastController } from "../../logic/toast";
 import { Portal } from "../Portal/Portal";
@@ -63,21 +64,23 @@ export const ToastItem = forwardRef<HTMLDivElement, ToastItemProps>(
       // biome-ignore lint/a11y/noStaticElementInteractions: role is set conditionally, see above
       <div
         ref={ref}
-        data-finra-ui="toast"
+        {...{ [FINRA_UI_ATTR]: componentIds.toast }}
         data-sentiment={toast.sentiment}
         role={assertive ? "alert" : "status"}
         aria-live={assertive ? "assertive" : "polite"}
         onMouseEnter={controls.pause}
         onMouseLeave={controls.resume}
         {...rest}>
-        {toast.title ? <div data-finra-ui="toast-title">{toast.title}</div> : null}
+        {toast.title ? (
+          <div {...{ [FINRA_UI_ATTR]: componentIds.toastTitle }}>{toast.title}</div>
+        ) : null}
         {toast.description ? (
-          <div data-finra-ui="toast-description">{toast.description}</div>
+          <div {...{ [FINRA_UI_ATTR]: componentIds.toastDescription }}>{toast.description}</div>
         ) : null}
         {toast.action ? (
           <button
             type="button"
-            data-finra-ui="toast-action"
+            {...{ [FINRA_UI_ATTR]: componentIds.toastAction }}
             onClick={() => {
               toast.action?.onClick();
               controls.dismiss();
@@ -87,7 +90,7 @@ export const ToastItem = forwardRef<HTMLDivElement, ToastItemProps>(
         ) : null}
         <button
           type="button"
-          data-finra-ui="toast-close"
+          {...{ [FINRA_UI_ATTR]: componentIds.toastClose }}
           aria-label="Dismiss notification"
           onClick={controls.dismiss}>
           {"×"}
@@ -118,6 +121,14 @@ ToastItem.displayName = "ToastItem";
  * ```
  */
 export interface ToasterProps {
+  /**
+   * Where the toast region is portalled. Defaults to `document.body`.
+   *
+   * @remarks
+   * Unlike the popup components, this places the whole region rather than one
+   * overlay. Pass a node you own to keep toasts inside a themed subtree.
+   */
+  container?: Element | null;
   /** Corner to stack toasts in. Default "bottom-right". */
   position?: ToastPosition;
   /** Accessible name for the toast region. Default "Notifications". */
@@ -137,13 +148,14 @@ export function Toaster({
   label = "Notifications",
   className,
   renderToast,
+  container,
 }: ToasterProps): ReactNode {
   const toasts = useStore(toastController.store, (state) => state.toasts);
 
   return (
-    <Portal>
+    <Portal container={container}>
       <div
-        data-finra-ui="toast-region"
+        {...{ [FINRA_UI_ATTR]: componentIds.toastRegion }}
         data-position={position}
         role="region"
         aria-label={label}

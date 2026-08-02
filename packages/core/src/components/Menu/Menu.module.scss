@@ -1,12 +1,12 @@
 .panel {
-  z-index: var(--finra-z-overlay, 1000);
+  z-index: var(--finra-z-overlay);
   display: flex;
   flex-direction: column;
   min-inline-size: 10rem;
-  max-inline-size: min(92vw, 18rem);
+  max-inline-size: min(var(--finra-overlay-max-viewport), 18rem);
   padding: var(--finra-spacing-1);
   background-color: var(--finra-container-background);
-  border: 1px solid var(--finra-container-border);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
   border-radius: var(--finra-radius-md);
   box-shadow: var(--finra-shadow-lg);
   animation: finra-menu-in var(--finra-duration-fast) ease-out;

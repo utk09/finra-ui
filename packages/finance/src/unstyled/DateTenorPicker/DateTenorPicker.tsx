@@ -1,4 +1,5 @@
-import { useClickOutside, useFormField } from "@utk09/finra-ui";
+import { FINRA_UI_ATTR, useClickOutside, useFormField } from "@utk09/finra-ui";
+import { cx } from "@utk09/finra-ui/utils";
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -15,6 +16,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds } from "../../componentIds";
 import type { DateFormat } from "../../utils/dateFormat";
 import { formatDate, validateDate } from "../../utils/dateFormat";
 import type {
@@ -692,12 +694,13 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
     return (
       <div
         ref={containerRef}
-        className={[cn?.root, isOpen && cn?.rootOpen].filter(Boolean).join(" ") || undefined}
+        className={cx(cn?.root, isOpen && cn?.rootOpen)}
         {...dataAttributes}
         {...props}>
         <input
           ref={inputRef}
           className={cn?.input}
+          {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPickerField }}
           type="text"
           role="combobox"
           id={field.id}
@@ -726,6 +729,7 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
           <button
             type="button"
             className={cn?.adornment}
+            {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPickerAdornment }}
             onClick={togglePopup}
             tabIndex={-1}
             aria-label="Toggle date and tenor picker"
@@ -735,32 +739,46 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
         ) : null}
 
         {renderModeIndicator && currentValue ? (
-          <span className={cn?.modeIndicator}>{renderModeIndicator(currentValue.mode)}</span>
+          <span
+            className={cn?.modeIndicator}
+            {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPickerModeIndicator }}>
+            {renderModeIndicator(currentValue.mode)}
+          </span>
         ) : null}
 
         {renderBrokenIndicator && currentValue?.mode === "date" ? (
-          <span className={cn?.brokenIndicator}>
+          <span
+            className={cn?.brokenIndicator}
+            {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPickerBrokenIndicator }}>
             {renderBrokenIndicator(currentValue.standardTenor == null)}
           </span>
         ) : null}
 
         {showResolvedDate && currentValue?.date ? (
-          <span className={cn?.resolvedDate}>{formatResolved(currentValue.date)}</span>
+          <span
+            className={cn?.resolvedDate}
+            {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPickerResolvedDate }}>
+            {formatResolved(currentValue.date)}
+          </span>
         ) : null}
 
         {renderIndicator ? (
           <span
-            className={
-              [cn?.indicator, isOpen && cn?.indicatorOpen].filter(Boolean).join(" ") || undefined
-            }
-            aria-hidden="true">
+            className={cx(cn?.indicator, isOpen && cn?.indicatorOpen)}
+            aria-hidden="true"
+            {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPickerIndicator }}>
             {renderIndicator(isOpen)}
           </span>
         ) : null}
 
         {isOpen ? (
-          <div className={cn?.popup} id={popupId}>
-            <div className={cn?.calendarSection}>
+          <div
+            className={cn?.popup}
+            {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPickerPopup }}
+            id={popupId}>
+            <div
+              className={cn?.calendarSection}
+              {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPickerCalendarSection }}>
               <CalendarBase
                 value={calendarValue}
                 onSelect={handleCalendarSelect}
@@ -780,13 +798,19 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
               className={cn?.tenorSection}
               role="listbox"
               id={listboxId}
-              aria-label={tenorSectionTitle}>
+              aria-label={tenorSectionTitle}
+              {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPickerTenorSection }}>
               {tenorSectionTitle ? (
-                <div className={cn?.tenorTitle} aria-hidden="true">
+                <div
+                  className={cn?.tenorTitle}
+                  aria-hidden="true"
+                  {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPickerTenorTitle }}>
                   {tenorSectionTitle}
                 </div>
               ) : null}
-              <div className={cn?.tenorGrid}>
+              <div
+                className={cn?.tenorGrid}
+                {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPickerTenorGrid }}>
                 {tenorMeta.map((meta, index) => {
                   const isSelected = meta.tenor === currentValue?.tenor;
                   return (
@@ -795,6 +819,7 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
                       type="button"
                       role="option"
                       id={optionId(index)}
+                      {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPickerTenor }}
                       // The roving highlight is carried by aria-activedescendant
                       // on the input; aria-selected is reserved for the committed
                       // value, as in every other picker here. Reusing it for the
@@ -803,16 +828,12 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
                       aria-selected={isSelected}
                       aria-disabled={meta.disabled || undefined}
                       disabled={meta.disabled}
-                      className={
-                        [
-                          cn?.tenor,
-                          index === highlight && cn?.tenorHighlighted,
-                          isSelected && cn?.tenorSelected,
-                          meta.disabled && cn?.tenorDisabled,
-                        ]
-                          .filter(Boolean)
-                          .join(" ") || undefined
-                      }
+                      className={cx(
+                        cn?.tenor,
+                        index === highlight && cn?.tenorHighlighted,
+                        isSelected && cn?.tenorSelected,
+                        meta.disabled && cn?.tenorDisabled,
+                      )}
                       onMouseDown={(event) => {
                         event.preventDefault();
                         selectTenor(index);

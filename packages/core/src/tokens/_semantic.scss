@@ -24,10 +24,42 @@
   // foreground - text/icon on a filled actionable surface
   --finra-actionable-foreground: var(--finra-color-white);
 
-  // container - surfaces, foreground text, borders (already theme-aware)
+  // container - surfaces, foreground text, borders.
+  // These alias raw tokens that themselves flip per theme, but that is NOT
+  // enough on its own: see the note in the dark block below, which must repeat
+  // every one of these three.
   --finra-container-background: var(--finra-color-background);
   --finra-container-foreground: var(--finra-color-foreground);
   --finra-container-border: var(--finra-color-border);
+
+  // container-disabled - the inert surface of a control that cannot be used.
+  //
+  // These exist because the neutral scale is mode-invariant: a component that
+  // reached for `neutral-50` directly got a near-white surface in dark mode and
+  // painted the dark-mode foreground on top of it. WCAG exempts inactive
+  // controls from the contrast minimum, which is not a licence to make them
+  // unreadable - a field nobody can read is a field nobody can understand.
+  // container-foreground-muted - secondary text and non-essential glyphs:
+  // placeholders, helper text, dropdown indicators, clear buttons, weekday
+  // headers, empty and loading rows.
+  //
+  // It has to flip, and the raw scale cannot. Picked against both surfaces
+  // rather than one: neutral-500 is 4.77:1 on white, neutral-400 is 6.80:1 on
+  // the dark background, so both clear the 4.5:1 minimum for text. Reaching
+  // straight for neutral-400 here, as several components used to, is 2.54:1 on
+  // white - placeholders that fail AA in the default theme.
+  --finra-container-foreground-muted: var(--finra-color-neutral-500);
+
+  --finra-container-disabled-background: var(--finra-color-neutral-50);
+  --finra-container-disabled-foreground: var(--finra-color-neutral-500);
+  --finra-container-disabled-border: var(--finra-color-neutral-200);
+
+  // container-scrim - the wash behind a modal surface. Stated as its own
+  // characteristic because how far an application dims the page behind a dialog
+  // is a brand decision, and it is the one colour a component cannot express
+  // through the palette: it is deliberately outside the theme so that it reads
+  // the same over any content.
+  --finra-container-scrim: rgb(0 0 0 / 50%);
 
   // status - danger / success / warning / info.
   // accent scale is mode-invariant; only the subtle background flips.
@@ -69,6 +101,36 @@
   --finra-actionable-emphasis-subtle: var(--finra-color-primary-500);
   --finra-actionable-accent-subtle-strong: var(--finra-color-primary-700);
   --finra-actionable-foreground: var(--finra-color-neutral-900);
+
+  // container - these MUST be repeated here even though _color.scss already
+  // flips the raw tokens they point at.
+  //
+  // A custom property's computed value has its var() references substituted at
+  // the element carrying the declaration. Declared only on :root, these three
+  // resolve there against the light palette and then inherit that literal
+  // everywhere - including into this subtree, where the raw tokens are dark but
+  // nothing re-runs the substitution. Repeating the alias inside the theme
+  // block re-resolves it against the dark values.
+  //
+  // The visible symptom was near-black text on the near-black overlay surfaces
+  // (Dialog, Menu, Popover, Select, Tabs, Toast, Tooltip, CurrencyPairPicker),
+  // which was invisible rather than merely low-contrast. Any new alias added to
+  // the container group has to be repeated here too.
+  --finra-container-background: var(--finra-color-background);
+  --finra-container-foreground: var(--finra-color-foreground);
+  --finra-container-border: var(--finra-color-border);
+
+  // container-disabled - step *up* the neutral scale here, not down. The dark
+  // page sits at neutral-900, so a recessed surface has to be lighter than its
+  // surroundings, the mirror of neutral-50 against white.
+  // Foreground is neutral-400 on neutral-800, about 5.5:1.
+  // Lighter, not darker: 6.80:1 on the dark background, where the light-mode
+  // neutral-500 would be only 3.67:1.
+  --finra-container-foreground-muted: var(--finra-color-neutral-400);
+
+  --finra-container-disabled-background: var(--finra-color-neutral-800);
+  --finra-container-disabled-foreground: var(--finra-color-neutral-400);
+  --finra-container-disabled-border: var(--finra-color-neutral-700);
 
   // status subtle backgrounds - the only status tokens that flip
   --finra-status-danger-subtle: #450a0a;

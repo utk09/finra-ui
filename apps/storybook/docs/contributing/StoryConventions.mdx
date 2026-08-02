@@ -1,0 +1,121 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+
+import { Note } from "../_components";
+import { DocsLink } from "../DocsLink";
+
+<Meta title="Contributing/Story Conventions" />
+
+# Story Conventions
+
+For anyone adding a story file. Three things here are easy to get wrong, and none of them fails loudly.
+
+## Shape of a file
+
+One file per component in `stories/`, titled by area: `Components/*`, `Finance/*`, `Foundations/*`, `Unstyled/*`.
+
+```tsx
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Button } from "@utk09/finra-ui";
+
+import { forwardsTo, inDark } from "./_shared";
+
+const meta: Meta<typeof Button> = {
+  title: "Components/Button",
+  component: Button,
+  parameters: {
+    docs: { description: { component: forwardsTo("button", "button element") } },
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Primary: Story = { args: { children: "Send", variant: "primary" } };
+export const DarkMode: Story = inDark(Primary);
+```
+
+`autodocs` and `a11y-test` are set project-wide in `preview.tsx`. Do not repeat them per file.
+
+Shared helpers live in `stories/_shared.tsx`: `Stack`, `Row`, `LabelledRow`, `inDark`, `forwardsTo`, and the reusable `argTypes` fragments.
+
+## 1. The theme is a parameter, not a global
+
+<Unstyled>
+  <Note kind="warning" title="globals do not reach the test runner">
+    The Vitest browser runner ignores a story's `globals`. A story setting only `globals: { theme: "dark" }` renders dark in this UI and **light** under test, so the accessibility check audits the wrong theme and passes.
+  </Note>
+</Unstyled>
+
+Use `inDark(base)`. It merges rather than replaces, so the variant keeps the base story's `layout`, `args`, `render` and `play`, and changes only the theme.
+
+```tsx
+export const DarkMode: Story = inDark(Primary);
+```
+
+## 2. axe only sees what is in the DOM
+
+The check runs as an `afterEach`, against the DOM as `play` left it. A story that never opens its menu, listbox or dialog means axe looked at a closed button. Portalled content is never inspected.
+
+Overlay components need a dark story whose `play` opens the surface and leaves it open:
+
+```tsx
+export const DarkModeOpen: Story = inDark({
+  ...Default,
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole("combobox"));
+    await screen.findByRole("listbox");
+  },
+});
+```
+
+Every overlay has one. A new overlay needs one too.
+
+## 3. Prop tables do not follow `extends`
+
+Docgen is `react-docgen`, pinned in `main.ts`. `react-docgen-typescript` cannot be used: this repo is on TypeScript 7, which has no JavaScript Compiler API, so that plugin throws at startup.
+
+`react-docgen` reads a component's own interface and JSDoc. It does not follow `extends` into another module.
+
+<Unstyled>
+  <Note kind="warning" title="An imported prop will not appear">
+    A prop reaching the component through cva's `VariantProps<typeof x>`, or any other imported type, is absent from the table. Declare it on the component's own interface with JSDoc. That also improves the published `.d.ts` and editor hover.
+  </Note>
+</Unstyled>
+
+Inherited DOM attributes stay out of the tables on purpose. Say where they go with `forwardsTo()`:
+
+```tsx
+parameters: {
+  docs: { description: { component: forwardsTo("input", "input element") } },
+}
+```
+
+## Writing
+
+- Set a component description on every story file. Say what it is for and what is not obvious, not what the name already says.
+- Per-story descriptions go on `parameters.docs.description.story`. Use them where a story demonstrates a specific rule.
+- Do not narrate the library's bug history. State the rule and what happens if you break it.
+- No em dashes.
+
+## Styling in stories
+
+Use tokens, not hex. A story with `#666` ignores the theme and will be wrong the moment someone flips the toolbar.
+
+```tsx
+<div style={{ color: "var(--finra-container-foreground-muted)" }} />
+```
+
+The unstyled demos are the exception: consumer-supplied styling is the point there, so their literal colours stay.
+
+## Before you push
+
+- `pnpm test` runs every story, `play` functions included, in headless Chromium. `a11y.test` is `"error"`, so axe violations fail the run.
+- `pnpm lint` covers both tools: Biome for `.tsx`, Prettier for `.mdx` and `.scss`. Prose is `proseWrap: "never"`, so write one long line per paragraph.
+- Open the page in Storybook and click it. Links and tables have both shipped broken before.
+
+Full setup instructions are in{" "}
+
+<DocsLink href="https://github.com/utk09/finra-ui/blob/main/CONTRIBUTING.md">
+  CONTRIBUTING.md
+</DocsLink>
+.

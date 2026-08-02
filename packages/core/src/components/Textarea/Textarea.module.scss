@@ -22,7 +22,7 @@
   &.disabled {
     opacity: var(--finra-opacity-disabled);
     cursor: var(--finra-cursor-disabled);
-    background-color: var(--finra-color-neutral-50);
+    background-color: var(--finra-container-disabled-background);
   }
 
   &.fullWidth {
@@ -80,7 +80,7 @@
   }
 
   &::placeholder {
-    color: var(--finra-color-neutral-400);
+    color: var(--finra-container-foreground-muted);
   }
 
   &:disabled {
@@ -95,7 +95,7 @@
   padding-inline: var(--finra-density-input-padding-x);
   padding-block-end: var(--finra-density-gap);
   font-size: var(--finra-text-xs);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   font-variant-numeric: var(--finra-font-tabular-nums);
 }
 

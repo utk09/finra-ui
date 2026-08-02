@@ -28,7 +28,7 @@
   &.disabled {
     opacity: var(--finra-opacity-disabled);
     cursor: var(--finra-cursor-disabled);
-    background-color: var(--finra-color-neutral-50);
+    background-color: var(--finra-container-disabled-background);
   }
 
   //  Full width
@@ -93,7 +93,7 @@
   }
 
   &::placeholder {
-    color: var(--finra-color-neutral-400);
+    color: var(--finra-container-foreground-muted);
   }
 
   &:disabled {
@@ -109,7 +109,7 @@
   padding: 0;
   border: none;
   background: transparent;
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   cursor: var(--finra-cursor-pointer);
   flex-shrink: 0;
   border-radius: var(--finra-radius-sm);
@@ -124,8 +124,8 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--finra-actionable-emphasis);
-    outline-offset: -2px;
+    outline: var(--finra-focus-width) solid var(--finra-focus-color);
+    outline-offset: calc(var(--finra-focus-offset) * -1);
   }
 
   &:disabled {
@@ -145,7 +145,7 @@
 //   [data-finra-ui="date-input"] .popup { inline-size: 100%; min-inline-size: 0; }
 .popup {
   position: absolute;
-  z-index: 50;
+  z-index: var(--finra-z-popup);
   inset-inline-start: 0;
   inset-block-start: 100%;
   min-inline-size: max(100%, 18rem);

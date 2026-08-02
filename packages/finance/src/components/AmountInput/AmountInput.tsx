@@ -1,15 +1,15 @@
-import { FINRA_UI_ATTR, type ValidationStatus } from "@utk09/finra-ui";
-import { cva, type VariantProps } from "class-variance-authority";
+import { FINRA_UI_ATTR, type ValidationStatus, type Variant } from "@utk09/finra-ui";
+import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import { forwardRef, useMemo } from "react";
 
+import { componentIds } from "../../componentIds";
 import type {
   AmountInputBaseProps,
   AmountInputClassNames,
   AmountInputHandle,
 } from "../../unstyled/AmountInput/AmountInput";
 import { AmountInputBase } from "../../unstyled/AmountInput/AmountInput";
-import { componentIds } from "../componentIds";
 import styles from "./AmountInput.module.scss";
 
 const rootVariants = cva(styles.root, {
@@ -52,8 +52,18 @@ const validationClasses: Record<ValidationStatus, string> = {
  * ```
  */
 export interface AmountInputProps
-  extends Omit<AmountInputBaseProps, "classNames" | "dataAttributes">,
-    VariantProps<typeof rootVariants> {
+  extends Omit<AmountInputBaseProps, "classNames" | "dataAttributes"> {
+  /**
+   * Visual emphasis of the field chrome.
+   *
+   * @remarks
+   * Changes the weight of the border and background only. It does not signal
+   * validity - that is `validationStatus`, which is orthogonal and takes over
+   * the border colour when set.
+   *
+   * @defaultValue "primary"
+   */
+  variant?: Variant;
   /** Visual validation status. */
   validationStatus?: ValidationStatus;
   /** Stretch to fill the container width. */

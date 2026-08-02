@@ -17,6 +17,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useAnchoredPosition } from "../../hooks/useAnchoredPosition";
 import { useDisclosure } from "../../hooks/useDisclosure";
 import { menuTypeahead, resolveMenuKey } from "../../logic/menu";
@@ -190,6 +191,7 @@ export const MenuTrigger = forwardRef<HTMLButtonElement, MenuTriggerProps>(
         ref={mergeRefs(ref, ctx.setReferenceEl)}
         {...(asChild ? {} : { type: "button" as const })}
         id={ctx.triggerId}
+        {...{ [FINRA_UI_ATTR]: componentIds.menuTrigger }}
         aria-haspopup="menu"
         aria-expanded={ctx.open}
         aria-controls={ctx.open ? ctx.contentId : undefined}
@@ -234,6 +236,15 @@ MenuTrigger.displayName = "MenuTrigger";
  * so it has no accessible name of its own.
  */
 export interface MenuContentProps extends HTMLAttributes<HTMLDivElement> {
+  /**
+   * Where the content is portalled. Defaults to `document.body`.
+   *
+   * @remarks
+   * Pass a node you own to bring it back inside your subtree, so a token
+   * override or a scoped rule declared on an ancestor reaches it. The default
+   * escapes ancestor `overflow: hidden`, `z-index` and `transform` contexts.
+   */
+  container?: Element | null;
   /** `MenuItem` and `MenuSeparator` children. */
   children?: ReactNode;
 }
@@ -244,7 +255,7 @@ export interface MenuContentProps extends HTMLAttributes<HTMLDivElement> {
  * @see {@link MenuContentProps}
  */
 export const MenuContent = forwardRef<HTMLDivElement, MenuContentProps>(
-  ({ children, style, onKeyDown, ...rest }, ref) => {
+  ({ children, style, onKeyDown, container, ...rest }, ref) => {
     const ctx = useMenuContext("Content");
     const menuRef = useRef<HTMLDivElement>(null);
     const { setFloating, x, y } = useAnchoredPosition(ctx.referenceEl, {
@@ -313,7 +324,7 @@ export const MenuContent = forwardRef<HTMLDivElement, MenuContentProps>(
     };
 
     return (
-      <Portal>
+      <Portal container={container}>
         <DismissableLayer
           ref={mergeRefs(ref, menuRef, setFloating)}
           role="menu"

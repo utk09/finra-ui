@@ -1,0 +1,21 @@
+// Sizes that mean the same thing in more than one component.
+//
+// A measurement used by a single component stays a literal in that component's
+// stylesheet and is reached through its `data-finra-ui` id. These are here
+// because changing one of them should change every place that means it.
+
+:root {
+  // Glyphs drawn inside a control, such as a clear button or a chevron. Sized
+  // against the control rather than the text, so they hold their proportion
+  // when density changes the control height.
+  --finra-icon-size-sm: 0.75rem;
+
+  // How tall a scrolling option list grows before it scrolls. Applies to the
+  // combo box, select, currency pair and tenor lists alike.
+  --finra-popup-max-block-size: 20rem;
+
+  // The ceiling every floating surface keeps against the viewport, so a wide
+  // panel still leaves a margin on a narrow screen. Each surface combines it
+  // with its own preferred width: `min(var(--finra-overlay-max-viewport), 32rem)`.
+  --finra-overlay-max-viewport: 92vw;
+}

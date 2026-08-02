@@ -27,7 +27,7 @@
 
 .value {
   font-variant-numeric: var(--finra-font-tabular-nums);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   font-size: var(--finra-text-xs);
 }
 
@@ -109,11 +109,11 @@
   //  Disabled
   &:disabled {
     &::-webkit-slider-thumb {
-      background-color: var(--finra-color-neutral-400);
+      background-color: var(--finra-container-disabled-foreground);
     }
 
     &::-moz-range-thumb {
-      background-color: var(--finra-color-neutral-400);
+      background-color: var(--finra-container-disabled-foreground);
     }
   }
 }

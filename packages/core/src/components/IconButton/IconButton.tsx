@@ -1,10 +1,10 @@
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import { forwardRef } from "react";
 
-import type { Sentiment } from "../../types/variants";
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
+import type { Sentiment, Variant } from "../../types/variants";
 import { IconButtonBase, type IconButtonBaseProps } from "../../unstyled/IconButton/IconButton";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./IconButton.module.scss";
 
 /**
@@ -49,9 +49,17 @@ const iconButtonVariants = cva(styles.iconButton, {
  * <IconButton icon={<TrashIcon />} aria-label="Delete order" sentiment="danger" />
  * ```
  */
-export interface IconButtonProps
-  extends IconButtonBaseProps,
-    VariantProps<typeof iconButtonVariants> {
+export interface IconButtonProps extends IconButtonBaseProps {
+  /**
+   * Visual emphasis - how loud the button is.
+   *
+   * @remarks
+   * Orthogonal to `sentiment`, which changes hue rather than emphasis. Icon
+   * buttons in a toolbar usually want `tertiary` so the icons carry the weight.
+   *
+   * @defaultValue "primary"
+   */
+  variant?: Variant;
   /** Colour meaning. Orthogonal to `variant`. */
   sentiment?: IconButtonSentiment;
 }

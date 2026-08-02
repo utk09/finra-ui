@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Badge } from "@utk09/finra-ui";
 import { expect, within } from "storybook/test";
 
+import { inDark, Row, Stack, TokenScope } from "./_shared";
+
 const meta: Meta<typeof Badge> = {
   title: "Components/Badge",
   component: Badge,
@@ -186,3 +188,41 @@ export const UseCases: Story = {
     </div>
   ),
 };
+
+/**
+ * Restyling without a class name. The wrapper redeclares two semantic tokens
+ * and every badge inside follows, including the sentiment variants, which read
+ * their own tokens and are unaffected.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-accent: #7c3aed;
+ *   --finra-actionable-accent-subtle: #ede9fe;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: () => (
+    <Stack gap="1.25rem">
+      <Row>
+        <span style={{ minInlineSize: "6rem" }}>Default</span>
+        <Badge>Primary</Badge>
+        <Badge variant="secondary">Secondary</Badge>
+        <Badge sentiment="success">Success</Badge>
+      </Row>
+      <TokenScope
+        tokens={{
+          "--finra-actionable-accent": "#7c3aed",
+          "--finra-actionable-accent-subtle": "#ede9fe",
+        }}>
+        <span style={{ minInlineSize: "6rem" }}>Overridden</span>
+        <Badge>Primary</Badge>
+        <Badge variant="secondary">Secondary</Badge>
+        <Badge sentiment="success">Success</Badge>
+      </TokenScope>
+    </Stack>
+  ),
+};
+
+/** Dark-mode counterpart of `Primary`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Primary);

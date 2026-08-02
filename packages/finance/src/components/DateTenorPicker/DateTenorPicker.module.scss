@@ -66,18 +66,18 @@
   cursor: var(--finra-cursor-disabled);
 
   &.root {
-    background-color: var(--finra-color-neutral-50);
-    border-color: var(--finra-color-neutral-200);
+    background-color: var(--finra-container-disabled-background);
+    border-color: var(--finra-container-disabled-border);
   }
 
   .input {
-    color: var(--finra-color-neutral-300);
+    color: var(--finra-container-disabled-foreground);
     cursor: var(--finra-cursor-disabled);
   }
 
   .calendarButton,
   .indicator {
-    color: var(--finra-color-neutral-200);
+    color: var(--finra-container-disabled-foreground);
   }
 }
 
@@ -97,7 +97,7 @@
   }
 
   &::placeholder {
-    color: var(--finra-color-neutral-400);
+    color: var(--finra-container-foreground-muted);
   }
 }
 
@@ -110,7 +110,7 @@
   padding: 0;
   border: none;
   background: transparent;
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   cursor: var(--finra-cursor-pointer);
   border-radius: var(--finra-radius-sm);
   transition: color var(--finra-duration-fast) ease-in-out;
@@ -139,7 +139,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
   transition: transform var(--finra-duration-fast) ease-in-out;
 
   @media (prefers-reduced-motion: reduce) {
@@ -159,7 +159,7 @@
 //  Popup - calendar + tenor list side by side
 .popup {
   position: absolute;
-  z-index: 50;
+  z-index: var(--finra-z-popup);
   inset-inline-start: 0;
   inset-block-start: 100%;
   display: flex;
@@ -181,7 +181,7 @@
   display: flex;
   flex-direction: column;
   min-inline-size: 6rem;
-  max-block-size: 20rem;
+  max-block-size: var(--finra-popup-max-block-size);
   overflow-y: auto;
   scrollbar-gutter: stable;
   border-inline-start: var(--finra-border-thin) solid var(--finra-color-neutral-100);
@@ -195,9 +195,9 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-xs);
   font-weight: var(--finra-font-semibold);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--finra-tracking-wide);
   background-color: var(--finra-color-background);
   border-block-end: var(--finra-border-thin) solid var(--finra-color-neutral-100);
   user-select: none;
@@ -248,7 +248,7 @@
 
   &.tenorDisabled,
   &:disabled {
-    color: var(--finra-color-neutral-300);
+    color: var(--finra-container-disabled-foreground);
     cursor: var(--finra-cursor-disabled);
   }
 }
@@ -257,7 +257,7 @@
 .resolvedDate {
   flex-shrink: 0;
   font-size: var(--finra-text-xs);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   user-select: none;

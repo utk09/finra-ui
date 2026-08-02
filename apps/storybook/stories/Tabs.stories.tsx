@@ -3,6 +3,8 @@ import { Badge, FormField, Input, Switch, Tab, TabList, TabPanel, Tabs } from "@
 import { useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
 
+import { inDark } from "./_shared";
+
 const meta: Meta<typeof Tabs> = {
   title: "Components/Tabs",
   component: Tabs,
@@ -22,9 +24,9 @@ const meta: Meta<typeof Tabs> = {
       table: { defaultValue: { summary: "automatic" } },
     },
     defaultValue: { control: "text" },
-    value: { table: { disable: true } },
-    onValueChange: { table: { disable: true } },
-    children: { table: { disable: true } },
+    value: { control: { disable: true } },
+    onValueChange: { control: { disable: true } },
+    children: { control: { disable: true } },
   },
   args: {
     orientation: "horizontal",
@@ -157,3 +159,6 @@ export const WithForms: Story = {
     </Tabs>
   ),
 };
+
+/** Dark-mode counterpart of `Playground`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Playground);

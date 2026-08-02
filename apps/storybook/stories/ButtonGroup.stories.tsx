@@ -10,6 +10,7 @@ import {
   PlusIcon,
   TrashIcon,
 } from "./_icons";
+import { inDark, Stack, TokenScope } from "./_shared";
 
 const meta: Meta<typeof ButtonGroup> = {
   title: "Components/ButtonGroup",
@@ -218,3 +219,35 @@ export const WithSentiments: Story = {
     </div>
   ),
 };
+
+/**
+ * The group inherits any token override applied to an ancestor, so a whole
+ * toolbar can be retinted in one declaration.
+ *
+ * ```css
+ * .toolbar {
+ *   --finra-actionable-accent: #0f766e;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: () => (
+    <Stack gap="1.25rem">
+      <ButtonGroup>
+        <Button variant="secondary">Buy</Button>
+        <Button variant="secondary">Sell</Button>
+        <Button variant="secondary">Hold</Button>
+      </ButtonGroup>
+      <TokenScope tokens={{ "--finra-actionable-accent": "#0f766e" }}>
+        <ButtonGroup>
+          <Button>Buy</Button>
+          <Button variant="secondary">Sell</Button>
+          <Button variant="secondary">Hold</Button>
+        </ButtonGroup>
+      </TokenScope>
+    </Stack>
+  ),
+};
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

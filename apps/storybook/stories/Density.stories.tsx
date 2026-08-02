@@ -2,12 +2,26 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button } from "@utk09/finra-ui";
 import { expect, within } from "storybook/test";
 
+import { inDark } from "./_shared";
+
 const meta: Meta = {
-  title: "Foundation/Density",
+  // Plural, matching `storySort` and the links on the landing page. A singular
+  // "Foundation" would sort as its own sidebar group.
+  title: "Foundations/Density",
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  /**
+   * Autodocs is off for this file only.
+   *
+   * `preview.tsx` turns it on project-wide, but `docs/foundations/Density.mdx`
+   * attaches to these stories with `<Meta of={...} />`. Leaving the generated
+   * page enabled as well would put two "Docs" entries under one title, so the
+   * tag is negated rather than the prose page being made standalone - a
+   * standalone page would need its own title, and any title that did not
+   * collide with this one would split density across two sidebar entries.
+   */
+  tags: ["!autodocs"],
 };
 
 export default meta;
@@ -88,3 +102,6 @@ export const WithSentiments: Story = {
     </div>
   ),
 };
+
+/** Dark-mode counterpart of `Comparison`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Comparison);

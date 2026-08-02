@@ -1,5 +1,6 @@
-import { useAnchoredPosition, useFormField, useStore } from "@utk09/finra-ui";
+import { FINRA_UI_ATTR, useAnchoredPosition, useFormField, useStore } from "@utk09/finra-ui";
 import { DismissableLayer, Portal } from "@utk09/finra-ui/unstyled";
+import { cx } from "@utk09/finra-ui/utils";
 import {
   type ChangeEvent,
   type CSSProperties,
@@ -19,6 +20,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds } from "../../componentIds";
 import {
   buildPairSections,
   type CurrencyPairLike,
@@ -427,6 +429,15 @@ export interface CurrencyPairPickerBaseProps<T extends CurrencyPair = CurrencyPa
   //  Style injection
   /** CSS class names injected by the styled layer. */
   classNames?: CurrencyPairPickerClassNames;
+  /**
+   * Where the popup is portalled. Defaults to `document.body`.
+   *
+   * @remarks
+   * Pass a node you own to bring the popup back inside your subtree, so a token
+   * override or a scoped rule declared on an ancestor reaches it. The default
+   * escapes ancestor `overflow: hidden`, `z-index` and `transform` contexts.
+   */
+  container?: Element | null;
   /** data-* attributes injected by the styled layer, applied to the root. */
   dataAttributes?: Record<string, string>;
   /** Applied to the control shell, so a styled layer can address it separately. */
@@ -520,6 +531,7 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
     formatError,
     formatResultCount = defaultFormatResultCount,
     classNames: cn,
+    container,
     dataAttributes,
     controlDataAttributes,
     badgeDataAttributes,
@@ -1119,17 +1131,14 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
         aria-disabled={!selectable || undefined}
         aria-label={nameParts.join(", ")}
         data-highlighted={index === highlight || undefined}
-        className={
-          [
-            cn?.option,
-            index === highlight && cn?.optionHighlighted,
-            selected && cn?.optionSelected,
-            !selectable && cn?.optionDisabled,
-            favourite && cn?.optionFavourite,
-          ]
-            .filter(Boolean)
-            .join(" ") || undefined
-        }
+        {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerOption }}
+        className={cx(
+          cn?.option,
+          index === highlight && cn?.optionHighlighted,
+          selected && cn?.optionSelected,
+          !selectable && cn?.optionDisabled,
+          favourite && cn?.optionFavourite,
+        )}
         // One handler for the whole row. Hit-testing the star here keeps it a
         // plain element - a role="option" may not contain interactive
         // descendants, and a nested button would be unreachable anyway.
@@ -1145,10 +1154,23 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
           renderOption(pair, state)
         ) : (
           <>
-            <span className={cn?.optionSymbol}>{symbol}</span>
-            {pair.displayName ? <span className={cn?.optionName}>{pair.displayName}</span> : null}
+            <span
+              className={cn?.optionSymbol}
+              {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerOptionSymbol }}>
+              {symbol}
+            </span>
+            {pair.displayName ? (
+              <span
+                className={cn?.optionName}
+                {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerOptionName }}>
+                {pair.displayName}
+              </span>
+            ) : null}
             {badges.length ? (
-              <span className={cn?.badges} aria-hidden="true">
+              <span
+                className={cn?.badges}
+                {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerBadges }}
+                aria-hidden="true">
                 {badges.map((badge) => (
                   <span key={badge} className={cn?.badge} {...badgeDataAttributes}>
                     {renderBadge ? renderBadge(badge, pair) : badge}
@@ -1159,12 +1181,9 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
             {showFavourites && renderFavourite ? (
               <span
                 {...{ [FAVOURITE_ATTR]: "" }}
+                {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerFavouriteToggle }}
                 aria-hidden="true"
-                className={
-                  [cn?.favouriteToggle, favourite && cn?.favouriteActive]
-                    .filter(Boolean)
-                    .join(" ") || undefined
-                }>
+                className={cx(cn?.favouriteToggle, favourite && cn?.favouriteActive)}>
                 {renderFavourite(favourite)}
               </span>
             ) : null}
@@ -1175,8 +1194,16 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
   };
 
   const renderSection = (section: PairSectionModel<T>): ReactNode => (
-    <div key={section.id} className={cn?.section} role="group" aria-label={section.label}>
-      <div className={cn?.sectionLabel} aria-hidden="true">
+    <div
+      key={section.id}
+      className={cn?.section}
+      {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerSection }}
+      role="group"
+      aria-label={section.label}>
+      <div
+        className={cn?.sectionLabel}
+        {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerSectionLabel }}
+        aria-hidden="true">
         {section.label}
       </div>
       {section.pairs.map(renderPairOption)}
@@ -1189,14 +1216,12 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
       : null;
 
   return (
-    <div
-      className={[cn?.root, isOpen && cn?.rootOpen].filter(Boolean).join(" ") || undefined}
-      {...dataAttributes}
-      {...rest}>
+    <div className={cx(cn?.root, isOpen && cn?.rootOpen)} {...dataAttributes} {...rest}>
       <div ref={setControlEl} className={cn?.control} {...controlDataAttributes}>
         <input
           ref={inputRef}
           className={cn?.input}
+          {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerInput }}
           type="text"
           // The role belongs on the input, not a wrapper: the combobox has to be
           // the element that takes focus and owns aria-activedescendant.
@@ -1225,9 +1250,8 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
         />
         {renderIndicator ? (
           <span
-            className={
-              [cn?.indicator, isOpen && cn?.indicatorOpen].filter(Boolean).join(" ") || undefined
-            }
+            className={cx(cn?.indicator, isOpen && cn?.indicatorOpen)}
+            {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerIndicator }}
             aria-hidden="true">
             {renderIndicator(isOpen)}
           </span>
@@ -1240,10 +1264,11 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
         inline rendering is clipped.
       */}
       {isOpen ? (
-        <Portal>
+        <Portal container={container}>
           <DismissableLayer
             ref={setFloating}
             className={cn?.listbox}
+            {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerListbox }}
             style={{
               position: "absolute",
               top: y,
@@ -1260,19 +1285,32 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
               role="listbox"
               tabIndex={-1}
               className={cn?.options}
+              {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerOptions }}
               aria-label={ariaLabel}>
               {errorNode ? (
-                <div role="presentation" className={cn?.error} aria-live="polite">
+                <div
+                  role="presentation"
+                  className={cn?.error}
+                  {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerError }}
+                  aria-live="polite">
                   {errorNode}
                 </div>
               ) : flat.length > 0 ? (
                 sections.map(renderSection)
               ) : busy ? (
-                <div role="presentation" className={cn?.loading} aria-live="polite">
+                <div
+                  role="presentation"
+                  className={cn?.loading}
+                  {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerLoading }}
+                  aria-live="polite">
                   {loadingMessage}
                 </div>
               ) : (
-                <div role="presentation" className={cn?.empty} aria-live="polite">
+                <div
+                  role="presentation"
+                  className={cn?.empty}
+                  {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerEmpty }}
+                  aria-live="polite">
                   {noOptionsMessage}
                 </div>
               )}

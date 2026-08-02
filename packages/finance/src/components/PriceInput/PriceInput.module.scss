@@ -7,7 +7,7 @@
   align-items: center;
   block-size: var(--finra-density-size-base);
   padding-inline: var(--finra-density-input-padding-x);
-  font-family: var(--finra-font-mono, var(--finra-font-sans));
+  font-family: var(--finra-font-mono);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
   font-variant-numeric: tabular-nums;
@@ -56,12 +56,12 @@
   cursor: var(--finra-cursor-disabled);
 
   &.root {
-    background-color: var(--finra-color-neutral-50);
-    border-color: var(--finra-color-neutral-200);
+    background-color: var(--finra-container-disabled-background);
+    border-color: var(--finra-container-disabled-border);
   }
 
   .input {
-    color: var(--finra-color-neutral-300);
+    color: var(--finra-container-disabled-foreground);
     cursor: var(--finra-cursor-disabled);
   }
 }
@@ -84,7 +84,7 @@
   }
 
   &::placeholder {
-    color: var(--finra-color-neutral-400);
+    color: var(--finra-container-foreground-muted);
   }
 }
 
@@ -126,34 +126,37 @@
 }
 
 .segPrecision {
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
   font-weight: var(--finra-font-normal);
   font-size: 0.85em;
 }
 
 //  FX 3-zone (big figure / pips / fractional pip). The pips are the focal
-//  digits (largest, boldest); big figure is de-emphasized; fractional pip is
-//  medium. All sizes are token-overridable relative to the input font (= pips).
+//  digits (largest, boldest); big figure is de-emphasised; fractional pip sits
+//  between the two. Sizes are relative to the input font, so the hierarchy
+//  survives a density change. Which zone a desk emphasises is a house
+//  convention, so each zone carries its own `data-finra-ui` id and a consumer
+//  restyles it with an ordinary rule.
 .segBigFigure {
-  color: var(--finra-price-big-figure-color, var(--finra-color-neutral-500));
-  font-size: var(--finra-price-big-figure-size, 0.72em);
+  color: var(--finra-container-foreground-muted);
+  font-size: 0.72em;
   font-weight: var(--finra-font-normal);
 }
 
 .segPips {
-  color: var(--finra-price-pips-color, var(--finra-color-foreground));
-  font-size: var(--finra-price-pips-size, 1em);
-  font-weight: var(--finra-font-bold, 700);
+  color: var(--finra-color-foreground);
+  font-size: 1em;
+  font-weight: var(--finra-font-bold);
 }
 
 .segFractionalPip {
-  color: var(--finra-price-fractional-pip-color, var(--finra-color-neutral-600));
-  font-size: var(--finra-price-fractional-pip-size, 0.85em);
-  font-weight: var(--finra-font-bold, 700);
+  color: var(--finra-container-foreground-muted);
+  font-size: 0.85em;
+  font-weight: var(--finra-font-bold);
 }
 
 .segUnit {
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   font-weight: var(--finra-font-normal);
   margin-inline-start: 0.15em;
 }

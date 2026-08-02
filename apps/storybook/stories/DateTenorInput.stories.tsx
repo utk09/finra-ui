@@ -1,14 +1,32 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { DateTenorInput } from "@utk09/finra-ui-finance";
+import { DateTenorInputBase } from "@utk09/finra-ui-finance/unstyled";
 import { formatDate } from "@utk09/finra-ui-finance/utils";
 import { useState } from "react";
 import { expect, fn, within } from "storybook/test";
+
+import { inDark, TokenScope } from "./_shared";
 
 const meta: Meta<typeof DateTenorInput> = {
   title: "Finance/DateTenorInput",
   component: DateTenorInput,
   parameters: {
     layout: "centered",
+    // Docgen does not follow `extends` across modules, so without this the
+    // props the base declares are missing from the table.
+    docs: {
+      inheritsFrom: DateTenorInputBase,
+      // Mirrors the `Omit` on the styled props: these are the styled layer's
+      // own injection points, not consumer API.
+      inheritedOmit: [
+        "classNames",
+        "dataAttributes",
+        "renderCalendarIcon",
+        "renderIndicator",
+        "renderCalendarNavPrev",
+        "renderCalendarNavNext",
+      ],
+    },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -333,3 +351,34 @@ export const AllStates: Story = {
     </div>
   ),
 };
+
+/**
+ * Both halves follow a token override applied to an ancestor, so the field
+ * matches a host application without any component-level CSS.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-accent: #b45309;
+ *   --finra-actionable-accent-subtle: #fef3c7;
+ *   --finra-actionable-emphasis: #d97706;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: (args) => (
+    <TokenScope
+      align="flex-start"
+      tokens={{
+        "--finra-actionable-accent": "#b45309",
+        "--finra-actionable-accent-subtle": "#fef3c7",
+        "--finra-actionable-emphasis": "#d97706",
+      }}>
+      <div style={{ minInlineSize: 360 }}>
+        <DateTenorInput {...args} />
+      </div>
+    </TokenScope>
+  ),
+};
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

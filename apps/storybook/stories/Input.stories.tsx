@@ -1,14 +1,19 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Input } from "@utk09/finra-ui";
+import { InputBase } from "@utk09/finra-ui/unstyled";
 import { expect, fn, userEvent, within } from "storybook/test";
 
 import { CloseIcon, LockIcon, MailIcon, SearchIcon } from "./_icons";
+import { inDark, TokenScope } from "./_shared";
 
 const meta: Meta<typeof Input> = {
   title: "Components/Input",
   component: Input,
   parameters: {
     layout: "centered",
+    // Docgen does not follow `extends` across modules, so `asChild` from the
+    // base is otherwise missing from the table.
+    docs: { inheritsFrom: InputBase },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -304,3 +309,39 @@ export const AllStates: Story = {
     </div>
   ),
 };
+
+/**
+ * The focus ring reads `--finra-actionable-emphasis` and the error state reads
+ * `--finra-status-danger-accent`. Click the first field to see the ring.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-emphasis: #7c3aed;
+ *   --finra-status-danger-accent: #9f1239;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: () => (
+    <TokenScope
+      align="flex-start"
+      tokens={{
+        "--finra-actionable-emphasis": "#7c3aed",
+        "--finra-status-danger-accent": "#9f1239",
+        "--finra-container-foreground-muted": "#7c3aed",
+      }}>
+      <div style={{ inlineSize: 200 }}>
+        <Input placeholder="Focus me" />
+      </div>
+      <div style={{ inlineSize: 200 }}>
+        <Input placeholder="Rejected" validationStatus="error" />
+      </div>
+    </TokenScope>
+  ),
+  play: async ({ canvasElement }) => {
+    within(canvasElement).getByPlaceholderText("Focus me").focus();
+  },
+};
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

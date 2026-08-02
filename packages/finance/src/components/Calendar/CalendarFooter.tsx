@@ -1,6 +1,7 @@
-import { Button } from "@utk09/finra-ui";
+import { Button, FINRA_UI_ATTR } from "@utk09/finra-ui";
 import type { ReactNode } from "react";
 
+import { componentIds } from "../../componentIds";
 import type { CalendarFooterApi } from "../../unstyled/Calendar/Calendar";
 import { resolveTenor } from "../../utils/tenor";
 import styles from "./Calendar.module.scss";
@@ -89,7 +90,7 @@ export interface CalendarShortcutsProps {
  */
 export function CalendarShortcuts({ api, shortcuts }: CalendarShortcutsProps): ReactNode {
   return (
-    <div className={styles.shortcuts}>
+    <div className={styles.shortcuts} {...{ [FINRA_UI_ATTR]: componentIds.calendarShortcuts }}>
       {shortcuts.map(({ label, tenor }) => {
         const target = resolveTenor(tenor, api.today);
         const disabled = !target || api.isDateDisabled(target);

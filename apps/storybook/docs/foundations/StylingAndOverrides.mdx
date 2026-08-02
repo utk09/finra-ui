@@ -1,0 +1,132 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Button } from "@utk09/finra-ui";
+
+import { Note, Sampler, Support } from "../_components";
+
+<Meta title="Foundations/Styling and Overrides" />
+
+# Styling and Overrides
+
+Every component exists twice. `@utk09/finra-ui` is the styled layer. `@utk09/finra-ui/unstyled` is the same behaviour, keyboard handling and ARIA with no CSS at all.
+
+The styled layer is a thin wrapper that passes class names into the unstyled base. If your design system disagrees with ours, drop a level and keep everything that was hard to build.
+
+## What is stable
+
+| Surface                                      | Stable                                        |
+| -------------------------------------------- | --------------------------------------------- |
+| The `finra-ui` cascade layer                 | Yes. Everything shipped is inside it.         |
+| `data-finra-ui="..."` attributes             | Yes. Style and query against them.            |
+| `--finra-*` custom properties, tiers 1 and 2 | Yes.                                          |
+| Component props and exported types           | Yes, under semver.                            |
+| Hashed class names like `_root_bkxtm_1`      | **No.** They change on any stylesheet edit.   |
+| `--_*` component-internal properties         | **No.**                                       |
+| The rendered DOM tree shape                  | **No.** Nesting changes without a major bump. |
+
+Every component stamps `data-finra-ui` on its root, and named parts get their own id, so you can reach an inner element without depending on the DOM shape.
+
+```css
+[data-finra-ui="input-field"] {
+  font-variant-numeric: tabular-nums;
+}
+[data-finra-ui="dialog-overlay"] {
+  backdrop-filter: blur(2px);
+}
+```
+
+There are 59 ids: roots such as `button`, `combo-box` and `dialog`, and parts such as `input-field`, `textarea-count`, `menu-item` and `toast-action`.
+
+## Four ways to override
+
+**1. Change a token.** Reaches everything that means the same thing, and keeps dark mode working. Usually the right answer.
+
+```css
+:root {
+  --finra-actionable-accent: #7c3aed;
+}
+```
+
+**2. Pass `className` or `style`.** Every component forwards unrecognised props to its underlying element. Good for one-off layout.
+
+**3. Target the data attribute** in your own stylesheet, for a systematic change to one component.
+
+```css
+[data-finra-ui="badge"] {
+  border-radius: var(--finra-radius-full);
+}
+```
+
+<Unstyled>
+  <Note kind="success" title="Your CSS wins, whatever its specificity">
+    Everything the library ships is inside `@layer finra-ui`. Unlayered CSS beats layered CSS in the
+    cascade, so an ordinary rule of yours overrides ours without a doubled selector, an
+    `!important`, or any dependence on which stylesheet the bundler loaded last.
+  </Note>
+</Unstyled>
+
+If you use layers yourself, name ours to place it explicitly:
+
+```css
+@layer finra-ui, app;
+
+@layer app {
+  [data-finra-ui="badge"] {
+    border-radius: 0;
+  }
+}
+```
+
+**4. Take the unstyled base**, when overriding has become a fight. You keep the state machine, keyboard handling, ARIA and focus management, and supply every class.
+
+```tsx
+import { ComboBoxBase } from "@utk09/finra-ui/unstyled";
+
+<ComboBoxBase
+  options={options}
+  classNames={{ root: styles.root, control: styles.control, option: styles.option }}
+/>;
+```
+
+Components that render more than one element take a `classNames` object keyed by part. That is the same mechanism the styled layer uses.
+
+## Composing with your own controls
+
+Triggers accept `asChild`, which merges props and ref onto your element instead of rendering a wrapper. Handlers chain, so your `onClick` still runs.
+
+```tsx
+<DialogTrigger asChild>
+  <Button variant="primary">Open</Button>
+</DialogTrigger>
+```
+
+## Variant and sentiment
+
+`variant` is emphasis: `primary`, `secondary`, `tertiary`. `sentiment` is meaning: `danger`, `success`, `warning`, `info`. They compose, so a secondary danger button needs no custom CSS.
+
+<Unstyled>
+  <Sampler>
+    <Button variant="primary">Primary</Button>
+    <Button variant="secondary">Secondary</Button>
+    <Button variant="tertiary">Tertiary</Button>
+    <Button variant="primary" sentiment="danger">
+      Primary danger
+    </Button>
+    <Button variant="secondary" sentiment="danger">
+      Secondary danger
+    </Button>
+  </Sampler>
+</Unstyled>
+
+## What is not supported
+
+- **Styling by hashed class name.** Those change without notice.
+- **Setting `--_*` properties from outside.** Override the semantic token the component reads instead.
+- **Separate token and component stylesheets.** `@utk09/finra-ui/styles` is one file containing both.
+- **A CSS-in-JS or styled-components integration.** There is none, and none is planned.
+
+<Unstyled>
+  <Support>
+    If you are fighting the CSS to get a reasonable result, that is worth reporting rather than
+    working around.
+  </Support>
+</Unstyled>

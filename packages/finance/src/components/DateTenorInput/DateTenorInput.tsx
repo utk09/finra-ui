@@ -1,21 +1,21 @@
-import { FINRA_UI_ATTR, type ValidationStatus } from "@utk09/finra-ui";
+import { FINRA_UI_ATTR, type ValidationStatus, type Variant } from "@utk09/finra-ui";
 import {
   CalendarIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@utk09/finra-ui-icons/react";
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import { forwardRef, useMemo } from "react";
 
+import { componentIds } from "../../componentIds";
 import type {
   DateTenorInputBaseProps,
   DateTenorInputClassNames,
 } from "../../unstyled/DateTenorInput/DateTenorInput";
 import { DateTenorInputBase } from "../../unstyled/DateTenorInput/DateTenorInput";
 import calendarStyles from "../Calendar/Calendar.module.scss";
-import { componentIds } from "../componentIds";
 import styles from "./DateTenorInput.module.scss";
 
 //  Variant CVA (for the trigger)
@@ -57,15 +57,25 @@ const validationClasses: Record<ValidationStatus, string> = {
  */
 export interface DateTenorInputProps
   extends Omit<
-      DateTenorInputBaseProps,
-      | "classNames"
-      | "dataAttributes"
-      | "renderCalendarIcon"
-      | "renderIndicator"
-      | "renderCalendarNavPrev"
-      | "renderCalendarNavNext"
-    >,
-    VariantProps<typeof triggerVariants> {
+    DateTenorInputBaseProps,
+    | "classNames"
+    | "dataAttributes"
+    | "renderCalendarIcon"
+    | "renderIndicator"
+    | "renderCalendarNavPrev"
+    | "renderCalendarNavNext"
+  > {
+  /**
+   * Visual emphasis of the field chrome.
+   *
+   * @remarks
+   * Changes the weight of the border and background only. It does not signal
+   * validity - that is `validationStatus`, which is orthogonal and takes over
+   * the border colour when set.
+   *
+   * @defaultValue "primary"
+   */
+  variant?: Variant;
   /** Visual validation status. */
   validationStatus?: ValidationStatus;
   /** Stretch to fill container width. */

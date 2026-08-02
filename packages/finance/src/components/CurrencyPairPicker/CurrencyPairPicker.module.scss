@@ -67,17 +67,17 @@
   cursor: var(--finra-cursor-disabled);
 
   .control {
-    background-color: var(--finra-color-neutral-50);
-    border-color: var(--finra-color-neutral-200);
+    background-color: var(--finra-container-disabled-background);
+    border-color: var(--finra-container-disabled-border);
   }
 
   .input {
-    color: var(--finra-color-neutral-300);
+    color: var(--finra-container-disabled-foreground);
     cursor: var(--finra-cursor-disabled);
   }
 
   .indicator {
-    color: var(--finra-color-neutral-200);
+    color: var(--finra-container-disabled-foreground);
   }
 }
 
@@ -101,7 +101,7 @@
   &::placeholder {
     // Placeholders are prose, not codes.
     text-transform: none;
-    color: var(--finra-color-neutral-400);
+    color: var(--finra-container-foreground-muted);
   }
 }
 
@@ -111,7 +111,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
   transition: transform var(--finra-duration-fast) ease-in-out;
 
   @media (prefers-reduced-motion: reduce) {
@@ -131,7 +131,7 @@
 //  Portalled panel - free-floating, so it carries its own chrome on all sides.
 //  Position and width come from the anchoring hook as inline styles.
 .listbox {
-  z-index: 50;
+  z-index: var(--finra-z-popup);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -144,7 +144,7 @@
 
 //  Scroll container, separate from the panel so its border and shadow stay put
 .options {
-  max-block-size: 20rem;
+  max-block-size: var(--finra-popup-max-block-size);
   overflow-y: auto;
   scrollbar-gutter: stable;
   padding-block: calc(var(--finra-density-gap) * 0.5);
@@ -167,9 +167,9 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-xs);
   font-weight: var(--finra-font-semibold);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--finra-tracking-wide);
   user-select: none;
 }
 
@@ -208,7 +208,7 @@
   }
 
   &.optionDisabled {
-    color: var(--finra-color-neutral-300);
+    color: var(--finra-container-disabled-foreground);
     cursor: var(--finra-cursor-disabled);
   }
 }
@@ -229,7 +229,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: var(--finra-text-xs);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
 
   .optionHighlighted & {
     color: var(--finra-actionable-foreground);
@@ -255,7 +255,7 @@
   padding-block: 0;
   font-size: var(--finra-text-xs);
   font-weight: var(--finra-font-medium);
-  line-height: 1.5;
+  line-height: var(--finra-leading-normal);
   color: var(--finra-container-foreground);
   border: var(--finra-border-thin) solid var(--finra-container-border);
   border-radius: var(--finra-radius-sm);
@@ -270,8 +270,8 @@
   }
 
   .optionDisabled & {
-    color: var(--finra-color-neutral-400);
-    border-color: var(--finra-color-neutral-200);
+    color: var(--finra-container-disabled-foreground);
+    border-color: var(--finra-container-disabled-border);
   }
 }
 
@@ -285,7 +285,7 @@
   flex-shrink: 0;
   font-size: var(--finra-text-base);
   line-height: 1;
-  color: var(--finra-color-neutral-400);
+  color: var(--finra-container-foreground-muted);
   cursor: var(--finra-cursor-pointer);
   transition: color var(--finra-duration-fast) ease-in-out;
 
@@ -313,7 +313,7 @@
   padding-block: calc(var(--finra-density-gap) * 0.75);
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-sm);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   user-select: none;
 }
 

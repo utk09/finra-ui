@@ -1,14 +1,31 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FormField } from "@utk09/finra-ui";
 import { DateInput } from "@utk09/finra-ui-finance";
+import { DateInputBase } from "@utk09/finra-ui-finance/unstyled";
 import { useState } from "react";
 import { expect, fn, within } from "storybook/test";
+
+import { inDark, TokenScope } from "./_shared";
 
 const meta: Meta<typeof DateInput> = {
   title: "Components/DateInput",
   component: DateInput,
   parameters: {
     layout: "centered",
+    // Docgen does not follow `extends` across modules, so without this the
+    // props the base declares are missing from the table.
+    docs: {
+      inheritsFrom: DateInputBase,
+      // Mirrors the `Omit` on the styled props: these are the styled layer's
+      // own injection points, not consumer API.
+      inheritedOmit: [
+        "classNames",
+        "dataAttributes",
+        "renderCalendarIcon",
+        "renderCalendarNavPrev",
+        "renderCalendarNavNext",
+      ],
+    },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -348,3 +365,36 @@ export const AllStates: Story = {
     </div>
   ),
 };
+
+/**
+ * `DateInput` takes its accent from the focus ring rather than from
+ * `--finra-actionable-accent`, and its validation colours from the status
+ * tokens. Those are the two worth overriding.
+ *
+ * ```css
+ * .brand-region {
+ *   --finra-actionable-emphasis: #0f766e;
+ *   --finra-status-danger-accent: #9f1239;
+ * }
+ * ```
+ */
+export const Overrides: Story = {
+  render: () => (
+    <TokenScope
+      align="flex-start"
+      tokens={{
+        "--finra-actionable-emphasis": "#0f766e",
+        "--finra-status-danger-accent": "#9f1239",
+      }}>
+      <div style={{ inlineSize: 220 }}>
+        <DateInput aria-label="Focus me" />
+      </div>
+      <div style={{ inlineSize: 220 }}>
+        <DateInput aria-label="Rejected date" validationStatus="error" />
+      </div>
+    </TokenScope>
+  ),
+};
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

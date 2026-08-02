@@ -3,6 +3,8 @@ import { Select, SelectContent, SelectTrigger } from "@utk09/finra-ui";
 import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
+import { darkMode, darkModeOpen } from "./_shared";
+
 const options = [
   { value: "aapl", label: "Apple" },
   { value: "msft", label: "Microsoft" },
@@ -52,15 +54,16 @@ const meta: Meta<typeof Select> = {
     loop: { control: "boolean", table: { defaultValue: { summary: "true" } } },
     dismissOnEscape: { control: "boolean", table: { defaultValue: { summary: "true" } } },
     dismissOnOutside: { control: "boolean", table: { defaultValue: { summary: "true" } } },
-    // Not useful as interactive controls.
-    options: { table: { disable: true } },
-    children: { table: { disable: true } },
-    value: { table: { disable: true } },
-    defaultValue: { table: { disable: true } },
-    open: { table: { disable: true } },
-    defaultOpen: { table: { disable: true } },
-    onValueChange: { table: { disable: true } },
-    onOpenChange: { table: { disable: true } },
+    // No interactive control, but they stay in the table: a consumer needs to
+    // know they exist.
+    options: { control: { disable: true } },
+    children: { control: { disable: true } },
+    value: { control: { disable: true } },
+    defaultValue: { control: { disable: true } },
+    open: { control: { disable: true } },
+    defaultOpen: { control: { disable: true } },
+    onValueChange: { control: { disable: true } },
+    onOpenChange: { control: { disable: true } },
   },
   args: {
     options,
@@ -118,6 +121,31 @@ export const ManyOptions: Story = {
 /** Opens upward when there is more room above the trigger. */
 export const TopPlacement: Story = {
   args: { placement: "top" },
+};
+
+/** Closed trigger in dark mode. */
+export const DarkMode: Story = {
+  ...darkMode,
+  args: { defaultValue: "goog" },
+};
+
+/**
+ * The listbox left open in dark mode.
+ *
+ * This is the story that matters for the accessibility check. The listbox is
+ * portalled to `<body>`, so a closed-trigger story tells axe nothing about the
+ * options, their hover and selected states, or the surface they sit on.
+ */
+export const DarkModeOpen: Story = {
+  ...darkModeOpen,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("combobox", { name: "Ticker" }));
+    const listbox = await within(document.body).findByRole("listbox");
+    await waitFor(() => expect(listbox).toBeVisible());
+    // Deliberately left open: the a11y check is an afterEach, so whatever is on
+    // screen when play resolves is what gets audited.
+  },
 };
 
 /** Drive the value yourself to react to changes (here, echoing the selection). */

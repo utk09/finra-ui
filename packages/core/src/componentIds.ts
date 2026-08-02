@@ -24,12 +24,17 @@ export const FINRA_UI_ATTR = "data-finra-ui" as const;
 export const componentIds = {
   // Button family
   button: "button",
+  buttonStartIcon: "button-start-icon",
+  buttonEndIcon: "button-end-icon",
   iconButton: "icon-button",
   buttonGroup: "button-group",
 
   // Input
   input: "input",
   inputField: "input-field",
+  inputStartAdornment: "input-start-adornment",
+  inputEndAdornment: "input-end-adornment",
+  inputClearButton: "input-clear-button",
 
   // Textarea
   textarea: "textarea",
@@ -50,30 +55,49 @@ export const componentIds = {
 
   // Checkbox
   checkbox: "checkbox",
+  checkboxInput: "checkbox-input",
   checkboxIndicator: "checkbox-indicator",
   checkboxLabel: "checkbox-label",
 
   // Switch
   switch: "switch",
+  /**
+   * The real checkbox, visually hidden behind the track. It carries the
+   * checked, disabled and focus state, so it is the hook for a focus ring the
+   * track cannot express.
+   */
+  switchInput: "switch-input",
   switchTrack: "switch-track",
   switchThumb: "switch-thumb",
   switchLabel: "switch-label",
 
   // RadioButton
   radioButton: "radio-button",
+  radioButtonInput: "radio-button-input",
   radioButtonIndicator: "radio-button-indicator",
+  radioButtonDot: "radio-button-dot",
   radioButtonLabel: "radio-button-label",
 
   // Slider
   slider: "slider",
   sliderHeader: "slider-header",
+  sliderLabel: "slider-label",
+  sliderValue: "slider-value",
+  sliderInput: "slider-input",
 
   // PillInput
   pillInput: "pill-input",
+  pillInputPill: "pill-input-pill",
+  pillInputPillText: "pill-input-pill-text",
+  pillInputPillRemove: "pill-input-pill-remove",
+  pillInputField: "pill-input-field",
 
   // FileDropZone
   fileDropZone: "file-drop-zone",
   fileDropZoneInput: "file-drop-zone-input",
+  fileDropZoneContent: "file-drop-zone-content",
+  fileDropZoneIcon: "file-drop-zone-icon",
+  fileDropZoneText: "file-drop-zone-text",
 
   // Badge
   badge: "badge",
@@ -81,9 +105,30 @@ export const componentIds = {
   // ComboBox
   comboBox: "combo-box",
   comboBoxControl: "combo-box-control",
+  comboBoxInput: "combo-box-input",
+  comboBoxSingleValue: "combo-box-single-value",
+  comboBoxMultiValue: "combo-box-multi-value",
+  comboBoxPillList: "combo-box-pill-list",
+  comboBoxPill: "combo-box-pill",
+  comboBoxPillText: "combo-box-pill-text",
+  comboBoxPillRemove: "combo-box-pill-remove",
+  comboBoxIndicator: "combo-box-indicator",
+  comboBoxListbox: "combo-box-listbox",
+  comboBoxHeader: "combo-box-header",
+  comboBoxOptions: "combo-box-options",
+  comboBoxOption: "combo-box-option",
+  comboBoxOptionLabel: "combo-box-option-label",
+  comboBoxOptionCheck: "combo-box-option-check",
+  comboBoxGroup: "combo-box-group",
+  comboBoxGroupLabel: "combo-box-group-label",
+  comboBoxEmpty: "combo-box-empty",
+  comboBoxLoading: "combo-box-loading",
+  comboBoxSpinner: "combo-box-spinner",
+  comboBoxFooter: "combo-box-footer",
 
   // Dialog
   dialog: "dialog",
+  dialogTrigger: "dialog-trigger",
   dialogOverlay: "dialog-overlay",
   dialogTitle: "dialog-title",
   dialogDescription: "dialog-description",
@@ -94,14 +139,19 @@ export const componentIds = {
 
   // Popover
   popover: "popover",
+  popoverTrigger: "popover-trigger",
+  popoverClose: "popover-close",
 
   // Select
   select: "select",
   selectTrigger: "select-trigger",
+  selectValue: "select-value",
+  selectIndicator: "select-indicator",
   selectOption: "select-option",
 
   // Menu
   menu: "menu",
+  menuTrigger: "menu-trigger",
   menuItem: "menu-item",
   menuSeparator: "menu-separator",
 

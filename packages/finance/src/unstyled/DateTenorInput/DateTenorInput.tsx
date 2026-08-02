@@ -1,4 +1,4 @@
-import { useClickOutside, useFormField } from "@utk09/finra-ui";
+import { FINRA_UI_ATTR, useClickOutside, useFormField } from "@utk09/finra-ui";
 import { cx, mergeRefs } from "@utk09/finra-ui/utils";
 import {
   type ChangeEvent,
@@ -13,6 +13,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds } from "../../componentIds";
 import { autoInsertSeparators, getMaxLength } from "../../logic/dateInput";
 import type { DateFormat } from "../../utils/dateFormat";
 import {
@@ -368,10 +369,13 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
     return (
       <div ref={mergeRefs(ref, containerRef)} className={cn?.root} {...dataAttributes} {...props}>
         {/* Trigger */}
-        <div className={cx(cn?.trigger, isOpen && cn?.triggerOpen)}>
+        <div
+          className={cx(cn?.trigger, isOpen && cn?.triggerOpen)}
+          {...{ [FINRA_UI_ATTR]: componentIds.dateTenorInputTrigger }}>
           <input
             ref={inputRef}
             className={cn?.dateInput}
+            {...{ [FINRA_UI_ATTR]: componentIds.dateTenorInputField }}
             type="text"
             inputMode="numeric"
             id={field.id ?? dateId}
@@ -392,12 +396,19 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
             }}
           />
 
-          {tenorValue ? <span className={cn?.tenorBadge}>{tenorValue}</span> : null}
+          {tenorValue ? (
+            <span
+              className={cn?.tenorBadge}
+              {...{ [FINRA_UI_ATTR]: componentIds.dateTenorInputBadge }}>
+              {tenorValue}
+            </span>
+          ) : null}
 
           {renderCalendarIcon ? (
             <button
               type="button"
               className={cn?.calendarButton}
+              {...{ [FINRA_UI_ATTR]: componentIds.dateTenorInputCalendarButton }}
               onClick={togglePopup}
               tabIndex={-1}
               aria-label="Toggle date and tenor picker"
@@ -409,6 +420,7 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
           {renderIndicator ? (
             <span
               className={cx(cn?.indicator, isOpen && cn?.indicatorOpen)}
+              {...{ [FINRA_UI_ATTR]: componentIds.dateTenorInputIndicator }}
               aria-hidden="true"
               onMouseDown={(e) => {
                 e.preventDefault();
@@ -421,8 +433,10 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
 
         {/* Popup: calendar + tenor list */}
         {isOpen ? (
-          <div className={cn?.popup}>
-            <div className={cn?.calendarSection}>
+          <div className={cn?.popup} {...{ [FINRA_UI_ATTR]: componentIds.dateTenorInputPopup }}>
+            <div
+              className={cn?.calendarSection}
+              {...{ [FINRA_UI_ATTR]: componentIds.dateTenorInputCalendarSection }}>
               <CalendarBase
                 value={calendarDisplayValue}
                 onSelect={handleCalendarSelect}
@@ -436,13 +450,22 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
                 renderNavNext={renderCalendarNavNext}
               />
             </div>
-            <div className={cn?.tenorSection} role="listbox" aria-label={tenorAriaLabel ?? "Tenor"}>
+            <div
+              className={cn?.tenorSection}
+              role="listbox"
+              aria-label={tenorAriaLabel ?? "Tenor"}
+              {...{ [FINRA_UI_ATTR]: componentIds.dateTenorInputTenorSection }}>
               {tenorSectionTitle ? (
-                <div className={cn?.tenorTitle} aria-hidden="true">
+                <div
+                  className={cn?.tenorTitle}
+                  aria-hidden="true"
+                  {...{ [FINRA_UI_ATTR]: componentIds.dateTenorInputTenorTitle }}>
                   {tenorSectionTitle}
                 </div>
               ) : null}
-              <div className={cn?.tenorGrid}>
+              <div
+                className={cn?.tenorGrid}
+                {...{ [FINRA_UI_ATTR]: componentIds.dateTenorInputTenorGrid }}>
                 {tenors.map((t) => (
                   <button
                     key={t}
@@ -450,6 +473,7 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
                     role="option"
                     aria-selected={t === tenorValue || undefined}
                     className={cx(cn?.tenor, t === tenorValue && cn?.tenorSelected)}
+                    {...{ [FINRA_UI_ATTR]: componentIds.dateTenorInputTenor }}
                     onMouseDown={(e) => {
                       e.preventDefault();
                       handleTenorSelect(t);

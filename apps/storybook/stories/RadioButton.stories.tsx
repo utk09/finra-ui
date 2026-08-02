@@ -3,6 +3,8 @@ import { RadioButton } from "@utk09/finra-ui";
 import { useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 
+import { inDark } from "./_shared";
+
 const meta: Meta<typeof RadioButton> = {
   title: "Components/RadioButton",
   component: RadioButton,
@@ -138,3 +140,6 @@ export const AllStates: Story = {
     </div>
   ),
 };
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

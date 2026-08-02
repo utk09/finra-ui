@@ -13,6 +13,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useDisclosure } from "../../hooks/useDisclosure";
 import { lockBodyScroll } from "../../logic/scrollLock";
 import { DismissableLayer } from "../DismissableLayer/DismissableLayer";
@@ -159,6 +160,7 @@ export const DialogTrigger = forwardRef<HTMLButtonElement, DialogTriggerProps>(
         ref={ref}
         {...(asChild ? {} : { type: "button" as const })}
         id={ctx.triggerId}
+        {...{ [FINRA_UI_ATTR]: componentIds.dialogTrigger }}
         aria-haspopup="dialog"
         aria-expanded={ctx.open}
         aria-controls={ctx.open ? ctx.contentId : undefined}
@@ -185,6 +187,15 @@ DialogTrigger.displayName = "DialogTrigger";
  * via `aria-labelledby`, and a modal without one is announced as just "dialog".
  */
 export interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
+  /**
+   * Where the popup is portalled. Defaults to `document.body`.
+   *
+   * @remarks
+   * Pass a node you own to bring the popup back inside your subtree, so a token
+   * override or a scoped rule declared on an ancestor reaches it. The default
+   * escapes ancestor `overflow: hidden`, `z-index` and `transform` contexts.
+   */
+  container?: Element | null;
   /** Dialog contents. Should include a `DialogTitle`. */
   children?: ReactNode;
 }
@@ -195,7 +206,7 @@ export interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
  * @see {@link DialogContentProps}
  */
 export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
-  ({ children, ...rest }, ref) => {
+  ({ children, container, ...rest }, ref) => {
     const ctx = useDialogContext("Content");
 
     useEffect(() => {
@@ -206,8 +217,8 @@ export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
     if (!ctx.open) return null;
 
     return (
-      <Portal>
-        <div data-finra-ui="dialog-overlay" />
+      <Portal container={container}>
+        <div {...{ [FINRA_UI_ATTR]: componentIds.dialogOverlay }} />
         <FocusScope trapped>
           <DismissableLayer
             onDismiss={() => ctx.setOpen(false)}

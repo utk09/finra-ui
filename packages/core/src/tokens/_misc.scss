@@ -9,6 +9,17 @@
   --finra-focus-color: var(--finra-actionable-emphasis);
   --finra-focus-offset: 2px;
 
+  //  Stacking
+  // Overlays portal to <body>, so they leave the host application's stacking
+  // context entirely. These are the levels to raise when an app has its own
+  // fixed chrome above them.
+  //
+  // A popup that stays inline, such as a combo box list or a date picker panel,
+  // sits in the host's own stacking context and needs far less height.
+  --finra-z-popup: 50;
+  --finra-z-overlay: 1000;
+  --finra-z-toast: 1100;
+
   //  Cursors
   --finra-cursor-pointer: pointer;
   --finra-cursor-disabled: not-allowed;

@@ -1,0 +1,85 @@
+import { Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { FormField, Input } from "@utk09/finra-ui";
+
+import * as DensityStories from "../../stories/Density.stories";
+import { Note, Sampler, Support } from "../_components";
+
+<Meta of={DensityStories} />
+
+# Density
+
+One attribute resizes every control inside it.
+
+```tsx
+<div data-density="high">{/* compact controls */}</div>
+```
+
+Three values: `high`, `medium` (the default) and `low`. Like the theme, it is plain CSS on any ancestor and it nests.
+
+<Unstyled>
+  <Sampler align="flex-end">
+    <div data-density="high">
+      <FormField label="High">
+        <Input placeholder="Search" />
+      </FormField>
+    </div>
+    <div data-density="medium">
+      <FormField label="Medium">
+        <Input placeholder="Search" />
+      </FormField>
+    </div>
+    <div data-density="low">
+      <FormField label="Low">
+        <Input placeholder="Search" />
+      </FormField>
+    </div>
+  </Sampler>
+</Unstyled>
+
+## Why there is no size prop
+
+Sizing belongs to the region, not the call site. A blotter, a filter bar and a settings dialog each want one consistent control size throughout. A `size` prop means passing it to forty call sites and missing two. Density means one attribute on the container.
+
+It also nests: a compact table inside a comfortable page is one more `data-density`, where a `size` prop would have to thread through every component in between.
+
+If you want a single control to differ, wrap it: `<span data-density="high">`.
+
+## What scales
+
+| Token                                | High       | Medium     | Low        |
+| ------------------------------------ | ---------- | ---------- | ---------- |
+| `--finra-density-size-base`          | `1.75rem`  | `2.25rem`  | `2.75rem`  |
+| `--finra-density-size-compact`       | `1.25rem`  | `1.75rem`  | `2.25rem`  |
+| `--finra-density-gap`                | `0.25rem`  | `0.5rem`   | `0.75rem`  |
+| `--finra-density-icon-size`          | `0.875rem` | `1rem`     | `1.25rem`  |
+| `--finra-density-button-padding-x`   | `0.75rem`  | `1rem`     | `1.5rem`   |
+| `--finra-density-input-padding-x`    | `0.5rem`   | `0.75rem`  | `1rem`     |
+| `--finra-density-checkbox-size`      | `0.875rem` | `1.125rem` | `1.375rem` |
+| `--finra-density-switch-track-width` | `2rem`     | `2.5rem`   | `3rem`     |
+| `--finra-density-slider-thumb-size`  | `0.875rem` | `1.125rem` | `1.375rem` |
+
+Control text moves with it: buttons and inputs use `--finra-text-xs` at high, `sm` at medium, `base` at low.
+
+## What does not scale
+
+`--finra-spacing-*`, radii, shadows and durations are the same at every density. So is the type scale itself: density picks a different step, it does not change what `--finra-text-sm` means.
+
+If layout padding grew alongside control height the two would compound, and a low-density page would balloon. Density changes the controls; the layout around them is yours.
+
+## Which to use
+
+- **High** for dense operational screens: blotters, ladders, watchlists.
+- **Medium** for ordinary forms, dialogs and settings.
+- **Low** for touch, onboarding, and anything where a bigger hit area is worth the space.
+
+## What is not supported
+
+- **Touch at high density.** Controls are `1.75rem`, roughly 28px, below the 44x44px in WCAG 2.2 Success Criterion 2.5.8. Fine for a mouse-and-keyboard trading screen, not for touch.
+- **Custom density levels.** Three values, no more. Adding a fourth means declaring the `--finra-density-*` tokens yourself under your own attribute.
+- **Per-component density props.** There are none, by design. Use a wrapper.
+
+<Canvas of={DensityStories.Comparison} />
+
+<Unstyled>
+  <Support />
+</Unstyled>

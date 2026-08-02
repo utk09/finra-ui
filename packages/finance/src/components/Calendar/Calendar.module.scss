@@ -28,7 +28,7 @@
   border: none;
   border-radius: var(--finra-radius-sm);
   background: transparent;
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   cursor: var(--finra-cursor-pointer);
   transition: background-color var(--finra-duration-fast) ease-in-out;
 
@@ -42,13 +42,13 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--finra-actionable-emphasis);
-    outline-offset: -2px;
+    outline: var(--finra-focus-width) solid var(--finra-focus-color);
+    outline-offset: calc(var(--finra-focus-offset) * -1);
   }
 
   > svg {
-    inline-size: 0.75rem;
-    block-size: 0.75rem;
+    inline-size: var(--finra-icon-size-sm);
+    block-size: var(--finra-icon-size-sm);
   }
 }
 
@@ -72,7 +72,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-xs);
   font-weight: var(--finra-font-medium);
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
   text-decoration: none;
   cursor: default;
 }
@@ -121,12 +121,12 @@
   }
 
   &:hover:not(:disabled) {
-    background-color: var(--finra-color-neutral-100);
+    background-color: var(--finra-container-disabled-background);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--finra-actionable-emphasis);
-    outline-offset: -2px;
+    outline: var(--finra-focus-width) solid var(--finra-focus-color);
+    outline-offset: calc(var(--finra-focus-offset) * -1);
   }
 
   //  States
@@ -154,7 +154,7 @@
   }
 
   &.dayDisabled {
-    color: var(--finra-color-neutral-200);
+    color: var(--finra-container-disabled-foreground);
     cursor: var(--finra-cursor-disabled);
 
     &:hover {
@@ -217,7 +217,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-xs);
   font-variant-numeric: tabular-nums;
-  color: var(--finra-color-neutral-500);
+  color: var(--finra-container-foreground-muted);
 }
 
 //  Footer

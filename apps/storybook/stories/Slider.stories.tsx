@@ -3,6 +3,8 @@ import { Slider } from "@utk09/finra-ui";
 import { useState } from "react";
 import { expect, fn, within } from "storybook/test";
 
+import { inDark } from "./_shared";
+
 const meta: Meta<typeof Slider> = {
   title: "Components/Slider",
   component: Slider,
@@ -148,3 +150,6 @@ export const AllStates: Story = {
     </div>
   ),
 };
+
+/** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
+export const DarkMode: Story = inDark(Default);

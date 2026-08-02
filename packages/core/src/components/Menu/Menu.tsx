@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import {
   MenuContent as MenuContentBase,
   type MenuContentProps as MenuContentBaseProps,
@@ -12,7 +13,6 @@ import {
   MenuTrigger as MenuTriggerBase,
   type MenuTriggerProps,
 } from "../../unstyled/Menu/Menu";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Menu.module.scss";
 
 export type { MenuProps, MenuTriggerProps };

@@ -8,7 +8,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@utk09/finra-ui";
+import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
+
+import { darkModeOpen } from "./_shared";
 
 const PLACEMENTS = [
   "top",
@@ -28,6 +31,9 @@ const PLACEMENTS = [
 const meta: Meta<typeof Popover> = {
   title: "Components/Popover",
   component: Popover,
+  // Without these the page documents only the root, and the parts a consumer
+  // actually renders are undocumented.
+  subcomponents: { PopoverTrigger, PopoverContent, PopoverClose },
   parameters: {
     layout: "centered",
   },
@@ -44,10 +50,10 @@ const meta: Meta<typeof Popover> = {
     },
     dismissOnEscape: { control: "boolean", table: { defaultValue: { summary: "true" } } },
     dismissOnOutside: { control: "boolean", table: { defaultValue: { summary: "true" } } },
-    children: { table: { disable: true } },
-    open: { table: { disable: true } },
-    defaultOpen: { table: { disable: true } },
-    onOpenChange: { table: { disable: true } },
+    children: { control: { disable: true } },
+    open: { control: { disable: true } },
+    defaultOpen: { control: { disable: true } },
+    onOpenChange: { control: { disable: true } },
   },
   args: {
     placement: "bottom",
@@ -152,4 +158,53 @@ export const StaysOpenOnOutsideClick: Story = {
 /** A larger gap between trigger and panel. */
 export const CustomOffset: Story = {
   args: { offset: 24, placement: "right" },
+};
+
+/**
+ * Everything here is scoped to one wrapper, including the panel.
+ *
+ * The panel is portalled to `document.body` by default, so nothing in your tree
+ * is its ancestor and a token set there cannot reach it. Pass `container` on
+ * `PopoverContent` to portal it into a node you own.
+ */
+export const Overrides: Story = {
+  render: function Render(args) {
+    const [scope, setScope] = useState<HTMLDivElement | null>(null);
+    return (
+      <div
+        ref={setScope}
+        style={
+          {
+            "--finra-container-background": "#064e3b",
+            "--finra-container-foreground": "#d1fae5",
+            "--finra-container-border": "#047857",
+          } as React.CSSProperties
+        }>
+        <Popover {...args}>
+          <PopoverTrigger asChild>
+            <Button>Details</Button>
+          </PopoverTrigger>
+          <PopoverContent container={scope}>
+            <p style={{ margin: 0 }}>The panel follows the tokens on the wrapper.</p>
+          </PopoverContent>
+        </Popover>
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Details" }));
+    await canvas.findByRole("dialog");
+  },
+};
+
+/** The panel left open in dark mode, so axe audits the portalled content. */
+export const DarkModeOpen: Story = {
+  ...darkModeOpen,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Filters" }));
+    const panel = await within(document.body).findByRole("dialog");
+    await waitFor(() => expect(panel).toBeVisible());
+  },
 };

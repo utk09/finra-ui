@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import { forwardRef } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import {
   TooltipContent as TooltipContentBase,
   type TooltipContentProps as TooltipContentBaseProps,
@@ -9,7 +10,6 @@ import {
   TooltipTrigger as TooltipTriggerBase,
   type TooltipTriggerProps,
 } from "../../unstyled/Tooltip/Tooltip";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
 import styles from "./Tooltip.module.scss";
 
 export type { TooltipProps, TooltipTriggerProps };

@@ -1,0 +1,154 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Badge, Button, FormField } from "@utk09/finra-ui";
+import { AmountInput, PriceInput } from "@utk09/finra-ui-finance";
+
+import { Card, CardGrid, Command, Hero, Note, Sampler, Support } from "./_components";
+import { DocsLink } from "./DocsLink";
+
+<Meta title="Introduction" />
+
+<Unstyled>
+
+<Hero
+  title="finra-ui"
+  tagline="A React component library for financial interfaces, and for the ordinary forms and overlays that surround them.">
+  <Command>npm install @utk09/finra-ui</Command>
+  <Command>npm install @utk09/finra-ui-finance</Command>
+  <Command>npm install @utk09/finra-ui-icons</Command>
+</Hero>
+
+</Unstyled>
+
+Trading and back-office screens keep re-implementing the same handful of awkward fields. A price input that steps by a tick rather than by one. An amount field where typing `10m` means ten million. A date field that also accepts `3M` or `SPOT+1W`. Each is small, each is easy to get subtly wrong, and each tends to get rewritten per project.
+
+This library ships those, plus the ordinary components they sit next to, so a form is one dependency rather than two.
+
+## Try it
+
+The fields below are live. Type `10m` into the amount, or press the up arrow on the rate and watch it move by half a pip rather than by one.
+
+<Unstyled>
+  <Sampler align="flex-end">
+    <FormField label="Notional">
+      <AmountInput currency="USD" defaultValue={2500000} />
+    </FormField>
+    <FormField label="Rate">
+      <PriceInput
+        format="decimal"
+        primaryPrecision={4}
+        precisionDigits={1}
+        tickSize={0.00005}
+        defaultValue={1.0925}
+      />
+    </FormField>
+    <Button variant="primary">Send</Button>
+  </Sampler>
+</Unstyled>
+
+Every story in this Storybook is interactive in the same way. Use the **Controls** panel under any component to change its props, and the **Theme** and **Density** menus in the toolbar to see it under the settings your app will actually run in.
+
+## The packages
+
+<Unstyled>
+  <CardGrid min="260px">
+    <Card title="@utk09/finra-ui" href="?path=/docs/components-button--docs">
+      Buttons, inputs, forms, overlays, tabs and toasts. 23 components, each with an unstyled
+      counterpart.
+    </Card>
+    <Card title="@utk09/finra-ui-finance" href="?path=/docs/finance-amountinput--docs">
+      Price, amount, tenor and date-tenor fields, plus the parsers behind them.
+    </Card>
+    <Card title="@utk09/finra-ui-icons" href="?path=/docs/icons--docs">
+      127 icons as plain data, with React wrappers. Framework-agnostic by design.
+    </Card>
+  </CardGrid>
+</Unstyled>
+
+## What it does not do
+
+It has no opinion about your market conventions. Holiday calendars, settlement lag, spot dates and tick grids differ per desk and per currency, so they are injected rather than assumed. The components own the interaction and the accessibility; you own the conventions.
+
+It is also not a data grid, a charting library, or a form-state manager. Each page lists what it does not support, and [Getting Started](?path=/docs/getting-started--docs) has the supported React and browser versions.
+
+## How it is put together
+
+<Unstyled>
+  <CardGrid>
+    <Card title="Two layers" href="?path=/docs/foundations-styling-and-overrides--docs">
+      Every component has an unstyled base carrying behaviour, keyboard handling and ARIA but no
+      CSS. The default export adds the styling. Take the base if your design system disagrees with
+      ours.
+    </Card>
+    <Card title="No provider" href="?path=/docs/foundations-theming--docs">
+      Theme and density are plain CSS, set with `data-theme` and `data-density` on any ancestor.
+      Nothing to wrap your tree in, and nothing that breaks under SSR.
+    </Card>
+    <Card title="Stable selectors" href="?path=/docs/foundations-styling-and-overrides--docs">
+      Each component renders `data-finra-ui="{name}"`. That attribute is public API you can style
+      against. The hashed class names are not.
+    </Card>
+    <Card title="No size prop" href="?path=/docs/foundations-density--docs">
+      Sizing comes from the density system, so a whole region resizes together instead of every call
+      site passing a size.
+    </Card>
+    <Card title="Typed" href="?path=/docs/contributing-story-conventions--docs">
+      Every exported type, prop and function carries documentation, so your editor explains the API
+      without a round trip to these docs.
+    </Card>
+    <Card title="Accessible by default" href="?path=/docs/foundations-accessibility--docs">
+      Components follow the ARIA Authoring Practices patterns, and every story is checked against
+      axe in CI.
+    </Card>
+  </CardGrid>
+</Unstyled>
+
+## Where to go next
+
+<Unstyled>
+  <CardGrid>
+    <Card title="Getting Started" href="?path=/docs/getting-started--docs">
+      Install, import the stylesheet, and render the first component.
+    </Card>
+    <Card title="Design Tokens" href="?path=/docs/foundations-design-tokens--docs">
+      The three-tier custom property system, and which tier you are meant to touch.
+    </Card>
+    <Card title="Accessibility" href="?path=/docs/foundations-accessibility--docs">
+      What the components guarantee, and the two things they cannot do for you.
+    </Card>
+    <Card title="Story Conventions" href="?path=/docs/contributing-story-conventions--docs">
+      How these pages are written, if you are adding one.
+    </Card>
+  </CardGrid>
+</Unstyled>
+
+<Unstyled>
+  <Support />
+</Unstyled>
+
+<Unstyled>
+  <Note title="Not affiliated with FINRA">
+    `finra-ui` is an independent open-source project with no affiliation to the Financial Industry
+    Regulatory Authority. It is licensed under{" "}
+    <DocsLink href="https://github.com/utk09/finra-ui/blob/main/LICENSE">Apache-2.0</DocsLink>, so
+    it is usable in commercial and closed-source work provided the copyright and{" "}
+    <DocsLink href="https://github.com/utk09/finra-ui/blob/main/NOTICE">NOTICE</DocsLink> are
+    carried forward.
+  </Note>
+</Unstyled>
+
+<Unstyled>
+  <Sampler>
+    <DocsLink href="https://github.com/utk09/finra-ui">
+      <Badge variant="secondary">GitHub</Badge>
+    </DocsLink>
+    <DocsLink href="https://www.npmjs.com/package/@utk09/finra-ui">
+      <Badge variant="secondary">npm</Badge>
+    </DocsLink>
+    <DocsLink href="https://github.com/utk09/finra-ui/blob/main/CONTRIBUTING.md">
+      <Badge variant="secondary">Contributing</Badge>
+    </DocsLink>
+    <DocsLink href="https://github.com/utk09/finra-ui/blob/main/SECURITY.md">
+      <Badge variant="secondary">Security</Badge>
+    </DocsLink>
+  </Sampler>
+</Unstyled>

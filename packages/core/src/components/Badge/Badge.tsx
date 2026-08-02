@@ -1,9 +1,9 @@
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
-import type { Sentiment } from "../../types/variants";
-import { componentIds, FINRA_UI_ATTR } from "../componentIds";
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
+import type { Sentiment, Variant } from "../../types/variants";
 import styles from "./Badge.module.scss";
 
 /**
@@ -48,9 +48,17 @@ const badgeVariants = cva(styles.badge, {
  * <Badge sentiment="danger" variant="secondary">Restricted</Badge>
  * ```
  */
-export interface BadgeProps
-  extends HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof badgeVariants> {
+export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
+  /**
+   * Visual emphasis - how filled-in the badge is.
+   *
+   * @remarks
+   * Orthogonal to `sentiment`, which sets the hue. `primary` is solid,
+   * `secondary` is subtle, `tertiary` is outline only.
+   *
+   * @defaultValue "primary"
+   */
+  variant?: Variant;
   /** Colour meaning. Omit for a neutral badge. */
   sentiment?: BadgeSentiment;
   /** Badge text. Keep it short - this is a label, not a container. */

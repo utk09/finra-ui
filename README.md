@@ -20,7 +20,7 @@ It has no opinion about your market conventions. Holiday calendars, settlement l
 
 | Package | What it is |
 | --- | --- |
-| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) ([docs](packages/core/README.md)) | Buttons, inputs, forms, overlays, tabs, toasts. 24 components. |
+| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) ([docs](packages/core/README.md)) | Buttons, inputs, forms, overlays, tabs, toasts. 23 components. |
 | [`@utk09/finra-ui-finance`](https://www.npmjs.com/package/@utk09/finra-ui-finance) ([docs](packages/finance/README.md)) | Price, amount, tenor and date-tenor fields, plus the parsers behind them. |
 | [`@utk09/finra-ui-icons`](https://www.npmjs.com/package/@utk09/finra-ui-icons) ([docs](packages/icons/README.md)) | 127 icons as plain data, with React wrappers. |
 
@@ -52,11 +52,7 @@ function Ticket() {
       </FormField>
 
       <FormField label="Rate">
-        <PriceInput
-          format="decimal"
-          precision={{ primaryPrecision: 4, precisionDigits: 1 }}
-          tickSize={0.00005}
-        />
+        <PriceInput format="decimal" primaryPrecision={4} precisionDigits={1} tickSize={0.00005} />
       </FormField>
 
       <Button variant="primary">Send</Button>
