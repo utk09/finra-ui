@@ -328,3 +328,16 @@ export const Overrides: Story = {
 
 /** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
 export const DarkMode: Story = inDark(Default);
+
+/**
+ * Secondary variant in dark mode, with a value on screen.
+ *
+ * The value is the point. This variant paints its own field surface, and a
+ * placeholder is drawn in the muted colour, so an empty field looks correct
+ * even when the surface and the text resolve to the same colour. Only a
+ * populated field puts that in front of the accessibility check.
+ */
+export const SecondaryVariantDark: Story = inDark({
+  ...SecondaryVariant,
+  args: { ...SecondaryVariant.args, defaultValue: 1250 },
+});

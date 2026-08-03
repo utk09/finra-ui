@@ -38,13 +38,7 @@ export const RadioButton = forwardRef<HTMLInputElement, RadioButtonProps>(
       <label
         {...{ [FINRA_UI_ATTR]: componentIds.radioButton }}
         className={clsx(styles.radio, disabled && styles.disabled, className)}>
-        <RadioButtonBase
-          ref={ref}
-          {...{ [FINRA_UI_ATTR]: componentIds.radioButtonInput }}
-          className={styles.input}
-          disabled={disabled}
-          {...props}
-        />
+        <RadioButtonBase ref={ref} className={styles.input} disabled={disabled} {...props} />
         <span
           className={styles.indicator}
           aria-hidden="true"

@@ -43,7 +43,7 @@ Operational guide for current and future maintainers of finra-ui.
 ## Updating Dependencies
 
 - All versions live in the **`pnpm-workspace.yaml` catalog**. Bump there; packages reference `"catalog:"`.
-- After bumping: `pnpm install`, then `pnpm verify` (lint → typecheck → test:coverage → build). Run the full `pnpm test` too - Storybook `play` tests run in a real browser and catch what jsdom misses.
+- After bumping: `pnpm install`, then `pnpm verify` (lint → typecheck → test:coverage → test:stories → build). `test:stories` is the real-browser pass over every story, and catches what jsdom misses.
 - Major upgrades of build-critical tools (Vite, Vitest, Storybook, TypeScript, Biome) get their own PR, and a changelog entry at release time only if build output changes.
 - Runtime dependency additions to published packages are rare and deliberate (current set: `clsx`, `class-variance-authority`, `@floating-ui/dom`). New runtime deps need a written justification in the PR: what it buys, why it cannot be a devDependency, and its bundle cost. Anything listed in `dependencies` or `peerDependencies` is externalised from the bundle automatically, so a new runtime dep becomes something the consumer installs.
 - Node version is pinned in `.nvmrc` (22) and mirrored in CI and Netlify - bump all three together. The pnpm floor is 11 (`allowBuilds` in `pnpm-workspace.yaml` is not understood by pnpm 10).

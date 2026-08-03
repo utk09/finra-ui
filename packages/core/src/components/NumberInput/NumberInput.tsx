@@ -15,6 +15,7 @@ import {
 import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
 import type { Variant } from "../../types/variants";
+import { NumberInputBase } from "../../unstyled/NumberInput/NumberInput";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./NumberInput.module.scss";
 
@@ -252,11 +253,14 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
           tabIndex={-1}>
           <MinusIcon />
         </button>
-        <input
+        {/* The field is `NumberInputBase`, not a bare <input>, so both entry
+            points run one implementation. It supplies `inputMode`. `fieldProps`
+            is already merged here because the wrapper needs the resolved
+            disabled state; the base merges again and `mergeControlA11y` is
+            idempotent. */}
+        <NumberInputBase
           ref={inputRef}
-          {...{ [FINRA_UI_ATTR]: componentIds.numberInputField }}
           className={styles.field}
-          inputMode="decimal"
           value={displayValue}
           onChange={handleChange}
           onBlur={handleBlur}

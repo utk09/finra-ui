@@ -1,5 +1,6 @@
 import { forwardRef, type InputHTMLAttributes, useCallback } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
 import { mergeRefs } from "../../utils/mergeRefs";
 
@@ -42,8 +43,16 @@ export const CheckboxBase = forwardRef<HTMLInputElement, CheckboxBaseProps>(
       [indeterminate],
     );
 
+    // Stamps its own id, so an unstyled checkbox is reachable by the same
+    // selector as a styled one. `fieldProps` follows, so a caller can still
+    // replace it.
     return (
-      <input ref={mergeRefs(forwardedRef, setIndeterminate)} type="checkbox" {...fieldProps} />
+      <input
+        ref={mergeRefs(forwardedRef, setIndeterminate)}
+        {...{ [FINRA_UI_ATTR]: componentIds.checkboxInput }}
+        type="checkbox"
+        {...fieldProps}
+      />
     );
   },
 );

@@ -11,7 +11,7 @@
 
 //  Trigger (single input-like bar)
 .trigger {
-  --_input-border-color: var(--finra-color-border);
+  --_input-border-color: var(--finra-container-border);
 
   display: inline-flex;
   align-items: center;
@@ -21,7 +21,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
-  background-color: var(--finra-color-background);
+  background-color: var(--finra-container-background);
   border: var(--finra-border-thin) solid var(--_input-border-color);
   border-radius: var(--finra-radius-md);
   transition: border-color var(--finra-duration-fast) ease-in-out;
@@ -42,7 +42,7 @@
 
   &.variantSecondary {
     border-width: var(--finra-border-thin);
-    background-color: var(--finra-color-neutral-50);
+    background-color: var(--finra-container-background-subtle);
   }
 
   &.variantTertiary {
@@ -111,7 +111,7 @@
   outline: none;
   background: transparent;
   font: inherit;
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   padding: 0;
 
   &:focus-visible {
@@ -164,7 +164,7 @@
   }
 
   &:hover:not(:disabled) {
-    color: var(--finra-color-foreground);
+    color: var(--finra-container-foreground);
   }
 
   &:disabled {
@@ -209,8 +209,8 @@
   inset-block-start: 100%;
   display: flex;
   min-inline-size: max(100%, 26rem);
-  background-color: var(--finra-color-background);
-  border: var(--finra-border-thin) solid var(--finra-color-border);
+  background-color: var(--finra-container-background);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
   border-block-start: none;
   border-end-start-radius: var(--finra-radius-md);
   border-end-end-radius: var(--finra-radius-md);
@@ -227,7 +227,7 @@
 .tenorSection {
   display: flex;
   flex-direction: column;
-  border-inline-start: var(--finra-border-thin) solid var(--finra-color-neutral-100);
+  border-inline-start: var(--finra-border-thin) solid var(--finra-container-border);
   min-inline-size: 6rem;
   max-block-size: var(--finra-popup-max-block-size);
   overflow-y: auto;
@@ -245,8 +245,8 @@
   color: var(--finra-container-foreground-muted);
   text-transform: uppercase;
   letter-spacing: var(--finra-tracking-wide);
-  background-color: var(--finra-color-background);
-  border-block-end: var(--finra-border-thin) solid var(--finra-color-neutral-100);
+  background-color: var(--finra-container-background);
+  border-block-end: var(--finra-border-thin) solid var(--finra-container-border);
   user-select: none;
 }
 
@@ -266,7 +266,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-sm);
   font-variant-numeric: tabular-nums;
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   cursor: var(--finra-cursor-pointer);
   user-select: none;
   transition: background-color var(--finra-duration-fast) ease-in-out;

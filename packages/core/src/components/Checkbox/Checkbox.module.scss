@@ -6,7 +6,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
 
   &.disabled {
     opacity: var(--finra-opacity-disabled);
@@ -26,7 +26,7 @@
   &:checked + .indicator {
     background-color: var(--finra-actionable-accent);
     border-color: var(--finra-actionable-accent);
-    color: var(--finra-color-white);
+    color: var(--finra-actionable-foreground);
 
     > svg {
       opacity: 1;
@@ -41,7 +41,7 @@
   &[data-indeterminate] + .indicator {
     background-color: var(--finra-actionable-accent);
     border-color: var(--finra-actionable-accent);
-    color: var(--finra-color-white);
+    color: var(--finra-actionable-foreground);
 
     > svg {
       opacity: 1;
@@ -55,10 +55,10 @@
   justify-content: center;
   inline-size: var(--finra-density-checkbox-size);
   block-size: var(--finra-density-checkbox-size);
-  border: var(--finra-border-thin) solid var(--finra-color-border);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
   border-radius: var(--finra-radius-md);
-  background-color: var(--finra-color-background);
-  color: var(--finra-color-white);
+  background-color: var(--finra-container-background);
+  color: var(--finra-actionable-foreground);
   flex-shrink: 0;
   transition:
     background-color var(--finra-duration-fast) ease-in-out,

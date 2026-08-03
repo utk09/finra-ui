@@ -104,7 +104,7 @@ export const VerticalInToolbar: Story = {
         alignItems: "center",
         gap: "0.75rem",
         padding: "0.5rem 1rem",
-        border: "1px solid #e5e7eb",
+        border: "var(--finra-border-thin) solid var(--finra-container-border)",
         borderRadius: 8,
       }}>
       <button type="button">Cut</button>

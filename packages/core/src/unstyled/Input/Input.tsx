@@ -1,5 +1,6 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
 import { Slot } from "../Slot";
 
@@ -37,7 +38,10 @@ export const InputBase = forwardRef<HTMLInputElement, InputBaseProps>(
     const fieldProps = useFormField(props);
     const Comp = asChild ? Slot : "input";
 
-    return <Comp ref={ref} {...fieldProps} />;
+    // Stamps the field id, so an unstyled input is reachable by the same
+    // selector as the field inside a styled Input. `fieldProps` follows, so a
+    // caller can still replace it.
+    return <Comp ref={ref} {...{ [FINRA_UI_ATTR]: componentIds.inputField }} {...fieldProps} />;
   },
 );
 

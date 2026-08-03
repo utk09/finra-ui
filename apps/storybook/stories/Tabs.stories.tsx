@@ -8,6 +8,9 @@ import { inDark } from "./_shared";
 const meta: Meta<typeof Tabs> = {
   title: "Components/Tabs",
   component: Tabs,
+  // Without these, the page documents the root's props and nothing about the
+  // three parts a consumer has to compose to use it at all.
+  subcomponents: { TabList, Tab, TabPanel },
   parameters: {
     layout: "padded",
   },
@@ -157,6 +160,66 @@ export const WithForms: Story = {
         </div>
       </TabPanel>
     </Tabs>
+  ),
+};
+
+/**
+ * Two supported ways to restyle, both shown against an untouched strip.
+ *
+ * Re-point a token on any ancestor and every tab below follows, dark mode
+ * included. For anything a token does not cover, target the part by its
+ * `data-finra-ui` id: `tabs`, `tab-list`, `tab` and `tab-panel`.
+ *
+ * ```css
+ * [data-finra-ui="tab"][data-state="active"] {
+ *   background: var(--finra-actionable-accent);
+ *   color: var(--finra-actionable-foreground);
+ * }
+ * ```
+ *
+ * Selected state is read from `data-state`, which the tab already carries, so
+ * no extra id is needed to reach it. Those rules are no more specific than the
+ * library's own and still win, because everything the library ships sits in
+ * `@layer finra-ui` and your stylesheet does not. The `:where()` wrapper only
+ * stops the demo leaking onto the rest of this page; it adds no specificity.
+ */
+export const Overrides: Story = {
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "2rem", maxInlineSize: "32rem" }}>
+      <Tabs defaultValue="a">
+        <TabList aria-label="Untouched">
+          <Tab value="a">Default</Tab>
+          <Tab value="b">Second</Tab>
+        </TabList>
+        <TabPanel value="a">The strip as the library ships it.</TabPanel>
+        <TabPanel value="b">Second panel.</TabPanel>
+      </Tabs>
+
+      <div className="tabs-pill-demo">
+        <style>{`
+          :where(.tabs-pill-demo) [data-finra-ui="tab-list"] {
+            border-block-end: none;
+            gap: 0.25rem;
+          }
+          :where(.tabs-pill-demo) [data-finra-ui="tab"] {
+            border-radius: 9999px;
+            padding-inline: 0.875rem;
+          }
+          :where(.tabs-pill-demo) [data-finra-ui="tab"][data-state="active"] {
+            background: var(--finra-actionable-accent);
+            color: var(--finra-actionable-foreground);
+          }
+        `}</style>
+        <Tabs defaultValue="a">
+          <TabList aria-label="Overridden">
+            <Tab value="a">Selector</Tab>
+            <Tab value="b">Second</Tab>
+          </TabList>
+          <TabPanel value="a">Underline swapped for a filled pill.</TabPanel>
+          <TabPanel value="b">Second panel.</TabPanel>
+        </Tabs>
+      </div>
+    </div>
   ),
 };
 

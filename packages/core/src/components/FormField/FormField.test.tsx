@@ -150,14 +150,27 @@ describe("FormField", () => {
     expect(input).toHaveAttribute("aria-invalid", "true");
   });
 
-  it("applies required class to label", () => {
+  it("marks a required field in the label text, not only in CSS", () => {
     render(
       <FormField label="Required Field" required>
         <TestInput />
       </FormField>,
     );
-    const label = screen.getByTestId("form-field-label");
-    expect(label.className).toMatch(/required/);
+    // A real node rather than `::after` content: generated content is absent
+    // from the accessible name in some assistive tech, and from textContent
+    // entirely, so a marker that only exists in CSS is a marker only sighted
+    // users on some browsers get.
+    expect(screen.getByTestId("form-field-required-marker")).toHaveTextContent("*");
+    expect(screen.getByTestId("form-field-label")).toHaveTextContent("Required Field *");
+  });
+
+  it("omits the required marker when the field is not required", () => {
+    render(
+      <FormField label="Optional Field">
+        <TestInput />
+      </FormField>,
+    );
+    expect(screen.queryByTestId("form-field-required-marker")).toBeNull();
   });
 
   it("applies fullWidth class", () => {

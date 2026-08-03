@@ -17,6 +17,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useAnchoredPosition } from "../../hooks/useAnchoredPosition";
 import { useDisclosure } from "../../hooks/useDisclosure";
 import type { Placement } from "../../logic/position";
@@ -195,6 +196,7 @@ export const TooltipTrigger = forwardRef<HTMLElement, TooltipTriggerProps>(
     return (
       <Comp
         ref={mergeRefs(ref, ctx.setReferenceEl)}
+        {...{ [FINRA_UI_ATTR]: componentIds.tooltipTrigger }}
         {...(asChild ? {} : { type: "button" as const })}
         aria-describedby={ctx.open ? ctx.contentId : undefined}
         onPointerEnter={(event: PointerEvent<HTMLElement>) => {
@@ -274,6 +276,7 @@ export const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(
       <Portal container={container}>
         <div
           ref={mergeRefs(ref, setFloating)}
+          {...{ [FINRA_UI_ATTR]: componentIds.tooltip }}
           role="tooltip"
           id={ctx.contentId}
           style={positionStyle}

@@ -71,7 +71,7 @@ export type { SliderBaseProps } from "./unstyled/Slider/Slider";
 export { SliderBase } from "./unstyled/Slider/Slider";
 export type { SwitchBaseProps } from "./unstyled/Switch/Switch";
 export { SwitchBase } from "./unstyled/Switch/Switch";
-export type { TabPanelProps, TabProps, TabsProps } from "./unstyled/Tabs/Tabs";
+export type { TabListProps, TabPanelProps, TabProps, TabsProps } from "./unstyled/Tabs/Tabs";
 export { Tab, TabList, TabPanel, Tabs } from "./unstyled/Tabs/Tabs";
 export type { TextareaBaseProps } from "./unstyled/Textarea/Textarea";
 export { TextareaBase } from "./unstyled/Textarea/Textarea";

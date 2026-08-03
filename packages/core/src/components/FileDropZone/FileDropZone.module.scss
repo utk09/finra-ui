@@ -8,8 +8,8 @@
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
   color: var(--finra-container-foreground-muted);
-  background-color: var(--finra-color-background);
-  border: var(--finra-border-medium) dashed var(--finra-color-border);
+  background-color: var(--finra-container-background);
+  border: var(--finra-border-medium) dashed var(--finra-container-border);
   border-radius: var(--finra-radius-lg);
   cursor: var(--finra-cursor-pointer);
   transition:
@@ -41,8 +41,8 @@
     cursor: var(--finra-cursor-disabled);
 
     &:hover {
-      border-color: var(--finra-color-border);
-      background-color: var(--finra-color-background);
+      border-color: var(--finra-container-border);
+      background-color: var(--finra-container-background);
     }
   }
 }

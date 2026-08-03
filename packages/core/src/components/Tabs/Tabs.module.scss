@@ -39,7 +39,7 @@
   background: transparent;
   border: none;
   // Reserve space for the active indicator so switching does not shift layout.
-  border-block-end: 2px solid transparent;
+  border-block-end: var(--finra-border-medium) solid transparent;
   margin-block-end: calc(-1 * var(--finra-border-thin));
   cursor: var(--finra-cursor-pointer);
 }
@@ -47,7 +47,7 @@
 .root[data-orientation="vertical"] > .list > .tab {
   justify-content: flex-start;
   border-block-end: none;
-  border-inline-end: 2px solid transparent;
+  border-inline-end: var(--finra-border-medium) solid transparent;
   margin-block-end: 0;
   margin-inline-end: calc(-1 * var(--finra-border-thin));
 }

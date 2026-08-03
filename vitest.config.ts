@@ -14,8 +14,7 @@ export default defineConfig({
       /**
        * Keep documentation tooling out of the coverage percentage.
        *
-       * The Storybook addon runs coverage against its own project only
-       * (`project: ["storybook:*"]`), so it measures one thing: how much of the
+       * Coverage over the `stories` project measures one thing: how much of the
        * code the preview loads is exercised *by stories*. `docgen.ts` and the
        * `docs/` furniture are loaded by `preview.tsx` but run in docs mode, so
        * stories can never execute them and the figure only ever falls as more
@@ -61,7 +60,11 @@ export default defineConfig({
             enabled: true,
             provider: playwright({}),
             headless: true,
-            instances: [{ browser: "chromium" }],
+            // Named explicitly. Vitest derives an instance name from the
+            // browser (`chromium`) when none is given, and `pnpm test:stories`
+            // selects this project with `--project stories`, so leaving it
+            // implicit would tie a script to a value nothing declares.
+            instances: [{ browser: "chromium", name: "stories" }],
           },
           // No setupFiles: since Storybook 10.3 @storybook/addon-vitest applies
           // preview + a11y annotations automatically (previously wired via a

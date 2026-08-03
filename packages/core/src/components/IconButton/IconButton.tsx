@@ -2,7 +2,6 @@ import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import { forwardRef } from "react";
 
-import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import type { Sentiment, Variant } from "../../types/variants";
 import { IconButtonBase, type IconButtonBaseProps } from "../../unstyled/IconButton/IconButton";
 import styles from "./IconButton.module.scss";
@@ -75,7 +74,6 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       <IconButtonBase
         ref={ref}
         type="button"
-        {...{ [FINRA_UI_ATTR]: componentIds.iconButton }}
         className={clsx(
           iconButtonVariants({ variant }),
           sentiment && sentimentClasses[sentiment],

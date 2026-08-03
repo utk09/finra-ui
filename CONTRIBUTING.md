@@ -39,11 +39,18 @@ This is a pnpm monorepo orchestrated by Turborepo. All dependency versions are c
 | --- | --- |
 | `pnpm dev` | Storybook dev server |
 | `pnpm build` | Build all packages |
-| `pnpm test` | Full test suite (includes the browser-based Storybook project) |
-| `pnpm test:coverage` | Unit tests with coverage (85% per-file threshold - a hard gate) |
+| `pnpm test` | Every package's `test` script, story tests included |
+| `pnpm test:coverage` | Package unit tests with coverage (85% per-file threshold - a hard gate) |
+| `pnpm test:stories` | Just the story `play` functions in real Chromium, plus the Storybook app's own unit tests |
 | `pnpm typecheck` | TypeScript checks |
 | `pnpm lint` / `pnpm lint:fix` | Biome + Prettier check / autofix (see Tooling below) |
-| `pnpm verify` | `lint → typecheck → test:coverage → build` - reproduces every CI/push gate; run before pushing |
+| `pnpm verify` | `lint → typecheck → test:coverage → test:stories → build` - reproduces every CI/push gate; run before pushing |
+
+`test:stories` drives a real browser, so it needs the Playwright binaries once per machine: `pnpm exec playwright install --with-deps chromium`.
+
+**The story tests live in the root `vitest.config.ts`, not in a package.** It declares four projects: the two package suites, the Storybook app's own unit tests, and the browser project that runs every story. `apps/storybook`'s `test` script selects the latter two (`vitest run --root ../.. --project storybook-app --project stories`), which is what brings them under Turborepo and its cache. Without a `test` script there, `turbo test` walks straight past them. This is also where the accessibility gate lives: stories carry `a11y.test: "error"`, so an axe violation fails there and in no other command.
+
+Because that script reaches outside its own package, `turbo.json` lists `../../vitest.config.ts` in the `test` task's `inputs`. `$TURBO_DEFAULT$` only sees the package directory, so without it an edit to the root config would be served a stale pass from cache.
 
 ## Tooling
 
@@ -98,7 +105,7 @@ What you write in the PR description is what the changelog entry gets written fr
 
 ### Testing
 
-- Vitest + Testing Library (+ user-event) in jsdom; Storybook `play` functions run in a separate real-browser project - they only execute under the full `pnpm test`, not under `--filter`ed coverage runs.
+- Vitest + Testing Library (+ user-event) in jsdom; Storybook `play` functions run in a separate real-browser project - they execute under `pnpm test` / `pnpm test:stories`, never under `turbo test` or a `--filter`ed coverage run.
 - The test setup sets `testIdAttribute: "data-finra-ui"`, so `getByTestId("<component-id>")` addresses role-less roots. Never traverse off a queried node (`closest`, `parentElement`, `querySelector`) - the custom `no-node-access` GritQL rule is a hard error. Do not add separate `data-testid` attributes.
 - Pure engines under `logic/` and `utils/` still run in jsdom. Splitting them out to the `node` environment was measured and made no difference to wall clock, because files already run in parallel and the critical path is the component tests.
 - Portalled overlays with entrance animations: wrap visibility assertions in `waitFor` (real browsers race the fade).

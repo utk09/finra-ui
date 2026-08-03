@@ -221,7 +221,7 @@ export const Validation: Story = {
  *   font-size: 0.66em;
  * }
  * [data-finra-ui="price-input-pips"] {
- *   color: #0d9488;
+ *   color: #0f766e;
  *   font-size: 1.2em;
  * }
  * [data-finra-ui="price-input-fractional-pip"] {
@@ -261,7 +261,7 @@ export const Overrides: Story = {
             font-size: 0.66em;
           }
           :where(.price-hierarchy-demo) [data-finra-ui="price-input-pips"] {
-            color: #0d9488;
+            color: #0f766e;
             font-size: 1.2em;
           }
           :where(.price-hierarchy-demo) [data-finra-ui="price-input-fractional-pip"] {
@@ -278,3 +278,16 @@ export const Overrides: Story = {
 
 /** Dark-mode counterpart of `FXSpot`, so the accessibility check covers dark contrast. */
 export const DarkMode: Story = inDark(FXSpot);
+
+/**
+ * Secondary variant in dark mode, with a value on screen.
+ *
+ * The value is the point. This variant paints its own field surface, and a
+ * placeholder is drawn in the muted colour, so an empty field looks correct
+ * even when the surface and the text resolve to the same colour. Only a
+ * populated field puts that in front of the accessibility check.
+ */
+export const SecondaryVariantDark: Story = inDark({
+  ...FXSpot,
+  args: { ...FXSpot.args, variant: "secondary" },
+});

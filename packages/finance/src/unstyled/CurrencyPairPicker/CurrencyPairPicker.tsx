@@ -1325,7 +1325,11 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
         text changes. Silent while closed, busy or errored; those rows announce
         themselves.
       */}
-      <div role="status" aria-live="polite" style={SR_ONLY}>
+      <div
+        {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPickerStatus }}
+        role="status"
+        aria-live="polite"
+        style={SR_ONLY}>
         {isOpen && !busy && !errorNode ? formatResultCount(flat.length) : ""}
       </div>
     </div>

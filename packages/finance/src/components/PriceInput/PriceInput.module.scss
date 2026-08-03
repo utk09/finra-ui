@@ -1,6 +1,6 @@
 //  Root - the input bar (and positioning context for the hierarchy overlay)
 .root {
-  --_input-border-color: var(--finra-color-border);
+  --_input-border-color: var(--finra-container-border);
 
   position: relative;
   display: inline-flex;
@@ -11,7 +11,7 @@
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
   font-variant-numeric: tabular-nums;
-  background-color: var(--finra-color-background);
+  background-color: var(--finra-container-background);
   border: var(--finra-border-thin) solid var(--_input-border-color);
   border-radius: var(--finra-radius-md);
   transition: border-color var(--finra-duration-fast) ease-in-out;
@@ -30,7 +30,7 @@
   }
 
   &.variantSecondary {
-    background-color: var(--finra-color-neutral-50);
+    background-color: var(--finra-container-background-subtle);
   }
 
   &.variantTertiary {
@@ -76,7 +76,7 @@
   background: transparent;
   font: inherit;
   font-variant-numeric: inherit;
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   text-align: end;
 
   &:focus-visible {
@@ -93,7 +93,7 @@
 .hasHierarchy {
   .input {
     color: transparent;
-    caret-color: var(--finra-color-foreground);
+    caret-color: var(--finra-container-foreground);
   }
 }
 
@@ -108,7 +108,7 @@
   pointer-events: none;
   font: inherit;
   font-variant-numeric: inherit;
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
 }
 
 //  One inline line: the mixed-size segments share a text baseline.
@@ -121,7 +121,7 @@
 .segInteger,
 .segSeparator,
 .segPrimary {
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   font-weight: var(--finra-font-semibold);
 }
 
@@ -144,7 +144,7 @@
 }
 
 .segPips {
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   font-size: 1em;
   font-weight: var(--finra-font-bold);
 }

@@ -127,6 +127,13 @@ export const componentIds = {
   currencyPairPickerEmpty: "currency-pair-picker-empty",
   currencyPairPickerLoading: "currency-pair-picker-loading",
   currencyPairPickerError: "currency-pair-picker-error",
+  /**
+   * Visually hidden result-count announcement.
+   *
+   * @remarks
+   * Carries no class, being positioned by an inline style, so it is reachable only through this id.
+   */
+  currencyPairPickerStatus: "currency-pair-picker-status",
   /** Instrument badges, so consumers can theme them without a render prop. */
   currencyPairBadge: "currency-pair-badge",
 } as const;

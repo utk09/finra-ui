@@ -13,6 +13,7 @@ import {
   useRef,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useControlledValue } from "../../hooks/useControlledValue";
 import { resolveTabsKey, type TabsActivationMode, type TabsOrientation } from "../../logic/tabs";
 import { mergeRefs } from "../../utils/mergeRefs";
@@ -100,7 +101,14 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
 
     return (
       <TabsContext.Provider value={ctx}>
-        <div ref={ref} data-orientation={orientation} {...rest}>
+        {/* Each part stamps its own id, so an unstyled Tabs is reachable by the
+            same selector as a styled one. `rest` follows, so a caller can still
+            replace it. */}
+        <div
+          ref={ref}
+          {...{ [FINRA_UI_ATTR]: componentIds.tabs }}
+          data-orientation={orientation}
+          {...rest}>
           {children}
         </div>
       </TabsContext.Provider>
@@ -113,9 +121,39 @@ Tabs.displayName = "Tabs";
 //  List
 
 /**
- * The `role="tablist"` strip. Owns roving focus over its tabs.
+ * Props for the `role="tablist"` strip.
+ *
+ * @remarks
+ * Owns roving focus: exactly one tab is tabbable at a time, and the arrow keys
+ * move between them along the axis set by the root's `orientation`. Disabled
+ * tabs are skipped rather than focused.
+ *
+ * The members are declared explicitly rather than left to `HTMLAttributes`,
+ * because `react-docgen` does not follow `extends` across modules and the strip
+ * would otherwise document nothing at all.
  */
-export const TabList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+export interface TabListProps extends HTMLAttributes<HTMLDivElement> {
+  /** The `Tab` elements. Their DOM order is the arrow-key order. */
+  children?: ReactNode;
+  /**
+   * Accessible name for the strip.
+   *
+   * @remarks
+   * Supply this or `aria-labelledby`. A tablist with neither is announced as an
+   * unnamed group of tabs, which tells a screen-reader user what the control is
+   * but not what it switches between.
+   */
+  "aria-label"?: string;
+  /** Ids of the elements naming the strip, when that text is already on screen. */
+  "aria-labelledby"?: string;
+}
+
+/**
+ * The `role="tablist"` strip. Owns roving focus over its tabs.
+ *
+ * @see {@link TabListProps}
+ */
+export const TabList = forwardRef<HTMLDivElement, TabListProps>(
   ({ children, onKeyDown, ...rest }, ref) => {
     const ctx = useTabsContext("List");
     const listRef = useRef<HTMLDivElement>(null);
@@ -163,6 +201,7 @@ export const TabList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>
       // tab). jsx-a11y wrongly wants the container itself focusable.
       <div
         ref={mergeRefs(ref, listRef)}
+        {...{ [FINRA_UI_ATTR]: componentIds.tabList }}
         role="tablist"
         aria-orientation={orientation}
         onKeyDown={handleKeyDown}
@@ -202,6 +241,7 @@ export const Tab = forwardRef<HTMLButtonElement, TabProps>(
     return (
       <button
         ref={ref}
+        {...{ [FINRA_UI_ATTR]: componentIds.tab }}
         type="button"
         role="tab"
         id={tabId(ctx.baseId, value)}
@@ -241,8 +281,9 @@ Tab.displayName = "Tab";
  * Props for one tab panel.
  *
  * @remarks
- * Only the selected panel is rendered. It takes `tabIndex={0}` so keyboard
- * users can reach panel content that contains nothing focusable of its own.
+ * Every panel stays mounted; the unselected ones carry `hidden`. It takes
+ * `tabIndex={0}` so keyboard users can reach panel content that contains
+ * nothing focusable of its own.
  */
 export interface TabPanelProps extends HTMLAttributes<HTMLDivElement> {
   /** Must match the `value` of the controlling tab. */
@@ -250,7 +291,7 @@ export interface TabPanelProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * One tab panel. Only the selected panel is rendered.
+ * One tab panel. Unselected panels stay mounted and carry `hidden`.
  *
  * @see {@link TabPanelProps}
  */
@@ -262,6 +303,7 @@ export const TabPanel = forwardRef<HTMLDivElement, TabPanelProps>(
     return (
       <div
         ref={ref}
+        {...{ [FINRA_UI_ATTR]: componentIds.tabPanel }}
         role="tabpanel"
         id={panelId(ctx.baseId, value)}
         aria-labelledby={tabId(ctx.baseId, value)}

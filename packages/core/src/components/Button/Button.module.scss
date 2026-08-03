@@ -98,7 +98,7 @@
     --_btn-accent-hover: var(--finra-status-danger-accent-hover);
     --_btn-accent-active: var(--finra-status-danger-accent-active);
     --_btn-accent-subtle: var(--finra-status-danger-subtle);
-    --_btn-on-accent: var(--finra-color-white);
+    --_btn-on-accent: var(--finra-status-danger-foreground);
   }
 
   &.sentimentSuccess {
@@ -106,7 +106,7 @@
     --_btn-accent-hover: var(--finra-status-success-accent-hover);
     --_btn-accent-active: var(--finra-status-success-accent-active);
     --_btn-accent-subtle: var(--finra-status-success-subtle);
-    --_btn-on-accent: var(--finra-color-white);
+    --_btn-on-accent: var(--finra-status-success-foreground);
   }
 
   &.sentimentWarning {
@@ -114,7 +114,7 @@
     --_btn-accent-hover: var(--finra-status-warning-accent-hover);
     --_btn-accent-active: var(--finra-status-warning-accent-active);
     --_btn-accent-subtle: var(--finra-status-warning-subtle);
-    --_btn-on-accent: var(--finra-color-white);
+    --_btn-on-accent: var(--finra-status-warning-foreground);
   }
 
   &.sentimentInfo {
@@ -122,7 +122,7 @@
     --_btn-accent-hover: var(--finra-status-info-accent-hover);
     --_btn-accent-active: var(--finra-status-info-accent-active);
     --_btn-accent-subtle: var(--finra-status-info-subtle);
-    --_btn-on-accent: var(--finra-color-white);
+    --_btn-on-accent: var(--finra-status-info-foreground);
   }
 
   //  Full width

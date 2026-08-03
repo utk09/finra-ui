@@ -32,6 +32,10 @@ catalog:
   husky: 9.1.7
   jsdom: 30.0.1
   lint-staged: 17.3.0
+  # Declared explicitly rather than left as an auto-installed peer of
+  # @vitest/browser-playwright: CI installs browsers from it, so the version has
+  # to be pinnable and cacheable on the lockfile hash.
+  playwright: 1.58.2
   prettier: 3.9.6
   react: 19.2.8
   react-dom: 19.2.8

@@ -6,7 +6,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
 
   &.disabled {
     opacity: var(--finra-opacity-disabled);
@@ -43,9 +43,9 @@
   justify-content: center;
   inline-size: var(--finra-density-checkbox-size);
   block-size: var(--finra-density-checkbox-size);
-  border: var(--finra-border-thin) solid var(--finra-color-border);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
   border-radius: var(--finra-radius-full);
-  background-color: var(--finra-color-background);
+  background-color: var(--finra-container-background);
   flex-shrink: 0;
   transition: border-color var(--finra-duration-fast) ease-in-out;
 

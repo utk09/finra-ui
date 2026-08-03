@@ -50,6 +50,7 @@ export const componentIds = {
   // FormField
   formField: "form-field",
   formFieldLabel: "form-field-label",
+  formFieldRequiredMarker: "form-field-required-marker",
   formFieldHelper: "form-field-helper",
   formFieldError: "form-field-error",
 
@@ -125,6 +126,13 @@ export const componentIds = {
   comboBoxLoading: "combo-box-loading",
   comboBoxSpinner: "combo-box-spinner",
   comboBoxFooter: "combo-box-footer",
+  /**
+   * Visually hidden result-count announcement.
+   *
+   * @remarks
+   * Carries no class, being positioned by an inline style, so it is reachable only through this id.
+   */
+  comboBoxStatus: "combo-box-status",
 
   // Dialog
   dialog: "dialog",
@@ -136,6 +144,7 @@ export const componentIds = {
 
   // Tooltip
   tooltip: "tooltip",
+  tooltipTrigger: "tooltip-trigger",
 
   // Popover
   popover: "popover",

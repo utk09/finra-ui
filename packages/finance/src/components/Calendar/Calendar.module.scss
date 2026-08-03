@@ -37,8 +37,8 @@
   }
 
   &:hover {
-    background-color: var(--finra-color-neutral-100);
-    color: var(--finra-color-foreground);
+    background-color: var(--finra-container-background-hover);
+    color: var(--finra-container-foreground);
   }
 
   &:focus-visible {
@@ -58,7 +58,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-sm);
   font-weight: var(--finra-font-semibold);
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   white-space: nowrap;
 }
 
@@ -112,7 +112,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-sm);
   font-variant-numeric: tabular-nums;
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   cursor: var(--finra-cursor-pointer);
   transition: background-color var(--finra-duration-fast) ease-in-out;
 
@@ -163,7 +163,7 @@
   }
 
   &.dayOutside {
-    color: var(--finra-color-neutral-200);
+    color: var(--finra-container-foreground-muted);
     cursor: var(--finra-cursor-disabled);
   }
 }
@@ -179,7 +179,7 @@
 }
 
 .day[data-range-middle] {
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   background-color: var(--finra-actionable-accent-subtle);
 }
 
@@ -229,7 +229,7 @@
   justify-content: center;
   gap: calc(var(--finra-density-gap) * 0.5);
   padding-block-start: calc(var(--finra-density-gap) * 0.5);
-  border-block-start: var(--finra-border-thin) solid var(--finra-color-neutral-100);
+  border-block-start: var(--finra-border-thin) solid var(--finra-container-border);
 }
 
 .shortcuts {

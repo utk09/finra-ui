@@ -22,13 +22,12 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-sm);
   font-weight: var(--finra-font-medium);
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   line-height: var(--finra-leading-normal);
+}
 
-  &.required::after {
-    content: " *";
-    color: var(--finra-status-danger-accent);
-  }
+.requiredMarker {
+  color: var(--finra-status-danger-accent);
 }
 
 .helperText {

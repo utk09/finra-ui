@@ -36,6 +36,9 @@ const PLACEMENTS = [
 const meta: Meta<typeof Select> = {
   title: "Components/Select",
   component: Select,
+  // The root owns state and renders nothing. Without these, the page documents
+  // its props and none of the parts a consumer actually composes.
+  subcomponents: { SelectTrigger, SelectContent },
   parameters: {
     layout: "centered",
   },
@@ -145,6 +148,80 @@ export const DarkModeOpen: Story = {
     await waitFor(() => expect(listbox).toBeVisible());
     // Deliberately left open: the a11y check is an afterEach, so whatever is on
     // screen when play resolves is what gets audited.
+  },
+};
+
+/**
+ * Two supported ways to restyle, both shown against an untouched select.
+ *
+ * Re-point a token on any ancestor and every part below follows, dark mode
+ * included. For anything a token does not cover, target the part by its
+ * `data-finra-ui` id: `select-trigger`, `select-value`, `select-indicator`,
+ * `select` for the listbox panel, and `select-option`.
+ *
+ * ```css
+ * [data-finra-ui="select-option"][data-selected] {
+ *   border-inline-start: 3px solid var(--finra-actionable-emphasis);
+ * }
+ * ```
+ *
+ * Selected and highlighted state are read from `data-selected` and
+ * `data-active`, which each option already carries, so no extra id is needed
+ * to reach them. The library already sets a heavier weight on the selected
+ * option, so a rule that only restated that would demonstrate nothing.
+ *
+ * **The listbox portals to `document.body`.** A token declared on a wrapper
+ * cannot reach it, because custom properties inherit through the DOM and the
+ * popup is not inside that wrapper. Pass `container` to bring it back into a
+ * node you own, which is what makes the override below apply.
+ */
+export const Overrides: Story = {
+  render: function Render() {
+    const [scope, setScope] = useState<HTMLDivElement | null>(null);
+    return (
+      <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start" }}>
+        <div style={{ inlineSize: "12rem" }}>
+          <p style={{ margin: "0 0 0.5rem", fontSize: "0.75rem" }}>Default</p>
+          <Select options={options} defaultValue="msft" placeholder="Select a ticker">
+            <SelectTrigger aria-label="Default ticker" />
+            <SelectContent aria-label="Default tickers" />
+          </Select>
+        </div>
+        <div
+          ref={setScope}
+          className="select-override-demo"
+          style={
+            {
+              inlineSize: "12rem",
+              "--finra-actionable-accent-subtle": "#ede9fe",
+              "--finra-actionable-emphasis": "#8b5cf6",
+              "--finra-radius-md": "0.75rem",
+            } as React.CSSProperties
+          }>
+          <style>{`
+            :where(.select-override-demo) [data-finra-ui="select-option"][data-selected] {
+              border-inline-start: 3px solid var(--finra-actionable-emphasis);
+              padding-inline-start: calc(var(--finra-spacing-2) - 3px);
+            }
+          `}</style>
+          <p style={{ margin: "0 0 0.5rem", fontSize: "0.75rem" }}>Overridden</p>
+          <Select options={options} defaultValue="msft" placeholder="Select a ticker">
+            <SelectTrigger aria-label="Overridden ticker" />
+            <SelectContent aria-label="Overridden tickers" container={scope} />
+          </Select>
+        </div>
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    // Open it, so the portalled listbox is on screen and visibly inside the
+    // scope. A resting-state view shows none of the parts being overridden.
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("combobox", { name: "Overridden ticker" }));
+    const listbox = await within(document.body).findByRole("listbox", {
+      name: "Overridden tickers",
+    });
+    await waitFor(() => expect(listbox).toBeVisible());
   },
 };
 

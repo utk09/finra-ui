@@ -163,6 +163,27 @@ describe("mergeInheritedArgTypes", () => {
     expect(out.label.description).toBe("styled wins");
   });
 
+  it("backfills a description onto a prop a story declared as a bare control", () => {
+    // `argTypes: { indeterminate: { control: "boolean" } }` creates an entry
+    // with no description, which then shadowed the documented one on the base.
+    // An entry that exists is not the same as an entry that is documented.
+    const argTypes = { indeterminate: { name: "indeterminate", control: "boolean" } } as never;
+    const base = withDocgen({
+      indeterminate: {
+        description: "Show the mixed state.\n@remarks A DOM property, not an attribute.",
+      },
+    });
+    const out = mergeInheritedArgTypes(argTypes, base) as never as Record<
+      string,
+      { description: string; control: string }
+    >;
+    expect(out.indeterminate.description).toBe(
+      "Show the mixed state.\n\nA DOM property, not an attribute.",
+    );
+    // The story's own control must survive the backfill.
+    expect(out.indeterminate.control).toBe("boolean");
+  });
+
   it("backfills a default onto a prop the styled layer re-declared without one", () => {
     // A styled wrapper that restates its props but not their defaults leaves the
     // column empty; the default is applied by the base.

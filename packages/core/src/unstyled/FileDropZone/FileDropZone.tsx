@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
 import type { AriaInvalid } from "../../logic/formField";
 import { mergeRefs } from "../../utils/mergeRefs";
@@ -163,6 +164,7 @@ export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBasePro
       <>
         <input
           ref={mergeRefs(forwardedRef, internalRef)}
+          {...{ [FINRA_UI_ATTR]: componentIds.fileDropZoneInput }}
           type="file"
           style={{ display: "none" }}
           accept={accept}
@@ -172,7 +174,11 @@ export const FileDropZoneBase = forwardRef<HTMLInputElement, FileDropZoneBasePro
           tabIndex={-1}
           aria-hidden="true"
         />
+        {/* Each part stamps its own id, so an unstyled drop zone is reachable
+            by the same selectors as a styled one. `props` follows, so a caller
+            can still replace it. */}
         <div
+          {...{ [FINRA_UI_ATTR]: componentIds.fileDropZone }}
           role="button"
           id={field.id}
           tabIndex={isDisabled ? -1 : 0}

@@ -13,6 +13,7 @@ import {
 import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
 import type { ValidationStatus as _ValidationStatus, Variant } from "../../types/variants";
+import { InputBase } from "../../unstyled/Input/Input";
 import styles from "./Input.module.scss";
 
 /**
@@ -169,9 +170,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {startAdornment}
           </span>
         ) : null}
-        <input
+        {/* The field is `InputBase`, not a bare <input>, so both entry points
+            run one implementation. `fieldProps` is already merged here because
+            the wrapper needs the resolved disabled state; the base merges again
+            and `mergeControlA11y` is idempotent. */}
+        <InputBase
           ref={inputRef}
-          {...{ [FINRA_UI_ATTR]: componentIds.inputField }}
           className={styles.field}
           readOnly={readOnly}
           value={value}

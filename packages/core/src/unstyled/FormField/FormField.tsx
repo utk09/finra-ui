@@ -8,6 +8,7 @@ import {
   useId,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { FormFieldContext } from "../../context/FormFieldContext";
 import {
   computeDescribedBy,
@@ -36,6 +37,25 @@ function pickOwnA11y(props: Record<string, unknown>): FormFieldOwnA11y {
     "aria-invalid": props["aria-invalid"] as boolean | undefined,
     disabled: props.disabled as boolean | undefined,
   };
+}
+
+/**
+ * CSS class overrides for the parts a FormField renders below its root.
+ *
+ * @remarks
+ * The root takes `className` like any element. These name the inner parts,
+ * which a caller cannot otherwise reach, and are how the styled `FormField`
+ * dresses this component rather than reimplementing it.
+ */
+export interface FormFieldClassNames {
+  /** The `<label>`. */
+  label?: string;
+  /** The marker appended to the label when `required`. */
+  requiredMarker?: string;
+  /** The error paragraph. Rendered only when `validationStatus` is `"error"`. */
+  error?: string;
+  /** The helper-text paragraph. */
+  helper?: string;
 }
 
 /**
@@ -70,6 +90,8 @@ export interface FormFieldBaseProps extends HTMLAttributes<HTMLDivElement> {
   disabled?: boolean;
   /** Explicit id for the input element. Auto-generated if omitted. */
   htmlFor?: string;
+  /** CSS class names for the inner parts. The root uses `className`. */
+  classNames?: FormFieldClassNames;
   /**
    * The control. Usually one element; non-element children (bare strings) are
    * passed through untouched rather than dropped.
@@ -93,6 +115,7 @@ export const FormFieldBase = forwardRef<HTMLDivElement, FormFieldBaseProps>(
       required,
       disabled,
       htmlFor,
+      classNames,
       children,
       ...props
     },
@@ -140,21 +163,49 @@ export const FormFieldBase = forwardRef<HTMLDivElement, FormFieldBaseProps>(
 
     return (
       <FormFieldContext.Provider value={field}>
-        <div ref={ref} {...props}>
-          <label id={labelId} htmlFor={fieldId}>
+        {/* Each part stamps its own id, so an unstyled field is reachable by
+            the same selectors as a styled one. `props` follows on the root, so
+            a caller can still replace it. */}
+        <div ref={ref} {...{ [FINRA_UI_ATTR]: componentIds.formField }} {...props}>
+          <label
+            {...{ [FINRA_UI_ATTR]: componentIds.formFieldLabel }}
+            id={labelId}
+            htmlFor={fieldId}
+            className={classNames?.label}>
             {label}
-            {required ? " *" : null}
+            {/* A real text node, not generated content. `::after` is absent from
+                `textContent`, and assistive tech that ignores generated content
+                never announces it, so the marker would exist only for sighted
+                users on Chromium. */}
+            {required ? (
+              <span
+                {...{ [FINRA_UI_ATTR]: componentIds.formFieldRequiredMarker }}
+                className={classNames?.requiredMarker}>
+                {" *"}
+              </span>
+            ) : null}
           </label>
 
           {enhancedChildren}
 
           {showError ? (
-            <p id={errorId} role="alert">
+            <p
+              {...{ [FINRA_UI_ATTR]: componentIds.formFieldError }}
+              id={errorId}
+              role="alert"
+              className={classNames?.error}>
               {errorMessage}
             </p>
           ) : null}
 
-          {helperText ? <p id={helperId}>{helperText}</p> : null}
+          {helperText ? (
+            <p
+              {...{ [FINRA_UI_ATTR]: componentIds.formFieldHelper }}
+              id={helperId}
+              className={classNames?.helper}>
+              {helperText}
+            </p>
+          ) : null}
         </div>
       </FormFieldContext.Provider>
     );

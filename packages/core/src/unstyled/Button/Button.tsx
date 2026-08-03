@@ -1,5 +1,6 @@
 import { type ButtonHTMLAttributes, forwardRef } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { Slot } from "../Slot";
 
 /**
@@ -33,7 +34,10 @@ export const ButtonBase = forwardRef<HTMLButtonElement, ButtonBaseProps>(
   ({ asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
 
-    return <Comp ref={ref} {...props} />;
+    // Stamps its own id, so an unstyled button is reachable by the same
+    // selector as a styled one. `props` follows, so a caller can still replace
+    // it. Under `asChild` the id lands on the child, which is the button.
+    return <Comp ref={ref} {...{ [FINRA_UI_ATTR]: componentIds.button }} {...props} />;
   },
 );
 

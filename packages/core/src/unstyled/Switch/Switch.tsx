@@ -1,5 +1,6 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
 
 /**
@@ -21,10 +22,20 @@ export interface SwitchBaseProps
 export const SwitchBase = forwardRef<HTMLInputElement, SwitchBaseProps>((props, ref) => {
   // Wire into an enclosing FormField (works at any depth; no-op standalone).
   const fieldProps = useFormField(props);
-  // The native checked state maps to aria-checked, so the attribute is not
-  // needed. This is the APG switch pattern verbatim.
-  // biome-ignore lint/a11y/useAriaPropsForRole: native checked state supplies aria-checked, see above
-  return <input ref={ref} type="checkbox" role="switch" {...fieldProps} />;
+  // Stamps its own id, so an unstyled switch is reachable by the same selector
+  // as a styled one. `fieldProps` follows, so a caller can still replace it.
+  return (
+    <input
+      ref={ref}
+      {...{ [FINRA_UI_ATTR]: componentIds.switchInput }}
+      type="checkbox"
+      // The native checked state maps to aria-checked, so the attribute is not
+      // needed. This is the APG switch pattern verbatim.
+      // biome-ignore lint/a11y/useAriaPropsForRole: native checked state supplies aria-checked, see above
+      role="switch"
+      {...fieldProps}
+    />
+  );
 });
 
 SwitchBase.displayName = "SwitchBase";

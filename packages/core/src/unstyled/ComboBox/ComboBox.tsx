@@ -1048,7 +1048,11 @@ function ComboBoxBaseRender<T = string>(
         announced); only its text changes. Silent while closed or loading - the
         loading node has its own aria-live.
       */}
-      <div role="status" aria-live="polite" style={SR_ONLY}>
+      <div
+        {...{ [FINRA_UI_ATTR]: componentIds.comboBoxStatus }}
+        role="status"
+        aria-live="polite"
+        style={SR_ONLY}>
         {isOpen && !loading ? formatResultCount(totalNavigable) : ""}
       </div>
     </div>

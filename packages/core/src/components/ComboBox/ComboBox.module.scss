@@ -11,7 +11,7 @@
 
 //  Trigger wrapper
 .wrapper {
-  --_input-border-color: var(--finra-color-border);
+  --_input-border-color: var(--finra-container-border);
 
   display: inline-flex;
   align-items: center;
@@ -21,7 +21,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
-  background-color: var(--finra-color-background);
+  background-color: var(--finra-container-background);
   border: var(--finra-border-thin) solid var(--_input-border-color);
   border-radius: var(--finra-radius-md);
   transition: border-color var(--finra-duration-fast) ease-in-out;
@@ -55,7 +55,7 @@
 
   &.variantSecondary {
     border-width: var(--finra-border-thin);
-    background-color: var(--finra-color-neutral-50);
+    background-color: var(--finra-container-background-subtle);
   }
 
   &.variantTertiary {
@@ -90,7 +90,7 @@
   outline: none;
   background: transparent;
   font: inherit;
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   padding: 0;
 
   // Override global :focus-visible - wrapper handles focus indication
@@ -121,7 +121,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
 }
 
 //  Multi-value container
@@ -147,11 +147,11 @@
   gap: 0.125rem;
   block-size: var(--finra-density-size-compact);
   padding-inline: var(--finra-density-gap);
-  background-color: var(--finra-color-neutral-100);
-  border: var(--finra-border-thin) solid var(--finra-color-neutral-200);
+  background-color: var(--finra-container-background-subtle);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
   border-radius: var(--finra-radius-full);
   font-size: var(--finra-text-xs);
-  color: var(--finra-color-neutral-900);
+  color: var(--finra-container-foreground);
   user-select: none;
   flex-shrink: 0;
 }
@@ -176,7 +176,7 @@
   flex-shrink: 0;
 
   &:hover {
-    color: var(--finra-color-foreground);
+    color: var(--finra-container-foreground);
   }
 
   // Now a real (roving) tab stop, so it needs its own visible focus ring - the
@@ -184,7 +184,7 @@
   &:focus-visible {
     outline: var(--finra-focus-width) solid var(--finra-focus-color);
     outline-offset: var(--finra-focus-offset);
-    color: var(--finra-color-foreground);
+    color: var(--finra-container-foreground);
   }
 
   > svg {
@@ -226,8 +226,8 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  background-color: var(--finra-color-background);
-  border: var(--finra-border-thin) solid var(--finra-color-border);
+  background-color: var(--finra-container-background);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
   border-radius: var(--finra-radius-md);
   box-shadow: var(--finra-shadow-lg);
   overflow: hidden;
@@ -251,7 +251,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   cursor: var(--finra-cursor-pointer);
   user-select: none;
   transition: background-color var(--finra-duration-fast) ease-in-out;
@@ -297,7 +297,7 @@
 //  Groups
 .group {
   &:not(:first-child) {
-    border-block-start: var(--finra-border-thin) solid var(--finra-color-neutral-100);
+    border-block-start: var(--finra-border-thin) solid var(--finra-container-border);
   }
 }
 
@@ -321,11 +321,11 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-xs);
   color: var(--finra-container-foreground-muted);
-  border-block-end: var(--finra-border-thin) solid var(--finra-color-neutral-100);
+  border-block-end: var(--finra-border-thin) solid var(--finra-container-border);
 }
 
 .footer {
-  border-block-start: var(--finra-border-thin) solid var(--finra-color-neutral-100);
+  border-block-start: var(--finra-border-thin) solid var(--finra-container-border);
   border-block-end: none;
 }
 

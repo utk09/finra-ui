@@ -54,6 +54,20 @@
   --finra-container-disabled-foreground: var(--finra-color-neutral-500);
   --finra-container-disabled-border: var(--finra-color-neutral-200);
 
+  // A ramp of surfaces stepping away from container-background, for parts that
+  // sit on the page rather than beside it. Each has to flip, for the reason
+  // container-disabled exists: the neutral scale does not.
+  //
+  // background-subtle - a recessed field surface, used by the secondary variant
+  // of every input-shaped component.
+  --finra-container-background-subtle: var(--finra-color-neutral-50);
+  // background-hover - the wash under a hovered or highlighted row: listbox
+  // options, calendar days, menu items, stepper buttons.
+  --finra-container-background-hover: var(--finra-color-neutral-100);
+  // track - the unfilled part of a control that shows progress or position:
+  // a slider's groove, a switch's off state. Separators are container-border.
+  --finra-container-track: var(--finra-color-neutral-200);
+
   // container-scrim - the wash behind a modal surface. Stated as its own
   // characteristic because how far an application dims the page behind a dialog
   // is a brand decision, and it is the one colour a component cannot express
@@ -131,6 +145,12 @@
   --finra-container-disabled-background: var(--finra-color-neutral-800);
   --finra-container-disabled-foreground: var(--finra-color-neutral-400);
   --finra-container-disabled-border: var(--finra-color-neutral-700);
+
+  // The surface ramp inverts: the page sits at neutral-900, so each step away
+  // from it goes *up* the scale, mirroring 50/100/200 against white.
+  --finra-container-background-subtle: var(--finra-color-neutral-800);
+  --finra-container-background-hover: var(--finra-color-neutral-700);
+  --finra-container-track: var(--finra-color-neutral-700);
 
   // status subtle backgrounds - the only status tokens that flip
   --finra-status-danger-subtle: #450a0a;

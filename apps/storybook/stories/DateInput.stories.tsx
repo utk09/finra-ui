@@ -396,5 +396,20 @@ export const Overrides: Story = {
   ),
 };
 
+/** The recessed field surface, for lower-emphasis fields in a dense form. */
+export const SecondaryVariant: Story = {
+  args: { variant: "secondary", "aria-label": "Date", value: new Date(2024, 2, 15) },
+};
+
 /** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
 export const DarkMode: Story = inDark(Default);
+
+/**
+ * Secondary variant in dark mode, with a value on screen.
+ *
+ * The value is the point. This variant paints its own field surface, and a
+ * placeholder is drawn in the muted colour, so an empty field looks correct
+ * even when the surface and the text resolve to the same colour. Only a
+ * populated field puts that in front of the accessibility check.
+ */
+export const SecondaryVariantDark: Story = inDark(SecondaryVariant);

@@ -105,7 +105,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <ButtonBase
         ref={ref}
         type="button"
-        {...{ [FINRA_UI_ATTR]: componentIds.button }}
         className={clsx(
           buttonVariants({ variant, fullWidth }),
           sentiment && sentimentClasses[sentiment],

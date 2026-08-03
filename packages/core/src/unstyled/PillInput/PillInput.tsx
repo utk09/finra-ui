@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useControlledValue } from "../../hooks/useControlledValue";
 import { useFormField } from "../../hooks/useFormField";
 import type { AriaInvalid } from "../../logic/formField";
@@ -140,16 +141,21 @@ export const PillInputBase = forwardRef<HTMLInputElement, PillInputBaseProps>(
     );
 
     return (
+      // Each part stamps its own id, so an unstyled pill input is reachable by
+      // the same selectors as a styled one. `props` follows on the root, so a
+      // caller can still replace it.
       <div
+        {...{ [FINRA_UI_ATTR]: componentIds.pillInput }}
         role="toolbar"
         {...props}
         onClick={handleContainerClick}
         onKeyDown={handleContainerKeyDown}>
         {values.map((pill) => (
-          <span key={pill}>
+          <span key={pill} {...{ [FINRA_UI_ATTR]: componentIds.pillInputPill }}>
             {pill}
             {!isDisabled ? (
               <button
+                {...{ [FINRA_UI_ATTR]: componentIds.pillInputPillRemove }}
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -164,6 +170,7 @@ export const PillInputBase = forwardRef<HTMLInputElement, PillInputBaseProps>(
         ))}
         <input
           ref={mergeRefs(forwardedRef, internalRef)}
+          {...{ [FINRA_UI_ATTR]: componentIds.pillInputField }}
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}

@@ -1,5 +1,5 @@
 .wrapper {
-  --_input-border-color: var(--finra-color-border);
+  --_input-border-color: var(--finra-container-border);
 
   display: inline-flex;
   align-items: center;
@@ -7,7 +7,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
-  background-color: var(--finra-color-background);
+  background-color: var(--finra-container-background);
   border: var(--finra-border-thin) solid var(--_input-border-color);
   border-radius: var(--finra-radius-md);
   transition: border-color var(--finra-duration-fast) ease-in-out;
@@ -37,7 +37,7 @@
 
   &.variantSecondary {
     border-width: var(--finra-border-thin);
-    background-color: var(--finra-color-neutral-50);
+    background-color: var(--finra-container-background-subtle);
   }
 
   &.variantTertiary {
@@ -72,7 +72,7 @@
   outline: none;
   background: transparent;
   font: inherit;
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   text-align: center;
   font-variant-numeric: var(--finra-font-tabular-nums);
   padding: 0;
@@ -98,16 +98,12 @@
 }
 
 .stepButton {
-  --_step-color: var(--finra-color-neutral-600);
-  --_step-hover-bg: var(--finra-color-neutral-100);
-  --_step-hover-color: var(--finra-color-foreground);
-  --_step-active-bg: var(--finra-color-neutral-200);
-
-  :where([data-theme="dark"]) & {
-    --_step-color: var(--finra-color-neutral-400);
-    --_step-hover-bg: var(--finra-color-neutral-700);
-    --_step-active-bg: var(--finra-color-neutral-600);
-  }
+  // No per-component dark block: every one of these reads the semantic tier,
+  // which the theme already remaps.
+  --_step-color: var(--finra-container-foreground-muted);
+  --_step-hover-bg: var(--finra-container-background-hover);
+  --_step-hover-color: var(--finra-container-foreground);
+  --_step-active-bg: var(--finra-container-border);
 
   display: inline-flex;
   align-items: center;

@@ -49,7 +49,6 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         className={clsx(styles.checkbox, disabled && styles.disabled, className)}>
         <CheckboxBase
           ref={mergeRefs(forwardedRef, internalRef)}
-          {...{ [FINRA_UI_ATTR]: componentIds.checkboxInput }}
           className={styles.input}
           disabled={disabled}
           data-indeterminate={indeterminate || undefined}

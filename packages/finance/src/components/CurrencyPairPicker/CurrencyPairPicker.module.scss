@@ -12,7 +12,7 @@
 //  Control shell - the visible input bar, and the anchor the portalled panel
 //  is positioned and sized against.
 .control {
-  --_input-border-color: var(--finra-color-border);
+  --_input-border-color: var(--finra-container-border);
 
   display: inline-flex;
   align-items: center;
@@ -23,7 +23,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
-  background-color: var(--finra-color-background);
+  background-color: var(--finra-container-background);
   border: var(--finra-border-thin) solid var(--_input-border-color);
   border-radius: var(--finra-radius-md);
   transition: border-color var(--finra-duration-fast) ease-in-out;
@@ -40,7 +40,7 @@
 
 //  Variants
 .variantSecondary .control {
-  background-color: var(--finra-color-neutral-50);
+  background-color: var(--finra-container-background-subtle);
 }
 
 .variantTertiary .control {
@@ -91,7 +91,7 @@
   background: transparent;
   font: inherit;
   font-variant-numeric: tabular-nums;
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   text-transform: uppercase;
 
   &:focus-visible {
@@ -135,8 +135,8 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  background-color: var(--finra-color-background);
-  border: var(--finra-border-thin) solid var(--finra-color-border);
+  background-color: var(--finra-container-background);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
   border-radius: var(--finra-radius-md);
   box-shadow: var(--finra-shadow-lg);
   overflow: hidden;
@@ -155,7 +155,7 @@
   flex-direction: column;
 
   & + & {
-    border-block-start: var(--finra-border-thin) solid var(--finra-color-neutral-100);
+    border-block-start: var(--finra-border-thin) solid var(--finra-container-border);
     margin-block-start: calc(var(--finra-density-gap) * 0.5);
     padding-block-start: calc(var(--finra-density-gap) * 0.5);
   }
@@ -182,7 +182,7 @@
   padding-block: calc(var(--finra-density-gap) * 0.5);
   font-family: var(--finra-font-sans);
   font-size: var(--finra-text-sm);
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   cursor: var(--finra-cursor-pointer);
   user-select: none;
   outline: none;

@@ -29,7 +29,13 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**", "../../config/**"]
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "test/**",
+        "../../config/**",
+        "../../vitest.config.ts"
+      ]
     },
     "test:coverage": {
       "dependsOn": ["^build"],

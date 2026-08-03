@@ -1,5 +1,6 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
 import { Slot } from "../Slot";
 
@@ -38,7 +39,17 @@ export const NumberInputBase = forwardRef<HTMLInputElement, NumberInputBaseProps
     const fieldProps = useFormField(props);
     const Comp = asChild ? Slot : "input";
 
-    return <Comp ref={ref} inputMode="decimal" {...fieldProps} />;
+    // Stamps the field id, so an unstyled numeric input is reachable by the
+    // same selector as the field inside a styled NumberInput. `fieldProps`
+    // follows, so a caller can still replace it.
+    return (
+      <Comp
+        ref={ref}
+        {...{ [FINRA_UI_ATTR]: componentIds.numberInputField }}
+        inputMode="decimal"
+        {...fieldProps}
+      />
+    );
   },
 );
 

@@ -1,7 +1,8 @@
 import { clsx } from "clsx";
-import { forwardRef } from "react";
+import { type ChangeEvent, forwardRef, useState } from "react";
 
 import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
+import { sliderMidpoint } from "../../logic/slider";
 import { SliderBase, type SliderBaseProps } from "../../unstyled/Slider/Slider";
 import styles from "./Slider.module.scss";
 
@@ -36,8 +37,25 @@ export interface SliderProps extends Omit<SliderBaseProps, "className"> {
  * @see {@link SliderProps}
  */
 export const Slider = forwardRef<HTMLInputElement, SliderProps>(
-  ({ className, label, showValue, disabled, value, defaultValue, ...props }, ref) => {
-    const displayValue = value ?? defaultValue ?? "";
+  (
+    { className, label, showValue, disabled, value, defaultValue, onChange, min, max, ...props },
+    ref,
+  ) => {
+    const isControlled = value !== undefined;
+    // The readout has to mirror the input's own value. Derived from props alone
+    // it stays on the initial number for an uncontrolled slider, so `showValue`
+    // reports one figure while the thumb sits at another.
+    const [uncontrolledValue, setUncontrolledValue] = useState(() =>
+      defaultValue === undefined ? sliderMidpoint(min, max) : String(defaultValue),
+    );
+    const displayValue = isControlled ? value : uncontrolledValue;
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+      onChange?.(event);
+      // Not gated on `defaultPrevented`: this tracks what the input already
+      // shows, it does not commit anything a consumer could decline.
+      if (!isControlled) setUncontrolledValue(event.target.value);
+    };
 
     return (
       <label
@@ -59,11 +77,13 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
         ) : null}
         <SliderBase
           ref={ref}
-          {...{ [FINRA_UI_ATTR]: componentIds.sliderInput }}
           className={styles.input}
           disabled={disabled}
           value={value}
           defaultValue={defaultValue}
+          min={min}
+          max={max}
+          onChange={handleChange}
           {...props}
         />
       </label>

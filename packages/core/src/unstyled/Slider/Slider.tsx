@@ -1,5 +1,7 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
+
 /**
  * Props for the unstyled slider.
  *
@@ -16,7 +18,11 @@ export interface SliderBaseProps extends Omit<InputHTMLAttributes<HTMLInputEleme
  * @see {@link SliderBaseProps}
  */
 export const SliderBase = forwardRef<HTMLInputElement, SliderBaseProps>((props, ref) => {
-  return <input ref={ref} type="range" {...props} />;
+  // Stamps its own id, so an unstyled slider is reachable by the same selector
+  // as a styled one. `props` follows, so a caller can still replace it.
+  return (
+    <input ref={ref} {...{ [FINRA_UI_ATTR]: componentIds.sliderInput }} type="range" {...props} />
+  );
 });
 
 SliderBase.displayName = "SliderBase";

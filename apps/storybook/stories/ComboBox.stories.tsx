@@ -506,3 +506,16 @@ export const DarkModeOpen: Story = inDark(
   Default,
   "The listbox left open in dark mode. The options are portalled to `<body>`, so a closed-trigger story tells the accessibility check nothing about them.",
 );
+
+/**
+ * Secondary variant in dark mode, with a value on screen.
+ *
+ * The value is the point. This variant paints its own field surface, and a
+ * placeholder is drawn in the muted colour, so an empty field looks correct
+ * even when the surface and the text resolve to the same colour. Only a
+ * populated field puts that in front of the accessibility check.
+ */
+export const SecondaryVariantDark: Story = inDark({
+  ...WithValue,
+  args: { ...WithValue.args, variant: "secondary" },
+});

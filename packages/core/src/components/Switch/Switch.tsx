@@ -33,13 +33,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       <label
         {...{ [FINRA_UI_ATTR]: componentIds.switch }}
         className={clsx(styles.switch, disabled && styles.disabled, className)}>
-        <SwitchBase
-          ref={ref}
-          {...{ [FINRA_UI_ATTR]: componentIds.switchInput }}
-          className={styles.input}
-          disabled={disabled}
-          {...props}
-        />
+        <SwitchBase ref={ref} className={styles.input} disabled={disabled} {...props} />
         <span
           className={styles.track}
           aria-hidden="true"

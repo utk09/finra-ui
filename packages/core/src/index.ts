@@ -95,7 +95,7 @@ export { Slider } from "./components/Slider/Slider";
 export type { SwitchProps } from "./components/Switch/Switch";
 export { Switch } from "./components/Switch/Switch";
 // Tabs
-export type { TabPanelProps, TabProps, TabsProps } from "./components/Tabs/Tabs";
+export type { TabListProps, TabPanelProps, TabProps, TabsProps } from "./components/Tabs/Tabs";
 export { Tab, TabList, TabPanel, Tabs } from "./components/Tabs/Tabs";
 // Textarea
 export type { TextareaProps } from "./components/Textarea/Textarea";

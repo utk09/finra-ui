@@ -145,6 +145,16 @@ export function mergeInheritedArgTypes(
       if (value && !existing.table?.defaultValue?.summary) {
         existing.table = { ...existing.table, defaultValue: { summary: value } };
       }
+      // A story that declares only a control (`indeterminate: { control:
+      // "boolean" }`) creates an entry with no description, which then shadows
+      // the documented one on the base. Fill it rather than skip it: an entry
+      // that exists is not the same as an entry that is documented.
+      if (!existing.description) {
+        const own = summaryOf(prop.description ?? "");
+        const detail = tagBody(prop.description ?? "", "remarks");
+        const text = [own, detail].filter(Boolean).join("\n\n");
+        if (text) existing.description = linkifySymbols(text);
+      }
       continue;
     }
     const summary = summaryOf(prop.description ?? "");

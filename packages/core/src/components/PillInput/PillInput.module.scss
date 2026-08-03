@@ -9,8 +9,8 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
-  background-color: var(--finra-color-background);
-  border: var(--finra-border-thin) solid var(--finra-color-border);
+  background-color: var(--finra-container-background);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
   border-radius: var(--finra-radius-md);
   cursor: var(--finra-cursor-text);
   transition: border-color var(--finra-duration-fast) ease-in-out;
@@ -37,11 +37,11 @@
   gap: 0.125rem;
   block-size: var(--finra-density-size-compact);
   padding-inline: var(--finra-density-gap);
-  background-color: var(--finra-color-neutral-100);
-  border: var(--finra-border-thin) solid var(--finra-color-neutral-200);
+  background-color: var(--finra-container-background-subtle);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
   border-radius: var(--finra-radius-full);
   font-size: var(--finra-text-xs);
-  color: var(--finra-color-neutral-900);
+  color: var(--finra-container-foreground);
   user-select: none;
   flex-shrink: 0;
 }
@@ -66,7 +66,7 @@
   flex-shrink: 0;
 
   &:hover {
-    color: var(--finra-color-foreground);
+    color: var(--finra-container-foreground);
   }
 
   > svg {
@@ -82,7 +82,7 @@
   outline: none;
   background: transparent;
   font: inherit;
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   padding: 0;
 
   // Override global :focus-visible - wrapper handles focus indication

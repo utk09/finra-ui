@@ -1,6 +1,6 @@
 //  Root - the input bar
 .root {
-  --_input-border-color: var(--finra-color-border);
+  --_input-border-color: var(--finra-container-border);
 
   display: inline-flex;
   align-items: center;
@@ -10,7 +10,7 @@
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
   font-variant-numeric: tabular-nums;
-  background-color: var(--finra-color-background);
+  background-color: var(--finra-container-background);
   border: var(--finra-border-thin) solid var(--_input-border-color);
   border-radius: var(--finra-radius-md);
   transition: border-color var(--finra-duration-fast) ease-in-out;
@@ -30,7 +30,7 @@
   }
 
   &.variantSecondary {
-    background-color: var(--finra-color-neutral-50);
+    background-color: var(--finra-container-background-subtle);
   }
 
   &.variantTertiary {
@@ -76,7 +76,7 @@
   background: transparent;
   font: inherit;
   font-variant-numeric: inherit;
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   // Amounts are compared down a column, so they align on their last digit.
   text-align: end;
 

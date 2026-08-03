@@ -1,5 +1,6 @@
 import { type ButtonHTMLAttributes, forwardRef, type ReactNode } from "react";
 
+import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { Slot } from "../Slot";
 
 /**
@@ -32,8 +33,11 @@ export const IconButtonBase = forwardRef<HTMLButtonElement, IconButtonBaseProps>
   ({ asChild = false, icon, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
 
+    // Stamps its own id, so an unstyled icon button is reachable by the same
+    // selector as a styled one. `props` follows, so a caller can still replace
+    // it. Under `asChild` the id lands on the child, which is the button.
     return (
-      <Comp ref={ref} {...props}>
+      <Comp ref={ref} {...{ [FINRA_UI_ATTR]: componentIds.iconButton }} {...props}>
         {icon}
         {children}
       </Comp>

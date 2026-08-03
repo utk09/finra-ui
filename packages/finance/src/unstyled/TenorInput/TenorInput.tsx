@@ -1,3 +1,4 @@
+import { FINRA_UI_ATTR } from "@utk09/finra-ui";
 import {
   ComboBoxBase,
   type ComboBoxClassNames,
@@ -5,6 +6,7 @@ import {
 } from "@utk09/finra-ui/unstyled";
 import { forwardRef, type HTMLAttributes, type ReactNode, useCallback, useMemo } from "react";
 
+import { componentIds } from "../../componentIds";
 import { parseTenor, STANDARD_TENORS } from "../../utils/tenor";
 
 /**
@@ -55,7 +57,14 @@ export interface TenorInputBaseProps
   // Style injection (same pattern as ComboBox)
   /** CSS class names injected by the styled layer. */
   classNames?: TenorInputClassNames;
-  /** data-* attributes injected by the styled layer. */
+  /**
+   * data-* attributes for the underlying combo box root.
+   *
+   * @remarks
+   * Defaults to the tenor-input id, so an unstyled tenor input is
+   * distinguishable from a plain combo box by selector. Supplying your own
+   * replaces it.
+   */
   dataAttributes?: Record<string, string>;
   /** Render the tick shown on the selected option. */
   renderCheckIcon?: () => ReactNode;
@@ -160,7 +169,7 @@ export const TenorInputBase = forwardRef<HTMLInputElement, TenorInputBaseProps>(
         open={open}
         onOpenChange={onOpenChange}
         classNames={classNames}
-        dataAttributes={dataAttributes}
+        dataAttributes={dataAttributes ?? { [FINRA_UI_ATTR]: componentIds.tenorInput }}
         renderCheckIcon={renderCheckIcon}
         renderIndicator={renderIndicator}
         renderPillRemoveIcon={renderPillRemoveIcon}

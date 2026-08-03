@@ -70,8 +70,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Coverage, not the plain run: the 85% per-file thresholds live in the
+      # package Vitest configs and only apply when the coverage reporter runs.
+      # Without this the artifact below is whatever a previous local run left
+      # behind, and the gate never executes here at all.
       - name: Run tests
-        run: pnpm run test
+        run: pnpm run test:coverage
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
@@ -80,6 +84,42 @@ jobs:
           path: |
             packages/core/coverage
             packages/finance/coverage
+
+  stories:
+    name: Story tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      # The story play functions and the Storybook app's own unit tests. Both
+      # are projects of the root Vitest config; the storybook package's `test`
+      # script selects them, which is what puts them under Turborepo.
+      # The axe check is part of this: stories carry `a11y.test: "error"`, so a
+      # contrast or ARIA regression fails here and nowhere else.
+      - name: Run story tests
+        run: pnpm run test:stories
 
   build:
     name: Build

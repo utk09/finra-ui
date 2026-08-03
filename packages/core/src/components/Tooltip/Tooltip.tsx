@@ -1,7 +1,6 @@
 import { clsx } from "clsx";
 import { forwardRef } from "react";
 
-import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import {
   TooltipContent as TooltipContentBase,
   type TooltipContentProps as TooltipContentBaseProps,
@@ -35,12 +34,7 @@ export const TooltipTrigger = TooltipTriggerBase;
 /** Styled tooltip bubble (portalled, positioned, `role="tooltip"`). */
 export const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(
   ({ className, ...rest }, ref) => (
-    <TooltipContentBase
-      ref={ref}
-      {...{ [FINRA_UI_ATTR]: componentIds.tooltip }}
-      className={clsx(styles.tooltip, className)}
-      {...rest}
-    />
+    <TooltipContentBase ref={ref} className={clsx(styles.tooltip, className)} {...rest} />
   ),
 );
 

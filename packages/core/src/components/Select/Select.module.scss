@@ -1,5 +1,5 @@
 .trigger {
-  --_select-border-color: var(--finra-color-border);
+  --_select-border-color: var(--finra-container-border);
 
   display: inline-flex;
   align-items: center;
@@ -12,7 +12,7 @@
   line-height: var(--finra-leading-normal);
   color: var(--finra-container-foreground);
   text-align: start;
-  background-color: var(--finra-color-background);
+  background-color: var(--finra-container-background);
   border: var(--finra-border-thin) solid var(--_select-border-color);
   border-radius: var(--finra-radius-md);
   transition: border-color var(--finra-duration-fast) ease-in-out;
@@ -65,7 +65,7 @@
   max-block-size: var(--finra-popup-max-block-size);
   padding: var(--finra-spacing-1);
   overflow-y: auto;
-  background-color: var(--finra-color-background);
+  background-color: var(--finra-container-background);
   border: var(--finra-border-thin) solid var(--finra-container-border);
   border-radius: var(--finra-radius-md);
   box-shadow: var(--finra-shadow-lg);

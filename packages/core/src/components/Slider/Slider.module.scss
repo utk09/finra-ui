@@ -5,7 +5,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
   cursor: var(--finra-cursor-pointer);
 
   &.disabled {
@@ -36,7 +36,7 @@
   inline-size: 100%;
   block-size: 4px;
   border-radius: var(--finra-radius-full);
-  background-color: var(--finra-color-neutral-200);
+  background-color: var(--finra-container-track);
   outline: none;
   cursor: inherit;
   transition: background-color var(--finra-duration-fast) ease-in-out;
@@ -52,7 +52,7 @@
     block-size: var(--finra-density-slider-thumb-size);
     border-radius: var(--finra-radius-full);
     background-color: var(--finra-actionable-accent);
-    border: var(--finra-border-medium) solid var(--finra-color-white);
+    border: var(--finra-border-medium) solid var(--finra-container-background);
     box-shadow: var(--finra-shadow-sm);
     cursor: inherit;
     transition: background-color var(--finra-duration-fast) ease-in-out;
@@ -72,7 +72,7 @@
     block-size: var(--finra-density-slider-thumb-size);
     border-radius: var(--finra-radius-full);
     background-color: var(--finra-actionable-accent);
-    border: var(--finra-border-medium) solid var(--finra-color-white);
+    border: var(--finra-border-medium) solid var(--finra-container-background);
     box-shadow: var(--finra-shadow-sm);
     cursor: inherit;
     transition: background-color var(--finra-duration-fast) ease-in-out;
@@ -88,7 +88,7 @@
 
   //  Track - Firefox
   &::-moz-range-track {
-    background-color: var(--finra-color-neutral-200);
+    background-color: var(--finra-container-track);
     block-size: 4px;
     border-radius: var(--finra-radius-full);
   }

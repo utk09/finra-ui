@@ -295,3 +295,16 @@ export const Overrides: Story = {
 
 /** Dark-mode counterpart of `Empty`, so the accessibility check covers dark contrast. */
 export const DarkMode: Story = inDark(Empty);
+
+/**
+ * Secondary variant in dark mode, with a value on screen.
+ *
+ * The value is the point. This variant paints its own field surface, and a
+ * placeholder is drawn in the muted colour, so an empty field looks correct
+ * even when the surface and the text resolve to the same colour. Only a
+ * populated field puts that in front of the accessibility check.
+ */
+export const SecondaryVariantDark: Story = inDark({
+  ...WithResolvedDate,
+  args: { ...WithResolvedDate.args, variant: "secondary" },
+});

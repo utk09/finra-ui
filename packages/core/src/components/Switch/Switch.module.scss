@@ -6,7 +6,7 @@
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
   line-height: var(--finra-leading-normal);
-  color: var(--finra-color-foreground);
+  color: var(--finra-container-foreground);
 
   &.disabled {
     opacity: var(--finra-opacity-disabled);
@@ -31,6 +31,11 @@
       inset-inline-start: calc(
         var(--finra-density-switch-track-width) - var(--finra-density-switch-thumb-size) - 2px
       );
+      // On an accent fill, so it takes the foreground meant for one. The knob
+      // has to clear 3:1 against the track in both themes (WCAG 1.4.11), and
+      // the two track states sit at opposite ends of the lightness range, so
+      // one colour cannot serve both.
+      background-color: var(--finra-actionable-foreground);
     }
   }
 
@@ -47,8 +52,8 @@
   inline-size: var(--finra-density-switch-track-width);
   block-size: var(--finra-density-switch-track-height);
   border-radius: var(--finra-radius-full);
-  background-color: var(--finra-color-neutral-300);
-  border: var(--finra-border-thin) solid var(--finra-color-border);
+  background-color: var(--finra-container-track);
+  border: var(--finra-border-thin) solid var(--finra-container-border);
   flex-shrink: 0;
   transition:
     background-color var(--finra-duration-fast) ease-in-out,
@@ -65,7 +70,8 @@
   inline-size: var(--finra-density-switch-thumb-size);
   block-size: var(--finra-density-switch-thumb-size);
   border-radius: var(--finra-radius-full);
-  background-color: var(--finra-color-white);
+  // Off state: reads against the track, not against the page.
+  background-color: var(--finra-container-foreground);
   box-shadow: var(--finra-shadow-sm);
   transition: inset-inline-start var(--finra-duration-fast) ease-in-out;
 

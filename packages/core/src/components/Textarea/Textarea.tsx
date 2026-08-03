@@ -13,6 +13,7 @@ import {
 import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
 import type { Variant } from "../../types/variants";
+import { TextareaBase } from "../../unstyled/Textarea/Textarea";
 import type { ValidationStatus } from "../Input/Input";
 import styles from "./Textarea.module.scss";
 
@@ -189,9 +190,12 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           fullWidth && styles.fullWidth,
           className,
         )}>
-        <textarea
+        {/* The field is `TextareaBase`, not a bare <textarea>, so both entry
+            points run one implementation. `fieldProps` is already merged here
+            because the wrapper needs the resolved disabled state; the base
+            merges again and `mergeControlA11y` is idempotent. */}
+        <TextareaBase
           ref={textareaRef}
-          {...{ [FINRA_UI_ATTR]: componentIds.textareaField }}
           className={styles.field}
           rows={minRows}
           maxLength={maxLength}
