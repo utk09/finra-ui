@@ -46,7 +46,7 @@ This is a pnpm monorepo orchestrated by Turborepo. All dependency versions are c
 | `pnpm lint` / `pnpm lint:fix` | Biome + Prettier check / autofix (see Tooling below) |
 | `pnpm verify` | `lint → typecheck → test:coverage → test:stories → build` - reproduces every CI/push gate; run before pushing |
 
-`test:stories` drives a real browser, so it needs the Playwright binaries once per machine: `pnpm exec playwright install --with-deps chromium`.
+`test:stories` drives a real browser, so it needs the Playwright binaries once per machine: `pnpm --filter @finra-ui/storybook exec playwright install --with-deps chromium`. The filter matters - `playwright` is a dependency of that package, not of the workspace root, so an unfiltered `pnpm exec` has no binary to find on a clean install.
 
 **The story tests live in the root `vitest.config.ts`, not in a package.** It declares four projects: the two package suites, the Storybook app's own unit tests, and the browser project that runs every story. `apps/storybook`'s `test` script selects the latter two (`vitest run --root ../.. --project storybook-app --project stories`), which is what brings them under Turborepo and its cache. Without a `test` script there, `turbo test` walks straight past them. This is also where the accessibility gate lives: stories carry `a11y.test: "error"`, so an axe violation fails there and in no other command.
 

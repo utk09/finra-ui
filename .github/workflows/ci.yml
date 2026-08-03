@@ -110,8 +110,11 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
+      # Filtered to the package that declares `playwright`. The workspace root
+      # does not depend on it, so on a clean install no `playwright` binary is
+      # linked there and an unfiltered `pnpm exec` cannot find one.
       - name: Install Chromium
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm --filter @finra-ui/storybook exec playwright install --with-deps chromium
 
       # The story play functions and the Storybook app's own unit tests. Both
       # are projects of the root Vitest config; the storybook package's `test`
