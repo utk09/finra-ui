@@ -1,5 +1,11 @@
 # @utk09/finra-ui-icons
 
+## 0.4.0
+
+### Minor Changes
+
+- bugfix unstyled components, enhance storybook
+
 ## 0.3.0
 
 ### Minor Changes
