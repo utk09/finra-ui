@@ -4,6 +4,7 @@ import type { Preview } from "@storybook/react-vite";
 
 import { DocsLink } from "../docs/DocsLink";
 import { componentDescription, enhanceArgTypesFromDocgen, mergeInheritedArgTypes } from "./docgen";
+import { extractReactArgTypes } from "./reactArgTypes";
 import { lightTheme } from "./theme";
 
 const preview: Preview = {
@@ -99,6 +100,24 @@ const preview: Preview = {
         component: unknown,
         context?: { parameters?: { docs?: { forwardsTo?: string } } },
       ) => componentDescription(component, context?.parameters),
+      /**
+       * Run the docgen backfill for every component a docs page extracts,
+       * subcomponents included.
+       *
+       * `argTypesEnhancers` receive only the primary `context.component`, so a
+       * subcomponent table never saw the backfill at all. A styled subcomponent
+       * that re-wraps its base also hides the base's destructuring default from
+       * `react-docgen`, which is why `PopoverTrigger`'s `asChild` showed a
+       * default while `PopoverClose`'s identical `asChild` showed none.
+       *
+       * The renderer's own extractor still does the work; this only adds
+       * `@defaultValue` and `@remarks` on top, so type formatting and required
+       * flags stay exactly as the renderer produced them.
+       */
+      extractArgTypes: (component: unknown) => {
+        const extracted = extractReactArgTypes(component);
+        return extracted ? enhanceArgTypesFromDocgen(extracted, component) : extracted;
+      },
       // Docs chrome stays light to match the manager; the story canvases inside
       // still follow the Theme toolbar, because the decorator below runs per
       // story in docs mode too.

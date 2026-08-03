@@ -324,7 +324,11 @@ Select.displayName = "Select";
  * Renders `SelectValue` automatically when given no children.
  */
 export interface SelectTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Render onto the single child element instead of a <button>. */
+  /**
+   * Render onto the single child element instead of a <button>.
+   *
+   * @defaultValue `false`
+   */
   asChild?: boolean;
 }
 

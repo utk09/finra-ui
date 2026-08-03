@@ -59,6 +59,30 @@ export interface ToastData {
 }
 
 /**
+ * Per-toast controls handed to a custom `renderToast`.
+ *
+ * @remarks
+ * Declared beside {@link ToastData} because the two travel together: a
+ * `renderToast` callback receives one of each, and both entry points export
+ * them from here.
+ */
+export interface ToastControls {
+  /** Dismiss this toast now and cancel its auto-dismiss timer. */
+  dismiss: () => void;
+  /**
+   * Freeze the auto-dismiss countdown.
+   *
+   * @remarks
+   * Call on pointer enter and on focus. A toast that expires while being read -
+   * or while its action button holds focus - is a genuine accessibility
+   * failure, not just an annoyance.
+   */
+  pause: () => void;
+  /** Restart the countdown with the toast's remaining duration. Pairs with `pause`. */
+  resume: () => void;
+}
+
+/**
  * What a caller supplies to raise a toast. Everything is optional; the
  * controller fills the gaps.
  *

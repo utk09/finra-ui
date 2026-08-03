@@ -41,6 +41,11 @@ const meta: Meta<typeof DateTenorPicker> = {
   // The Calendar popup meets the APG grid pattern, so the a11y gate applies.
   tags: ["autodocs", "a11y-test"],
   argTypes: {
+    // Named here because the value is a shared constant: `condenseDefault` can
+    // recover a function's name from its source but not a constant's, so this
+    // default reaches the cell as a bare shape hint unless the story says what
+    // it is.
+    tenorOptions: { table: { defaultValue: { summary: "DEFAULT_TENOR_OPTIONS" } } },
     variant: {
       control: "select",
       options: ["primary", "secondary", "tertiary"],

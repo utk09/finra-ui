@@ -584,7 +584,10 @@ export const PriceInputBase = forwardRef<PriceInputHandle, PriceInputBaseProps>(
     );
 
     return (
-      <span className={cn?.root} {...dataAttributes}>
+      <span
+        className={cn?.root}
+        {...{ [FINRA_UI_ATTR]: componentIds.priceInput }}
+        {...dataAttributes}>
         <input
           ref={inputRef}
           className={cn?.input}

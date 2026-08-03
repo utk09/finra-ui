@@ -25,6 +25,11 @@ const meta: Meta<typeof PriceInput> = {
   // enable a11y-test once the resting/empty states are verified against axe.
   tags: ["autodocs"],
   argTypes: {
+    // Named here because the value is a shared constant: `condenseDefault` can
+    // recover a function's name from its source but not a constant's, so this
+    // default reaches the cell as a bare shape hint unless the story says what
+    // it is.
+    keymap: { table: { defaultValue: { summary: "DEFAULT_PRICE_KEYMAP" } } },
     format: {
       control: "select",
       options: ["decimal", "bond32", "percent", "basis-points"],

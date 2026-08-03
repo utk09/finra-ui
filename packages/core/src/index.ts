@@ -117,7 +117,13 @@ export { useControlledValue } from "./hooks/useControlledValue";
 export { useFormField } from "./hooks/useFormField";
 export { useStore } from "./hooks/useStore";
 export type { TabsActivationMode, TabsOrientation } from "./logic/tabs";
-export type { ToastApi, ToastData, ToastInput, ToastSentiment } from "./logic/toast";
+export type {
+  ToastApi,
+  ToastControls,
+  ToastData,
+  ToastInput,
+  ToastSentiment,
+} from "./logic/toast";
 export { toast } from "./logic/toast";
 // Cross-cutting design axes (shared by core and the finance package)
 export type { Sentiment, Variant } from "./types/variants";

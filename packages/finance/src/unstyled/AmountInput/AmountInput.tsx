@@ -584,7 +584,10 @@ export const AmountInputBase = forwardRef<AmountInputHandle, AmountInputBaseProp
     );
 
     return (
-      <span className={cn?.root} {...dataAttributes}>
+      <span
+        className={cn?.root}
+        {...{ [FINRA_UI_ATTR]: componentIds.amountInput }}
+        {...dataAttributes}>
         <input
           ref={inputRef}
           className={cn?.input}

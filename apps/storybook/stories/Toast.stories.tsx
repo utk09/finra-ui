@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, Toaster, toast } from "@utk09/finra-ui";
-import { expect, userEvent, within } from "storybook/test";
+import { useState } from "react";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { darkModeOpen } from "./_shared";
 
@@ -154,6 +155,68 @@ export const CustomAppearance: Story = {
         </button>
       </div>
     ),
+  },
+};
+
+/**
+ * Restyling toasts. Two regions are mounted so one raised toast renders in both,
+ * default on the right and overridden on the left.
+ *
+ * Two mounted `Toaster`s is exactly what the API docs tell you not to do in an
+ * app, because every toast then renders twice. It is done here so the same toast
+ * can be seen styled two ways at once; ship one.
+ *
+ * The region is portalled, so `container` is what brings it back inside the
+ * element carrying the overrides. Sentiment colour, radius and panel surface are
+ * semantic tokens; the accent bar's width has no token of its own and is reached
+ * through `[data-finra-ui="toast"]`, which wins because the library ships inside
+ * `@layer finra-ui`.
+ */
+export const Overrides: Story = {
+  parameters: { layout: "padded" },
+  render: function Render() {
+    const [scope, setScope] = useState<HTMLDivElement | null>(null);
+    return (
+      <>
+        <Button
+          onClick={() =>
+            toast.success({ title: "Order filled", description: "2M EURUSD at 1.0921." })
+          }>
+          Raise a toast
+        </Button>
+        <Toaster position="bottom-right" label="Default notifications" />
+        <div
+          ref={setScope}
+          className="toast-override-demo"
+          style={
+            {
+              "--finra-status-success-accent": "#7c3aed",
+              "--finra-radius-md": "1rem",
+              "--finra-container-background": "#faf5ff",
+            } as React.CSSProperties
+          }>
+          <style>{`
+            :where(.toast-override-demo) [data-finra-ui="toast"] {
+              border-inline-start-width: 0.5rem;
+            }
+            :where(.toast-override-demo) [data-finra-ui="toast-title"] {
+              text-transform: uppercase;
+              letter-spacing: var(--finra-tracking-wide);
+            }
+          `}</style>
+          <Toaster position="bottom-left" label="Overridden notifications" container={scope} />
+        </div>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    toast.clear();
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Raise a toast" }));
+    // Both regions render it, so wait for the pair rather than the first match.
+    await waitFor(async () =>
+      expect(await within(document.body).findAllByRole("status")).toHaveLength(2),
+    );
   },
 };
 

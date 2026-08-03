@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, IconButton, Tooltip, TooltipContent, TooltipTrigger } from "@utk09/finra-ui";
+import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { EditIcon, TrashIcon } from "./_icons";
@@ -19,24 +20,18 @@ const PLACEMENTS = [
 const meta: Meta<typeof Tooltip> = {
   title: "Components/Tooltip",
   component: Tooltip,
+  subcomponents: { TooltipTrigger, TooltipContent },
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
-    openDelay: {
-      control: { type: "number", min: 0, max: 2000, step: 50 },
-      table: { defaultValue: { summary: "0" } },
-    },
-    closeDelay: {
-      control: { type: "number", min: 0, max: 2000, step: 50 },
-      table: { defaultValue: { summary: "0" } },
-    },
-    placement: {
-      control: "select",
-      options: PLACEMENTS,
-      table: { defaultValue: { summary: "top" } },
-    },
+    // Defaults are not restated here. They come from the `@defaultValue` tags on
+    // the props, so the table cannot drift from the component the way it did
+    // while this file claimed `openDelay` defaulted to 0 rather than 700.
+    openDelay: { control: { type: "number", min: 0, max: 2000, step: 50 } },
+    closeDelay: { control: { type: "number", min: 0, max: 2000, step: 50 } },
+    placement: { control: "select", options: PLACEMENTS },
     children: { control: { disable: true } },
     open: { control: { disable: true } },
     defaultOpen: { control: { disable: true } },
@@ -135,6 +130,61 @@ export const RichContent: Story = {
       </TooltipContent>
     </Tooltip>
   ),
+};
+
+/**
+ * Restyling the bubble. Both tooltips are held open so the difference is visible
+ * at rest.
+ *
+ * The bubble is portalled, so an override declared on an ancestor only reaches it
+ * when `container` brings it back inside that subtree. Semantic tokens carry the
+ * inverse surface; anything with no token behind it is reached through
+ * `[data-finra-ui="tooltip"]`, which wins because the library ships inside
+ * `@layer finra-ui`.
+ */
+export const Overrides: Story = {
+  parameters: { layout: "padded" },
+  render: function Render() {
+    const [scope, setScope] = useState<HTMLDivElement | null>(null);
+    return (
+      <div style={{ display: "flex", gap: "6rem", padding: "4rem 1rem 1rem" }}>
+        <div>
+          <p style={{ margin: "0 0 0.5rem", fontSize: "0.75rem" }}>Default</p>
+          <Tooltip open placement="bottom">
+            <TooltipTrigger asChild>
+              <Button variant="secondary">Default</Button>
+            </TooltipTrigger>
+            <TooltipContent>Settles T+2</TooltipContent>
+          </Tooltip>
+        </div>
+        <div
+          ref={setScope}
+          className="tooltip-override-demo"
+          style={
+            {
+              position: "relative",
+              "--finra-container-foreground": "#4c1d95",
+              "--finra-radius-md": "0.75rem",
+            } as React.CSSProperties
+          }>
+          <style>{`
+            :where(.tooltip-override-demo) [data-finra-ui="tooltip"] {
+              letter-spacing: var(--finra-tracking-wide);
+              text-transform: uppercase;
+              font-weight: var(--finra-font-semibold);
+            }
+          `}</style>
+          <p style={{ margin: "0 0 0.5rem", fontSize: "0.75rem" }}>Overridden</p>
+          <Tooltip open placement="bottom">
+            <TooltipTrigger asChild>
+              <Button variant="secondary">Overridden</Button>
+            </TooltipTrigger>
+            <TooltipContent container={scope}>Settles T+2</TooltipContent>
+          </Tooltip>
+        </div>
+      </div>
+    );
+  },
 };
 
 /** The tooltip left visible in dark mode. Tooltips are the easiest surface to get wrong on a dark background. */

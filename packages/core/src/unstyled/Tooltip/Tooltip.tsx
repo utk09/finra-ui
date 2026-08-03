@@ -75,11 +75,23 @@ export interface TooltipProps {
   defaultOpen?: boolean;
   /** Fired whenever the tooltip wants to open or close - hover, focus, Escape or blur. */
   onOpenChange?: (open: boolean) => void;
-  /** Delay before showing on hover/focus, in ms. Default 700. */
+  /**
+   * Delay before showing on hover/focus, in ms.
+   *
+   * @defaultValue `700`
+   */
   openDelay?: number;
-  /** Delay before hiding, in ms. Default 0. */
+  /**
+   * Delay before hiding, in ms.
+   *
+   * @defaultValue `0`
+   */
   closeDelay?: number;
-  /** Preferred placement. Default "top". */
+  /**
+   * Preferred placement.
+   *
+   * @defaultValue `"top"`
+   */
   placement?: Placement;
 }
 
@@ -251,7 +263,11 @@ export interface TooltipContentProps extends HTMLAttributes<HTMLDivElement> {
   container?: Element | null;
   /** Bubble contents. Plain text or simple inline markup - never controls. */
   children?: ReactNode;
-  /** Gap between the trigger and the tooltip, in px. Default 6. */
+  /**
+   * Gap between the trigger and the tooltip, in px.
+   *
+   * @defaultValue `6`
+   */
   offset?: number;
 }
 

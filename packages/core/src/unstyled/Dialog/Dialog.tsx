@@ -141,7 +141,11 @@ Dialog.displayName = "Dialog";
  * Calling `preventDefault()` in your own `onClick` suppresses the open.
  */
 export interface DialogTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Render onto the single child element instead of a <button>. */
+  /**
+   * Render onto the single child element instead of a <button>.
+   *
+   * @defaultValue `false`
+   */
   asChild?: boolean;
 }
 

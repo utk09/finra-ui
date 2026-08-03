@@ -1,8 +1,8 @@
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+import { Fragment, forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useStore } from "../../hooks/useStore";
-import { type ToastData, toastController } from "../../logic/toast";
+import { type ToastControls, type ToastData, toastController } from "../../logic/toast";
 import { Portal } from "../Portal/Portal";
 
 /**
@@ -19,23 +19,6 @@ export type ToastPosition =
   | "bottom-left"
   | "bottom-center"
   | "bottom-right";
-
-/** Per-toast controls handed to a custom `renderToast`. */
-export interface ToastControls {
-  /** Dismiss this toast now and cancel its auto-dismiss timer. */
-  dismiss: () => void;
-  /**
-   * Freeze the auto-dismiss countdown.
-   *
-   * @remarks
-   * Call on pointer enter and on focus. A toast that expires while being read -
-   * or while its action button holds focus - is a genuine accessibility
-   * failure, not just an annoyance.
-   */
-  pause: () => void;
-  /** Restart the countdown with the toast's remaining duration. Pairs with `pause`. */
-  resume: () => void;
-}
 
 //  Item
 
@@ -166,8 +149,11 @@ export function Toaster({
             pause: () => toastController.pause(toast.id),
             resume: () => toastController.resume(toast.id, toast.duration),
           };
+          // A Fragment, not a wrapper element: what `renderToast` returns is the
+          // toast, and it has to be a direct child of the region for the
+          // region's `gap` and alignment to reach it.
           return renderToast ? (
-            <div key={toast.id}>{renderToast(toast, controls)}</div>
+            <Fragment key={toast.id}>{renderToast(toast, controls)}</Fragment>
           ) : (
             <ToastItem key={toast.id} toast={toast} controls={controls} />
           );

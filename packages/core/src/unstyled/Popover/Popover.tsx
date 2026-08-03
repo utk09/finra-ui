@@ -128,7 +128,11 @@ Popover.displayName = "Popover";
  * Calling `preventDefault()` in your own `onClick` suppresses the toggle.
  */
 export interface PopoverTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Render onto the single child element instead of a <button>. */
+  /**
+   * Render onto the single child element instead of a <button>.
+   *
+   * @defaultValue `false`
+   */
   asChild?: boolean;
 }
 

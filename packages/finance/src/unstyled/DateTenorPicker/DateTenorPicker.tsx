@@ -695,6 +695,7 @@ export const DateTenorPickerBase = forwardRef<DateTenorPickerHandle, DateTenorPi
       <div
         ref={containerRef}
         className={cx(cn?.root, isOpen && cn?.rootOpen)}
+        {...{ [FINRA_UI_ATTR]: componentIds.dateTenorPicker }}
         {...dataAttributes}
         {...props}>
         <input

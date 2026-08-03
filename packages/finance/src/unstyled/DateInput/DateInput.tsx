@@ -290,6 +290,7 @@ export const DateInputBase = forwardRef<HTMLInputElement, DateInputBaseProps>(
     return (
       <div
         ref={containerRef}
+        {...{ [FINRA_UI_ATTR]: componentIds.dateInput }}
         {...dataAttributes}
         className={cx(classNames?.root, isCalendarOpen && classNames?.calendarOpen)}
         {...props}>

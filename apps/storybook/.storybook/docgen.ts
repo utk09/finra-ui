@@ -65,6 +65,48 @@ function tagValue(text: string, tag: string): string {
 }
 
 /**
+ * The value a `@defaultValue` tag states, ready for a table cell.
+ *
+ * @remarks
+ * The tag is written both ways across the library, as `` `false` `` and as
+ * `"primary"`, and one carries a trailing clause. A leading code span is the
+ * value; anything after it is prose about the value, and a Default column is
+ * too narrow to be the place for it.
+ *
+ * Backticks reach the cell verbatim otherwise, which only shows up on props
+ * where the tag is the sole source: a prop whose default `react-docgen` can
+ * also see natively takes that value first and never reveals the difference.
+ */
+function documentedDefault(description: string): string {
+  const raw = tagValue(description, "defaultValue");
+  return raw.match(/^`([^`]+)`/)?.[1] ?? raw;
+}
+
+/** Longest default rendered as-is. Past this a table cell stops being readable. */
+const DEFAULT_SUMMARY_MAX = 80;
+
+/**
+ * Condense a default that `react-docgen` resolved to a whole definition.
+ *
+ * @remarks
+ * A prop defaulting to a named function or a shared constant is reported as
+ * that value's entire source, so `AmountInput`'s `parser` arrived as 3,815
+ * characters of function body in one cell. The name is what identifies it; the
+ * body is one click away in the source.
+ *
+ * A story can still name a value this cannot, by setting
+ * `table.defaultValue.summary` itself: short summaries pass through untouched.
+ */
+export function condenseDefault(summary: string): string {
+  if (summary.length <= DEFAULT_SUMMARY_MAX && !summary.includes("\n")) return summary;
+  const named = summary.match(/^(?:async[ \t]+)?function[ \t*]*([A-Za-z_$][\w$]*)/);
+  if (named) return named[1];
+  if (summary.startsWith("[")) return "[…]";
+  if (summary.startsWith("{")) return "{…}";
+  return `${summary.slice(0, DEFAULT_SUMMARY_MAX).trimEnd()}…`;
+}
+
+/**
  * Rebuild a component description for display.
  *
  * Keeps the summary and `@remarks`, drops `@see` when it only points at the
@@ -160,7 +202,7 @@ export function mergeInheritedArgTypes(
       // The prop is already listed, but a styled wrapper that re-declares its
       // props without re-stating the defaults leaves the column empty. The
       // default is applied by the base, so read it from there.
-      const value = prop.defaultValue?.value ?? tagValue(prop.description ?? "", "defaultValue");
+      const value = prop.defaultValue?.value ?? documentedDefault(prop.description ?? "");
       if (value && !existing.table?.defaultValue?.summary) {
         existing.table = { ...existing.table, defaultValue: { summary: value } };
       }
@@ -185,8 +227,7 @@ export function mergeInheritedArgTypes(
       table: {
         type: prop.tsType?.name ? { summary: prop.tsType.name } : undefined,
         defaultValue: (() => {
-          const value =
-            prop.defaultValue?.value ?? tagValue(prop.description ?? "", "defaultValue");
+          const value = prop.defaultValue?.value ?? documentedDefault(prop.description ?? "");
           return value ? { summary: value } : undefined;
         })(),
       },
@@ -209,10 +250,20 @@ export function enhanceArgTypesFromDocgen(
   if (!props) return argTypes;
 
   for (const [name, argType] of Object.entries(argTypes)) {
+    // Independent of the docblock: the oversized default comes from the value
+    // `react-docgen` resolved, so a prop with no description needs it too.
+    const resolved = argType.table?.defaultValue?.summary;
+    if (resolved) {
+      const condensed = condenseDefault(resolved);
+      if (condensed !== resolved) {
+        argType.table = { ...argType.table, defaultValue: { summary: condensed } };
+      }
+    }
+
     const raw = props[name]?.description;
     if (!raw) continue;
 
-    const documented = tagValue(raw, "defaultValue");
+    const documented = documentedDefault(raw);
     const existing = argType.table?.defaultValue?.summary;
     if (documented && !existing) {
       argType.table = { ...argType.table, defaultValue: { summary: documented } };

@@ -367,7 +367,12 @@ export const DateTenorInputBase = forwardRef<HTMLDivElement, DateTenorInputBaseP
           })();
 
     return (
-      <div ref={mergeRefs(ref, containerRef)} className={cn?.root} {...dataAttributes} {...props}>
+      <div
+        ref={mergeRefs(ref, containerRef)}
+        className={cn?.root}
+        {...{ [FINRA_UI_ATTR]: componentIds.dateTenorInput }}
+        {...dataAttributes}
+        {...props}>
         {/* Trigger */}
         <div
           className={cx(cn?.trigger, isOpen && cn?.triggerOpen)}

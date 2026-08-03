@@ -12,9 +12,9 @@ import {
 
 import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useFormField } from "../../hooks/useFormField";
-import type { Variant } from "../../types/variants";
+import { charCountStatus } from "../../logic/charCount";
+import type { ValidationStatus, Variant } from "../../types/variants";
 import { TextareaBase } from "../../unstyled/Textarea/Textarea";
-import type { ValidationStatus } from "../Input/Input";
 import styles from "./Textarea.module.scss";
 
 const textareaVariants = cva(styles.wrapper, {
@@ -72,14 +72,15 @@ export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaE
    */
   showCharCount?: boolean;
   /**
-   * Fraction of `maxLength` at which the counter turns warning-coloured, as
-   * `0`-`1`.
+   * Character count at which the counter turns warning-coloured.
    *
    * @remarks
-   * Colour is not the only signal - the counter's text carries the numbers
-   * regardless.
+   * A count, not a fraction of `maxLength`: pass `180` to warn at 180
+   * characters, not `0.9`. Needs `maxLength`, and has no effect without it.
    *
-   * @defaultValue `0.9`
+   * Left unset there is no warning tier, and the counter goes straight from
+   * plain to the error colour on reaching the limit. Colour is not the only
+   * signal either way - the counter's text carries the numbers regardless.
    */
   warningThreshold?: number;
   /** Grow the field with its content, between `minRows` and `maxRows`. */
@@ -168,16 +169,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       [onChange, adjustHeight],
     );
 
-    const isOverWarning =
-      warningThreshold !== undefined && maxLength !== undefined && charCount >= warningThreshold;
-    const isAtLimit = maxLength !== undefined && charCount >= maxLength;
-
-    const countStatus: ValidationStatus | undefined = isAtLimit
-      ? "error"
-      : isOverWarning
-        ? "warning"
-        : undefined;
-
+    const countStatus = charCountStatus(charCount, maxLength, warningThreshold);
     const effectiveValidation = validationStatus ?? countStatus;
 
     return (

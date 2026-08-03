@@ -1216,7 +1216,11 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
       : null;
 
   return (
-    <div className={cx(cn?.root, isOpen && cn?.rootOpen)} {...dataAttributes} {...rest}>
+    <div
+      className={cx(cn?.root, isOpen && cn?.rootOpen)}
+      {...{ [FINRA_UI_ATTR]: componentIds.currencyPairPicker }}
+      {...dataAttributes}
+      {...rest}>
       <div ref={setControlEl} className={cn?.control} {...controlDataAttributes}>
         <input
           ref={inputRef}

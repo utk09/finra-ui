@@ -62,11 +62,17 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChang
   defaultValue?: string;
   /** Called when the selected tab changes. */
   onValueChange?: (value: string) => void;
-  /** Arrow-key axis and `aria-orientation`. Default "horizontal". */
+  /**
+   * Arrow-key axis and `aria-orientation`.
+   *
+   * @defaultValue `"horizontal"`
+   */
   orientation?: TabsOrientation;
   /**
    * "automatic" selects a tab as soon as it is focused (arrow keys); "manual"
-   * only moves focus and selects on Enter/Space or click. Default "automatic".
+   * only moves focus and selects on Enter/Space or click.
+   *
+   * @defaultValue `"automatic"`
    */
   activationMode?: TabsActivationMode;
   /** The tab list and panels. */

@@ -2,16 +2,30 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Textarea } from "@utk09/finra-ui";
 import { expect, userEvent, within } from "storybook/test";
 
-import { inDark } from "./_shared";
+import { forwardsTo, inDark, NATIVE, nativeFieldArgTypes } from "./_shared";
 
 const meta: Meta<typeof Textarea> = {
   title: "Components/Textarea",
   component: Textarea,
   parameters: {
     layout: "centered",
+    // No `inheritsFrom`: this component composes `TextareaBase` rather than
+    // re-declaring its props, so docgen already sees everything it declares.
+    docs: { forwardsTo: forwardsTo("textarea", "textarea element") },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
+    // Declared on `TextareaHTMLAttributes`, so react-docgen cannot see them and
+    // there is nothing for the docgen backfill to read.
+    disabled: nativeFieldArgTypes.disabled,
+    readOnly: nativeFieldArgTypes.readOnly,
+    placeholder: nativeFieldArgTypes.placeholder,
+    maxLength: {
+      control: "number",
+      description:
+        "Native character limit. The browser stops input at this length; `showCharCount` renders it as the counter's denominator.",
+      table: { category: NATIVE, type: { summary: "number" } },
+    },
     variant: {
       control: "select",
       options: ["primary", "secondary", "tertiary"],
@@ -21,12 +35,6 @@ const meta: Meta<typeof Textarea> = {
       options: [undefined, "error", "warning", "success"],
     },
     fullWidth: {
-      control: "boolean",
-    },
-    disabled: {
-      control: "boolean",
-    },
-    readOnly: {
       control: "boolean",
     },
     showCharCount: {
@@ -39,9 +47,6 @@ const meta: Meta<typeof Textarea> = {
       control: "number",
     },
     maxRows: {
-      control: "number",
-    },
-    maxLength: {
       control: "number",
     },
     warningThreshold: {
@@ -282,6 +287,61 @@ export const AllVariations: Story = {
           <Textarea disabled defaultValue="Disabled" aria-label="Disabled textarea" />
           <Textarea readOnly defaultValue="Read-only" aria-label="Read-only textarea" />
         </div>
+      </div>
+    </div>
+  ),
+};
+
+/**
+ * Restyling the field chrome and the counter.
+ *
+ * Nothing here is portalled, so an override declared on an ancestor reaches every
+ * part. Border, radius and the warning colour are semantic tokens; the counter's
+ * alignment has no token behind it and is reached through
+ * `[data-finra-ui="textarea-count"]`, which wins because the library ships inside
+ * `@layer finra-ui`.
+ */
+export const Overrides: Story = {
+  parameters: { layout: "padded" },
+  render: () => (
+    <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start" }}>
+      <div>
+        <p style={{ margin: "0 0 0.5rem", fontSize: "0.75rem" }}>Default</p>
+        <Textarea
+          aria-label="Default notes"
+          showCharCount
+          maxLength={50}
+          warningThreshold={40}
+          defaultValue="Settlement instructions are nearly complete."
+        />
+      </div>
+      <div
+        className="textarea-override-demo"
+        style={
+          {
+            // The field is in its warning tier, so this drives both the border
+            // and the counter. `--finra-container-border` is deliberately absent:
+            // the warning status takes the border over, so overriding it here
+            // would change nothing and imply it does.
+            "--finra-status-warning-accent": "#0369a1",
+            "--finra-radius-md": "0.75rem",
+          } as React.CSSProperties
+        }>
+        <style>{`
+          :where(.textarea-override-demo) [data-finra-ui="textarea-count"] {
+            text-align: start;
+            font-variant-numeric: normal;
+            letter-spacing: var(--finra-tracking-wide);
+          }
+        `}</style>
+        <p style={{ margin: "0 0 0.5rem", fontSize: "0.75rem" }}>Overridden</p>
+        <Textarea
+          aria-label="Overridden notes"
+          showCharCount
+          maxLength={50}
+          warningThreshold={40}
+          defaultValue="Settlement instructions are nearly complete."
+        />
       </div>
     </div>
   ),

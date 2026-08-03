@@ -3,7 +3,13 @@
 // Tabs orientation / activation enums (part of the Tabs props surface)
 export type { TabsActivationMode, TabsOrientation } from "./logic/tabs";
 // Imperative toast API + queue types (framework-agnostic store)
-export type { ToastApi, ToastData, ToastInput, ToastSentiment } from "./logic/toast";
+export type {
+  ToastApi,
+  ToastControls,
+  ToastData,
+  ToastInput,
+  ToastSentiment,
+} from "./logic/toast";
 export { toast } from "./logic/toast";
 export type { ButtonBaseProps } from "./unstyled/Button/Button";
 export { ButtonBase } from "./unstyled/Button/Button";
@@ -75,12 +81,7 @@ export type { TabListProps, TabPanelProps, TabProps, TabsProps } from "./unstyle
 export { Tab, TabList, TabPanel, Tabs } from "./unstyled/Tabs/Tabs";
 export type { TextareaBaseProps } from "./unstyled/Textarea/Textarea";
 export { TextareaBase } from "./unstyled/Textarea/Textarea";
-export type {
-  ToastControls,
-  ToasterProps,
-  ToastItemProps,
-  ToastPosition,
-} from "./unstyled/Toast/Toast";
+export type { ToasterProps, ToastItemProps, ToastPosition } from "./unstyled/Toast/Toast";
 export { Toaster, ToastItem } from "./unstyled/Toast/Toast";
 export type {
   TooltipContentProps,

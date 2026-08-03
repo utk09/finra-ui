@@ -924,7 +924,11 @@ function ComboBoxBaseRender<T = string>(
   };
 
   return (
-    <div className={cn?.root} {...dataAttributes} {...props}>
+    <div
+      className={cn?.root}
+      {...{ [FINRA_UI_ATTR]: componentIds.comboBox }}
+      {...dataAttributes}
+      {...props}>
       {/* Presentational shell only - all combobox ARIA lives on the input. */}
       <div
         ref={setControlEl}

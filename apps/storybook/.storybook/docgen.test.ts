@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   componentDescription,
+  condenseDefault,
   describeComponent,
   enhanceArgTypesFromDocgen,
   linkifySymbols,
@@ -262,5 +263,86 @@ describe("mergeInheritedArgTypes", () => {
       { table: { defaultValue?: { summary: string } } }
     >;
     expect(out.onSelect.table.defaultValue).toBeUndefined();
+  });
+});
+
+describe("condenseDefault", () => {
+  it("leaves a short single-line default alone", () => {
+    expect(condenseDefault("false")).toBe("false");
+    expect(condenseDefault('"bottom-right"')).toBe('"bottom-right"');
+  });
+
+  it("names a function rather than printing its body", () => {
+    const source = `function parseAmount(input: string): AmountParseResult {\n  ${"// body\n  ".repeat(20)}return null;\n}`;
+    expect(source.length).toBeGreaterThan(80);
+    expect(condenseDefault(source)).toBe("parseAmount");
+  });
+
+  it("names an async or generator function too", () => {
+    expect(condenseDefault(`async function loadThings() {\n${" ".repeat(90)}\n}`)).toBe(
+      "loadThings",
+    );
+    expect(condenseDefault(`function* walk() {\n${" ".repeat(90)}\n}`)).toBe("walk");
+  });
+
+  it("marks the shape of an oversized literal it cannot name", () => {
+    expect(condenseDefault(`[\n${'  "ON",\n'.repeat(30)}]`)).toBe("[…]");
+    expect(condenseDefault(`{\n${"  a: 1,\n".repeat(30)}}`)).toBe("{…}");
+  });
+
+  it("truncates anything else oversized rather than filling the cell", () => {
+    const out = condenseDefault("x".repeat(200));
+    expect(out).toHaveLength(81);
+    expect(out.endsWith("…")).toBe(true);
+  });
+
+  it("condenses a multi-line value even when it is short", () => {
+    expect(condenseDefault("function f() {\n  return 1;\n}")).toBe("f");
+  });
+});
+
+describe("enhanceArgTypesFromDocgen: default handling", () => {
+  it("strips the code span a @defaultValue tag is written with", () => {
+    const argTypes = { asChild: { name: "asChild", table: {} } } as never;
+    const enhanced = enhanceArgTypesFromDocgen(
+      argTypes,
+      withDocgen({
+        asChild: { description: "Render onto the child.\n@defaultValue `false`" },
+      }),
+    );
+    expect(enhanced.asChild.table?.defaultValue?.summary).toBe("false");
+  });
+
+  it("keeps a tag value written without a code span", () => {
+    const argTypes = { variant: { name: "variant", table: {} } } as never;
+    const enhanced = enhanceArgTypesFromDocgen(
+      argTypes,
+      withDocgen({ variant: { description: 'Emphasis.\n@defaultValue "primary"' } }),
+    );
+    expect(enhanced.variant.table?.defaultValue?.summary).toBe('"primary"');
+  });
+
+  it("drops the prose a tag trails after its value", () => {
+    const argTypes = { sentiment: { name: "sentiment", table: {} } } as never;
+    const enhanced = enhanceArgTypesFromDocgen(
+      argTypes,
+      withDocgen({
+        sentiment: {
+          description: 'Tone.\n@defaultValue `"info"` - unless raised through a helper',
+        },
+      }),
+    );
+    expect(enhanced.sentiment.table?.defaultValue?.summary).toBe('"info"');
+  });
+
+  it("condenses a resolved default even when the prop has no description", () => {
+    const argTypes = {
+      parser: {
+        name: "parser",
+        table: { defaultValue: { summary: `function parseAmount() {\n${" ".repeat(90)}\n}` } },
+      },
+    } as never;
+    const enhanced = enhanceArgTypesFromDocgen(argTypes, withDocgen({ parser: {} }));
+    expect(enhanced.parser.table?.defaultValue?.summary).toBe("parseAmount");
   });
 });

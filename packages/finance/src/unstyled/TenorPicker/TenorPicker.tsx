@@ -621,6 +621,7 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
       <div
         ref={containerRef}
         className={cx(cn?.root, isOpen && cn?.rootOpen)}
+        {...{ [FINRA_UI_ATTR]: componentIds.tenorPicker }}
         {...dataAttributes}
         {...props}>
         <input
