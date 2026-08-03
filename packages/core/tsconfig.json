@@ -2,7 +2,11 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["vitest/globals", "@testing-library/jest-dom/vitest"]
+    // `node` is here for tests that read source off disk, not for library code.
+    // The published surface is emitted by `tsconfig.build.json`, which keeps
+    // `types: []` and excludes test files, so shipped code importing `node:*`
+    // still fails the build.
+    "types": ["vitest/globals", "@testing-library/jest-dom/vitest", "node"]
   },
   "include": ["src", "test"],
   "exclude": ["node_modules", "dist"]

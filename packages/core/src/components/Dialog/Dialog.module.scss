@@ -1,6 +1,7 @@
-// Backdrop is rendered by the unstyled DialogContent with a stable data
-// attribute (its public styling hook), so it is targeted globally here.
-[data-finra-ui="dialog-overlay"] {
+// The backdrop sits beside the panel rather than inside it, so it cannot be
+// reached by a descendant selector. `DialogContent` takes `overlayClassName`
+// and this class is passed to it.
+.overlay {
   position: fixed;
   inset: 0;
   z-index: var(--finra-z-overlay);
@@ -67,7 +68,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-finra-ui="dialog-overlay"],
+  .overlay,
   .panel {
     animation: none;
   }

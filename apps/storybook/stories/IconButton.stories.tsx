@@ -12,13 +12,14 @@ import {
   SearchIcon,
   TrashIcon,
 } from "./_icons";
-import { inDark, Row, Stack, TokenScope } from "./_shared";
+import { forwardsTo, inDark, NATIVE, Row, Stack, TokenScope } from "./_shared";
 
 const meta: Meta<typeof IconButton> = {
   title: "Components/IconButton",
   component: IconButton,
   parameters: {
     layout: "centered",
+    docs: { forwardsTo: forwardsTo("button", "button element") },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -32,6 +33,17 @@ const meta: Meta<typeof IconButton> = {
     },
     disabled: {
       control: "boolean",
+      description:
+        "Native disabled state. A disabled icon button is not focusable and fires no events.",
+      table: { category: NATIVE, type: { summary: "boolean" } },
+    },
+    onClick: {
+      description:
+        "Fires on click and on Enter or Space while focused, because the element is a real `button`.",
+      table: {
+        category: NATIVE,
+        type: { summary: "(event: MouseEvent<HTMLButtonElement>) => void" },
+      },
     },
   },
   args: {

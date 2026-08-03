@@ -104,6 +104,11 @@ describe("forwardsTo", () => {
     expect(forwardsTo("input", "input element")).toContain("ref");
     expect(forwardsTo("input")).not.toContain("ref");
   });
+
+  it("supplies the article itself, so the caller passes a bare noun", () => {
+    expect(forwardsTo("input", "radio input")).toContain("points at the radio input");
+    expect(forwardsTo("input", "radio input")).not.toContain("the the");
+  });
 });
 
 describe("argType fragments", () => {

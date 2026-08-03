@@ -4,7 +4,7 @@ import { InputBase } from "@utk09/finra-ui/unstyled";
 import { expect, fn, userEvent, within } from "storybook/test";
 
 import { CloseIcon, LockIcon, MailIcon, SearchIcon } from "./_icons";
-import { inDark, TokenScope } from "./_shared";
+import { forwardsTo, inDark, nativeFieldArgTypes, TokenScope } from "./_shared";
 
 const meta: Meta<typeof Input> = {
   title: "Components/Input",
@@ -13,7 +13,10 @@ const meta: Meta<typeof Input> = {
     layout: "centered",
     // Docgen does not follow `extends` across modules, so `asChild` from the
     // base is otherwise missing from the table.
-    docs: { inheritsFrom: InputBase },
+    docs: {
+      inheritsFrom: InputBase,
+      forwardsTo: forwardsTo("input", "input element"),
+    },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -28,12 +31,9 @@ const meta: Meta<typeof Input> = {
     fullWidth: {
       control: "boolean",
     },
-    disabled: {
-      control: "boolean",
-    },
-    readOnly: {
-      control: "boolean",
-    },
+    disabled: nativeFieldArgTypes.disabled,
+    readOnly: nativeFieldArgTypes.readOnly,
+    placeholder: nativeFieldArgTypes.placeholder,
     clearable: {
       control: "boolean",
     },

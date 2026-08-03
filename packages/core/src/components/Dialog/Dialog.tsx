@@ -60,11 +60,12 @@ export const DialogTrigger = DialogTriggerBase;
 
 /** Styled modal panel (portalled, focus-trapped, dismiss-on-escape/outside). */
 export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
-  ({ className, ...rest }, ref) => (
+  ({ className, overlayClassName, ...rest }, ref) => (
     <DialogContentBase
       ref={ref}
       {...{ [FINRA_UI_ATTR]: componentIds.dialog }}
       className={clsx(styles.panel, className)}
+      overlayClassName={clsx(styles.overlay, overlayClassName)}
       {...rest}
     />
   ),

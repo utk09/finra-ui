@@ -72,9 +72,11 @@
   animation: finra-select-in var(--finra-duration-fast) ease-out;
 }
 
-// Options are rendered by the unstyled SelectContent with a stable data
-// attribute (their public styling hook), so they are targeted globally.
-[data-finra-ui="select-option"] {
+// Options are rendered by the unstyled SelectContent, which takes no class for
+// them, so they are reached by their stable data attribute. Scoped under the
+// styled panel: the same attribute is stamped on every unstyled SelectContent,
+// which ships no CSS.
+.listbox [data-finra-ui="select-option"] {
   display: flex;
   align-items: center;
   gap: var(--finra-spacing-2);
@@ -88,15 +90,15 @@
   user-select: none;
 }
 
-[data-finra-ui="select-option"][data-active] {
+.listbox [data-finra-ui="select-option"][data-active] {
   background-color: var(--finra-actionable-accent-subtle);
 }
 
-[data-finra-ui="select-option"][data-selected] {
+.listbox [data-finra-ui="select-option"][data-selected] {
   font-weight: var(--finra-font-semibold);
 }
 
-[data-finra-ui="select-option"][data-disabled] {
+.listbox [data-finra-ui="select-option"][data-disabled] {
   opacity: var(--finra-opacity-disabled);
   cursor: var(--finra-cursor-disabled);
 }

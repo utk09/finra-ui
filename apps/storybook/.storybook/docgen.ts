@@ -89,6 +89,25 @@ export function describeComponent(raw: string | undefined): string {
   return linkifySymbols(parts.filter(Boolean).join("\n\n"));
 }
 
+/**
+ * The component description a docs page should show.
+ *
+ * @remarks
+ * Storybook resolves `parameters.docs.description.component` *instead of*
+ * calling the extractor, not in addition to it, so a story that used it to add
+ * a sentence lost the component's own summary. Anything a story wants appended
+ * travels as `parameters.docs.forwardsTo` and is joined on here.
+ */
+export function componentDescription(
+  component: unknown,
+  parameters?: { docs?: { forwardsTo?: string } },
+): string {
+  const own = describeComponent(
+    (component as { __docgenInfo?: { description?: string } })?.__docgenInfo?.description,
+  );
+  return [own, parameters?.docs?.forwardsTo].filter(Boolean).join("\n\n");
+}
+
 /** Docgen shape we read off the component. Only the fields used here. */
 interface DocgenProp {
   description?: string;

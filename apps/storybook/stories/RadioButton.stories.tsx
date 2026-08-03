@@ -16,7 +16,7 @@ const meta: Meta<typeof RadioButton> = {
       // Mirrors the `Omit` on the styled props: the wrapper owns the root's
       // class, so the base's is not consumer API here.
       inheritedOmit: ["className"],
-      description: { component: forwardsTo("input", "the radio input") },
+      forwardsTo: forwardsTo("input", "radio input"),
     },
   },
   tags: ["autodocs", "a11y-test"],

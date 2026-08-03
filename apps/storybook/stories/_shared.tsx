@@ -240,6 +240,13 @@ export const APPEARANCE = "Appearance";
  * @remarks
  * The prop tables deliberately omit inherited DOM attributes; a table with 250
  * rows helps nobody. This says where they go instead.
+ *
+ * Assign the result to `parameters.docs.forwardsTo`, which is appended to the
+ * component's own docblock. `parameters.docs.description.component` is resolved
+ * *instead of* the extractor that reads that docblock, so a story using it
+ * replaces the component summary rather than adding to it.
+ *
+ * `ref` is a bare noun phrase: this supplies the article.
  */
 export function forwardsTo(element: string, ref?: string): string {
   const refText = ref ? ` \`ref\` points at the ${ref}.` : "";
@@ -266,6 +273,12 @@ export const nativeFieldArgTypes = {
   placeholder: {
     control: "text",
     description: "Hint text. Never a substitute for a label, which `FormField` supplies.",
+    table: { category: NATIVE, type: { summary: "string" } },
+  },
+  "aria-label": {
+    control: "text",
+    description:
+      "Accessible name for a control with no visible label. Prefer a visible one via `FormField`; use this only where the surrounding design supplies the meaning.",
     table: { category: NATIVE, type: { summary: "string" } },
   },
 } satisfies Meta["argTypes"];

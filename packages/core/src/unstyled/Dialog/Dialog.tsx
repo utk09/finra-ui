@@ -196,6 +196,14 @@ export interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
    * escapes ancestor `overflow: hidden`, `z-index` and `transform` contexts.
    */
   container?: Element | null;
+  /**
+   * Class for the backdrop behind the panel.
+   *
+   * @remarks
+   * The backdrop is rendered here rather than composed by the caller, so this
+   * is the only way to give it a class. `className` goes to the panel.
+   */
+  overlayClassName?: string;
   /** Dialog contents. Should include a `DialogTitle`. */
   children?: ReactNode;
 }
@@ -206,7 +214,7 @@ export interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
  * @see {@link DialogContentProps}
  */
 export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
-  ({ children, container, ...rest }, ref) => {
+  ({ children, container, overlayClassName, ...rest }, ref) => {
     const ctx = useDialogContext("Content");
 
     useEffect(() => {
@@ -218,7 +226,7 @@ export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
 
     return (
       <Portal container={container}>
-        <div {...{ [FINRA_UI_ATTR]: componentIds.dialogOverlay }} />
+        <div {...{ [FINRA_UI_ATTR]: componentIds.dialogOverlay }} className={overlayClassName} />
         <FocusScope trapped>
           <DismissableLayer
             onDismiss={() => ctx.setOpen(false)}

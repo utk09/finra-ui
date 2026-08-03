@@ -3,7 +3,7 @@ import { NumberInput } from "@utk09/finra-ui";
 import { NumberInputBase } from "@utk09/finra-ui/unstyled";
 import { expect, fn, userEvent, within } from "storybook/test";
 
-import { inDark } from "./_shared";
+import { forwardsTo, inDark, nativeFieldArgTypes } from "./_shared";
 
 const meta: Meta<typeof NumberInput> = {
   title: "Components/NumberInput",
@@ -12,7 +12,10 @@ const meta: Meta<typeof NumberInput> = {
     layout: "centered",
     // Docgen does not follow `extends` across modules, so the base's props are
     // otherwise missing from the table.
-    docs: { inheritsFrom: NumberInputBase },
+    docs: {
+      inheritsFrom: NumberInputBase,
+      forwardsTo: forwardsTo("input", "input element"),
+    },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -27,12 +30,9 @@ const meta: Meta<typeof NumberInput> = {
     fullWidth: {
       control: "boolean",
     },
-    disabled: {
-      control: "boolean",
-    },
-    readOnly: {
-      control: "boolean",
-    },
+    disabled: nativeFieldArgTypes.disabled,
+    readOnly: nativeFieldArgTypes.readOnly,
+    "aria-label": nativeFieldArgTypes["aria-label"],
     min: {
       control: "number",
     },

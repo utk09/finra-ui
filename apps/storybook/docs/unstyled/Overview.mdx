@@ -1,0 +1,76 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Note } from "../_components";
+
+<Meta title="Unstyled/Overview" />
+
+# Unstyled
+
+Every component in the library exists twice. `@utk09/finra-ui` is the styled layer. `@utk09/finra-ui/unstyled` and `@utk09/finra-ui-finance/unstyled` are the same behaviour, keyboard handling and ARIA with **no CSS at all**.
+
+Reach for a base when your design system disagrees with ours. You keep the state machine, the keyboard model, the ARIA wiring and the focus management, and you supply every class yourself.
+
+```tsx
+import { ComboBoxBase } from "@utk09/finra-ui/unstyled";
+```
+
+<Note kind="info" title="These pages look plain on purpose">
+  The demos add just enough inline style to make portalled content legible. That styling is not part
+  of the package. What you are looking at is the entire visual output of a base component.
+</Note>
+
+## Form controls
+
+| Base | What it carries |
+| --- | --- |
+| [ButtonBase](?path=/docs/unstyled-buttonbase--docs) | A real `button`, plus `asChild` to render as any element |
+| [IconButtonBase](?path=/docs/unstyled-iconbuttonbase--docs) | Icon slot, and an accessible name it refuses to go without |
+| [InputBase](?path=/docs/unstyled-inputbase--docs) | Single-line text entry with `asChild` |
+| [TextareaBase](?path=/docs/unstyled-textareabase--docs) | Multi-line text entry |
+| [NumberInputBase](?path=/docs/unstyled-numberinputbase--docs) | Spinbutton semantics, clamping and step arithmetic |
+| [CheckboxBase](?path=/docs/unstyled-checkboxbase--docs) | Checked and indeterminate, the latter set as a DOM property |
+| [RadioButtonBase](?path=/docs/unstyled-radiobuttonbase--docs) | Group membership by shared `name` |
+| [SwitchBase](?path=/docs/unstyled-switchbase--docs) | `role="switch"` over a native checkbox |
+| [SliderBase](?path=/docs/unstyled-sliderbase--docs) | Range input with min, max and step |
+| [FormFieldBase](?path=/docs/unstyled-formfieldbase--docs) | Label, helper text and error, wired to the control it wraps |
+| [PillInputBase](?path=/docs/unstyled-pillinputbase--docs) | Free text committed as removable pills |
+| [FileDropZoneBase](?path=/docs/unstyled-filedropzonebase--docs) | Drag-and-drop that is also keyboard-operable |
+| [ComboBoxBase](?path=/docs/unstyled-comboboxbase--docs) | Filtered listbox, portalled, with the APG keyboard model |
+
+## Overlays and primitives
+
+The overlay compounds portal their content out of the story canvas, so their behaviour is visible with no stylesheet at all: focus trapping, outside-dismiss, `Escape`, scroll locking and placement.
+
+| Base | What it carries |
+| --- | --- |
+| [Tabs](?path=/docs/unstyled-tabs--docs) | Roving arrow keys, automatic or manual activation |
+| [Dialog](?path=/docs/unstyled-dialog--docs) | Modal focus trap, scroll lock, `aria-modal` |
+| [Popover](?path=/docs/unstyled-popover--docs) | Non-modal panel with outside-dismiss |
+| [Menu](?path=/docs/unstyled-menu--docs) | Roving focus, typeahead, close on select |
+| [Select](?path=/docs/unstyled-select--docs) | APG activedescendant listbox |
+| [Tooltip](?path=/docs/unstyled-tooltip--docs) | Hover and focus with open/close delays |
+| [Toast](?path=/docs/unstyled-toast--docs) | An `aria-live` region driven by the imperative `toast` API |
+| [Portal](?path=/docs/unstyled-portal--docs) | Escapes ancestor `overflow`, `z-index` and `transform` |
+| [DismissableLayer](?path=/docs/unstyled-dismissablelayer--docs) | Escape and outside-pointer dismissal, layer-aware |
+| [FocusScope](?path=/docs/unstyled-focusscope--docs) | Traps Tab, and restores focus on unmount |
+
+## Finance
+
+These carry the domain rules: parsing, tick arithmetic, canonicalisation and resolution. None of it is presentational, so all of it survives having no CSS.
+
+| Base | What it carries |
+| --- | --- |
+| [CalendarBase](?path=/docs/unstyled-calendarbase--docs) | Month grid, `min`/`max`, configurable week start |
+| [DateInputBase](?path=/docs/unstyled-dateinputbase--docs) | Masked date entry against a format |
+| [TenorInputBase](?path=/docs/unstyled-tenorinputbase--docs) | Tenor entry (deprecated; prefer TenorPickerBase) |
+| [DateTenorInputBase](?path=/docs/unstyled-datetenorinputbase--docs) | Paired date and tenor fields |
+| [TenorPickerBase](?path=/docs/unstyled-tenorpickerbase--docs) | Grouped tenors, favourites, free-form entry canonicalised on commit |
+| [DateTenorPickerBase](?path=/docs/unstyled-datetenorpickerbase--docs) | One field taking either a date or a tenor, mode decided by the parser |
+| [PriceInputBase](?path=/docs/unstyled-priceinputbase--docs) | Tick-aware price entry with a digit hierarchy the styled layer colours |
+| [AmountInputBase](?path=/docs/unstyled-amountinputbase--docs) | Trader shorthand in (`10m`), a real number out |
+| [CurrencyPairPickerBase](?path=/docs/unstyled-currencypairpickerbase--docs) | Instrument lookup that refuses to guess between ambiguous matches |
+
+## Related
+
+- [Styling and Overrides](?path=/docs/foundations-styling-and-overrides--docs) walks the four escalation levels, of which taking a base is the last.
+- [Accessibility](?path=/docs/foundations-accessibility--docs) covers what the bases guarantee and what stays yours.

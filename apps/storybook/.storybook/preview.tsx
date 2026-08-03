@@ -3,7 +3,7 @@ import "@utk09/finra-ui/styles";
 import type { Preview } from "@storybook/react-vite";
 
 import { DocsLink } from "../docs/DocsLink";
-import { describeComponent, enhanceArgTypesFromDocgen, mergeInheritedArgTypes } from "./docgen";
+import { componentDescription, enhanceArgTypesFromDocgen, mergeInheritedArgTypes } from "./docgen";
 import { lightTheme } from "./theme";
 
 const preview: Preview = {
@@ -67,6 +67,7 @@ const preview: Preview = {
           "Components",
           "Finance",
           "Unstyled",
+          ["Overview", "*"],
           "Icons",
           "Contributing",
         ],
@@ -85,16 +86,19 @@ const preview: Preview = {
        */
       components: { a: DocsLink },
       /**
-       * Clean up the raw docblock before it is rendered.
+       * Clean up the raw docblock before it is rendered, and append whatever
+       * the story adds.
        *
        * `react-docgen` hands the whole comment over, block tags included, so
        * without this every component page prints `@see {@link XProps}` as
-       * literal text. See `./docgen.ts`.
+       * literal text. A story's extra prose arrives as `docs.forwardsTo`
+       * rather than `docs.description.component`, because the latter replaces
+       * this extractor instead of running alongside it. See `./docgen.ts`.
        */
-      extractComponentDescription: (component: unknown) =>
-        describeComponent(
-          (component as { __docgenInfo?: { description?: string } })?.__docgenInfo?.description,
-        ),
+      extractComponentDescription: (
+        component: unknown,
+        context?: { parameters?: { docs?: { forwardsTo?: string } } },
+      ) => componentDescription(component, context?.parameters),
       // Docs chrome stays light to match the manager; the story canvases inside
       // still follow the Theme toolbar, because the decorator below runs per
       // story in docs mode too.

@@ -15,7 +15,7 @@ const meta: Meta<typeof Switch> = {
       // Mirrors the `Omit` on the styled props: the wrapper owns the root's
       // class, so the base's is not consumer API here.
       inheritedOmit: ["className"],
-      description: { component: forwardsTo("input", "the checkbox input") },
+      forwardsTo: forwardsTo("input", "checkbox input"),
     },
   },
   tags: ["autodocs", "a11y-test"],

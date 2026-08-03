@@ -3,13 +3,14 @@ import { PillInput } from "@utk09/finra-ui";
 import { useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 
-import { inDark } from "./_shared";
+import { forwardsTo, inDark, nativeFieldArgTypes } from "./_shared";
 
 const meta: Meta<typeof PillInput> = {
   title: "Components/PillInput",
   component: PillInput,
   parameters: {
     layout: "centered",
+    docs: { forwardsTo: forwardsTo("input", "text input") },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -19,6 +20,7 @@ const meta: Meta<typeof PillInput> = {
     maxPills: {
       control: "number",
     },
+    "aria-label": nativeFieldArgTypes["aria-label"],
   },
   args: {
     onChange: fn(),

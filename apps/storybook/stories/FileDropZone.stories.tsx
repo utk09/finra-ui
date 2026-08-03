@@ -3,13 +3,14 @@ import { FileDropZone } from "@utk09/finra-ui";
 import { useState } from "react";
 import { expect, fn, within } from "storybook/test";
 
-import { inDark, Stack, TokenScope } from "./_shared";
+import { forwardsTo, inDark, nativeFieldArgTypes, Stack, TokenScope } from "./_shared";
 
 const meta: Meta<typeof FileDropZone> = {
   title: "Components/FileDropZone",
   component: FileDropZone,
   parameters: {
     layout: "centered",
+    docs: { forwardsTo: forwardsTo("input", "file input") },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -22,6 +23,7 @@ const meta: Meta<typeof FileDropZone> = {
     accept: {
       control: "text",
     },
+    "aria-label": nativeFieldArgTypes["aria-label"],
   },
   args: {
     onChange: fn(),

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  componentDescription,
   describeComponent,
   enhanceArgTypesFromDocgen,
   linkifySymbols,
@@ -35,6 +36,31 @@ describe("linkifySymbols", () => {
 
   it("tolerates extra whitespace after the tag", () => {
     expect(linkifySymbols("{@link   Spaced}")).toBe("`Spaced`");
+  });
+});
+
+describe("componentDescription", () => {
+  it("keeps the component's own summary when a story appends to it", () => {
+    const component = withDocgen({}, "One radio in a group.");
+    const text = componentDescription(component, {
+      docs: { forwardsTo: "Any prop not listed here is forwarded." },
+    });
+    expect(text).toBe("One radio in a group.\n\nAny prop not listed here is forwarded.");
+  });
+
+  it("appends nothing when the story adds nothing", () => {
+    expect(componentDescription(withDocgen({}, "Just the summary."))).toBe("Just the summary.");
+  });
+
+  it("still yields the appended sentence when there is no docblock", () => {
+    expect(componentDescription({}, { docs: { forwardsTo: "Forwarded." } })).toBe("Forwarded.");
+  });
+
+  it("strips block tags from the component half", () => {
+    const component = withDocgen({}, "Summary.\n@see {@link BadgeProps}");
+    expect(componentDescription(component, { docs: { forwardsTo: "Tail." } })).toBe(
+      "Summary.\n\nTail.",
+    );
   });
 });
 

@@ -4,7 +4,7 @@ import { CheckboxBase } from "@utk09/finra-ui/unstyled";
 import { useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 
-import { inDark, Row, Stack, TokenScope } from "./_shared";
+import { forwardsTo, inDark, NATIVE, Row, Stack, TokenScope } from "./_shared";
 
 const meta: Meta<typeof Checkbox> = {
   title: "Components/Checkbox",
@@ -17,15 +17,27 @@ const meta: Meta<typeof Checkbox> = {
       // Mirrors the `Omit` on the styled props: these are the styled layer's
       // own injection points, not consumer API.
       inheritedOmit: ["className"],
+      forwardsTo: forwardsTo("input", "checkbox input"),
     },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
     disabled: {
       control: "boolean",
+      description:
+        "Native disabled state. A disabled checkbox is not focusable and submits nothing.",
+      table: { category: NATIVE, type: { summary: "boolean" } },
     },
     indeterminate: {
       control: "boolean",
+    },
+    onChange: {
+      description:
+        "Fires on every toggle. Read `event.target.checked`; `indeterminate` is not reflected there, because the DOM resolves it to a definite state on activation.",
+      table: {
+        category: NATIVE,
+        type: { summary: "(event: ChangeEvent<HTMLInputElement>) => void" },
+      },
     },
   },
   args: {

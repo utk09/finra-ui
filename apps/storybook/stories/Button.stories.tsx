@@ -14,7 +14,7 @@ import {
   SearchIcon,
   TrashIcon,
 } from "./_icons";
-import { inDark, Row, Stack, TokenScope } from "./_shared";
+import { forwardsTo, inDark, NATIVE, Row, Stack, TokenScope } from "./_shared";
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
@@ -23,7 +23,10 @@ const meta: Meta<typeof Button> = {
     layout: "centered",
     // `ButtonProps extends ButtonBaseProps`, and docgen does not follow
     // `extends` across modules. Without this the base's own props are absent.
-    docs: { inheritsFrom: ButtonBase },
+    docs: {
+      inheritsFrom: ButtonBase,
+      forwardsTo: forwardsTo("button", "button element"),
+    },
   },
   tags: ["autodocs", "a11y-test"],
   argTypes: {
@@ -38,8 +41,25 @@ const meta: Meta<typeof Button> = {
     fullWidth: {
       control: "boolean",
     },
+    children: {
+      control: "text",
+      description:
+        "Button label. Keep it a verb phrase naming the action; an icon alone needs `IconButton` and an `aria-label` instead.",
+      table: { category: NATIVE, type: { summary: "ReactNode" } },
+    },
     disabled: {
       control: "boolean",
+      description:
+        "Native disabled state. A disabled button is not focusable and fires no events, so it cannot explain itself; prefer leaving it enabled and reporting why on activation.",
+      table: { category: NATIVE, type: { summary: "boolean" } },
+    },
+    onClick: {
+      description:
+        "Fires on click and on Enter or Space while focused, because the element is a real `button`.",
+      table: {
+        category: NATIVE,
+        type: { summary: "(event: MouseEvent<HTMLButtonElement>) => void" },
+      },
     },
   },
   args: {

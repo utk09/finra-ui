@@ -48,10 +48,12 @@
   inset-inline-end: 0;
 }
 
-// Toast items are rendered by the unstyled layer with stable data attributes
-// (their public styling hook), so they are targeted globally here.
+// Toast items are rendered by the unstyled Toaster, which takes no class for
+// them, so they are reached by their stable data attributes. Scoped under the
+// styled region: the same attributes are stamped on every unstyled Toaster,
+// which ships no CSS.
 
-[data-finra-ui="toast"] {
+.region [data-finra-ui="toast"] {
   --_toast-accent: var(--finra-status-info-accent);
 
   display: grid;
@@ -70,31 +72,31 @@
   animation: finra-toast-in var(--finra-duration-normal) ease-out;
 }
 
-[data-finra-ui="toast"][data-sentiment="success"] {
+.region [data-finra-ui="toast"][data-sentiment="success"] {
   --_toast-accent: var(--finra-status-success-accent);
 }
 
-[data-finra-ui="toast"][data-sentiment="warning"] {
+.region [data-finra-ui="toast"][data-sentiment="warning"] {
   --_toast-accent: var(--finra-status-warning-accent);
 }
 
-[data-finra-ui="toast"][data-sentiment="danger"] {
+.region [data-finra-ui="toast"][data-sentiment="danger"] {
   --_toast-accent: var(--finra-status-danger-accent);
 }
 
-[data-finra-ui="toast-title"] {
+.region [data-finra-ui="toast-title"] {
   grid-column: 1;
   font-size: var(--finra-text-sm);
   font-weight: var(--finra-font-semibold);
 }
 
-[data-finra-ui="toast-description"] {
+.region [data-finra-ui="toast-description"] {
   grid-column: 1;
   font-size: var(--finra-text-sm);
   color: var(--finra-container-foreground-muted);
 }
 
-[data-finra-ui="toast-action"] {
+.region [data-finra-ui="toast-action"] {
   grid-column: 1;
   justify-self: start;
   margin-block-start: var(--finra-spacing-1);
@@ -107,11 +109,11 @@
   cursor: var(--finra-cursor-pointer);
 }
 
-[data-finra-ui="toast-action"]:hover {
+.region [data-finra-ui="toast-action"]:hover {
   text-decoration: underline;
 }
 
-[data-finra-ui="toast-close"] {
+.region [data-finra-ui="toast-close"] {
   display: inline-flex;
   grid-column: 2;
   grid-row: 1;
@@ -129,7 +131,7 @@
   cursor: var(--finra-cursor-pointer);
 }
 
-[data-finra-ui="toast-close"]:hover {
+.region [data-finra-ui="toast-close"]:hover {
   color: var(--finra-container-foreground);
 }
 
@@ -146,7 +148,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-finra-ui="toast"] {
+  .region [data-finra-ui="toast"] {
     animation: none;
   }
 }
