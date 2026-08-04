@@ -6,6 +6,14 @@ The financial fields of [finra-ui](https://github.com/utk09/finra-ui): prices, a
 
 **[Browse the components](https://finra-ui.netlify.app)**
 
+## Packages
+
+| Package | What it is |
+| --- | --- |
+| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) ([docs](https://github.com/utk09/finra-ui/blob/main/packages/core/README.md)) | Buttons, inputs, forms, overlays, tabs, toasts. 23 components. |
+| **`@utk09/finra-ui-finance`** (this one) | Price, amount, tenor and date-tenor fields, plus the parsers behind them. |
+| [`@utk09/finra-ui-icons`](https://www.npmjs.com/package/@utk09/finra-ui-icons) ([docs](https://github.com/utk09/finra-ui/blob/main/packages/icons/README.md)) | 127 icons as plain data, with React wrappers. |
+
 ## Install
 
 ```bash
