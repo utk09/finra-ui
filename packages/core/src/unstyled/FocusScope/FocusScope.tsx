@@ -20,6 +20,22 @@ export interface FocusScopeProps extends HTMLAttributes<HTMLDivElement> {
   focusOnMount?: boolean;
   /** Restore focus to the previously focused element on unmount. Default true. */
   restoreFocus?: boolean;
+  /**
+   * Where to send focus on unmount when the element that had it is no longer in
+   * the document.
+   *
+   * @remarks
+   * A trigger often unmounts alongside the surface it opened: a row's menu
+   * button when the row is deleted, a dialog's opener when the route changes.
+   * Calling `focus()` on a detached element does nothing, so without this the
+   * user's place collapses to `document.body` and the next Tab starts from the
+   * top of the page. Pass a function to resolve the target at unmount rather
+   * than at mount, since the element may not exist yet when the scope opens.
+   *
+   * Ignored while the previously focused element is still connected, and when
+   * `restoreFocus` is false.
+   */
+  fallbackFocus?: HTMLElement | null | (() => HTMLElement | null);
 }
 
 /**
@@ -29,10 +45,25 @@ export interface FocusScopeProps extends HTMLAttributes<HTMLDivElement> {
  */
 export const FocusScope = forwardRef<HTMLDivElement, FocusScopeProps>(
   (
-    { children, trapped = true, focusOnMount = true, restoreFocus = true, tabIndex, ...rest },
+    {
+      children,
+      trapped = true,
+      focusOnMount = true,
+      restoreFocus = true,
+      fallbackFocus,
+      tabIndex,
+      ...rest
+    },
     ref,
   ) => {
     const innerRef = useRef<HTMLDivElement>(null);
+
+    // Read at unmount, not at mount, and kept out of the focus effect's deps so
+    // a new callback identity cannot re-run it and pull focus back inside.
+    const fallbackFocusRef = useRef(fallbackFocus);
+    useEffect(() => {
+      fallbackFocusRef.current = fallbackFocus;
+    }, [fallbackFocus]);
 
     // Focus in on mount, restore on unmount.
     useEffect(() => {
@@ -46,9 +77,15 @@ export const FocusScope = forwardRef<HTMLDivElement, FocusScopeProps>(
       }
 
       return () => {
-        if (restoreFocus && previouslyFocused && typeof previouslyFocused.focus === "function") {
+        if (!restoreFocus) return;
+        // A detached element still has a `focus` method; calling it is a silent
+        // no-op, so connectedness is what decides whether restoring is possible.
+        if (previouslyFocused?.isConnected) {
           previouslyFocused.focus();
+          return;
         }
+        const fallback = fallbackFocusRef.current;
+        (typeof fallback === "function" ? fallback() : fallback)?.focus();
       };
     }, [focusOnMount, restoreFocus]);
 

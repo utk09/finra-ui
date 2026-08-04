@@ -2,6 +2,7 @@ import {
   forwardRef,
   type HTMLAttributes,
   type KeyboardEvent,
+  type ReactNode,
   useCallback,
   useRef,
   useState,
@@ -23,6 +24,17 @@ import { mergeRefs } from "../../utils/mergeRefs";
  *
  * Controlled: pass `values` and handle `onChange`.
  */
+export interface PillInputClassNames {
+  /** The pill wrapper around one value. */
+  pill?: string;
+  /** The value's text inside the pill. */
+  pillText?: string;
+  /** The pill's remove button. */
+  pillRemove?: string;
+  /** The typing input. */
+  input?: string;
+}
+
 export interface PillInputBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   /** Current list of pills (controlled). */
   values?: string[];
@@ -36,6 +48,17 @@ export interface PillInputBaseProps extends Omit<HTMLAttributes<HTMLDivElement>,
   maxPills?: number;
   /** Characters that trigger pill creation (default: Enter). */
   delimiters?: string[];
+  /** CSS class names for the inner parts. The root uses `className`. */
+  classNames?: PillInputClassNames;
+  /**
+   * Render a pill's remove button icon. Defaults to a `×` character.
+   *
+   * @remarks
+   * The unstyled layer ships no icons, so the default is a text glyph rather
+   * than an SVG. The button carries its own `aria-label`, so whatever this
+   * returns is decorative and the accessible name is unaffected.
+   */
+  renderPillRemoveIcon?: () => ReactNode;
 }
 
 /**
@@ -52,6 +75,8 @@ export const PillInputBase = forwardRef<HTMLInputElement, PillInputBaseProps>(
       disabled,
       maxPills,
       delimiters = [],
+      classNames,
+      renderPillRemoveIcon,
       id,
       "aria-describedby": ariaDescribedBy,
       "aria-invalid": ariaInvalid,
@@ -151,25 +176,34 @@ export const PillInputBase = forwardRef<HTMLInputElement, PillInputBaseProps>(
         onClick={handleContainerClick}
         onKeyDown={handleContainerKeyDown}>
         {values.map((pill) => (
-          <span key={pill} {...{ [FINRA_UI_ATTR]: componentIds.pillInputPill }}>
-            {pill}
+          <span
+            key={pill}
+            className={classNames?.pill}
+            {...{ [FINRA_UI_ATTR]: componentIds.pillInputPill }}>
+            <span
+              className={classNames?.pillText}
+              {...{ [FINRA_UI_ATTR]: componentIds.pillInputPillText }}>
+              {pill}
+            </span>
             {!isDisabled ? (
               <button
                 {...{ [FINRA_UI_ATTR]: componentIds.pillInputPillRemove }}
                 type="button"
+                className={classNames?.pillRemove}
                 onClick={(e) => {
                   e.stopPropagation();
                   removePill(values.indexOf(pill));
                 }}
                 aria-label={`Remove ${pill}`}
                 tabIndex={-1}>
-                ×
+                {renderPillRemoveIcon ? renderPillRemoveIcon() : "×"}
               </button>
             ) : null}
           </span>
         ))}
         <input
           ref={mergeRefs(forwardedRef, internalRef)}
+          className={classNames?.input}
           {...{ [FINRA_UI_ATTR]: componentIds.pillInputField }}
           type="text"
           value={inputValue}

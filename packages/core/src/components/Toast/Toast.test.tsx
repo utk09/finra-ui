@@ -27,4 +27,23 @@ describe("Toaster (styled)", () => {
     expect(item).toHaveAttribute("data-finra-ui", "toast");
     expect(item).toHaveAttribute("data-sentiment", "success");
   });
+
+  it("closes with the icon rather than the unstyled text glyph", () => {
+    render(<Toaster />);
+    act(() => {
+      toast("hi");
+    });
+
+    const close = screen.getByRole("button", { name: "Dismiss notification" });
+    expect(close.innerHTML).toContain("<svg");
+    expect(close).not.toHaveTextContent("×");
+  });
+
+  it("lets a consumer override the close icon", () => {
+    render(<Toaster renderCloseIcon={() => <span>mine</span>} />);
+    act(() => {
+      toast("hi");
+    });
+    expect(screen.getByRole("button", { name: "Dismiss notification" })).toHaveTextContent("mine");
+  });
 });

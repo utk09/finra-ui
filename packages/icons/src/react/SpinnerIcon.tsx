@@ -10,7 +10,14 @@ import type { SVGProps } from "react";
  */
 export function SpinnerIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" {...props}>
+    <svg
+      viewBox="0 0 24 24"
+      width="1em"
+      height="1em"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      {...props}>
       <circle cx="12" cy="12" r="10" opacity="0.25" />
       <path d="M12 2a10 10 0 0 1 10 10" />
     </svg>

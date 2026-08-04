@@ -57,6 +57,20 @@ export interface IconData {
   name: string;
   /** SVG user-space viewport, e.g. `"0 0 24 24"`. */
   viewBox: string;
+  /**
+   * Default rendered width, `"1em"`.
+   *
+   * @remarks
+   * An `<svg>` with a `viewBox` and no width resolves to the CSS default size
+   * for a replaced element, around 300px, so an icon dropped into a container
+   * that does not size it swamps the page. `"1em"` scales it with the
+   * surrounding text instead. A renderer applies this before any caller-supplied
+   * attributes, so a consumer can still override it, and a CSS rule beats it
+   * outright because presentation attributes lose to every declaration.
+   */
+  width: string;
+  /** Default rendered height, `"1em"`. Square by convention across the set. */
+  height: string;
   /** Default fill. Usually `"none"` - these are stroke-drawn outline icons. */
   fill: string;
   /**
@@ -83,6 +97,8 @@ export interface IconData {
 export const plusIcon: IconData = {
   name: "plus",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -94,6 +110,8 @@ export const plusIcon: IconData = {
 export const minusIcon: IconData = {
   name: "minus",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -105,6 +123,8 @@ export const minusIcon: IconData = {
 export const dashIcon: IconData = {
   name: "dash",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -116,6 +136,8 @@ export const dashIcon: IconData = {
 export const closeIcon: IconData = {
   name: "close",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -128,6 +150,8 @@ export const closeIcon: IconData = {
 export const closeSmallIcon: IconData = {
   name: "close-small",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -140,6 +164,8 @@ export const closeSmallIcon: IconData = {
 export const spinnerIcon: IconData = {
   name: "spinner",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -153,6 +179,8 @@ export const spinnerIcon: IconData = {
 export const downloadIcon: IconData = {
   name: "download",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -169,6 +197,8 @@ export const downloadIcon: IconData = {
 export const uploadIcon: IconData = {
   name: "upload",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -185,6 +215,8 @@ export const uploadIcon: IconData = {
 export const editIcon: IconData = {
   name: "edit",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -200,6 +232,8 @@ export const editIcon: IconData = {
 export const deleteIcon: IconData = {
   name: "delete",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -216,6 +250,8 @@ export const deleteIcon: IconData = {
 export const copyIcon: IconData = {
   name: "copy",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -231,6 +267,8 @@ export const copyIcon: IconData = {
 export const shareIcon: IconData = {
   name: "share",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -249,6 +287,8 @@ export const shareIcon: IconData = {
 export const externalLinkIcon: IconData = {
   name: "external-link",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -265,6 +305,8 @@ export const externalLinkIcon: IconData = {
 export const refreshIcon: IconData = {
   name: "refresh",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -281,6 +323,8 @@ export const refreshIcon: IconData = {
 export const saveIcon: IconData = {
   name: "save",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -297,6 +341,8 @@ export const saveIcon: IconData = {
 export const downloadCloudIcon: IconData = {
   name: "download-cloud",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -313,6 +359,8 @@ export const downloadCloudIcon: IconData = {
 export const uploadCloudIcon: IconData = {
   name: "upload-cloud",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -329,6 +377,8 @@ export const uploadCloudIcon: IconData = {
 export const pauseIcon: IconData = {
   name: "pause",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -344,6 +394,8 @@ export const pauseIcon: IconData = {
 export const playIcon: IconData = {
   name: "play",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -356,6 +408,8 @@ export const playIcon: IconData = {
 export const stopIcon: IconData = {
   name: "stop",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -370,6 +424,8 @@ export const stopIcon: IconData = {
 export const mailIcon: IconData = {
   name: "mail",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -385,6 +441,8 @@ export const mailIcon: IconData = {
 export const bellIcon: IconData = {
   name: "bell",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -400,6 +458,8 @@ export const bellIcon: IconData = {
 export const messageIcon: IconData = {
   name: "message",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -412,6 +472,8 @@ export const messageIcon: IconData = {
 export const sendIcon: IconData = {
   name: "send",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -429,6 +491,8 @@ export const sendIcon: IconData = {
 export const lockIcon: IconData = {
   name: "lock",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -444,6 +508,8 @@ export const lockIcon: IconData = {
 export const unlockIcon: IconData = {
   name: "unlock",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -459,6 +525,8 @@ export const unlockIcon: IconData = {
 export const userIcon: IconData = {
   name: "user",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -474,6 +542,8 @@ export const userIcon: IconData = {
 export const usersIcon: IconData = {
   name: "users",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -491,6 +561,8 @@ export const usersIcon: IconData = {
 export const keyIcon: IconData = {
   name: "key",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -508,6 +580,8 @@ export const keyIcon: IconData = {
 export const shieldIcon: IconData = {
   name: "shield",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -522,6 +596,8 @@ export const shieldIcon: IconData = {
 export const checkIcon: IconData = {
   name: "check",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -534,6 +610,8 @@ export const checkIcon: IconData = {
 export const infoIcon: IconData = {
   name: "info",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -550,6 +628,8 @@ export const infoIcon: IconData = {
 export const warningIcon: IconData = {
   name: "warning",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -569,6 +649,8 @@ export const warningIcon: IconData = {
 export const errorIcon: IconData = {
   name: "error",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -585,6 +667,8 @@ export const errorIcon: IconData = {
 export const successCircleIcon: IconData = {
   name: "success-circle",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -600,6 +684,8 @@ export const successCircleIcon: IconData = {
 export const helpCircleIcon: IconData = {
   name: "help-circle",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -618,6 +704,8 @@ export const helpCircleIcon: IconData = {
 export const chevronDownIcon: IconData = {
   name: "chevron-down",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -630,6 +718,8 @@ export const chevronDownIcon: IconData = {
 export const chevronLeftIcon: IconData = {
   name: "chevron-left",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -642,6 +732,8 @@ export const chevronLeftIcon: IconData = {
 export const chevronRightIcon: IconData = {
   name: "chevron-right",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -654,6 +746,8 @@ export const chevronRightIcon: IconData = {
 export const chevronUpIcon: IconData = {
   name: "chevron-up",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -666,6 +760,8 @@ export const chevronUpIcon: IconData = {
 export const moreHorizontalIcon: IconData = {
   name: "more-horizontal",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -680,6 +776,8 @@ export const moreHorizontalIcon: IconData = {
 export const moreVerticalIcon: IconData = {
   name: "more-vertical",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -694,6 +792,8 @@ export const moreVerticalIcon: IconData = {
 export const arrowUpIcon: IconData = {
   name: "arrow-up",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -709,6 +809,8 @@ export const arrowUpIcon: IconData = {
 export const arrowDownIcon: IconData = {
   name: "arrow-down",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -724,6 +826,8 @@ export const arrowDownIcon: IconData = {
 export const arrowLeftIcon: IconData = {
   name: "arrow-left",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -739,6 +843,8 @@ export const arrowLeftIcon: IconData = {
 export const arrowRightIcon: IconData = {
   name: "arrow-right",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -754,6 +860,8 @@ export const arrowRightIcon: IconData = {
 export const homeIcon: IconData = {
   name: "home",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -769,6 +877,8 @@ export const homeIcon: IconData = {
 export const settingsIcon: IconData = {
   name: "settings",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -789,6 +899,8 @@ export const settingsIcon: IconData = {
 export const calendarIcon: IconData = {
   name: "calendar",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -806,6 +918,8 @@ export const calendarIcon: IconData = {
 export const searchIcon: IconData = {
   name: "search",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -821,6 +935,8 @@ export const searchIcon: IconData = {
 export const filterIcon: IconData = {
   name: "filter",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -833,6 +949,8 @@ export const filterIcon: IconData = {
 export const eyeIcon: IconData = {
   name: "eye",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -848,6 +966,8 @@ export const eyeIcon: IconData = {
 export const eyeOffIcon: IconData = {
   name: "eye-off",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -866,6 +986,8 @@ export const eyeOffIcon: IconData = {
 export const sortIcon: IconData = {
   name: "sort",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -881,6 +1003,8 @@ export const sortIcon: IconData = {
 export const sortAscIcon: IconData = {
   name: "sort-asc",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -896,6 +1020,8 @@ export const sortAscIcon: IconData = {
 export const sortDescIcon: IconData = {
   name: "sort-desc",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -911,6 +1037,8 @@ export const sortDescIcon: IconData = {
 export const funnelOffIcon: IconData = {
   name: "funnel-off",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -926,6 +1054,8 @@ export const funnelOffIcon: IconData = {
 export const columnsIcon: IconData = {
   name: "columns",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -941,6 +1071,8 @@ export const columnsIcon: IconData = {
 export const eyeOpenIcon: IconData = {
   name: "eye-open",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -956,6 +1088,8 @@ export const eyeOpenIcon: IconData = {
 export const eyeClosedIcon: IconData = {
   name: "eye-closed",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -974,6 +1108,8 @@ export const eyeClosedIcon: IconData = {
 export const searchPlusIcon: IconData = {
   name: "search-plus",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -991,6 +1127,8 @@ export const searchPlusIcon: IconData = {
 export const searchMinusIcon: IconData = {
   name: "search-minus",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1007,6 +1145,8 @@ export const searchMinusIcon: IconData = {
 export const checkCircleIcon: IconData = {
   name: "check-circle",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1022,6 +1162,8 @@ export const checkCircleIcon: IconData = {
 export const xCircleIcon: IconData = {
   name: "x-circle",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1037,6 +1179,8 @@ export const xCircleIcon: IconData = {
 export const alertTriangleIcon: IconData = {
   name: "alert-triangle",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1056,6 +1200,8 @@ export const alertTriangleIcon: IconData = {
 export const calendarRangeIcon: IconData = {
   name: "calendar-range",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1074,6 +1220,8 @@ export const calendarRangeIcon: IconData = {
 export const clockIcon: IconData = {
   name: "clock",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1089,6 +1237,8 @@ export const clockIcon: IconData = {
 export const minusSquareIcon: IconData = {
   name: "minus-square",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1104,6 +1254,8 @@ export const minusSquareIcon: IconData = {
 export const checkSquareIcon: IconData = {
   name: "check-square",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1119,6 +1271,8 @@ export const checkSquareIcon: IconData = {
 export const circleDotIcon: IconData = {
   name: "circle-dot",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1134,6 +1288,8 @@ export const circleDotIcon: IconData = {
 export const indeterminateIcon: IconData = {
   name: "indeterminate",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1149,6 +1305,8 @@ export const indeterminateIcon: IconData = {
 export const pinIcon: IconData = {
   name: "pin",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1164,6 +1322,8 @@ export const pinIcon: IconData = {
 export const slidersIcon: IconData = {
   name: "sliders",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1188,6 +1348,8 @@ export const slidersIcon: IconData = {
 export const trendingUpIcon: IconData = {
   name: "trending-up",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1203,6 +1365,8 @@ export const trendingUpIcon: IconData = {
 export const trendingDownIcon: IconData = {
   name: "trending-down",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1218,6 +1382,8 @@ export const trendingDownIcon: IconData = {
 export const candlestickIcon: IconData = {
   name: "candlestick",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1237,6 +1403,8 @@ export const candlestickIcon: IconData = {
 export const chartLineIcon: IconData = {
   name: "chart-line",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1253,6 +1421,8 @@ export const chartLineIcon: IconData = {
 export const percentIcon: IconData = {
   name: "percent",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1269,6 +1439,8 @@ export const percentIcon: IconData = {
 export const dollarIcon: IconData = {
   name: "dollar",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1284,6 +1456,8 @@ export const dollarIcon: IconData = {
 export const coinIcon: IconData = {
   name: "coin",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1300,6 +1474,8 @@ export const coinIcon: IconData = {
 export const walletIcon: IconData = {
   name: "wallet",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1316,6 +1492,8 @@ export const walletIcon: IconData = {
 export const clipboardCheckIcon: IconData = {
   name: "clipboard-check",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1332,6 +1510,8 @@ export const clipboardCheckIcon: IconData = {
 export const clipboardXIcon: IconData = {
   name: "clipboard-x",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1348,6 +1528,8 @@ export const clipboardXIcon: IconData = {
 export const timerIcon: IconData = {
   name: "timer",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1364,6 +1546,8 @@ export const timerIcon: IconData = {
 export const activityIcon: IconData = {
   name: "activity",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1376,6 +1560,8 @@ export const activityIcon: IconData = {
 export const targetIcon: IconData = {
   name: "target",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1392,6 +1578,8 @@ export const targetIcon: IconData = {
 export const shieldAlertIcon: IconData = {
   name: "shield-alert",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1408,6 +1596,8 @@ export const shieldAlertIcon: IconData = {
 export const shieldCheckIcon: IconData = {
   name: "shield-check",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1423,6 +1613,8 @@ export const shieldCheckIcon: IconData = {
 export const fileCheckIcon: IconData = {
   name: "file-check",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1439,6 +1631,8 @@ export const fileCheckIcon: IconData = {
 export const fileWarningIcon: IconData = {
   name: "file-warning",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1456,6 +1650,8 @@ export const fileWarningIcon: IconData = {
 export const auditTrailIcon: IconData = {
   name: "audit-trail",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1474,6 +1670,8 @@ export const auditTrailIcon: IconData = {
 export const bankIcon: IconData = {
   name: "bank",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1492,6 +1690,8 @@ export const bankIcon: IconData = {
 export const bitcoinIcon: IconData = {
   name: "bitcoin",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1512,6 +1712,8 @@ export const bitcoinIcon: IconData = {
 export const chartBarIcon: IconData = {
   name: "chart-bar",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1529,6 +1731,8 @@ export const chartBarIcon: IconData = {
 export const chartPieIcon: IconData = {
   name: "chart-pie",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1544,6 +1748,8 @@ export const chartPieIcon: IconData = {
 export const commoditiesIcon: IconData = {
   name: "commodities",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1559,6 +1765,8 @@ export const commoditiesIcon: IconData = {
 export const creditIcon: IconData = {
   name: "credit",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1576,6 +1784,8 @@ export const creditIcon: IconData = {
 export const creditCardIcon: IconData = {
   name: "credit-card",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1592,6 +1802,8 @@ export const creditCardIcon: IconData = {
 export const cryptoIcon: IconData = {
   name: "crypto",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1607,6 +1819,8 @@ export const cryptoIcon: IconData = {
 export const derivativesIcon: IconData = {
   name: "derivatives",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1624,6 +1838,8 @@ export const derivativesIcon: IconData = {
 export const equitiesIcon: IconData = {
   name: "equities",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1642,6 +1858,8 @@ export const equitiesIcon: IconData = {
 export const euroIcon: IconData = {
   name: "euro",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1658,6 +1876,8 @@ export const euroIcon: IconData = {
 export const fxIcon: IconData = {
   name: "fx",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1675,6 +1895,8 @@ export const fxIcon: IconData = {
 export const historyIcon: IconData = {
   name: "history",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1691,6 +1913,8 @@ export const historyIcon: IconData = {
 export const poundIcon: IconData = {
   name: "pound",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1706,6 +1930,8 @@ export const poundIcon: IconData = {
 export const ratesIcon: IconData = {
   name: "rates",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1722,6 +1948,8 @@ export const ratesIcon: IconData = {
 export const receiptIcon: IconData = {
   name: "receipt",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1739,6 +1967,8 @@ export const receiptIcon: IconData = {
 export const starIcon: IconData = {
   name: "star",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1757,6 +1987,8 @@ export const starIcon: IconData = {
 export const yenIcon: IconData = {
   name: "yen",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1776,6 +2008,8 @@ export const yenIcon: IconData = {
 export const fileIcon: IconData = {
   name: "file",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1791,6 +2025,8 @@ export const fileIcon: IconData = {
 export const fileTextIcon: IconData = {
   name: "file-text",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1809,6 +2045,8 @@ export const fileTextIcon: IconData = {
 export const paperclipIcon: IconData = {
   name: "paperclip",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1826,6 +2064,8 @@ export const paperclipIcon: IconData = {
 export const imageIcon: IconData = {
   name: "image",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1842,6 +2082,8 @@ export const imageIcon: IconData = {
 export const downloadFileIcon: IconData = {
   name: "download-file",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1859,6 +2101,8 @@ export const downloadFileIcon: IconData = {
 export const gridIcon: IconData = {
   name: "grid",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1876,6 +2120,8 @@ export const gridIcon: IconData = {
 export const listIcon: IconData = {
   name: "list",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1895,6 +2141,8 @@ export const listIcon: IconData = {
 export const panelLeftIcon: IconData = {
   name: "panel-left",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1910,6 +2158,8 @@ export const panelLeftIcon: IconData = {
 export const panelRightIcon: IconData = {
   name: "panel-right",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1925,6 +2175,8 @@ export const panelRightIcon: IconData = {
 export const monitorIcon: IconData = {
   name: "monitor",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1941,6 +2193,8 @@ export const monitorIcon: IconData = {
 export const mobileIcon: IconData = {
   name: "mobile",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1956,6 +2210,8 @@ export const mobileIcon: IconData = {
 export const logInIcon: IconData = {
   name: "log-in",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1972,6 +2228,8 @@ export const logInIcon: IconData = {
 export const logOutIcon: IconData = {
   name: "log-out",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -1988,6 +2246,8 @@ export const logOutIcon: IconData = {
 export const powerIcon: IconData = {
   name: "power",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -2003,6 +2263,8 @@ export const powerIcon: IconData = {
 export const databaseIcon: IconData = {
   name: "database",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -2019,6 +2281,8 @@ export const databaseIcon: IconData = {
 export const cloudIcon: IconData = {
   name: "cloud",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -2031,6 +2295,8 @@ export const cloudIcon: IconData = {
 export const cloudOffIcon: IconData = {
   name: "cloud-off",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
@@ -2049,6 +2315,8 @@ export const cloudOffIcon: IconData = {
 export const printerIcon: IconData = {
   name: "printer",
   viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,

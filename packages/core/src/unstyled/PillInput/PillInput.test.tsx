@@ -222,4 +222,50 @@ describe("PillInputBase - consumer event handlers", () => {
 
     expect(onChange).toHaveBeenCalledWith(["react"]);
   });
+
+  it("stamps the pill text with its registered id", () => {
+    render(<PillInputBase aria-label="Tags" values={["react"]} />);
+    // Every id in the registry has to reach the DOM from the base, or the
+    // selector only exists for consumers who happen to use the styled layer.
+    expect(screen.getByTestId("pill-input-pill-text")).toHaveTextContent("react");
+  });
+
+  it("removes with a text glyph by default, so the unstyled layer ships no icon", () => {
+    render(<PillInputBase aria-label="Tags" values={["react"]} />);
+    expect(screen.getByRole("button", { name: "Remove react" })).toHaveTextContent("×");
+  });
+
+  it("renders renderPillRemoveIcon in place of the glyph", () => {
+    render(
+      <PillInputBase
+        aria-label="Tags"
+        values={["react"]}
+        renderPillRemoveIcon={() => <span>icon</span>}
+      />,
+    );
+
+    const remove = screen.getByRole("button", { name: "Remove react" });
+    expect(remove).toHaveTextContent("icon");
+    expect(remove).not.toHaveTextContent("×");
+  });
+
+  it("applies per-part classNames", () => {
+    render(
+      <PillInputBase
+        aria-label="Tags"
+        values={["react"]}
+        classNames={{
+          pill: "my-pill",
+          pillText: "my-pill-text",
+          pillRemove: "my-pill-remove",
+          input: "my-input",
+        }}
+      />,
+    );
+
+    expect(screen.getByTestId("pill-input-pill")).toHaveClass("my-pill");
+    expect(screen.getByTestId("pill-input-pill-text")).toHaveClass("my-pill-text");
+    expect(screen.getByTestId("pill-input-pill-remove")).toHaveClass("my-pill-remove");
+    expect(screen.getByTestId("pill-input-field")).toHaveClass("my-input");
+  });
 });

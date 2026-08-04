@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { describe, expect, it } from "vitest";
 
 import { FocusScope } from "./FocusScope";
@@ -86,6 +86,70 @@ describe("FocusScope", () => {
     // Unmount the scope: focus returns to where it was before.
     fireEvent.click(outside);
     expect(outside).toHaveFocus();
+  });
+
+  it("focuses fallbackFocus when the previously focused element was removed", () => {
+    function Harness() {
+      const [open, setOpen] = useState(false);
+      const [triggerMounted, setTriggerMounted] = useState(true);
+      const fallbackRef = useRef<HTMLButtonElement>(null);
+      return (
+        <>
+          <button ref={fallbackRef}>fallback</button>
+          <button
+            onClick={() => {
+              setOpen(false);
+              setTriggerMounted(false);
+            }}>
+            close
+          </button>
+          {triggerMounted ? <button onClick={() => setOpen(true)}>trigger</button> : null}
+          {open ? (
+            <FocusScope fallbackFocus={() => fallbackRef.current}>
+              <button>inside</button>
+            </FocusScope>
+          ) : null}
+        </>
+      );
+    }
+
+    render(<Harness />);
+    const trigger = screen.getByText("trigger");
+    trigger.focus();
+    fireEvent.click(trigger);
+    expect(screen.getByText("inside")).toHaveFocus();
+
+    // The trigger unmounts with the scope, so restoring to it would silently
+    // drop focus onto the body.
+    fireEvent.click(screen.getByText("close"));
+    expect(screen.queryByText("trigger")).not.toBeInTheDocument();
+    expect(screen.getByText("fallback")).toHaveFocus();
+  });
+
+  it("prefers the previously focused element over fallbackFocus when it survives", () => {
+    function Harness() {
+      const [open, setOpen] = useState(false);
+      const fallbackRef = useRef<HTMLButtonElement>(null);
+      return (
+        <>
+          <button ref={fallbackRef}>fallback</button>
+          <button onClick={() => setOpen(false)}>close</button>
+          <button onClick={() => setOpen(true)}>trigger</button>
+          {open ? (
+            <FocusScope fallbackFocus={() => fallbackRef.current}>
+              <button>inside</button>
+            </FocusScope>
+          ) : null}
+        </>
+      );
+    }
+
+    render(<Harness />);
+    const trigger = screen.getByText("trigger");
+    trigger.focus();
+    fireEvent.click(trigger);
+    fireEvent.click(screen.getByText("close"));
+    expect(trigger).toHaveFocus();
   });
 
   it("focuses the container itself when there are no tabbables", () => {

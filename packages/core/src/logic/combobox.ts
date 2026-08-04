@@ -53,7 +53,15 @@ export function defaultFilter<T>(option: ComboBoxOptionLike<T>, input: string): 
   return option.label.toLowerCase().includes(input.toLowerCase());
 }
 
-/** Partition options into favourites, named groups, and ungrouped. */
+/**
+ * Sort options into favourites, named groups, and ungrouped.
+ *
+ * @remarks
+ * The three lists overlap rather than partition: a favourite also appears under
+ * its group, or under `ungrouped` when it has none, so a caller rendering all
+ * three shows it twice. {@link flattenOptions} is the render order and drops the
+ * duplicates.
+ */
 export function groupOptions<T>(options: ComboBoxOptionLike<T>[]): {
   favourites: ComboBoxOptionLike<T>[];
   groups: ComboBoxGroupResult<T>[];

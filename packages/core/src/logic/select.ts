@@ -144,7 +144,7 @@ export interface SelectKeyResult {
   effects: SelectEffect[];
 }
 
-const OPEN_KEYS = new Set(["ArrowDown", "ArrowUp", "Enter", " ", "Spacebar"]);
+const OPEN_KEYS = new Set(["ArrowDown", "ArrowUp", "Enter", " "]);
 
 /** Active index to land on when opening, based on selection and open direction. */
 function openActiveIndex<T>(ctx: SelectKeyContext<T>, key: string): number {
@@ -210,7 +210,6 @@ export function resolveSelectKey<T = string>(
       };
     case "Enter":
     case " ":
-    case "Spacebar":
       return ctx.activeIndex >= 0
         ? { preventDefault: true, effects: [{ type: "select", index: ctx.activeIndex }] }
         : { preventDefault: true, effects: [{ type: "close" }] };

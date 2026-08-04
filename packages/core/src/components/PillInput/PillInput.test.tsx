@@ -198,4 +198,23 @@ describe("PillInput - consumer event handlers", () => {
 
     expect(onChange).toHaveBeenCalledWith(["react"]);
   });
+
+  it("removes with the icon rather than the unstyled text glyph", () => {
+    render(<PillInput aria-label="Tags" values={["react"]} />);
+
+    const remove = screen.getByRole("button", { name: "Remove react" });
+    expect(remove.innerHTML).toContain("<svg");
+    expect(remove).not.toHaveTextContent("×");
+  });
+
+  it("lets a consumer override the remove icon", () => {
+    render(
+      <PillInput
+        aria-label="Tags"
+        values={["react"]}
+        renderPillRemoveIcon={() => <span>mine</span>}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "Remove react" })).toHaveTextContent("mine");
+  });
 });

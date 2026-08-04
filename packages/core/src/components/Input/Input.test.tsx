@@ -151,4 +151,20 @@ describe("Input", () => {
     render(<Input clearable defaultValue="hello" />);
     expect(screen.getByRole("button", { name: /clear input/i })).toBeInTheDocument();
   });
+
+  it("clears with an icon by default", () => {
+    render(<Input clearable defaultValue="hello" />);
+    expect(screen.getByRole("button", { name: /clear input/i }).innerHTML).toContain("<svg");
+  });
+
+  it("lets a consumer override the clear icon", () => {
+    render(<Input clearable defaultValue="hello" renderClearIcon={() => <span>mine</span>} />);
+    expect(screen.getByRole("button", { name: /clear input/i })).toHaveTextContent("mine");
+  });
+
+  it("keeps the clear button's accessible name when the icon is overridden", () => {
+    render(<Input clearable defaultValue="hello" renderClearIcon={() => <span>mine</span>} />);
+    // The label lives on the button, so swapping its content cannot strip it.
+    expect(screen.getByRole("button", { name: /clear input/i })).toBeInTheDocument();
+  });
 });

@@ -88,6 +88,14 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
    */
   clearable?: boolean;
   /**
+   * Render the clear button's icon. Defaults to the library's close icon.
+   *
+   * @remarks
+   * The button keeps its own `aria-label`, so whatever this returns is
+   * decorative and the accessible name is unaffected.
+   */
+  renderClearIcon?: () => ReactNode;
+  /**
    * Called instead of the built-in clear.
    *
    * @remarks
@@ -114,6 +122,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       startAdornment,
       endAdornment,
       clearable,
+      renderClearIcon,
       onClear,
       fullWidth,
       disabled,
@@ -191,7 +200,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             onClick={handleClear}
             aria-label="Clear input"
             tabIndex={-1}>
-            <CloseIcon />
+            {renderClearIcon ? renderClearIcon() : <CloseIcon />}
           </button>
         ) : null}
         {endAdornment ? (

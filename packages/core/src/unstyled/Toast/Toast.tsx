@@ -34,11 +34,20 @@ export interface ToastItemProps extends HTMLAttributes<HTMLDivElement> {
   toast: ToastData;
   /** Dismiss/pause/resume for this toast. Wire `pause`/`resume` to hover and focus. */
   controls: ToastControls;
+  /**
+   * Render the dismiss button's icon. Defaults to a `×` character.
+   *
+   * @remarks
+   * The unstyled layer ships no icons, so the default is a text glyph rather
+   * than an SVG. The button carries its own `aria-label`, so whatever this
+   * returns is decorative and the accessible name is unaffected.
+   */
+  renderCloseIcon?: () => ReactNode;
 }
 
 /** A live toast. Danger/warning are assertive (`role="alert"`); others polite. */
 export const ToastItem = forwardRef<HTMLDivElement, ToastItemProps>(
-  ({ toast, controls, ...rest }, ref) => {
+  ({ toast, controls, renderCloseIcon, ...rest }, ref) => {
     const assertive = toast.sentiment === "danger" || toast.sentiment === "warning";
 
     return (
@@ -76,7 +85,7 @@ export const ToastItem = forwardRef<HTMLDivElement, ToastItemProps>(
           {...{ [FINRA_UI_ATTR]: componentIds.toastClose }}
           aria-label="Dismiss notification"
           onClick={controls.dismiss}>
-          {"×"}
+          {renderCloseIcon ? renderCloseIcon() : "×"}
         </button>
       </div>
     );
@@ -120,6 +129,15 @@ export interface ToasterProps {
   className?: string;
   /** Render a toast yourself; defaults to the built-in {@link ToastItem}. */
   renderToast?: (toast: ToastData, controls: ToastControls) => ReactNode;
+  /**
+   * Render the dismiss button's icon on the built-in {@link ToastItem}.
+   * Defaults to a `×` character.
+   *
+   * @remarks
+   * Ignored when `renderToast` is supplied, since that replaces the toast
+   * entirely and owns its own close button.
+   */
+  renderCloseIcon?: () => ReactNode;
 }
 
 /**
@@ -131,6 +149,7 @@ export function Toaster({
   label = "Notifications",
   className,
   renderToast,
+  renderCloseIcon,
   container,
 }: ToasterProps): ReactNode {
   const toasts = useStore(toastController.store, (state) => state.toasts);
@@ -155,7 +174,12 @@ export function Toaster({
           return renderToast ? (
             <Fragment key={toast.id}>{renderToast(toast, controls)}</Fragment>
           ) : (
-            <ToastItem key={toast.id} toast={toast} controls={controls} />
+            <ToastItem
+              key={toast.id}
+              toast={toast}
+              controls={controls}
+              renderCloseIcon={renderCloseIcon}
+            />
           );
         })}
       </div>

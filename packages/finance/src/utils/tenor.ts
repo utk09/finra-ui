@@ -1,4 +1,4 @@
-import { isSameDay } from "../logic/calendar";
+import { addDays, addMonths, addYears, isSameDay } from "../logic/calendar";
 
 /**
  * The market-standard tenor set, in conventional order.
@@ -149,32 +149,18 @@ export function isStandardTenor(input: string): input is StandardTenor {
   return (STANDARD_TENORS as readonly string[]).includes(input.toUpperCase());
 }
 
-function addDays(date: Date, days: number): Date {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
-}
-
-function addMonths(date: Date, months: number): Date {
-  const result = new Date(date);
-  result.setMonth(result.getMonth() + months);
-  return result;
-}
-
-function addYears(date: Date, years: number): Date {
-  const result = new Date(date);
-  result.setFullYear(result.getFullYear() + years);
-  return result;
-}
-
 /**
  * Resolve a tenor to a date by pure calendar arithmetic.
  *
  * @remarks
- * No holiday or business-day awareness, and no spot lag: `3M` from 31 January
- * lands on 30 April because `Date` clamps the day, not because a roll
- * convention was applied. Rolling is the consumer's job - inject a
- * {@link TenorResolver} or apply a `BusinessCalendar` afterwards.
+ * Month and year steps clamp the day of month to the target month's length, so
+ * `1M` from 31 January is 28 February (29 in a leap year) and `3M` is 30 April.
+ * That is day clamping, not a roll convention: there is no holiday or
+ * business-day awareness and no spot lag. Rolling is the consumer's job - inject
+ * a {@link TenorResolver} or apply a `BusinessCalendar` afterwards.
+ *
+ * Results are normalised to midnight local time, so a `referenceDate` carrying a
+ * time of day resolves to the start of the target day.
  *
  * @param tenor - Canonical or special tenor, e.g. `"3M"` or `"SN"`.
  * @param referenceDate - The date to count from.

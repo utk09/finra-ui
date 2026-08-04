@@ -136,12 +136,22 @@ describe("resolveTenor", () => {
     expect(resolveTenor("ABC", ref)).toBeNull();
   });
 
-  it("handles month-end edge case", () => {
-    // Jan 31 + 1M - Feb doesn't have 31 days
-    const jan31 = new Date(2026, 0, 31);
-    const result = resolveTenor("1M", jan31);
-    // JS Date wraps to March 3 (28 + 3 = 31), which is the native behavior
-    expect(result).not.toBeNull();
+  it("clamps the day of month when the target month is shorter", () => {
+    // 31 January + 1M has no 31 February to land on, so it clamps to the 28th.
+    expect(resolveTenor("1M", new Date(2026, 0, 31))).toEqual(new Date(2026, 1, 28));
+    expect(resolveTenor("1M", new Date(2024, 0, 31))).toEqual(new Date(2024, 1, 29));
+    expect(resolveTenor("1M", new Date(2026, 7, 31))).toEqual(new Date(2026, 8, 30));
+    expect(resolveTenor("3M", new Date(2026, 0, 31))).toEqual(new Date(2026, 3, 30));
+  });
+
+  it("clamps 29 February when the target year is not a leap year", () => {
+    expect(resolveTenor("1Y", new Date(2024, 1, 29))).toEqual(new Date(2025, 1, 28));
+    expect(resolveTenor("4Y", new Date(2024, 1, 29))).toEqual(new Date(2028, 1, 29));
+  });
+
+  it("normalises the result to midnight local time", () => {
+    const withTime = new Date(2026, 0, 15, 14, 30, 45, 123);
+    expect(resolveTenor("1M", withTime)).toEqual(new Date(2026, 1, 15));
   });
 });
 

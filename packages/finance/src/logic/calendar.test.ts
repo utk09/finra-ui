@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   addDays,
   addMonths,
+  addYears,
   type CalendarKeyContext,
   endOfWeek,
   firstOfMonth,
@@ -165,6 +166,16 @@ describe("date arithmetic", () => {
 
   it("addMonths keeps the day when it fits", () => {
     expect(addMonths(new Date(2026, 0, 15), 2)).toEqual(new Date(2026, 2, 15));
+  });
+
+  it("addYears clamps 29 February onto a non-leap year", () => {
+    expect(addYears(new Date(2024, 1, 29), 1)).toEqual(new Date(2025, 1, 28));
+    expect(addYears(new Date(2024, 1, 29), 4)).toEqual(new Date(2028, 1, 29));
+    expect(addYears(new Date(2024, 1, 29), -1)).toEqual(new Date(2023, 1, 28));
+  });
+
+  it("addYears keeps the day when it fits", () => {
+    expect(addYears(new Date(2026, 5, 15), 3)).toEqual(new Date(2029, 5, 15));
   });
 
   it("startOfWeek/endOfWeek bracket the week per weekStartsOn", () => {

@@ -34,6 +34,11 @@ export {
 } from "./unstyled/Dialog/Dialog";
 export type { DismissableLayerProps } from "./unstyled/DismissableLayer/DismissableLayer";
 export { DismissableLayer } from "./unstyled/DismissableLayer/DismissableLayer";
+export type {
+  ErrorBoundaryFallbackProps,
+  ErrorBoundaryProps,
+} from "./unstyled/ErrorBoundary/ErrorBoundary";
+export { ErrorBoundary } from "./unstyled/ErrorBoundary/ErrorBoundary";
 export type { FileDropZoneBaseProps } from "./unstyled/FileDropZone/FileDropZone";
 export { FileDropZoneBase } from "./unstyled/FileDropZone/FileDropZone";
 export type { FocusScopeProps } from "./unstyled/FocusScope/FocusScope";
@@ -53,7 +58,7 @@ export type {
 export { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from "./unstyled/Menu/Menu";
 export type { NumberInputBaseProps } from "./unstyled/NumberInput/NumberInput";
 export { NumberInputBase } from "./unstyled/NumberInput/NumberInput";
-export type { PillInputBaseProps } from "./unstyled/PillInput/PillInput";
+export type { PillInputBaseProps, PillInputClassNames } from "./unstyled/PillInput/PillInput";
 export { PillInputBase } from "./unstyled/PillInput/PillInput";
 export type {
   PopoverContentProps,

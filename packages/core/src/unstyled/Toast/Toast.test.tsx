@@ -103,4 +103,43 @@ describe("Toaster", () => {
     render(<Toaster position="top-center" />);
     expect(screen.getByRole("region")).toHaveAttribute("data-position", "top-center");
   });
+
+  it("closes with a text glyph by default, so the unstyled layer ships no icon", () => {
+    render(<Toaster />);
+    act(() => {
+      toast("hi");
+    });
+    expect(screen.getByRole("button", { name: "Dismiss notification" })).toHaveTextContent("×");
+  });
+
+  it("renders renderCloseIcon in the close button instead of the glyph", () => {
+    render(<Toaster renderCloseIcon={() => <span>icon</span>} />);
+    act(() => {
+      toast("hi");
+    });
+
+    const close = screen.getByRole("button", { name: "Dismiss notification" });
+    expect(close).toHaveTextContent("icon");
+    expect(close).not.toHaveTextContent("×");
+  });
+
+  it("keeps the close button's accessible name when an icon replaces the glyph", () => {
+    render(<Toaster renderCloseIcon={() => <span aria-hidden>icon</span>} />);
+    act(() => {
+      toast("hi");
+    });
+    // The label lives on the button, so swapping the glyph cannot strip the name.
+    expect(screen.getByRole("button", { name: "Dismiss notification" })).toBeInTheDocument();
+  });
+
+  it("still dismisses when the icon is supplied", async () => {
+    const user = userEvent.setup();
+    render(<Toaster renderCloseIcon={() => <span>icon</span>} />);
+    act(() => {
+      toast("hi");
+    });
+
+    await user.click(screen.getByRole("button", { name: "Dismiss notification" }));
+    expect(screen.queryByText("hi")).not.toBeInTheDocument();
+  });
 });

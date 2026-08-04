@@ -1,3 +1,4 @@
+import { addDays, addMonths, addYears, startOfDay } from "../logic/calendar";
 import type { DateFormat } from "./dateFormat";
 import { formatDate, parseDate } from "./dateFormat";
 import type { TenorUnit } from "./tenor";
@@ -90,29 +91,9 @@ const VERBOSE_UNITS: readonly (readonly [RegExp, string])[] = [
 
 const COMPONENT_RE = /(\d+)([DWMY])/g;
 
-function startOfDay(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function addDays(date: Date, n: number): Date {
-  const r = new Date(date);
-  r.setDate(r.getDate() + n);
-  return r;
-}
-
-function addMonths(date: Date, n: number): Date {
-  const r = new Date(date);
-  r.setMonth(r.getMonth() + n);
-  return r;
-}
-
-function addYears(date: Date, n: number): Date {
-  const r = new Date(date);
-  r.setFullYear(r.getFullYear() + n);
-  return r;
-}
-
-/** Apply a chain of tenor steps to a base date with raw calendar math. */
+/**
+ * Apply a chain of tenor steps to a base date. Month and year steps clamp themday of month to the target month's length.
+ */
 function applyComponents(base: Date, components: readonly TenorComponent[], sign: 1 | -1): Date {
   let acc = base;
   for (const { value, unit } of components) {

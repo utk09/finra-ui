@@ -21,8 +21,9 @@ function mergeProps(
     const slotVal = slotProps[key];
     const childVal = childProps[key];
 
-    // Merge event handlers
-    if (typeof slotVal === "function" && typeof childVal === "function") {
+    // Chain event handlers only. Any other function prop carries a return value
+    // that a chaining wrapper would discard, so the child's own wins outright.
+    if (/^on[A-Z]/.test(key) && typeof slotVal === "function" && typeof childVal === "function") {
       merged[key] = (...args: unknown[]) => {
         childVal(...args);
         slotVal(...args);
@@ -48,9 +49,11 @@ function mergeProps(
  *
  * @remarks
  * Merges its own props onto the single child element rather than rendering a
- * wrapper: `className` is concatenated, `style` is merged, and event handlers
- * are chained with the child's called first. Renders `null` if `children` is
- * not a single valid element.
+ * wrapper: `className` is concatenated, `style` is merged, and `on*` event
+ * handlers are chained with the child's called first. Every other prop the child
+ * also sets is left to the child, including function props, whose return value
+ * chaining would discard. Renders `null` if `children` is not a single valid
+ * element.
  */
 export interface SlotProps extends HTMLAttributes<HTMLElement> {
   /** Exactly one React element. Anything else renders nothing. */

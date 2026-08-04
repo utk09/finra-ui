@@ -37,6 +37,15 @@ export interface FileDropZoneProps extends Omit<HTMLAttributes<HTMLDivElement>, 
   disabled?: boolean;
   /** Custom content inside the drop zone. */
   children?: ReactNode;
+  /**
+   * Render the icon above the prompt. Defaults to the library's upload icon.
+   *
+   * @remarks
+   * Ignored when `children` is supplied, since that replaces the zone's whole
+   * default content. The surrounding slot keeps its id and `aria-hidden`, so an
+   * override stays decorative and stays selectable.
+   */
+  renderIcon?: () => ReactNode;
 }
 
 /**
@@ -53,6 +62,7 @@ export const FileDropZone = forwardRef<HTMLInputElement, FileDropZoneProps>(
       multiple,
       disabled,
       children,
+      renderIcon,
       id,
       "aria-describedby": ariaDescribedBy,
       "aria-invalid": ariaInvalid,
@@ -201,11 +211,14 @@ export const FileDropZone = forwardRef<HTMLInputElement, FileDropZoneProps>(
             <div
               className={styles.content}
               {...{ [FINRA_UI_ATTR]: componentIds.fileDropZoneContent }}>
-              <UploadIcon
+              {/* The id sits on the slot, not on the icon, so it survives a
+                  `renderIcon` override and stays a usable selector. */}
+              <span
                 className={styles.icon}
                 aria-hidden="true"
-                {...{ [FINRA_UI_ATTR]: componentIds.fileDropZoneIcon }}
-              />
+                {...{ [FINRA_UI_ATTR]: componentIds.fileDropZoneIcon }}>
+                {renderIcon ? renderIcon() : <UploadIcon />}
+              </span>
               <span className={styles.text} {...{ [FINRA_UI_ATTR]: componentIds.fileDropZoneText }}>
                 Drop files here or click to browse
               </span>

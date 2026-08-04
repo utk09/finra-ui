@@ -430,6 +430,12 @@ importers:
       '@biomejs/biome':
         specifier: 'catalog:'
         version: 2.5.6
+      '@testing-library/jest-dom':
+        specifier: 'catalog:'
+        version: 7.0.0(@testing-library/dom@10.4.1)
+      '@testing-library/react':
+        specifier: 'catalog:'
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@types/node':
         specifier: 'catalog:'
         version: 26.1.2
@@ -439,18 +445,30 @@ importers:
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 6.0.5(vite@8.2.0(@types/node@26.1.2)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.102.0)(yaml@2.9.0))
+      '@vitest/coverage-istanbul':
+        specifier: 'catalog:'
+        version: 4.1.10(supports-color@8.1.1)(vitest@4.1.10)
+      jsdom:
+        specifier: 'catalog:'
+        version: 30.0.1
       prettier:
         specifier: 'catalog:'
         version: 3.9.6
       react:
         specifier: 'catalog:'
         version: 19.2.8
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
       vite:
         specifier: 'catalog:'
         version: 8.2.0(@types/node@26.1.2)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.102.0)(yaml@2.9.0)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@26.1.2)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-istanbul@4.1.10)(jsdom@30.0.1)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.27.3)(jiti@2.6.1)(sass@1.102.0)(yaml@2.9.0))
 
 packages:
 

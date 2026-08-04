@@ -131,6 +131,11 @@
   cursor: var(--finra-cursor-pointer);
 }
 
+.region [data-finra-ui="toast-close"] > svg {
+  inline-size: var(--finra-icon-size-sm);
+  block-size: var(--finra-icon-size-sm);
+}
+
 .region [data-finra-ui="toast-close"]:hover {
   color: var(--finra-container-foreground);
 }

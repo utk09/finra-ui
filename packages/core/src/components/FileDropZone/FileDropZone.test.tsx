@@ -352,4 +352,21 @@ describe("FileDropZone - consumer event handlers", () => {
     expect(onKeyDown).toHaveBeenCalled();
     expect(clickSpy).not.toHaveBeenCalled();
   });
+
+  it("renders the upload icon by default", () => {
+    render(<FileDropZone />);
+    expect(screen.getByTestId("file-drop-zone-icon").innerHTML).toContain("<svg");
+  });
+
+  it("lets a consumer override the icon", () => {
+    render(<FileDropZone renderIcon={() => <span>mine</span>} />);
+    expect(screen.getByTestId("file-drop-zone-icon")).toHaveTextContent("mine");
+  });
+
+  it("keeps the icon slot's id and hides it from assistive tech when overridden", () => {
+    render(<FileDropZone renderIcon={() => <span>mine</span>} />);
+    // The id has to survive an override, or the selector is a claim rather than
+    // a contract.
+    expect(screen.getByTestId("file-drop-zone-icon")).toHaveAttribute("aria-hidden", "true");
+  });
 });

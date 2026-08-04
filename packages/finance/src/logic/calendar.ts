@@ -231,6 +231,13 @@ export function addMonths(date: Date, n: number): Date {
   return new Date(target.getFullYear(), target.getMonth(), Math.min(date.getDate(), daysInTarget));
 }
 
+/**
+ * `date` shifted by `n` years, clamping the day-of-month so 29 February plus one year is 28 February rather than 1 March.
+ */
+export function addYears(date: Date, n: number): Date {
+  return addMonths(date, n * 12);
+}
+
 /** First day of the display week containing `date`. */
 export function startOfWeek(date: Date, weekStartsOn: 0 | 1): Date {
   return addDays(date, -dayOfWeekIndex(date, weekStartsOn));

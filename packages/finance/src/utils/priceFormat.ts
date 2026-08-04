@@ -211,7 +211,6 @@ export type PriceSegmentKind =
   | "unit";
 
 /** A contiguous run of a formatted price, tagged by its semantic role. */
-/** A contiguous run of a formatted price, tagged by its semantic role. */
 export interface PriceSegment {
   /** What this run means - drives the visual weight it is given. */
   kind: PriceSegmentKind;

@@ -65,9 +65,15 @@
 }
 
 .icon {
+  display: inline-flex;
   inline-size: 2rem;
   block-size: 2rem;
   color: var(--finra-container-foreground-muted);
+
+  > svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
 }
 
 .text {

@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 
-import { Slot } from "./Slot";
+import { Slot, type SlotProps } from "./Slot";
 
 describe("Slot", () => {
   describe("invalid children", () => {
@@ -80,6 +80,30 @@ describe("Slot", () => {
       expect(childHandler).toHaveBeenCalledTimes(1);
       expect(slotHandler).toHaveBeenCalledTimes(1);
       expect(order).toEqual(["child", "slot"]);
+    });
+
+    it("does not chain non-event function props", () => {
+      const slotFormat = vi.fn(() => "slot");
+      const childFormat = vi.fn(() => "child");
+
+      // Test setup configures testIdAttribute = "data-finra-ui".
+      function Display({ format }: { format: () => string }) {
+        return <span data-finra-ui="out">{format()}</span>;
+      }
+
+      // Every `asChild` call site reaches Slot through `ElementType`, which
+      // erases `SlotProps`, so a value-returning prop can arrive here. Chaining
+      // one would discard its return value, so the child's own must survive.
+      const props = { format: slotFormat } as unknown as SlotProps;
+
+      render(
+        <Slot {...props}>
+          <Display format={childFormat} />
+        </Slot>,
+      );
+
+      expect(screen.getByTestId("out")).toHaveTextContent("child");
+      expect(slotFormat).not.toHaveBeenCalled();
     });
 
     it("merges className strings", () => {
