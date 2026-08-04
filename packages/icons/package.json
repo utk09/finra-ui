@@ -1,6 +1,6 @@
 {
   "name": "@utk09/finra-ui-icons",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Icon library for Finra UI. Framework-agnostic SVG data with React wrappers.",
   "type": "module",
   "main": "./dist/index.js",

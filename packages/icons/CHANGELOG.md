@@ -1,5 +1,19 @@
 # @utk09/finra-ui-icons
 
+## 0.5.0
+
+### Minor Changes
+
+- **Action required.** Month and year tenors clamp to the target month's length instead of overflowing. `1M` from 31 January was returning 3 March and now returns 28 February, 29 in a leap year. Tenor results are also normalised to midnight, so a reference date carrying a time of day now resolves to the start of the target day.
+- **Action required.** `FileDropZone`'s `data-finra-ui="file-drop-zone-icon"` moved from the `<svg>` onto a wrapper `<span>`, so the icon slot keeps its selector when you replace the icon. A rule targeting that attribute now matches the slot; size the icon with `[data-finra-ui="file-drop-zone-icon"] > svg`.
+- **Action required.** `IconData` declares `width` and `height`, which breaks any custom icon data you construct yourself. Both are `"1em"` across the set.
+- Icons carry a `1em` default size. An `<svg>` with only a `viewBox` resolves to the CSS replaced-element default of around 300px, so an icon used outside a container that sized it came out enormous. Consumer props and CSS both still override it.
+- Icons that render an icon now let you replace it: `renderCloseIcon` on `Toaster` and `ToastItem`, `renderPillRemoveIcon` on `PillInput`, `renderClearIcon` on `Input`, and `renderIcon` on `FileDropZone`. Each keeps its button's `aria-label`, so a replacement stays decorative. The styled toast also closes with a real icon rather than a `×` character.
+- New `ErrorBoundary` in the `/unstyled` entry, so a render error in one subtree no longer takes the application down with it. Takes a node or a render-prop `fallback` receiving `{ error, reset }`, plus `onError` for reporting.
+- `FocusScope` accepts `fallbackFocus`, used when the element that had focus is gone by the time the scope closes. A trigger often unmounts alongside the surface it opened, and restoring focus to a detached element silently drops it to the page body.
+- `PillInput` is now one implementation rather than two. The unstyled base gained `classNames` and `renderPillRemoveIcon`, and it now renders the `pill-input-pill-text` span that previously existed only in the styled build, so that selector works in both.
+- `Slot` chains only `on*` event handlers. Any other function prop the child also sets is left to the child, because chaining discarded its return value.
+
 ## 0.4.0
 
 ### Minor Changes
