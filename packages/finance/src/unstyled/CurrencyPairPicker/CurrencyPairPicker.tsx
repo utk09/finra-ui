@@ -1,6 +1,6 @@
 import { FINRA_UI_ATTR, useAnchoredPosition, useFormField, useStore } from "@utk09/finra-ui";
 import { DismissableLayer, Portal } from "@utk09/finra-ui/unstyled";
-import { cx } from "@utk09/finra-ui/utils";
+import { cx, scrollActiveDescendantIntoView } from "@utk09/finra-ui/utils";
 import {
   type ChangeEvent,
   type CSSProperties,
@@ -1083,17 +1083,16 @@ function CurrencyPairPickerBaseRender<T extends CurrencyPair = CurrencyPair>(
     offset: 4,
   });
 
-  useEffect(() => {
-    if (highlight < 0 || !listRef.current) return;
-    listRef.current
-      .querySelector(`[data-index="${highlight}"]`)
-      ?.scrollIntoView?.({ block: "nearest" });
-  }, [highlight]);
-
   //  Render
 
   const busy = isAsync && (searchState.status === "loading" || isSearchStale(searchState));
   const activeDescendant = isOpen && highlight >= 0 ? optionId(highlight) : undefined;
+
+  // Focus stays on the input, so the browser never follows the highlight into
+  // the listbox's overflow.
+  useEffect(() => {
+    scrollActiveDescendantIntoView(activeDescendant);
+  }, [activeDescendant]);
 
   const renderPairOption = (pair: T): ReactNode => {
     const index = indexById.get(pair.id) ?? -1;

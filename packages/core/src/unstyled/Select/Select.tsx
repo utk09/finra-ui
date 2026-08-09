@@ -20,6 +20,7 @@ import {
 import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useAnchoredPosition } from "../../hooks/useAnchoredPosition";
 import { useDisclosure } from "../../hooks/useDisclosure";
+import { scrollActiveDescendantIntoView } from "../../logic/activeDescendant";
 import type { Placement } from "../../logic/position";
 import {
   findSelectedIndex,
@@ -416,6 +417,9 @@ SelectValue.displayName = "SelectValue";
  * Renders the root's `options` itself - it takes no option children. Give it an
  * `aria-label`: the popup is detached from the trigger in the DOM, so it has no
  * accessible name of its own.
+ *
+ * This panel is the element carrying `data-finra-ui="select"`, since the root
+ * renders no DOM to hang it on. Style the popup through that selector.
  */
 export interface SelectContentProps extends HTMLAttributes<HTMLDivElement> {
   /**
@@ -444,6 +448,12 @@ export const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
       offset: ctx.offset,
     });
 
+    const activeId = ctx.open && ctx.activeIndex >= 0 ? ctx.optionId(ctx.activeIndex) : undefined;
+
+    useEffect(() => {
+      scrollActiveDescendantIntoView(activeId);
+    }, [activeId]);
+
     if (!ctx.open) return null;
 
     const positionStyle: CSSProperties = { position: "absolute", top: y, left: x, ...style };
@@ -454,6 +464,7 @@ export const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
           ref={mergeRefs(ref, setFloating)}
           role="listbox"
           id={ctx.listboxId}
+          {...{ [FINRA_UI_ATTR]: componentIds.select }}
           style={positionStyle}
           onDismiss={() => ctx.close()}
           disableEscape={!ctx.dismissOnEscape}

@@ -34,6 +34,16 @@ describe("Select (styled)", () => {
     expect(screen.getAllByRole("option")[0]).toHaveAttribute("data-finra-ui", "select-option");
   });
 
+  it("carries exactly one listbox id, not one per layer", async () => {
+    const user = userEvent.setup();
+    renderSelect();
+    await user.click(screen.getByRole("combobox", { name: "Fruit" }));
+
+    // The base stamps the panel and the styled wrapper passes the same id
+    // through, so the two must resolve to a single attribute.
+    expect(screen.getAllByTestId("select")).toHaveLength(1);
+  });
+
   it("selects an option and reflects the label on the trigger", async () => {
     const user = userEvent.setup();
     renderSelect();

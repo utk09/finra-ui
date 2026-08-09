@@ -397,6 +397,32 @@ describe("ComboBox", () => {
     expect(secondOption).toHaveAttribute("data-highlighted", "true");
   });
 
+  it("scrolls the highlighted option into view while arrowing", async () => {
+    const user = userEvent.setup();
+    render(<ComboBox options={options} value={null} onChange={vi.fn()} placeholder="Select" />);
+
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+
+    // Focus stays on the input under aria-activedescendant, so the browser
+    // never scrolls the listbox and the library has to.
+    const scrolls = screen.getAllByRole("option").map((option) => {
+      const spy = vi.fn();
+      option.scrollIntoView = spy;
+      return spy;
+    });
+
+    await user.keyboard("{ArrowDown}"); // Apple
+    expect(scrolls[0]).toHaveBeenCalledWith({ block: "nearest" });
+
+    await user.keyboard("{ArrowDown}"); // Banana
+    expect(scrolls[1]).toHaveBeenCalledWith({ block: "nearest" });
+
+    await user.keyboard("{ArrowUp}"); // back to Apple
+    expect(scrolls[0]).toHaveBeenCalledTimes(2);
+    expect(scrolls[2]).not.toHaveBeenCalled();
+  });
+
   it("wraps around from last to first option", async () => {
     const user = userEvent.setup();
     const shortOptions: ComboBoxOption[] = [

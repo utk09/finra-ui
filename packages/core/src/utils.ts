@@ -1,6 +1,8 @@
 // Utilities
 
 // Logic utilities
+// Framework-agnostic scroll-into-view for aria-activedescendant listboxes
+export { scrollActiveDescendantIntoView } from "./logic/activeDescendant";
 export { cx } from "./logic/cx";
 // Framework-agnostic overlay dismiss stack (React DismissableLayer + future Lit adapter)
 export { type DismissLayerHandle, type DismissReason, registerDismissLayer } from "./logic/dismiss";

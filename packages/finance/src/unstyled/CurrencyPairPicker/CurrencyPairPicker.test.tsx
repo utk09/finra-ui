@@ -389,6 +389,32 @@ describe("CurrencyPairPickerBase - keyboard", () => {
     expect(input.getAttribute("aria-activedescendant")).toBe(highlighted.id);
   });
 
+  it("scrolls the highlighted row into view while roving", async () => {
+    const { input, user } = setup();
+    input.focus();
+    await user.keyboard("{ArrowDown}"); // open, highlighting the first row
+
+    // Focus stays on the input under aria-activedescendant, so the browser
+    // never scrolls the listbox and the library has to.
+    const scrolls = new Map<string, ReturnType<typeof vi.fn>>();
+    for (const option of screen.getAllByRole("option")) {
+      const spy = vi.fn();
+      option.scrollIntoView = spy;
+      scrolls.set(option.id, spy);
+    }
+    const scrolledFor = (id: string | null): ReturnType<typeof vi.fn> | undefined =>
+      scrolls.get(id ?? "");
+
+    await user.keyboard("{ArrowDown}");
+    const second = input.getAttribute("aria-activedescendant");
+    expect(scrolledFor(second)).toHaveBeenCalledWith({ block: "nearest" });
+
+    await user.keyboard("{ArrowUp}");
+    const first = input.getAttribute("aria-activedescendant");
+    expect(first).not.toBe(second);
+    expect(scrolledFor(first)).toHaveBeenCalledWith({ block: "nearest" });
+  });
+
   it("selects the highlighted row on Enter", async () => {
     const { input, user, onChange } = setup();
     input.focus();

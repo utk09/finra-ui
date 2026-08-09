@@ -152,6 +152,7 @@ export const componentIds = {
   popoverClose: "popover-close",
 
   // Select
+  /** The popup listbox panel. The Select root renders no DOM of its own. */
   select: "select",
   selectTrigger: "select-trigger",
   selectValue: "select-value",

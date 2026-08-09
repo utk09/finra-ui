@@ -18,6 +18,7 @@ import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useAnchoredPosition } from "../../hooks/useAnchoredPosition";
 import { useControlledValue } from "../../hooks/useControlledValue";
 import { useFormField } from "../../hooks/useFormField";
+import { scrollActiveDescendantIntoView } from "../../logic/activeDescendant";
 import {
   defaultFilter,
   flattenOptions,
@@ -636,15 +637,6 @@ function ComboBoxBaseRender<T = string>(
     offset: 4,
   });
 
-  // Scroll highlighted into view
-  useEffect(() => {
-    if (highlightedIndex < 0 || !listRef.current) return;
-    const el = listRef.current.querySelector(`[data-index="${highlightedIndex}"]`);
-    if (el) {
-      el.scrollIntoView?.({ block: "nearest" });
-    }
-  }, [highlightedIndex]);
-
   //  Grouped rendering data
   const { favourites, groups, ungrouped } = useMemo(
     () => groupOptions(filteredOptions),
@@ -653,6 +645,15 @@ function ComboBoxBaseRender<T = string>(
 
   //  Helper: get option id
   const getOptionId = (index: number) => `${id}-option-${index}`;
+
+  const activeDescendant =
+    isOpen && highlightedIndex >= 0 ? getOptionId(highlightedIndex) : undefined;
+
+  // Focus stays on the input, so the browser never follows the highlight into
+  // the listbox's overflow.
+  useEffect(() => {
+    scrollActiveDescendantIntoView(activeDescendant);
+  }, [activeDescendant]);
 
   //  Helper: render a single option
   const renderSingleOption = (opt: ComboBoxOption<T>, flatIdx: number) => {
@@ -910,8 +911,7 @@ function ComboBoxBaseRender<T = string>(
     "aria-expanded": isOpen,
     "aria-haspopup": "listbox" as const,
     "aria-controls": isOpen ? listboxId : undefined,
-    "aria-activedescendant":
-      isOpen && highlightedIndex >= 0 ? getOptionId(highlightedIndex) : undefined,
+    "aria-activedescendant": activeDescendant,
     "aria-label": ariaLabel ?? placeholder,
     "aria-labelledby": ariaLabelledBy,
     "aria-describedby": field["aria-describedby"],

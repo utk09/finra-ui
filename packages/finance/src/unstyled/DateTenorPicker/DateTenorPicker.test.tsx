@@ -157,6 +157,34 @@ describe("DateTenorPickerBase", () => {
     expect(onChange.mock.calls[0][0]).toMatchObject({ tenor: "ON" });
   });
 
+  it("scrolls the highlighted tenor into view while arrowing", async () => {
+    const user = userEvent.setup();
+    const { input } = setup();
+
+    act(() => input.focus());
+    await user.keyboard("{ArrowDown}"); // open
+
+    // Focus stays on the input under aria-activedescendant, so the browser
+    // never scrolls the tenor grid and the library has to. The popup caps its
+    // height with --finra-popup-max-block-size, so anything past the fold is
+    // invisible without this.
+    const scrolls = screen.getAllByRole("option").map((option) => {
+      const spy = vi.fn();
+      option.scrollIntoView = spy;
+      return spy;
+    });
+
+    await user.keyboard("{ArrowDown}"); // highlight the first tenor (ON)
+    expect(scrolls[0]).toHaveBeenCalledWith({ block: "nearest" });
+
+    await user.keyboard("{ArrowDown}"); // TN
+    expect(scrolls[1]).toHaveBeenCalledWith({ block: "nearest" });
+
+    await user.keyboard("{ArrowUp}"); // back to ON
+    expect(scrolls[0]).toHaveBeenCalledTimes(2);
+    expect(scrolls[2]).not.toHaveBeenCalled();
+  });
+
   it("opens the tenor list with Ctrl+Space", async () => {
     const user = userEvent.setup();
     const { input } = setup();

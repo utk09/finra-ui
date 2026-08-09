@@ -1,5 +1,5 @@
 import { FINRA_UI_ATTR, useClickOutside, useFormField } from "@utk09/finra-ui";
-import { cx } from "@utk09/finra-ui/utils";
+import { cx, scrollActiveDescendantIntoView } from "@utk09/finra-ui/utils";
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -547,6 +547,12 @@ export const TenorPickerBase = forwardRef<TenorPickerHandle, TenorPickerBaseProp
     );
 
     const activeDescendant = isOpen && highlight >= 0 ? optionId(highlight) : undefined;
+
+    // Focus stays on the input, so the browser never follows the highlight into
+    // the popup's overflow.
+    useEffect(() => {
+      scrollActiveDescendantIntoView(activeDescendant);
+    }, [activeDescendant]);
 
     const renderOption = (option: TenorOptionModel): ReactNode => {
       const index = flatIndexOf(option.tenor);

@@ -276,6 +276,32 @@ describe("TenorPickerBase", () => {
     expect(onChange).toHaveBeenCalledWith("1M");
   });
 
+  it("scrolls the highlighted option into view while arrowing", async () => {
+    const user = userEvent.setup();
+    const { input } = setup({ tenors: ["1M", "2M", "3M"] });
+    await user.click(input);
+
+    // Focus stays on the input under aria-activedescendant, so the browser
+    // never scrolls the popup and the library has to. The popup caps its height
+    // with --finra-popup-max-block-size, so anything past the fold is invisible
+    // without this.
+    const scrolls = screen.getAllByRole("option").map((option) => {
+      const spy = vi.fn();
+      option.scrollIntoView = spy;
+      return spy;
+    });
+
+    await user.keyboard("{ArrowDown}"); // 1M
+    expect(scrolls[0]).toHaveBeenCalledWith({ block: "nearest" });
+
+    await user.keyboard("{ArrowDown}"); // 2M
+    expect(scrolls[1]).toHaveBeenCalledWith({ block: "nearest" });
+
+    await user.keyboard("{ArrowUp}"); // back to 1M
+    expect(scrolls[0]).toHaveBeenCalledTimes(2);
+    expect(scrolls[2]).not.toHaveBeenCalled();
+  });
+
   it("opens with Ctrl+Space", async () => {
     const user = userEvent.setup();
     const { input } = setup();

@@ -319,6 +319,66 @@ describe("Select", () => {
     );
   });
 
+  it("stamps its own id on the content root", async () => {
+    const user = userEvent.setup();
+    renderSelect();
+    await user.click(getTrigger());
+
+    // The base has to stamp this itself. Taking the id only from the styled
+    // wrapper's props leaves the listbox unidentified for anyone composing
+    // SelectContent from /unstyled.
+    expect(screen.getByRole("listbox")).toHaveAttribute("data-finra-ui", "select");
+  });
+
+  it("lets a caller replace the content id", async () => {
+    const user = userEvent.setup();
+    render(
+      <Select options={options} placeholder="Pick fruit">
+        <SelectTrigger aria-label="Fruit" />
+        <SelectContent aria-label="Fruit options" {...{ "data-finra-ui": "my-listbox" }} />
+      </Select>,
+    );
+    await user.click(getTrigger());
+    expect(screen.getByRole("listbox")).toHaveAttribute("data-finra-ui", "my-listbox");
+  });
+
+  it("scrolls the highlighted option into view while arrowing", () => {
+    renderSelect();
+    const trigger = getTrigger();
+    fireEvent.keyDown(trigger, { key: "ArrowDown" }); // open, active = Apple (0)
+
+    // Focus stays on the trigger under aria-activedescendant, so the browser
+    // never scrolls the list and the library has to.
+    const scrolls = screen.getAllByRole("option").map((option) => {
+      const spy = vi.fn();
+      option.scrollIntoView = spy;
+      return spy;
+    });
+
+    fireEvent.keyDown(trigger, { key: "ArrowDown" }); // skips disabled Banana -> Cherry (2)
+    expect(scrolls[2]).toHaveBeenCalledWith({ block: "nearest" });
+    expect(scrolls[0]).not.toHaveBeenCalled();
+    expect(scrolls[1]).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(trigger, { key: "ArrowUp" }); // back to Apple (0)
+    expect(scrolls[0]).toHaveBeenCalledWith({ block: "nearest" });
+  });
+
+  it("scrolls the last option into view on End", () => {
+    renderSelect();
+    const trigger = getTrigger();
+    fireEvent.keyDown(trigger, { key: "ArrowDown" }); // open
+
+    const scrolls = screen.getAllByRole("option").map((option) => {
+      const spy = vi.fn();
+      option.scrollIntoView = spy;
+      return spy;
+    });
+
+    fireEvent.keyDown(trigger, { key: "End" });
+    expect(scrolls[3]).toHaveBeenCalledWith({ block: "nearest" });
+  });
+
   it("throws when a part is used outside a Select", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     expect(() => render(<SelectTrigger aria-label="x" />)).toThrow(
