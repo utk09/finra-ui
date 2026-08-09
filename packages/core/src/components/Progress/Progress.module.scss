@@ -1,0 +1,81 @@
+.progress {
+  --_progress-fill: var(--finra-actionable-accent);
+  --_progress-height: calc(var(--finra-density-size-base) * 0.25);
+  // Long enough to read as a sweep rather than a flicker, and derived from the
+  // scale so it retunes with everything else.
+  --_progress-cycle: calc(var(--finra-duration-slow) * 4);
+
+  display: flex;
+  align-items: center;
+  gap: var(--finra-density-gap);
+}
+
+.track {
+  flex: 1;
+  block-size: var(--_progress-height);
+  background-color: var(--finra-container-track);
+  border-radius: var(--finra-radius-full);
+  overflow: hidden;
+}
+
+.fill {
+  block-size: 100%;
+  background-color: var(--_progress-fill);
+  border-radius: inherit;
+  transition: inline-size var(--finra-duration-normal) ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.label {
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-xs);
+  color: var(--finra-container-foreground-muted);
+  // A percentage that changes width shifts the bar beside it on every tick.
+  font-variant-numeric: tabular-nums;
+}
+
+//  Sentiments
+
+.sentimentDanger {
+  --_progress-fill: var(--finra-status-danger-accent);
+}
+
+.sentimentSuccess {
+  --_progress-fill: var(--finra-status-success-accent);
+}
+
+.sentimentWarning {
+  --_progress-fill: var(--finra-status-warning-accent);
+}
+
+.sentimentInfo {
+  --_progress-fill: var(--finra-status-info-accent);
+}
+
+//  Indeterminate
+
+.progress[data-indeterminate] {
+  .fill {
+    inline-size: 40%;
+    animation: progress-indeterminate var(--_progress-cycle) ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      // Still legible without motion: a stationary partial fill reads as work
+      // in progress, where a full bar would read as finished.
+      animation: none;
+    }
+  }
+}
+
+@keyframes progress-indeterminate {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(250%);
+  }
+}

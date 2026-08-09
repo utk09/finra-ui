@@ -181,6 +181,22 @@ export const componentIds = {
 
   // Divider
   divider: "divider",
+
+  // Spinner
+  spinner: "spinner",
+  /** The spinning glyph. Sized here, so this is the selector that resizes one. */
+  spinnerGlyph: "spinner-glyph",
+
+  // Skeleton
+  skeleton: "skeleton",
+  /** One placeholder line. Only `variant="text"` renders these. */
+  skeletonLine: "skeleton-line",
+
+  // Progress
+  progress: "progress",
+  progressTrack: "progress-track",
+  progressFill: "progress-fill",
+  progressLabel: "progress-label",
 } as const;
 
 /**

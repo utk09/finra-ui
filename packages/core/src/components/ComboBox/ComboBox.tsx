@@ -1,9 +1,4 @@
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  CloseSmallIcon,
-  SpinnerIcon,
-} from "@utk09/finra-ui-icons/react";
+import { CheckIcon, ChevronDownIcon, CloseSmallIcon } from "@utk09/finra-ui-icons/react";
 import { cva } from "class-variance-authority";
 import { clsx } from "clsx";
 import {
@@ -24,6 +19,7 @@ import {
   type ComboBoxRenderOptionState,
 } from "../../unstyled/ComboBox/ComboBox";
 import type { ValidationStatus } from "../Input/Input";
+import { Spinner } from "../Spinner/Spinner";
 import styles from "./ComboBox.module.scss";
 
 //  Re-export types from unstyled
@@ -226,11 +222,13 @@ function styledRenderPillRemoveIcon(): ReactNode {
 function styledRenderLoading(): ReactNode {
   return (
     <>
-      <SpinnerIcon
-        {...{ [FINRA_UI_ATTR]: componentIds.comboBoxSpinner }}
-        className={styles.spinner}
-        aria-hidden="true"
-      />
+      {/*
+        No label: the row this sits in is already a polite live region carrying
+        "Loading...", and a second announcement would repeat it. The published
+        `combo-box-spinner` id is kept in place of the Spinner's own, since it
+        is a selector consumers may already target.
+      */}
+      <Spinner {...{ [FINRA_UI_ATTR]: componentIds.comboBoxSpinner }} />
       Loading...
     </>
   );

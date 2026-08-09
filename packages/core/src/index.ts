@@ -77,6 +77,9 @@ export {
   PopoverContent,
   PopoverTrigger,
 } from "./components/Popover/Popover";
+// Progress
+export type { ProgressProps, ProgressSentiment } from "./components/Progress/Progress";
+export { Progress } from "./components/Progress/Progress";
 // RadioButton
 export type { RadioButtonProps } from "./components/RadioButton/RadioButton";
 export { RadioButton } from "./components/RadioButton/RadioButton";
@@ -88,9 +91,15 @@ export type {
   SelectTriggerProps,
 } from "./components/Select/Select";
 export { Select, SelectContent, SelectTrigger } from "./components/Select/Select";
+// Skeleton
+export type { SkeletonProps } from "./components/Skeleton/Skeleton";
+export { Skeleton } from "./components/Skeleton/Skeleton";
 // Slider
 export type { SliderProps } from "./components/Slider/Slider";
 export { Slider } from "./components/Slider/Slider";
+// Spinner
+export type { SpinnerProps } from "./components/Spinner/Spinner";
+export { Spinner } from "./components/Spinner/Spinner";
 // Switch
 export type { SwitchProps } from "./components/Switch/Switch";
 export { Switch } from "./components/Switch/Switch";

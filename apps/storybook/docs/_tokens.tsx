@@ -177,7 +177,7 @@ const mono: CSSProperties = {
 const cell: CSSProperties = {
   ...mono,
   padding: "0.35rem 0.6rem",
-  borderBlockEnd: "1px solid var(--finra-container-border)",
+  borderBlockEnd: "var(--finra-border-thin) solid var(--finra-container-border)",
   textAlign: "start",
   verticalAlign: "middle",
 };
@@ -213,7 +213,7 @@ function TokenRow({ token, variants }: { token: TokenFile["tokens"][number]; var
                 blockSize: "1rem",
                 flex: "0 0 auto",
                 borderRadius: "4px",
-                border: "1px solid var(--finra-container-border)",
+                border: "var(--finra-border-thin) solid var(--finra-container-border)",
                 background: `var(${token.name})`,
               }}
             />
@@ -291,7 +291,7 @@ export function TokenReference({ files = TOKEN_FILES }: { files?: TokenFile[] } 
             fontWeight: 400,
             color: "var(--finra-container-foreground)",
             background: "var(--finra-container-background)",
-            border: "1px solid var(--finra-container-border)",
+            border: "var(--finra-border-thin) solid var(--finra-container-border)",
             borderRadius: "8px",
           }}
         />
@@ -367,7 +367,7 @@ export function TokenOverrideTemplate({ files = TOKEN_FILES }: { files?: TokenFi
         maxBlockSize: "24rem",
         overflow: "auto",
         padding: "1rem",
-        border: "1px solid var(--finra-container-border)",
+        border: "var(--finra-border-thin) solid var(--finra-container-border)",
         borderRadius: "10px",
         background: "var(--finra-container-background)",
         color: "var(--finra-container-foreground)",

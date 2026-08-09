@@ -15,7 +15,7 @@ import { DocsLink } from "./DocsLink";
  */
 
 const surface: CSSProperties = {
-  border: "1px solid var(--finra-color-border)",
+  border: "var(--finra-border-thin) solid var(--finra-color-border)",
   borderRadius: "10px",
   background: "var(--finra-color-background)",
 };
@@ -198,7 +198,7 @@ export function Swatch({ token, note }: { token: string; note?: string }) {
       <div
         style={{
           background: `var(${token})`,
-          border: "1px solid var(--finra-color-border)",
+          border: "var(--finra-border-thin) solid var(--finra-color-border)",
           borderRadius: "8px",
           blockSize: "3rem",
         }}

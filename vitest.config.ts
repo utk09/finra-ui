@@ -66,9 +66,11 @@ export default defineConfig({
             // implicit would tie a script to a value nothing declares.
             instances: [{ browser: "chromium", name: "stories" }],
           },
-          // No setupFiles: since Storybook 10.3 @storybook/addon-vitest applies
-          // preview + a11y annotations automatically (previously wired via a
-          // vitest.setup.ts calling setProjectAnnotations).
+          // Preview and a11y annotations are applied by @storybook/addon-vitest
+          // itself since Storybook 10.3, so this setup file carries only what
+          // the addon does not: the shared `testIdAttribute` mapping, which
+          // both package suites also set.
+          setupFiles: [path.join(dirname, "apps/storybook/.storybook/vitest.setup.ts")],
         },
       },
     ],

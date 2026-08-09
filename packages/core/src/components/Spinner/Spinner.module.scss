@@ -1,0 +1,33 @@
+.spinner {
+  // A full rotation is far longer than any of the interaction durations, so it
+  // is derived from the slowest rather than restated as a literal: retuning the
+  // scale keeps the spinner in proportion with everything else.
+  --_spinner-cycle: calc(var(--finra-duration-slow) * 3);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.glyph {
+  // No size prop: the glyph follows the density icon token, and one instance is
+  // resized with a rule against [data-finra-ui="spinner"].
+  inline-size: var(--finra-density-icon-size);
+  block-size: var(--finra-density-icon-size);
+  animation: spin var(--_spinner-cycle) linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -68,6 +68,8 @@ export type {
 export { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "./unstyled/Popover/Popover";
 export type { PortalProps } from "./unstyled/Portal/Portal";
 export { Portal } from "./unstyled/Portal/Portal";
+export type { ProgressBaseProps, ProgressClassNames } from "./unstyled/Progress/Progress";
+export { ProgressBase } from "./unstyled/Progress/Progress";
 export type { RadioButtonBaseProps } from "./unstyled/RadioButton/RadioButton";
 export { RadioButtonBase } from "./unstyled/RadioButton/RadioButton";
 export type {
@@ -78,8 +80,12 @@ export type {
   SelectValueProps,
 } from "./unstyled/Select/Select";
 export { Select, SelectContent, SelectTrigger, SelectValue } from "./unstyled/Select/Select";
+export type { SkeletonBaseProps, SkeletonClassNames } from "./unstyled/Skeleton/Skeleton";
+export { SkeletonBase } from "./unstyled/Skeleton/Skeleton";
 export type { SliderBaseProps } from "./unstyled/Slider/Slider";
 export { SliderBase } from "./unstyled/Slider/Slider";
+export type { SpinnerBaseProps } from "./unstyled/Spinner/Spinner";
+export { SpinnerBase } from "./unstyled/Spinner/Spinner";
 export type { SwitchBaseProps } from "./unstyled/Switch/Switch";
 export { SwitchBase } from "./unstyled/Switch/Switch";
 export type { TabListProps, TabPanelProps, TabProps, TabsProps } from "./unstyled/Tabs/Tabs";

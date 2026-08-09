@@ -1,0 +1,107 @@
+.skeleton {
+  // The placeholder surface and the band that moves across it. Both are
+  // semantic tokens, so both flip with the theme. In dark mode the band reads
+  // darker than the surface rather than lighter, which is still a visible
+  // contrast and the direction a dark UI expects.
+  --_skeleton-surface: var(--finra-container-track);
+  --_skeleton-band: var(--finra-container-background-subtle);
+  --_skeleton-cycle: calc(var(--finra-duration-slow) * 4);
+
+  display: block;
+
+  &[data-variant="text"] {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--finra-density-gap) * 0.5);
+  }
+
+  &[data-variant="circular"] {
+    border-radius: var(--finra-radius-full);
+    // Square by default so the radius reads as a circle. Give it a size with a
+    // rule against [data-finra-ui="skeleton"]; an avatar and a status dot are
+    // not one measurement.
+    inline-size: var(--finra-density-size-base);
+    block-size: var(--finra-density-size-base);
+  }
+
+  &[data-variant="rectangular"] {
+    border-radius: var(--finra-radius-md);
+    block-size: var(--finra-density-size-base);
+  }
+}
+
+// The line box, and the root itself when the root is the shape.
+.skeleton[data-variant="circular"],
+.skeleton[data-variant="rectangular"],
+.line {
+  background-color: var(--_skeleton-surface);
+}
+
+.line {
+  // Exactly the line-height the placeholder stands in for, at every density and
+  // for any consumer font size, so swapping in the real text shifts nothing.
+  block-size: 1lh;
+  border-radius: var(--finra-radius-sm);
+
+  // A last line shorter than the rest is what a paragraph actually looks like.
+  &:last-child:not(:only-child) {
+    inline-size: 60%;
+  }
+}
+
+//  Animations
+
+.skeleton[data-animation="pulse"] {
+  .line,
+  &[data-variant="circular"],
+  &[data-variant="rectangular"] {
+    animation: skeleton-pulse var(--_skeleton-cycle) ease-in-out infinite;
+  }
+}
+
+.skeleton[data-animation="wave"] {
+  .line,
+  &[data-variant="circular"],
+  &[data-variant="rectangular"] {
+    background-image: linear-gradient(
+      90deg,
+      var(--_skeleton-surface) 0%,
+      var(--_skeleton-band) 50%,
+      var(--_skeleton-surface) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-wave var(--_skeleton-cycle) linear infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton[data-animation="pulse"],
+  .skeleton[data-animation="wave"] {
+    .line,
+    &[data-variant="circular"],
+    &[data-variant="rectangular"] {
+      animation: none;
+    }
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    background-color: var(--_skeleton-surface);
+  }
+
+  50% {
+    background-color: var(--_skeleton-band);
+  }
+}
+
+@keyframes skeleton-wave {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
