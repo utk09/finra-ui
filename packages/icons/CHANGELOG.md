@@ -1,5 +1,11 @@
 # @utk09/finra-ui-icons
 
+## 0.6.0
+
+### Minor Changes
+
+- fix overflow in list box, improve README
+
 ## 0.5.0
 
 ### Minor Changes

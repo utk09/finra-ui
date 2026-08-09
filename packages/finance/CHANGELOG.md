@@ -1,5 +1,17 @@
 # @utk09/finra-ui-finance
 
+## 0.6.0
+
+### Minor Changes
+
+- fix overflow in list box, improve README
+
+### Patch Changes
+
+- Updated dependencies
+  - @utk09/finra-ui@0.6.0
+  - @utk09/finra-ui-icons@0.6.0
+
 ## 0.5.0
 
 ### Minor Changes
