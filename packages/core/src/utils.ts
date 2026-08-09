@@ -3,6 +3,12 @@
 // Logic utilities
 // Framework-agnostic scroll-into-view for aria-activedescendant listboxes
 export { scrollActiveDescendantIntoView } from "./logic/activeDescendant";
+// Framework-agnostic spreadsheet clipboard parsing (text to a cell matrix)
+export {
+  type ClipboardMatrix,
+  type ClipboardMatrixOptions,
+  parseClipboardMatrix,
+} from "./logic/clipboardMatrix";
 // WCAG contrast maths, for checking a theme override against the surface it lands on
 export { contrastRatio, parseHexColor, type Rgb, relativeLuminance } from "./logic/contrast";
 export { cx } from "./logic/cx";

@@ -1,3 +1,11 @@
+// Spreadsheet cell text to a number. Pairs with core's parseClipboardMatrix,
+// which splits the paste into the cells this reads.
+export type {
+  CellNumberOptions,
+  CellNumberResult,
+  NumberLocaleHint,
+} from "./logic/clipboardValues";
+export { parseCellNumber } from "./logic/clipboardValues";
 // Human-notation amount parse/format (AmountInput's pluggable seams)
 export type {
   AmountFormat,
