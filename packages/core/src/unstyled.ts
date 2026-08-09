@@ -11,6 +11,8 @@ export type {
   ToastSentiment,
 } from "./logic/toast";
 export { toast } from "./logic/toast";
+export type { BannerBaseProps, BannerClassNames } from "./unstyled/Banner/Banner";
+export { BannerBase } from "./unstyled/Banner/Banner";
 export type { ButtonBaseProps } from "./unstyled/Button/Button";
 export { ButtonBase } from "./unstyled/Button/Button";
 export type { CheckboxBaseProps } from "./unstyled/Checkbox/Checkbox";

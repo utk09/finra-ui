@@ -15,6 +15,12 @@ export {
   type FormFieldState,
   mergeControlA11y,
 } from "./logic/formField";
+// Framework-agnostic mapping from sentiment to live-region politeness
+export {
+  isAssertiveSentiment,
+  type LiveRegionAttributes,
+  liveRegionAttributes,
+} from "./logic/liveRegion";
 // Framework-agnostic anchored positioning over @floating-ui/dom (overlays + future Lit adapter)
 export {
   type AnchoredPosition,

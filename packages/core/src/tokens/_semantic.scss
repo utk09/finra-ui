@@ -76,7 +76,12 @@
   --finra-container-scrim: rgb(0 0 0 / 50%);
 
   // status - danger / success / warning / info.
-  // accent scale is mode-invariant; only the subtle background flips.
+  //
+  // A status colour has two jobs, and both have to hold in both themes.
+  // It is a fill, with `status-*-foreground` as the ink on top of it.
+  // It is also ink and borders drawn on a container or subtle surface.
+  // So the accent steps with the theme and the on-accent foreground flips
+  // with it, exactly as `actionable` does.
   --finra-status-danger-accent: var(--finra-color-error);
   --finra-status-danger-accent-hover: var(--finra-color-error-hover);
   --finra-status-danger-accent-active: var(--finra-color-error-active);
@@ -152,9 +157,47 @@
   --finra-container-background-hover: var(--finra-color-neutral-700);
   --finra-container-track: var(--finra-color-neutral-700);
 
-  // status subtle backgrounds - the only status tokens that flip
+  // status - the accent steps lighter and the on-accent ink flips dark, the
+  // mirror of the actionable block above.
+  //
+  // A mid-tone accent can only serve one of those two jobs on a dark page.
+  // It stays legible as a fill under white ink, and disappears as ink or a
+  // border on the page or on its own subtle surface: info at #1d4ed8 is
+  // 2.65:1 on the page and 1.55:1 on info-subtle.
+  //
+  // Stepping the accent lighter serves the ink job; flipping the on-accent
+  // foreground to a dark ink keeps the fill job. Hover and active step
+  // lighter here for the reason they step darker in light mode: away from
+  // the surface, not towards it.
+  //
+  // These are literals rather than palette aliases because the raw scale holds
+  // the brand's status hues, which do not change with the theme, and carries no
+  // step light enough to read on a dark surface.
+  --finra-status-danger-accent: #f87171;
+  --finra-status-danger-accent-hover: #fca5a5;
+  --finra-status-danger-accent-active: #fecaca;
+  --finra-status-danger-foreground: var(--finra-color-neutral-900);
+
+  --finra-status-success-accent: #34d399;
+  --finra-status-success-accent-hover: #6ee7b7;
+  --finra-status-success-accent-active: #a7f3d0;
+  --finra-status-success-foreground: var(--finra-color-neutral-900);
+
+  --finra-status-warning-accent: #fbbf24;
+  --finra-status-warning-accent-hover: #fcd34d;
+  --finra-status-warning-accent-active: #fde68a;
+  --finra-status-warning-foreground: var(--finra-color-neutral-900);
+
+  --finra-status-info-accent: #93c5fd;
+  --finra-status-info-accent-hover: #bfdbfe;
+  --finra-status-info-accent-active: #dbeafe;
+  --finra-status-info-foreground: var(--finra-color-neutral-900);
+
+  // status subtle backgrounds. One step off black, and all four the same
+  // distance from it, so a wash reads as the same weight whichever status it
+  // carries. Their luminances land within 0.015 to 0.022.
   --finra-status-danger-subtle: #450a0a;
   --finra-status-success-subtle: #052e16;
   --finra-status-warning-subtle: #451a03;
-  --finra-status-info-subtle: #1e3a8a;
+  --finra-status-info-subtle: #172554;
 }

@@ -5,6 +5,9 @@ export { componentIds, FINRA_UI_ATTR } from "./componentIds";
 // Badge
 export type { BadgeProps, BadgeSentiment } from "./components/Badge/Badge";
 export { Badge } from "./components/Badge/Badge";
+// Banner
+export type { BannerProps, BannerSentiment } from "./components/Banner/Banner";
+export { Banner } from "./components/Banner/Banner";
 // Button
 export type { ButtonProps, ButtonSentiment } from "./components/Button/Button";
 export { Button } from "./components/Button/Button";

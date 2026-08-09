@@ -103,6 +103,16 @@ export const componentIds = {
   // Badge
   badge: "badge",
 
+  // Banner
+  banner: "banner",
+  /** The leading icon slot. Present only when an icon is rendered. */
+  bannerIcon: "banner-icon",
+  bannerContent: "banner-content",
+  bannerTitle: "banner-title",
+  bannerDescription: "banner-description",
+  bannerAction: "banner-action",
+  bannerClose: "banner-close",
+
   // ComboBox
   comboBox: "combo-box",
   comboBoxControl: "combo-box-control",

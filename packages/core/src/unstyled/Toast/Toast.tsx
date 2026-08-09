@@ -2,6 +2,7 @@ import { Fragment, forwardRef, type HTMLAttributes, type ReactNode } from "react
 
 import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useStore } from "../../hooks/useStore";
+import { liveRegionAttributes } from "../../logic/liveRegion";
 import { type ToastControls, type ToastData, toastController } from "../../logic/toast";
 import { Portal } from "../Portal/Portal";
 
@@ -48,18 +49,17 @@ export interface ToastItemProps extends HTMLAttributes<HTMLDivElement> {
 /** A live toast. Danger/warning are assertive (`role="alert"`); others polite. */
 export const ToastItem = forwardRef<HTMLDivElement, ToastItemProps>(
   ({ toast, controls, renderCloseIcon, ...rest }, ref) => {
-    const assertive = toast.sentiment === "danger" || toast.sentiment === "warning";
+    const announced = liveRegionAttributes(toast.sentiment);
 
     return (
-      // The element does carry a role; Biome cannot resolve the conditional.
-      // Pause-on-hover stops a toast expiring while it is being read.
-      // biome-ignore lint/a11y/noStaticElementInteractions: role is set conditionally, see above
+      // The element does carry a role; it arrives through a spread, which Biome
+      // cannot resolve. Pause-on-hover stops a toast expiring while it is read.
+      // biome-ignore lint/a11y/noStaticElementInteractions: role arrives by spread, see above
       <div
         ref={ref}
         {...{ [FINRA_UI_ATTR]: componentIds.toast }}
         data-sentiment={toast.sentiment}
-        role={assertive ? "alert" : "status"}
-        aria-live={assertive ? "assertive" : "polite"}
+        {...announced}
         onMouseEnter={controls.pause}
         onMouseLeave={controls.resume}
         {...rest}>

@@ -23,22 +23,28 @@
   --finra-color-neutral-800: #1f2937;
   --finra-color-neutral-900: #111827;
 
-  //  Semantic colours (WCAG AA 4.5:1+ on white)
+  //  Semantic colours.
+  //
+  // All four sit on the same step of their own scale, and their hover and
+  // active steps sit one and two below it. That is what makes a status colour
+  // legible both on white and on its own subtle wash: a step lighter clears
+  // 4.5:1 against the page and misses it against the wash, which is the
+  // surface a secondary or tertiary control hovers onto.
   --finra-color-success: #047857;
   --finra-color-warning: #b45309;
-  --finra-color-error: #dc2626;
+  --finra-color-error: #b91c1c;
   --finra-color-info: #1d4ed8;
 
   // Semantic colours - hover
   --finra-color-success-hover: #065f46;
   --finra-color-warning-hover: #92400e;
-  --finra-color-error-hover: #b91c1c;
+  --finra-color-error-hover: #991b1b;
   --finra-color-info-hover: #1e40af;
 
   // Semantic colours - active
   --finra-color-success-active: #064e3b;
   --finra-color-warning-active: #78350f;
-  --finra-color-error-active: #991b1b;
+  --finra-color-error-active: #7f1d1d;
   --finra-color-info-active: #1e3a8a;
 
   // Semantic colours - disabled

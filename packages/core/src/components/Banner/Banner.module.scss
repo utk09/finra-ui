@@ -1,0 +1,125 @@
+.banner {
+  // Three jobs, so three properties. The wash fills the block, the edge draws
+  // the hairline around it, and the accent draws the thick leading rule and
+  // the glyph. Each sentiment swaps all three together, so they never disagree
+  // about what the banner means.
+  //
+  // With no sentiment the edge stays a plain hairline while the accent steps up
+  // to the muted foreground: a leading rule the same colour as its surround
+  // reads as a faint box rather than as a banner.
+  --_banner-surface: var(--finra-container-background);
+  --_banner-edge: var(--finra-container-border);
+  --_banner-accent: var(--finra-container-foreground-muted);
+
+  display: flex;
+  align-items: flex-start;
+  gap: var(--finra-density-gap);
+  padding: var(--finra-spacing-3) var(--finra-spacing-4);
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-text-sm);
+  // The body reads against the wash rather than against the accent, which is
+  // what keeps every sentiment legible in both themes.
+  color: var(--finra-container-foreground);
+  background-color: var(--_banner-surface);
+  border: var(--finra-border-thin) solid var(--_banner-edge);
+  border-inline-start: var(--finra-border-thick) solid var(--_banner-accent);
+  border-radius: var(--finra-radius-md);
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--finra-density-icon-size);
+  // One line box tall, so the glyph centres on the first line of text rather
+  // than the top of the border box and stays put as the body wraps.
+  block-size: 1lh;
+  color: var(--_banner-accent);
+}
+
+.icon > svg {
+  inline-size: var(--finra-density-icon-size);
+  block-size: var(--finra-density-icon-size);
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--finra-spacing-1);
+  min-inline-size: 0;
+}
+
+.title {
+  font-weight: var(--finra-font-semibold);
+  line-height: var(--finra-leading-tight);
+}
+
+.description {
+  line-height: var(--finra-leading-normal);
+}
+
+.action {
+  flex: none;
+}
+
+.close {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  // The glyph is small; the target is not. 1.5rem keeps the hit area at the
+  // 24px minimum at every density, where sizing it from the line box would
+  // shrink it with the text.
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  padding: 0;
+  font-size: var(--finra-text-base);
+  line-height: 1;
+  color: var(--finra-container-foreground-muted);
+  background: none;
+  border: none;
+  border-radius: var(--finra-radius-sm);
+  cursor: var(--finra-cursor-pointer);
+}
+
+.close > svg {
+  inline-size: var(--finra-density-icon-size);
+  block-size: var(--finra-density-icon-size);
+}
+
+.close:hover {
+  color: var(--finra-container-foreground);
+}
+
+.close:focus-visible {
+  outline: var(--finra-focus-width) solid var(--finra-focus-color);
+  outline-offset: var(--finra-focus-offset);
+}
+
+//  Sentiments
+
+.sentimentDanger {
+  --_banner-surface: var(--finra-status-danger-subtle);
+  --_banner-edge: var(--finra-status-danger-accent);
+  --_banner-accent: var(--finra-status-danger-accent);
+}
+
+.sentimentSuccess {
+  --_banner-surface: var(--finra-status-success-subtle);
+  --_banner-edge: var(--finra-status-success-accent);
+  --_banner-accent: var(--finra-status-success-accent);
+}
+
+.sentimentWarning {
+  --_banner-surface: var(--finra-status-warning-subtle);
+  --_banner-edge: var(--finra-status-warning-accent);
+  --_banner-accent: var(--finra-status-warning-accent);
+}
+
+.sentimentInfo {
+  --_banner-surface: var(--finra-status-info-subtle);
+  --_banner-edge: var(--finra-status-info-accent);
+  --_banner-accent: var(--finra-status-info-accent);
+}
