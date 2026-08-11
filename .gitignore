@@ -4,6 +4,7 @@ node_modules
 .claude
 .github/copilot-instructions.md
 .github/agents
+.venv
 
 # Build outputs
 dist
@@ -14,6 +15,11 @@ storybook-static
 coverage
 *.lcov
 PLAN.md
+TASKS.md
+TASK.md
+AGENTS.md
+CLAUDE.md
+GEMINI.md
 the_custom_folder/
 
 # Turbo
@@ -22,6 +28,9 @@ the_custom_folder/
 # Logs
 *.log
 npm-debug.log*
+pnpm-debug.log
+storybook-debug.log*
+pytest-debug.log*
 
 # OS
 .DS_Store
