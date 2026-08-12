@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { IconButton } from "@utk09/finra-ui";
+import { IconButton, type IconButtonSentiment } from "@utk09/finra-ui";
 import { expect, fn, userEvent, within } from "storybook/test";
 
 import {
@@ -53,6 +53,17 @@ const meta: Meta<typeof IconButton> = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+/** The sentiment-less default first, then the four sentiments. */
+const SENTIMENT_ROWS: { label: string; sentiment?: IconButtonSentiment }[] = [
+  { label: "Default" },
+  { label: "Danger", sentiment: "danger" },
+  { label: "Success", sentiment: "success" },
+  { label: "Warning", sentiment: "warning" },
+  { label: "Info", sentiment: "info" },
+];
+
+const VARIANTS = ["primary", "secondary", "tertiary"] as const;
 
 //  Variant stories
 
@@ -148,6 +159,71 @@ export const Disabled: Story = {
     const canvas = within(canvasElement);
     const button = canvas.getByRole("button", { name: "Add item (disabled)" });
     await expect(button).toBeDisabled();
+  },
+};
+
+/**
+ * Disabled beside enabled, for every variant and sentiment.
+ *
+ * The same treatment `Button` uses. An icon-only control's glyph is a graphic
+ * rather than text, so the 4.5:1 minimum does not formally reach it. It is held
+ * to that bar anyway: the two controls sit side by side in a toolbar, and an
+ * icon that fades while the label beside it keeps its colour reads as a defect
+ * whatever the specification allows.
+ */
+export const DisabledSentiments: Story = {
+  render: () => (
+    <Stack gap="0.75rem">
+      {SENTIMENT_ROWS.map(({ label, sentiment }) => (
+        <Row key={label}>
+          <span style={{ minInlineSize: "5rem" }}>{label}</span>
+          {VARIANTS.flatMap((variant) => [
+            <IconButton
+              key={variant}
+              variant={variant}
+              sentiment={sentiment}
+              icon={<PlusIcon />}
+              aria-label={`${label} ${variant}`}
+            />,
+            <IconButton
+              key={`${variant} disabled`}
+              variant={variant}
+              sentiment={sentiment}
+              icon={<PlusIcon />}
+              aria-label={`${label} ${variant} disabled`}
+              disabled
+            />,
+          ])}
+        </Row>
+      ))}
+    </Stack>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const styleOf = (name: string) => getComputedStyle(canvas.getByRole("button", { name }));
+
+    // The icon is `stroke="currentColor"`, so the button's colour is the glyph's.
+    // Four sentiments, four colours: a flat neutral treatment paints one.
+    const inks = new Set(
+      SENTIMENT_ROWS.filter((row) => row.sentiment).map(
+        (row) => styleOf(`${row.label} primary disabled`).color,
+      ),
+    );
+    await expect(inks.size).toBe(4);
+    await expect(styleOf("Danger primary disabled").color).not.toBe(
+      styleOf("Default primary disabled").color,
+    );
+
+    // Disabled is visibly different from enabled in every variant, not merely
+    // legible: the fill changes in all three, and secondary drops its accent edge.
+    for (const variant of VARIANTS) {
+      await expect(styleOf(`Danger ${variant} disabled`).backgroundColor).not.toBe(
+        styleOf(`Danger ${variant}`).backgroundColor,
+      );
+    }
+    await expect(styleOf("Danger secondary disabled").borderTopColor).not.toBe(
+      styleOf("Danger secondary").borderTopColor,
+    );
   },
 };
 
@@ -253,10 +329,15 @@ export const AllSentiments: Story = {
  * Restyled by redeclaring the actionable tokens. The `danger` sentiment reads
  * the status tokens instead, so it is unaffected.
  *
+ * `--finra-actionable-accent-subtle` is what a disabled icon button fills with,
+ * so a brand that redeclares it gets a disabled state in its own colour rather
+ * than a leftover blue.
+ *
  * ```css
  * .brand-region {
  *   --finra-actionable-accent: #7c3aed;
  *   --finra-actionable-accent-hover: #6d28d9;
+ *   --finra-actionable-accent-subtle: #ede9fe;
  * }
  * ```
  */
@@ -267,16 +348,19 @@ export const Overrides: Story = {
         <span style={{ minInlineSize: "6rem" }}>Default</span>
         <IconButton icon={<PlusIcon />} aria-label="Add" />
         <IconButton icon={<TrashIcon />} aria-label="Delete" sentiment="danger" />
+        <IconButton icon={<PlusIcon />} aria-label="Add disabled" disabled />
       </Row>
       <TokenScope
         tokens={{
           "--finra-actionable-accent": "#7c3aed",
           "--finra-actionable-accent-hover": "#6d28d9",
           "--finra-actionable-accent-active": "#5b21b6",
+          "--finra-actionable-accent-subtle": "#ede9fe",
         }}>
         <span style={{ minInlineSize: "6rem" }}>Overridden</span>
         <IconButton icon={<PlusIcon />} aria-label="Add branded" />
         <IconButton icon={<TrashIcon />} aria-label="Delete branded" sentiment="danger" />
+        <IconButton icon={<PlusIcon />} aria-label="Add branded disabled" disabled />
       </TokenScope>
     </Stack>
   ),
@@ -284,3 +368,14 @@ export const Overrides: Story = {
 
 /** Dark-mode counterpart of `Default`, so the accessibility check covers dark contrast. */
 export const DarkMode: Story = inDark(Default);
+
+/**
+ * Dark-mode counterpart of `DisabledSentiments`, which is the state most likely
+ * to break: the disabled colours are the only ones a component picks for itself
+ * rather than inheriting from its variant, and the sentiment ramps invert
+ * between themes.
+ */
+export const DarkModeDisabled: Story = inDark(
+  DisabledSentiments,
+  "Every variant and sentiment, disabled beside enabled, in dark mode. The play function measures the same colours here, so a treatment that only holds in light fails.",
+);

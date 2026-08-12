@@ -46,4 +46,14 @@ describe("Toaster (styled)", () => {
     });
     expect(screen.getByRole("button", { name: "Dismiss notification" })).toHaveTextContent("mine");
   });
+
+  it("forwards dismissLabel to the close button", () => {
+    render(<Toaster dismissLabel="Cerrar notificación" />);
+    act(() => {
+      toast("hi");
+    });
+
+    expect(screen.getByRole("button", { name: "Cerrar notificación" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Dismiss notification" })).not.toBeInTheDocument();
+  });
 });

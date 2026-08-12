@@ -10,7 +10,13 @@ export {
   parseClipboardMatrix,
 } from "./logic/clipboardMatrix";
 // WCAG contrast maths, for checking a theme override against the surface it lands on
-export { contrastRatio, parseHexColor, type Rgb, relativeLuminance } from "./logic/contrast";
+export {
+  compositeOver,
+  contrastRatio,
+  parseHexColor,
+  type Rgb,
+  relativeLuminance,
+} from "./logic/contrast";
 export { cx } from "./logic/cx";
 // Framework-agnostic overlay dismiss stack (React DismissableLayer + future Lit adapter)
 export { type DismissLayerHandle, type DismissReason, registerDismissLayer } from "./logic/dismiss";

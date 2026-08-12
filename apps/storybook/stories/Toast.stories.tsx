@@ -28,6 +28,7 @@ const meta: Meta<typeof Toaster> = {
       table: { defaultValue: { summary: "bottom-right" } },
     },
     label: { control: "text", table: { defaultValue: { summary: "Notifications" } } },
+    dismissLabel: { control: "text" },
     className: { control: { disable: true } },
     renderToast: { control: { disable: true } },
   },
@@ -111,6 +112,28 @@ export const WithAction: Story = {
     const toastEl = await within(document.body).findByRole("status");
     await userEvent.click(within(toastEl).getByRole("button", { name: "Undo" }));
     await expect(within(document.body).queryByText("Item moved to archive.")).toBeNull();
+  },
+};
+
+/**
+ * The dismiss button's accessible name is English by default, so an app that
+ * ships in another language passes `dismissLabel`. It is the button's only
+ * name: the glyph inside it is decorative.
+ */
+export const TranslatedDismissLabel: Story = {
+  args: { dismissLabel: "Cerrar notificación" },
+  play: async ({ canvasElement }) => {
+    toast.clear();
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Success" }));
+
+    const toastEl = await within(document.body).findByRole("status");
+    // Both states: the passed name is there and the default one is gone.
+    const close = within(toastEl).getByRole("button", { name: "Cerrar notificación" });
+    await expect(
+      within(toastEl).queryByRole("button", { name: "Dismiss notification" }),
+    ).toBeNull();
+    await userEvent.click(close);
   },
 };
 

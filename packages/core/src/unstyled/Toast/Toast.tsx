@@ -36,6 +36,12 @@ export interface ToastItemProps extends HTMLAttributes<HTMLDivElement> {
   /** Dismiss/pause/resume for this toast. Wire `pause`/`resume` to hover and focus. */
   controls: ToastControls;
   /**
+   * Accessible name for the dismiss button.
+   *
+   * @defaultValue `"Dismiss notification"`
+   */
+  dismissLabel?: string;
+  /**
    * Render the dismiss button's icon. Defaults to a `×` character.
    *
    * @remarks
@@ -48,7 +54,7 @@ export interface ToastItemProps extends HTMLAttributes<HTMLDivElement> {
 
 /** A live toast. Danger/warning are assertive (`role="alert"`); others polite. */
 export const ToastItem = forwardRef<HTMLDivElement, ToastItemProps>(
-  ({ toast, controls, renderCloseIcon, ...rest }, ref) => {
+  ({ toast, controls, dismissLabel = "Dismiss notification", renderCloseIcon, ...rest }, ref) => {
     const announced = liveRegionAttributes(toast.sentiment);
 
     return (
@@ -83,7 +89,7 @@ export const ToastItem = forwardRef<HTMLDivElement, ToastItemProps>(
         <button
           type="button"
           {...{ [FINRA_UI_ATTR]: componentIds.toastClose }}
-          aria-label="Dismiss notification"
+          aria-label={dismissLabel}
           onClick={controls.dismiss}>
           {renderCloseIcon ? renderCloseIcon() : "×"}
         </button>
@@ -130,6 +136,16 @@ export interface ToasterProps {
   /** Render a toast yourself; defaults to the built-in {@link ToastItem}. */
   renderToast?: (toast: ToastData, controls: ToastControls) => ReactNode;
   /**
+   * Accessible name for the dismiss button on the built-in {@link ToastItem}.
+   *
+   * @remarks
+   * Ignored when `renderToast` is supplied, since that replaces the toast
+   * entirely and owns its own close button.
+   *
+   * @defaultValue `"Dismiss notification"`
+   */
+  dismissLabel?: string;
+  /**
    * Render the dismiss button's icon on the built-in {@link ToastItem}.
    * Defaults to a `×` character.
    *
@@ -149,6 +165,7 @@ export function Toaster({
   label = "Notifications",
   className,
   renderToast,
+  dismissLabel,
   renderCloseIcon,
   container,
 }: ToasterProps): ReactNode {
@@ -178,6 +195,7 @@ export function Toaster({
               key={toast.id}
               toast={toast}
               controls={controls}
+              dismissLabel={dismissLabel}
               renderCloseIcon={renderCloseIcon}
             />
           );

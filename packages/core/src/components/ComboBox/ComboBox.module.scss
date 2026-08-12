@@ -35,10 +35,15 @@
     --_input-border-color: var(--finra-actionable-emphasis);
   }
 
+  //  Disabled - explicit colours, not opacity, to keep WCAG contrast
   &.disabled {
-    opacity: var(--finra-opacity-disabled);
     cursor: var(--finra-cursor-disabled);
     background-color: var(--finra-container-disabled-background);
+
+    .input,
+    .singleValue {
+      color: var(--finra-container-disabled-foreground);
+    }
   }
 
   // The listbox is portalled and floats with a gap, so the control keeps its
@@ -268,8 +273,9 @@
     font-weight: var(--finra-font-medium);
   }
 
+  //  Explicit ink, not opacity: the row is the text.
   &.optionDisabled {
-    opacity: var(--finra-opacity-disabled);
+    color: var(--finra-container-disabled-foreground);
     cursor: var(--finra-cursor-disabled);
   }
 

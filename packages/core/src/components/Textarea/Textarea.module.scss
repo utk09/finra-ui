@@ -19,10 +19,14 @@
     --_input-border-color: var(--finra-actionable-emphasis);
   }
 
+  //  Disabled - explicit colours, not opacity, to keep WCAG contrast
   &.disabled {
-    opacity: var(--finra-opacity-disabled);
     cursor: var(--finra-cursor-disabled);
     background-color: var(--finra-container-disabled-background);
+
+    .field {
+      color: var(--finra-container-disabled-foreground);
+    }
   }
 
   &.fullWidth {

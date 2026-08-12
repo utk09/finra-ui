@@ -36,13 +36,19 @@
     background-color: var(--finra-actionable-accent-subtle);
   }
 
+  //  Disabled - explicit colours, not opacity, to keep WCAG contrast. Only the
+  //  icon dims; the prompt keeps its muted ink at full strength.
   &.disabled {
-    opacity: var(--finra-opacity-disabled);
     cursor: var(--finra-cursor-disabled);
+    background-color: var(--finra-container-disabled-background);
 
     &:hover {
       border-color: var(--finra-container-border);
-      background-color: var(--finra-container-background);
+      background-color: var(--finra-container-disabled-background);
+    }
+
+    .icon {
+      opacity: var(--finra-opacity-disabled);
     }
   }
 }

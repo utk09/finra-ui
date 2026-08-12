@@ -12,9 +12,17 @@
     }
   }
 
+  //  Disabled - explicit ink, not opacity, to keep WCAG contrast. The field
+  //  propagates `disabled` to the control it wraps, so the control dims itself;
+  //  an opacity here would additionally multiply with the control's own and
+  //  composite its text twice. Helper and error text keep their own ink, both
+  //  of which are paired against the page.
   &.disabled {
-    opacity: var(--finra-opacity-disabled);
     cursor: var(--finra-cursor-disabled);
+
+    .label {
+      color: var(--finra-container-disabled-foreground);
+    }
   }
 }
 

@@ -32,11 +32,6 @@
   }
 
   //  States
-  &:disabled {
-    opacity: var(--finra-opacity-disabled);
-    cursor: var(--finra-cursor-disabled);
-  }
-
   &:focus-visible {
     outline: var(--finra-focus-width) solid var(--finra-focus-color);
     outline-offset: var(--finra-focus-offset);
@@ -123,5 +118,24 @@
     --_btn-accent-active: var(--finra-status-info-accent-active);
     --_btn-accent-subtle: var(--finra-status-info-subtle);
     --_btn-on-accent: var(--finra-status-info-foreground);
+  }
+
+  //  Disabled: identical to Button's, on purpose.
+  //
+  //  The glyph is a graphic, not text, so WCAG's 4.5:1 does not reach it and an
+  //  opacity here would break no rule. It is held to the text bar anyway: the
+  //  two controls sit side by side in every toolbar in the library, and an icon
+  //  dimmed to 2.1:1 beside a label that keeps its colour reads as a defect
+  //  whatever the specification allows. Read the note in `Button.module.scss`
+  //  for why the sentiment survives and the border goes neutral; keep them in
+  //  step.
+  //
+  //  Keep this block last: it matches at the same specificity as
+  //  `.iconButton.variantPrimary` and wins on source order.
+  &:disabled {
+    background-color: var(--_btn-accent-subtle);
+    color: var(--_btn-accent);
+    border-color: var(--finra-container-disabled-border);
+    cursor: var(--finra-cursor-disabled);
   }
 }

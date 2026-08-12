@@ -38,6 +38,43 @@ export function parseHexColor(value: string): Rgb | null {
   };
 }
 
+/**
+ * Flatten a colour drawn at `alpha` onto the colour behind it.
+ *
+ * @remarks
+ * This is what `opacity` does. An element with `opacity` is painted into its own
+ * group and the finished group is composited over the backdrop, so every colour
+ * inside it, text included, ends up blended toward whatever is behind. A
+ * declared token pair therefore says nothing about what a user sees through an
+ * opacity: near-black body ink on white declares 17.74:1 and renders 3.39:1 at
+ * `opacity: 0.5`. Nested groups multiply, so two of them reach 1.36:1.
+ *
+ * Measure the result of this function, never the declared colour, whenever an
+ * opacity sits on the element or on any of its ancestors.
+ *
+ * @param source - The colour as declared.
+ * @param backdrop - The colour painted behind it.
+ * @param alpha - The group's effective alpha, 0 to 1. Multiply the chain when
+ * more than one ancestor carries an opacity.
+ * @returns The flattened colour, with channels left unrounded so a chain of
+ * composites does not accumulate rounding error.
+ *
+ * @example
+ * ```ts
+ * const ink = parseHexColor("#111827");
+ * const page = parseHexColor("#ffffff");
+ * if (ink && page) contrastRatio(compositeOver(ink, page, 0.5), page); // 3.39
+ * ```
+ */
+export function compositeOver(source: Rgb, backdrop: Rgb, alpha: number): Rgb {
+  const blend = (from: number, to: number): number => from * alpha + to * (1 - alpha);
+  return {
+    r: blend(source.r, backdrop.r),
+    g: blend(source.g, backdrop.g),
+    b: blend(source.b, backdrop.b),
+  };
+}
+
 function channelLuminance(channel: number): number {
   const proportion = channel / 255;
   return proportion <= 0.04045 ? proportion / 12.92 : ((proportion + 0.055) / 1.055) ** 2.4;

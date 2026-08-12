@@ -26,6 +26,24 @@
   --finra-cursor-text: text;
 
   //  Opacity
+  //
+  // opacity-disabled dims non-text chrome only: a track, an indicator, a thumb,
+  // a decorative icon. It must never land on an element that carries text, nor
+  // on an ancestor of one.
+  //
+  // `opacity` composites the whole subtree as a group, so ink painted inside it
+  // is blended toward whatever sits behind the group. Half-strength body ink on
+  // the page measures 3.39:1 where the declared pair is 17.74:1, and nesting two
+  // such groups (a disabled FormField around a disabled Input) reaches 1.36:1.
+  // Declared token contrast says nothing about any of it.
+  //
+  // Text takes an explicit disabled colour at full opacity instead: the neutral
+  // container-disabled-foreground on container-disabled-background for a field,
+  // or the sentiment's own accent on its own subtle wash where the sentiment has
+  // to survive being disabled, as it does on Button and IconButton. Either way
+  // the pair is measured in `tokens/contrast.test.ts`, and
+  // `components/disabledOpacity.test.ts` holds the list of parts allowed to use
+  // this token and fails on any usage that is not on it.
   --finra-opacity-disabled: 0.5;
   --finra-opacity-hover: 0.8;
 

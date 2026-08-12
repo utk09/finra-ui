@@ -28,9 +28,12 @@
     --_select-border-color: var(--finra-actionable-emphasis);
   }
 
+  //  Disabled - explicit colours, not opacity, to keep WCAG contrast. The
+  //  chevron follows `currentColor`.
   &:disabled {
-    opacity: var(--finra-opacity-disabled);
     cursor: var(--finra-cursor-disabled);
+    background-color: var(--finra-container-disabled-background);
+    color: var(--finra-container-disabled-foreground);
   }
 }
 
@@ -98,8 +101,9 @@
   font-weight: var(--finra-font-semibold);
 }
 
+// Explicit ink, not opacity: the option is the text.
 .listbox [data-finra-ui="select-option"][data-disabled] {
-  opacity: var(--finra-opacity-disabled);
+  color: var(--finra-container-disabled-foreground);
   cursor: var(--finra-cursor-disabled);
 }
 

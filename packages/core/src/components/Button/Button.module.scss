@@ -32,11 +32,6 @@
   padding: 0 var(--finra-density-button-padding-x);
 
   //  States
-  &:disabled {
-    opacity: var(--finra-opacity-disabled);
-    cursor: var(--finra-cursor-disabled);
-  }
-
   &:focus-visible {
     outline: var(--finra-focus-width) solid var(--finra-focus-color);
     outline-offset: var(--finra-focus-offset);
@@ -123,6 +118,33 @@
     --_btn-accent-active: var(--finra-status-info-accent-active);
     --_btn-accent-subtle: var(--finra-status-info-subtle);
     --_btn-on-accent: var(--finra-status-info-foreground);
+  }
+
+  //  Disabled: the sentiment survives, the emphasis does not.
+  //
+  //  All three variants collapse to one inert treatment - the sentiment's own
+  //  subtle wash under its accent ink, the pairing Badge's tertiary variant
+  //  already uses. Emphasis says how loudly a control asks to be pressed, and an
+  //  inert control asks for nothing; meaning is not a function of whether the
+  //  control can be operated, so a disabled Delete stays red.
+  //
+  //  Never an opacity. The label sits inside the button, so dimming the button
+  //  dims the label with it: white on a half-strength accent renders 2.14:1.
+  //  Accent on its own wash is 4.75:1 at worst across both themes, and every
+  //  pair is asserted in `tokens/contrast.test.ts`.
+  //
+  //  The border drops to the inert neutral edge. That is the one cue no enabled
+  //  state carries: a wash under accent ink is exactly how secondary and
+  //  tertiary look while hovered, so without it a disabled button and a hovered
+  //  one would be indistinguishable.
+  //
+  //  Keep this block after the variant and sentiment blocks. It matches at the
+  //  same specificity as `.button.variantPrimary` and wins on source order.
+  &:disabled {
+    background-color: var(--_btn-accent-subtle);
+    color: var(--_btn-accent);
+    border-color: var(--finra-container-disabled-border);
+    cursor: var(--finra-cursor-disabled);
   }
 
   //  Full width

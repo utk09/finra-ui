@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button } from "@utk09/finra-ui";
+import { Button, type ButtonSentiment } from "@utk09/finra-ui";
 import { ButtonBase } from "@utk09/finra-ui/unstyled";
 import { expect, fn, userEvent, within } from "storybook/test";
 
@@ -69,6 +69,17 @@ const meta: Meta<typeof Button> = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+/** The sentiment-less default first, then the four sentiments. */
+const SENTIMENT_ROWS: { label: string; sentiment?: ButtonSentiment }[] = [
+  { label: "Default" },
+  { label: "Danger", sentiment: "danger" },
+  { label: "Success", sentiment: "success" },
+  { label: "Warning", sentiment: "warning" },
+  { label: "Info", sentiment: "info" },
+];
+
+const VARIANTS = ["primary", "secondary", "tertiary"] as const;
 
 //  Variant stories
 
@@ -149,6 +160,68 @@ export const Disabled: Story = {
     const canvas = within(canvasElement);
     const button = canvas.getByRole("button", { name: "Disabled Button" });
     await expect(button).toBeDisabled();
+  },
+};
+
+/**
+ * Disabled beside enabled, for every variant and sentiment.
+ *
+ * A disabled button keeps its meaning and loses its emphasis. The fill drops to
+ * the sentiment's own subtle wash, the label keeps the sentiment's accent, and
+ * the border goes to the inert neutral edge, so a disabled Delete still reads as
+ * destructive and nothing that can be operated looks like this.
+ *
+ * The label is never dimmed with an opacity, which would composite the text down
+ * along with the fill: white on a half-strength accent renders 2.14:1. Every
+ * pair here measures 4.75:1 or better in both themes.
+ */
+export const DisabledSentiments: Story = {
+  render: () => (
+    <Stack gap="0.75rem">
+      {SENTIMENT_ROWS.map(({ label, sentiment }) => (
+        <Row key={label}>
+          <span style={{ minInlineSize: "5rem" }}>{label}</span>
+          {VARIANTS.flatMap((variant) => [
+            <Button key={variant} variant={variant} sentiment={sentiment}>
+              {`${label} ${variant}`}
+            </Button>,
+            <Button
+              key={`${variant} disabled`}
+              variant={variant}
+              sentiment={sentiment}
+              disabled>{`${label} ${variant} disabled`}</Button>,
+          ])}
+        </Row>
+      ))}
+    </Stack>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const styleOf = (name: string) => getComputedStyle(canvas.getByRole("button", { name }));
+
+    // The sentiment survives being disabled. A flat neutral treatment paints all
+    // four labels the same colour, which is what this row catches.
+    const inks = new Set(
+      SENTIMENT_ROWS.filter((row) => row.sentiment).map(
+        (row) => styleOf(`${row.label} primary disabled`).color,
+      ),
+    );
+    await expect(inks.size).toBe(4);
+    await expect(styleOf("Danger primary disabled").color).not.toBe(
+      styleOf("Default primary disabled").color,
+    );
+
+    // And disabled is visibly different from enabled rather than merely legible:
+    // the fill changes in all three variants, and secondary drops its accent
+    // edge for the inert one.
+    for (const variant of VARIANTS) {
+      await expect(styleOf(`Danger ${variant} disabled`).backgroundColor).not.toBe(
+        styleOf(`Danger ${variant}`).backgroundColor,
+      );
+    }
+    await expect(styleOf("Danger secondary disabled").borderTopColor).not.toBe(
+      styleOf("Danger secondary").borderTopColor,
+    );
   },
 };
 
@@ -350,8 +423,12 @@ export const WithAccessibility: Story = {
 
 /**
  * Restyling without a class name. The wrapper redeclares the actionable tokens
- * and every button inside follows, hover and active states included. The
- * `danger` sentiment reads the status tokens instead, so it is unaffected.
+ * and every button inside follows, hover, active and disabled states included.
+ * The `danger` sentiment reads the status tokens instead, so it is unaffected.
+ *
+ * `--finra-actionable-accent-subtle` is what a disabled button fills with, so a
+ * brand that redeclares it gets a disabled state in its own colour rather than a
+ * leftover blue.
  *
  * ```css
  * .brand-region {
@@ -370,6 +447,7 @@ export const Overrides: Story = {
         <Button>Primary</Button>
         <Button variant="secondary">Secondary</Button>
         <Button sentiment="danger">Danger</Button>
+        <Button disabled>Disabled</Button>
       </Row>
       <TokenScope
         tokens={{
@@ -382,6 +460,7 @@ export const Overrides: Story = {
         <Button>Primary</Button>
         <Button variant="secondary">Secondary</Button>
         <Button sentiment="danger">Danger</Button>
+        <Button disabled>Disabled branded</Button>
       </TokenScope>
     </Stack>
   ),
@@ -389,3 +468,14 @@ export const Overrides: Story = {
 
 /** Dark-mode counterpart of `Primary`, so the accessibility check covers dark contrast. */
 export const DarkMode: Story = inDark(Primary);
+
+/**
+ * Dark-mode counterpart of `DisabledSentiments`, which is the state most likely
+ * to break: the disabled colours are the only ones a component picks for itself
+ * rather than inheriting from its variant, and the sentiment ramps invert
+ * between themes.
+ */
+export const DarkModeDisabled: Story = inDark(
+  DisabledSentiments,
+  "Every variant and sentiment, disabled beside enabled, in dark mode. The play function measures the same colours here, so a treatment that only holds in light fails.",
+);

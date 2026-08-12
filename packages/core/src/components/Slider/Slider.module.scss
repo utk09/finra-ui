@@ -8,9 +8,16 @@
   color: var(--finra-container-foreground);
   cursor: var(--finra-cursor-pointer);
 
+  //  Disabled - explicit ink, not opacity, to keep WCAG contrast. Only the
+  //  groove and thumb dim: an opacity here would composite the label and the
+  //  value readout toward the page.
   &.disabled {
-    opacity: var(--finra-opacity-disabled);
     cursor: var(--finra-cursor-disabled);
+    color: var(--finra-container-disabled-foreground);
+
+    .input {
+      opacity: var(--finra-opacity-disabled);
+    }
   }
 }
 

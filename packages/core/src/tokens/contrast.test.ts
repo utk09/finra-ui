@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { readThemeTokens, type ThemeName, tokenColour } from "../../test/tokens";
-import { contrastRatio } from "../logic/contrast";
+import { compositeOver, contrastRatio } from "../logic/contrast";
 
 /**
  * Contrast is a property of a *pair*, so tokenising a value proves nothing on
@@ -139,7 +139,123 @@ const PAIRINGS: Pairing[] = [
   },
 ];
 
+/**
+ * A disabled control's text, measured as it renders rather than as it is
+ * declared.
+ *
+ * `opacity` paints an element and its whole subtree into a group and composites
+ * the finished group over the backdrop, so an opacity anywhere above a text node
+ * blends that text toward whatever sits behind. The pairs above cannot see it:
+ * they compare two declared tokens, and the declared pair for a disabled Switch
+ * label read 17.74:1 while Chromium rendered 3.39:1.
+ *
+ * So each row carries the alpha that actually reaches the text, and both the ink
+ * and the surface are composited before measuring. `alpha: 1` is a claim that
+ * nothing dims this text, and `components/disabledOpacity.test.ts` is what keeps
+ * that claim true: it fails on any use of `--finra-opacity-disabled` that is not
+ * on its list of text-free parts. Neither test is sufficient alone.
+ */
+interface DisabledPairing {
+  what: string;
+  ink: string;
+  /** Painted behind the ink, inside the opacity group when there is one. */
+  surface: string;
+  /** Painted behind the group. Only reachable when `alpha` is below 1. */
+  backdrop: string;
+  /** The product of every `opacity` between this text and the page. */
+  alpha: number;
+  minimum: number;
+}
+
+const PAGE = "--finra-container-background";
+const DISABLED_INK = "--finra-container-disabled-foreground";
+const DISABLED_SURFACE = "--finra-container-disabled-background";
+const MUTED_INK = "--finra-container-foreground-muted";
+
+/** `[what, ink, surface]`. Every row is text at full opacity on the page. */
+type DisabledText = [what: string, ink: string, surface: string];
+
+/**
+ * Button and IconButton keep their sentiment when disabled.
+ *
+ * @remarks
+ * Every variant collapses to one inert treatment, the sentiment's accent on the
+ * sentiment's own subtle wash, so the rows do not vary by variant. Emphasis is
+ * how loudly a control asks to be pressed and an inert one asks for nothing;
+ * meaning does not depend on whether the control can be operated, so a disabled
+ * Delete stays red rather than going neutral.
+ *
+ * The same pairs already appear above as "accent ink on its own subtle wash",
+ * which is the hover surface. Both are listed because they are two different
+ * claims: change the hover wash and the hover rows move, change the disabled
+ * treatment and these do, and a reader looking for what a disabled Button paints
+ * should find it in the disabled table.
+ *
+ * IconButton's glyph is a graphic rather than text, so WCAG would allow 3:1 for
+ * it. It is held to 4.5 here because the two controls sit side by side and are
+ * meant to look alike, not because the specification demands it.
+ */
+const SENTIMENT_BUTTON_DISABLED: DisabledText[] = ["Button", "IconButton"].flatMap(
+  (component): DisabledText[] => [
+    [
+      `${component}, disabled label, no sentiment`,
+      "--finra-actionable-accent",
+      "--finra-actionable-accent-subtle",
+    ],
+    ...SENTIMENTS.map(
+      (sentiment): DisabledText => [
+        `${component}, disabled ${sentiment} label`,
+        `--finra-status-${sentiment}-accent`,
+        `--finra-status-${sentiment}-subtle`,
+      ],
+    ),
+  ],
+);
+
+/** Text on a control the consumer has disabled, one row per component. */
+const DISABLED_TEXT: DisabledText[] = [
+  ...SENTIMENT_BUTTON_DISABLED,
+  ["Checkbox, label", DISABLED_INK, PAGE],
+  ["ComboBox, field text", DISABLED_INK, DISABLED_SURFACE],
+  ["ComboBox, disabled option", DISABLED_INK, PAGE],
+  // finance, reading the same two core tokens as Input.
+  ["DateInput, field text", DISABLED_INK, DISABLED_SURFACE],
+  ["FileDropZone, prompt", MUTED_INK, DISABLED_SURFACE],
+  ["FormField, label", DISABLED_INK, PAGE],
+  ["FormField, helper text", MUTED_INK, PAGE],
+  ["FormField, error message", "--finra-status-danger-accent", PAGE],
+  ["Input, field text", DISABLED_INK, DISABLED_SURFACE],
+  ["Menu, disabled item", DISABLED_INK, PAGE],
+  ["NumberInput, field text", DISABLED_INK, DISABLED_SURFACE],
+  ["RadioButton, label", DISABLED_INK, PAGE],
+  ["Select, trigger value", DISABLED_INK, DISABLED_SURFACE],
+  ["Select, disabled option", DISABLED_INK, PAGE],
+  ["Slider, label", DISABLED_INK, PAGE],
+  ["Slider, value readout", MUTED_INK, PAGE],
+  ["Switch, label", DISABLED_INK, PAGE],
+  ["Tabs, disabled tab", DISABLED_INK, PAGE],
+  ["Textarea, field text", DISABLED_INK, DISABLED_SURFACE],
+  ["Textarea, character count", MUTED_INK, DISABLED_SURFACE],
+];
+
+const DISABLED_PAIRINGS: DisabledPairing[] = DISABLED_TEXT.map(([what, ink, surface]) => ({
+  what,
+  ink,
+  surface,
+  backdrop: PAGE,
+  alpha: 1,
+  minimum: TEXT,
+}));
+
 const THEMES: ThemeName[] = ["default", "dark"];
+
+function compositedRatio(tokens: Map<string, string>, pairing: DisabledPairing): number {
+  const backdrop = tokenColour(tokens, pairing.backdrop);
+  return contrastRatio(
+    compositeOver(tokenColour(tokens, pairing.ink), backdrop, pairing.alpha),
+    compositeOver(tokenColour(tokens, pairing.surface), backdrop, pairing.alpha),
+  );
+}
 
 describe("token contrast", () => {
   describe.each(THEMES)("%s theme", (theme) => {
@@ -148,6 +264,10 @@ describe("token contrast", () => {
     it.each(PAIRINGS)("$what meets $minimum:1", ({ ink, surface, minimum }) => {
       const ratio = contrastRatio(tokenColour(tokens, ink), tokenColour(tokens, surface));
       expect(ratio).toBeGreaterThanOrEqual(minimum);
+    });
+
+    it.each(DISABLED_PAIRINGS)("$what renders at $minimum:1 when disabled", (pairing) => {
+      expect(compositedRatio(tokens, pairing)).toBeGreaterThanOrEqual(pairing.minimum);
     });
   });
 
@@ -165,7 +285,34 @@ describe("token contrast", () => {
 
     it("checks both themes against every declared pairing", () => {
       expect(PAIRINGS.length).toBeGreaterThanOrEqual(29);
+      expect(DISABLED_PAIRINGS.length).toBeGreaterThanOrEqual(30);
+      // Button and IconButton carry five rows each: the sentiment-less default
+      // and the four sentiments. A treatment that quietly went back to one
+      // neutral row for all five would still satisfy the floor above.
+      expect(SENTIMENT_BUTTON_DISABLED).toHaveLength(10);
       expect(THEMES).toEqual(["default", "dark"]);
+    });
+
+    it("fails the disabled rows when an opacity reaches the text", () => {
+      // The composited check is worthless if it cannot see the defect it exists
+      // for, and every shipped row now declares `alpha: 1`, so nothing in the
+      // table exercises the compositing path. This replays the configuration
+      // that shipped: body ink and the recessed field surface under a single
+      // 0.5 group, which Chromium rendered at 3.32:1 on the Input disabled
+      // story against a declared 16.98:1.
+      const tokens = readThemeTokens("default");
+      const shipped: DisabledPairing = {
+        what: "Input, field text, as it shipped",
+        ink: "--finra-container-foreground",
+        surface: DISABLED_SURFACE,
+        backdrop: PAGE,
+        alpha: 0.5,
+        minimum: TEXT,
+      };
+      expect(compositedRatio(tokens, shipped)).toBeCloseTo(3.32, 2);
+      expect(compositedRatio(tokens, shipped)).toBeLessThan(TEXT);
+      // Same pair, nothing dimming it: the number the old suite was checking.
+      expect(compositedRatio(tokens, { ...shipped, alpha: 1 })).toBeGreaterThan(TEXT);
     });
 
     it("reads a theme override rather than the base value", () => {

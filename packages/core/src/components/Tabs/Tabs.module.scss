@@ -72,9 +72,10 @@
   border-inline-end-color: var(--finra-actionable-accent);
 }
 
+// Explicit ink, not opacity: the tab is the text, so an opacity here composites
+// the label toward the page.
 .tab[aria-disabled="true"] {
-  color: var(--finra-container-foreground);
-  opacity: var(--finra-opacity-disabled);
+  color: var(--finra-container-disabled-foreground);
   cursor: var(--finra-cursor-disabled);
 }
 

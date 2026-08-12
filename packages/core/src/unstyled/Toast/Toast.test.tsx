@@ -142,4 +142,25 @@ describe("Toaster", () => {
     await user.click(screen.getByRole("button", { name: "Dismiss notification" }));
     expect(screen.queryByText("hi")).not.toBeInTheDocument();
   });
+
+  it("names the close button through dismissLabel", () => {
+    render(<Toaster dismissLabel="Cerrar notificación" />);
+    act(() => {
+      toast("hi");
+    });
+
+    expect(screen.getByRole("button", { name: "Cerrar notificación" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Dismiss notification" })).not.toBeInTheDocument();
+  });
+
+  it("still dismisses when the label is translated", async () => {
+    const user = userEvent.setup();
+    render(<Toaster dismissLabel="Cerrar notificación" />);
+    act(() => {
+      toast("hi");
+    });
+
+    await user.click(screen.getByRole("button", { name: "Cerrar notificación" }));
+    expect(screen.queryByText("hi")).not.toBeInTheDocument();
+  });
 });

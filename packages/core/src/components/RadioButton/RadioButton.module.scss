@@ -8,9 +8,15 @@
   line-height: var(--finra-leading-normal);
   color: var(--finra-container-foreground);
 
+  //  Disabled - explicit ink, not opacity, to keep WCAG contrast. Only the
+  //  indicator dims: an opacity here would composite the label toward the page.
   &.disabled {
-    opacity: var(--finra-opacity-disabled);
     cursor: var(--finra-cursor-disabled);
+    color: var(--finra-container-disabled-foreground);
+
+    .indicator {
+      opacity: var(--finra-opacity-disabled);
+    }
   }
 }
 

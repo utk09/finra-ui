@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { contrastRatio, parseHexColor, type Rgb, relativeLuminance } from "./contrast";
+import {
+  compositeOver,
+  contrastRatio,
+  parseHexColor,
+  type Rgb,
+  relativeLuminance,
+} from "./contrast";
 
 function rgb(value: string): Rgb {
   const parsed = parseHexColor(value);
@@ -78,5 +84,55 @@ describe("contrastRatio", () => {
     expect(contrastRatio(rgb("#dc2626"), rgb("#fef2f2"))).toBeCloseTo(4.4148, 3);
     expect(contrastRatio(rgb("#1d4ed8"), rgb("#1e3a8a"))).toBeCloseTo(1.5456, 3);
     expect(contrastRatio(rgb("#f9fafb"), rgb("#111827"))).toBeCloseTo(16.9754, 3);
+  });
+});
+
+describe("compositeOver", () => {
+  it("returns the source at alpha 1 and the backdrop at alpha 0", () => {
+    const ink = rgb("#111827");
+    const page = rgb("#ffffff");
+    expect(compositeOver(ink, page, 1)).toEqual(ink);
+    expect(compositeOver(ink, page, 0)).toEqual(page);
+  });
+
+  it("takes the midpoint of every channel at alpha 0.5", () => {
+    expect(compositeOver(rgb("#000000"), rgb("#ffffff"), 0.5)).toEqual({
+      r: 127.5,
+      g: 127.5,
+      b: 127.5,
+    });
+  });
+
+  it("keeps fractional channels rather than rounding", () => {
+    // Rounding here would drift once a nested group composites twice, which is
+    // exactly the case that produces the library's worst disabled pairing.
+    expect(compositeOver(rgb("#010101"), rgb("#000000"), 0.5)).toEqual({ r: 0.5, g: 0.5, b: 0.5 });
+  });
+
+  it("multiplies through nested groups", () => {
+    const ink = rgb("#111827");
+    const page = rgb("#ffffff");
+    const once = compositeOver(ink, page, 0.5);
+    expect(compositeOver(once, page, 0.5)).toEqual(compositeOver(ink, page, 0.25));
+  });
+
+  it("reproduces the contrast the browser renders through an opacity", () => {
+    // Measured in Chromium on the Switch and Slider disabled stories: the
+    // declared pair reads 17.74:1 and the composited result 3.39:1. A model
+    // that cannot reproduce the browser is not measuring what ships.
+    const page = rgb("#ffffff");
+    const body = rgb("#111827");
+    expect(contrastRatio(body, page)).toBeCloseTo(17.74, 2);
+    expect(contrastRatio(compositeOver(body, page, 0.5), page)).toBeCloseTo(3.39, 2);
+
+    // Measured on the FormField disabled story, where a disabled field nested a
+    // disabled input and the two groups multiplied to 0.25. Both the ink and the
+    // surface it lands on composite, which is why measuring the ink alone
+    // against the page gives 1.72 and misses the real 1.36.
+    const muted = rgb("#6b7280");
+    const recessed = rgb("#f9fafb");
+    expect(
+      contrastRatio(compositeOver(muted, page, 0.25), compositeOver(recessed, page, 0.25)),
+    ).toBeCloseTo(1.36, 2);
   });
 });
