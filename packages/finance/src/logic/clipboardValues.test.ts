@@ -52,7 +52,7 @@ describe("parseCellNumber", () => {
 
   it("reports the one pattern that genuinely cannot be decided", () => {
     // 1.234 is a rate in US and a thousand-something in EU, and both are
-    // ordinary numbers here. AC-5: say so rather than pick one.
+    // ordinary numbers here. Say so rather than pick one.
     const result = parseCellNumber("1.234");
     expect(result.error).toBe("ambiguous");
     expect(result.value).toBeNull();

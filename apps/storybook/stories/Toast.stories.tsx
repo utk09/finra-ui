@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, Toaster, toast } from "@utk09/finra-ui";
+import { Button, SoundSettings, soundEngine, Toaster, toast } from "@utk09/finra-ui";
 import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
-import { darkModeOpen } from "./_shared";
+import { darkModeOpen, Stack } from "./_shared";
 
 const POSITIONS = [
   "top-left",
@@ -38,47 +38,65 @@ const meta: Meta<typeof Toaster> = {
   },
   render: (args) => (
     <>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-        <Button onClick={() => toast.success({ title: "Saved", description: "Changes saved." })}>
-          Success
-        </Button>
-        <Button
-          sentiment="danger"
-          onClick={() => toast.error({ title: "Failed", description: "Could not save." })}>
-          Error
-        </Button>
-        <Button
-          sentiment="warning"
-          onClick={() => toast.warning({ title: "Heads up", description: "Market closes soon." })}>
-          Warning
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => toast.info({ title: "FYI", description: "Report is ready." })}>
-          Info
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() =>
-            toast({
-              description: "Item moved to archive.",
-              action: { label: "Undo", onClick: () => undefined },
-            })
-          }>
-          With action
-        </Button>
-        <Button
-          variant="tertiary"
-          onClick={() =>
-            toast({ title: "Sticky", description: "Stays until dismissed.", duration: 0 })
-          }>
-          Persistent
-        </Button>
-      </div>
+      <ToastButtons />
       <Toaster {...args} />
     </>
   ),
 };
+
+/** The shared button row, so `WithSound` can put a sound control above it. */
+function ToastButtons() {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+      <Button onClick={() => toast.success({ title: "Saved", description: "Changes saved." })}>
+        Success
+      </Button>
+      <Button
+        sentiment="danger"
+        onClick={() => toast.error({ title: "Failed", description: "Could not save." })}>
+        Error
+      </Button>
+      <Button
+        sentiment="warning"
+        onClick={() => toast.warning({ title: "Heads up", description: "Market closes soon." })}>
+        Warning
+      </Button>
+      <Button
+        variant="secondary"
+        onClick={() => toast.info({ title: "FYI", description: "Report is ready." })}>
+        Info
+      </Button>
+      <Button
+        variant="secondary"
+        onClick={() =>
+          toast({
+            description: "Item moved to archive.",
+            action: { label: "Undo", onClick: () => undefined },
+          })
+        }>
+        With action
+      </Button>
+      <Button
+        variant="tertiary"
+        onClick={() =>
+          toast({ title: "Sticky", description: "Stays until dismissed.", duration: 0 })
+        }>
+        Persistent
+      </Button>
+      <Button
+        variant="secondary"
+        onClick={() =>
+          toast.success({
+            title: "Filled",
+            description: "2M EURUSD at 1.0921.",
+            sound: "chime",
+          })
+        }>
+        With sound
+      </Button>
+    </div>
+  );
+}
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -240,6 +258,47 @@ export const Overrides: Story = {
     await waitFor(async () =>
       expect(await within(document.body).findAllByRole("status")).toHaveLength(2),
     );
+  },
+};
+
+/**
+ * `ToastInput.sound` attaches a cue, played once when the toast is raised.
+ *
+ * **To hear it, switch Sound on first.** The shared `soundEngine` ships muted
+ * and nothing in this library unmutes it for you, so a toast with a cue is
+ * silent until a person opts in. The control above is `SoundSettings` bound to
+ * that same shared engine, which is the whole mechanism: no provider, no
+ * configuration, one process-wide setting that any control can drive. Flip it
+ * on, then press "With sound" and the toast arrives with a `chime`.
+ *
+ * Leave it off and the toast is identical in every other way, which is the
+ * point: sound is additive and never a second source of truth for the toast.
+ */
+export const WithSound: Story = {
+  render: (args) => (
+    <Stack gap="1.25rem">
+      <SoundSettings engine={soundEngine} />
+      <ToastButtons />
+      <Toaster {...args} />
+    </Stack>
+  ),
+  play: async ({ canvasElement }) => {
+    toast.clear();
+    const canvas = within(canvasElement);
+
+    // Muted by default, and nothing in the library changes that. This is the
+    // promise the engine makes, asserted where a consumer would first meet it.
+    await expect(canvas.getByRole("switch", { name: "Sound" })).not.toBeChecked();
+
+    await userEvent.click(canvas.getByRole("button", { name: "With sound" }));
+
+    // Scoped to the notification region, not to the body: `SoundSettings`
+    // carries a polite `role="status"` of its own, so this is the one story
+    // where the two live regions are on screen together and a body-wide query
+    // matches both.
+    const region = within(document.body).getByRole("region", { name: "Notifications" });
+    const toastEl = await within(region).findByRole("status");
+    await expect(toastEl).toHaveTextContent("Filled");
   },
 };
 

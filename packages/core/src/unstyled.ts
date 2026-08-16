@@ -86,6 +86,15 @@ export type { SkeletonBaseProps, SkeletonClassNames } from "./unstyled/Skeleton/
 export { SkeletonBase } from "./unstyled/Skeleton/Skeleton";
 export type { SliderBaseProps } from "./unstyled/Slider/Slider";
 export { SliderBase } from "./unstyled/Slider/Slider";
+// `SoundIconState` is the root entry, alongside every other sound type, because
+// the styled `SoundSettingsProps.renderIcon` names it too
+export type {
+  SoundMuteControlProps,
+  SoundSettingsBaseProps,
+  SoundSettingsClassNames,
+  SoundVolumeControlProps,
+} from "./unstyled/SoundSettings/SoundSettings";
+export { SoundSettingsBase } from "./unstyled/SoundSettings/SoundSettings";
 export type { SpinnerBaseProps } from "./unstyled/Spinner/Spinner";
 export { SpinnerBase } from "./unstyled/Spinner/Spinner";
 export type { SwitchBaseProps } from "./unstyled/Switch/Switch";

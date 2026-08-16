@@ -41,7 +41,14 @@ const categories: Record<string, string[]> = {
     "UploadCloudIcon",
     "UploadIcon",
   ],
-  "2. Communication": ["BellIcon", "MailIcon", "MessageIcon", "SendIcon"],
+  "2. Communication": [
+    "BellIcon",
+    "MailIcon",
+    "MessageIcon",
+    "SendIcon",
+    "VolumeIcon",
+    "VolumeOffIcon",
+  ],
   "3. Security / User": [
     "KeyIcon",
     "LockIcon",
@@ -166,7 +173,7 @@ const meta: Meta<IconsStoryArgs> = {
     docs: {
       description: {
         component: [
-          "127 icons, shipped two ways from one source.",
+          "129 icons, shipped two ways from one source.",
           "",
           "`@utk09/finra-ui-icons` exports each icon as **plain data** - a name, a viewBox and a path list - with no framework attached. `@utk09/finra-ui-icons/react` exports the same set as React components. The data entry is what makes a future Web Component or server-rendered build possible without redrawing anything.",
           "",
@@ -338,7 +345,7 @@ export const CategoryIcons: Story = {
     docs: {
       description: {
         story:
-          "The same 127 icons grouped by what they are for. Useful when you know the job but not the name. Every icon appears in exactly one group, so the counts sum to the full set.",
+          "The same 129 icons grouped by what they are for. Useful when you know the job but not the name. Every icon appears in exactly one group, so the counts sum to the full set.",
       },
     },
   },

@@ -207,6 +207,16 @@ export const componentIds = {
   progressTrack: "progress-track",
   progressFill: "progress-fill",
   progressLabel: "progress-label",
+
+  // SoundSettings
+  soundSettings: "sound-settings",
+  /** The group label. Present only when `label` is not `null`. */
+  soundSettingsLabel: "sound-settings-label",
+  /** The leading icon slot. Present only when an icon is rendered. */
+  soundSettingsIcon: "sound-settings-icon",
+  soundSettingsMute: "sound-settings-mute",
+  soundSettingsVolume: "sound-settings-volume",
+  soundSettingsStatus: "sound-settings-status",
 } as const;
 
 /**

@@ -1,0 +1,50 @@
+.soundSettings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--finra-spacing-3);
+  align-items: flex-start;
+  font-family: var(--finra-font-sans);
+  font-size: var(--finra-density-input-font-size);
+  color: var(--finra-container-foreground);
+}
+
+.label {
+  font-weight: var(--finra-font-semibold);
+  line-height: var(--finra-leading-tight);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--finra-density-icon-size);
+  color: var(--finra-container-foreground-muted);
+}
+
+.icon > svg {
+  inline-size: var(--finra-density-icon-size);
+  block-size: var(--finra-density-icon-size);
+}
+
+.mute {
+  display: flex;
+}
+
+.volume {
+  display: flex;
+  inline-size: 100%;
+  max-inline-size: 16rem;
+}
+
+// Stretches whatever `renderVolume` returns - the styled `Slider`'s own root
+// or a consumer's replacement - to fill the wrapper, without naming either
+// one's internal class names.
+.volume > * {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.status {
+  font-size: var(--finra-text-xs);
+  color: var(--finra-container-foreground-muted);
+}

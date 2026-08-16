@@ -20,9 +20,9 @@ It has no opinion about your market conventions. Holiday calendars, settlement l
 
 | Package | What it is |
 | --- | --- |
-| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) ([docs](packages/core/README.md)) | Buttons, inputs, forms, overlays, tabs, toasts. 23 components. |
+| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) ([docs](packages/core/README.md)) | Buttons, inputs, forms, overlays, tabs, toasts. 28 components. |
 | [`@utk09/finra-ui-finance`](https://www.npmjs.com/package/@utk09/finra-ui-finance) ([docs](packages/finance/README.md)) | Price, amount, tenor and date-tenor fields, plus the parsers behind them. |
-| [`@utk09/finra-ui-icons`](https://www.npmjs.com/package/@utk09/finra-ui-icons) ([docs](packages/icons/README.md)) | 127 icons as plain data, with React wrappers. |
+| [`@utk09/finra-ui-icons`](https://www.npmjs.com/package/@utk09/finra-ui-icons) ([docs](packages/icons/README.md)) | 129 icons as plain data, with React wrappers. |
 
 ## Install
 

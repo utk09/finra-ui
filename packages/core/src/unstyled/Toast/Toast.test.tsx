@@ -1,7 +1,9 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { StrictMode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { soundEngine } from "../../logic/sound";
 import { toast } from "../../logic/toast";
 import { Toaster } from "./Toast";
 
@@ -9,6 +11,7 @@ afterEach(() => {
   act(() => {
     toast.clear();
   });
+  vi.restoreAllMocks();
 });
 
 describe("Toaster", () => {
@@ -141,6 +144,45 @@ describe("Toaster", () => {
 
     await user.click(screen.getByRole("button", { name: "Dismiss notification" }));
     expect(screen.queryByText("hi")).not.toBeInTheDocument();
+  });
+
+  it("a toast with `sound` renders identically to one without it", () => {
+    render(<Toaster />);
+    act(() => {
+      toast.success({ title: "Filled", description: "2M EURUSD" });
+    });
+    const withoutSound = screen.getByRole("status").outerHTML;
+
+    act(() => {
+      toast.clear();
+    });
+
+    act(() => {
+      toast.success({ title: "Filled", description: "2M EURUSD", sound: "chime" });
+    });
+    const withSound = screen.getByRole("status").outerHTML;
+
+    // Same role, same aria-live (inherited from role="status"), same
+    // data-sentiment, same text, same accessible names, same data-finra-ui
+    // ids: `sound` never reaches `ToastData`, so nothing here can differ.
+    // `ToastItem` renders no `toast.id` and no `useId`, so the two toasts'
+    // markup is byte-comparable with no normalisation.
+    expect(withSound).toBe(withoutSound);
+  });
+
+  it("a StrictMode double-render does not replay a toast's cue", () => {
+    const play = vi.spyOn(soundEngine, "play");
+    render(
+      <StrictMode>
+        <Toaster />
+      </StrictMode>,
+    );
+    act(() => {
+      toast({ description: "Filled", sound: "chime" });
+    });
+    // The side effect lives in the controller's `add`, called once before
+    // React renders anything - there is no effect for StrictMode to double-fire.
+    expect(play).toHaveBeenCalledTimes(1);
   });
 
   it("names the close button through dismissLabel", () => {

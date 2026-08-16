@@ -4,6 +4,7 @@
  * stateful controller, not a pure reducer - so both the React `Toaster` and a
  * future Lit `<finra-toaster>` inherit auto-dismiss without re-implementing it).
  */
+import { soundEngine as defaultSoundEngine, type SoundCue, type SoundEngine } from "./sound";
 import { createStore, type Store } from "./store";
 
 /**
@@ -36,7 +37,9 @@ export interface ToastAction {
 
 /**
  * A toast as it exists in the store: every optional field on {@link ToastInput}
- * resolved to a concrete value.
+ * resolved to a concrete value, with one exception - {@link ToastInput.sound} is
+ * consumed at raise time and never stored, so a toast in the queue carries no
+ * trace of whether it played a cue.
  *
  * @remarks
  * You receive this when rendering the queue; you never construct it. Pass a
@@ -115,6 +118,22 @@ export interface ToastInput {
   duration?: number;
   /** Optional single action button. */
   action?: ToastAction;
+  /**
+   * Cue played once when this toast is raised.
+   *
+   * @remarks
+   * Omit for a silent toast; there is no `"none"` value, because `undefined`
+   * already means silent and two spellings for one state is a defect waiting to
+   * be found. Silent regardless until the host application unmutes the sound
+   * engine, so this is safe to set everywhere and switch on once.
+   *
+   * Not derived from {@link ToastInput.sentiment} on purpose. Deriving it would
+   * make every already-shipped `toast.error(...)` call site audible the moment
+   * any part of the application unmutes, with nobody having chosen that.
+   *
+   * @defaultValue `undefined`, meaning silent
+   */
+  sound?: SoundCue;
 }
 
 /** The whole queue. Render order is insertion order - newest last. */
@@ -246,6 +265,21 @@ export interface ToastController {
   resume(id: string, duration: number): void;
 }
 
+/** Options for {@link createToastStore}. */
+export interface CreateToastStoreOptions {
+  /**
+   * Engine used to play {@link ToastInput.sound}.
+   *
+   * @remarks
+   * Injected so an isolated queue can be given an isolated engine. Without it, a
+   * test queue built for isolation would still play through the shared engine
+   * and tests would bleed into each other.
+   *
+   * @defaultValue the shared `soundEngine`
+   */
+  soundEngine?: SoundEngine;
+}
+
 /**
  * Build an independent toast queue with its own timers and id counter.
  *
@@ -259,7 +293,8 @@ export interface ToastController {
  *
  * @returns A controller whose `store` is safe to subscribe to immediately.
  */
-export function createToastStore(): ToastController {
+export function createToastStore(options: CreateToastStoreOptions = {}): ToastController {
+  const { soundEngine: engine = defaultSoundEngine } = options;
   const store = createStore(initialToastState, toastReducer);
   const timers = new Map<string, ReturnType<typeof setTimeout>>();
   let counter = 0;
@@ -298,6 +333,16 @@ export function createToastStore(): ToastController {
       action: norm.action,
     };
     store.send({ type: "add", toast: data });
+    // Ordered after the toast reaches the store, and wrapped, so a throwing
+    // engine can neither stop the toast from being raised nor escape into the
+    // caller's click handler. The toast above is already committed either way.
+    if (norm.sound) {
+      try {
+        engine.play(norm.sound);
+      } catch {
+        // Swallowed on purpose - see the comment above.
+      }
+    }
     schedule(data.id, data.duration);
     return data.id;
   }

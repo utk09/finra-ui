@@ -1,6 +1,6 @@
 # @utk09/finra-ui-icons
 
-127 icons for [finra-ui](https://github.com/utk09/finra-ui), as plain data with React wrappers on top.
+129 icons for [finra-ui](https://github.com/utk09/finra-ui), as plain data with React wrappers on top.
 
 [![npm](https://img.shields.io/npm/v/@utk09/finra-ui-icons.svg)](https://www.npmjs.com/package/@utk09/finra-ui-icons) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
@@ -10,9 +10,9 @@
 
 | Package | What it is |
 | --- | --- |
-| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) ([docs](https://github.com/utk09/finra-ui/blob/main/packages/core/README.md)) | Buttons, inputs, forms, overlays, tabs, toasts. 23 components. |
+| [`@utk09/finra-ui`](https://www.npmjs.com/package/@utk09/finra-ui) ([docs](https://github.com/utk09/finra-ui/blob/main/packages/core/README.md)) | Buttons, inputs, forms, overlays, tabs, toasts. 28 components. |
 | [`@utk09/finra-ui-finance`](https://www.npmjs.com/package/@utk09/finra-ui-finance) ([docs](https://github.com/utk09/finra-ui/blob/main/packages/finance/README.md)) | Price, amount, tenor and date-tenor fields, plus the parsers behind them. |
-| **`@utk09/finra-ui-icons`** (this one) | 127 icons as plain data, with React wrappers. |
+| **`@utk09/finra-ui-icons`** (this one) | 129 icons as plain data, with React wrappers. |
 
 ## Install
 

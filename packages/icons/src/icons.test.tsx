@@ -13,7 +13,7 @@ const dataEntries = Object.entries(iconData).filter(
 
 /**
  * Every export of `./react` is an icon component. A cast rather than a type
- * predicate, because the module's inferred type is a 127-member union of
+ * predicate, because the module's inferred type is a 129-member union of
  * structurally identical signatures and a predicate has to be assignable to it.
  */
 type IconComponent = (props: SVGProps<SVGSVGElement>) => ReactElement;
@@ -23,7 +23,7 @@ describe("icon data", () => {
   it("exports the full set", () => {
     // Guards the denominator: a suite that silently scanned nothing would pass
     // every assertion below.
-    expect(dataEntries.length).toBe(127);
+    expect(dataEntries.length).toBe(129);
   });
 
   it.each(dataEntries)("%s declares a 1em default size", (_name, icon) => {

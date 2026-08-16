@@ -27,6 +27,8 @@ export { BellIcon } from "./react/BellIcon";
 export { MailIcon } from "./react/MailIcon";
 export { MessageIcon } from "./react/MessageIcon";
 export { SendIcon } from "./react/SendIcon";
+export { VolumeIcon } from "./react/VolumeIcon";
+export { VolumeOffIcon } from "./react/VolumeOffIcon";
 
 // 3. Security / User
 

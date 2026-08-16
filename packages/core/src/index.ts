@@ -100,6 +100,9 @@ export { Skeleton } from "./components/Skeleton/Skeleton";
 // Slider
 export type { SliderProps } from "./components/Slider/Slider";
 export { Slider } from "./components/Slider/Slider";
+// SoundSettings
+export type { SoundSettingsProps } from "./components/SoundSettings/SoundSettings";
+export { SoundSettings } from "./components/SoundSettings/SoundSettings";
 // Spinner
 export type { SpinnerProps } from "./components/Spinner/Spinner";
 export { Spinner } from "./components/Spinner/Spinner";
@@ -128,17 +131,34 @@ export { useClickOutside } from "./hooks/useClickOutside";
 export { useControlledValue } from "./hooks/useControlledValue";
 export { useFormField } from "./hooks/useFormField";
 export { useStore } from "./hooks/useStore";
+// Synthesized audio cues: the engine, the shared instance, and every type a
+// root-exported signature names. The pure settings functions (reducer, seed
+// state, silent-reason lookup) are ./utils, matching the house precedent for a
+// framework-agnostic logic/ module
+export type {
+  AudioContextLike,
+  SoundCue,
+  SoundEngine,
+  SoundEngineOptions,
+  SoundSilentReason,
+  SoundState,
+  SoundStoreAction,
+} from "./logic/sound";
+export { createSoundEngine, soundEngine } from "./logic/sound";
 export type { TabsActivationMode, TabsOrientation } from "./logic/tabs";
 export type {
+  CreateToastStoreOptions,
   ToastApi,
+  ToastController,
   ToastControls,
   ToastData,
   ToastInput,
   ToastSentiment,
 } from "./logic/toast";
-export { toast } from "./logic/toast";
+export { createToastStore, toast } from "./logic/toast";
 // Cross-cutting design axes (shared by core and the finance package)
 export type { Sentiment, Variant } from "./types/variants";
+export type { SoundIconState } from "./unstyled/SoundSettings/SoundSettings";
 
 // Import styles
 import "./styles/global.scss";

@@ -43,6 +43,10 @@ export {
   type Placement,
   trackAnchoredPosition,
 } from "./logic/position";
+// Framework-agnostic synthesized-audio settings: the pure reducer, its seed
+// state and the silent-reason lookup. Every type they name is the root entry,
+// matching `liveRegionAttributes` naming `Sentiment`
+export { initialSoundState, soundReducer, soundSilentReason } from "./logic/sound";
 // Framework-agnostic state store (shared foundation for state machines)
 export { createStore, type Store } from "./logic/store";
 export { mergeRefs } from "./utils/mergeRefs";
