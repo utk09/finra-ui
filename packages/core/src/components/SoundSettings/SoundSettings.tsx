@@ -24,6 +24,12 @@ function defaultRenderIcon(state: SoundIconState): ReactNode {
  * `volumeLabel` render as visible text beside each control here, which the
  * unstyled base cannot do. Sizing is `data-density` on an ancestor plus a CSS
  * rule against `[data-finra-ui="sound-settings"]`.
+ *
+ * The root is a two-column grid: the icon takes the first column and the mute
+ * switch the second, so the speaker glyph sits on the switch's line, and the
+ * label, the slider and the status region each span both. Redeclare the grid
+ * against `[data-finra-ui="sound-settings"]` and place the part ids yourself to
+ * change it; consumer CSS wins over `@layer finra-ui`.
  */
 export interface SoundSettingsProps
   extends Omit<

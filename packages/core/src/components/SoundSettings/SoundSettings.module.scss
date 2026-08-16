@@ -1,11 +1,32 @@
+// Two columns: the icon owns the first, the mute switch the second, and
+// everything else spans both. That puts the speaker glyph on the switch's line,
+// where it reads as the state of the thing beside it rather than as a heading of
+// its own.
+//
+// The placement is by column only, never by row number, because the label and
+// the icon are both optional: `label={null}`, `renderIcon={() => null}`, or
+// both. Auto-placement then puts each element on the first row that fits, so all
+// four combinations lay out without a special case. Naming rows would break
+// three of them.
+//
+// The column gap is 0 and the icon carries its own trailing margin instead. A
+// gap would survive the icon's absence and indent the switch away from the label
+// and the slider by a space nothing occupies.
 .soundSettings {
-  display: flex;
-  flex-direction: column;
-  gap: var(--finra-spacing-3);
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  justify-items: start;
+  gap: var(--finra-spacing-3) 0;
   font-family: var(--finra-font-sans);
   font-size: var(--finra-density-input-font-size);
   color: var(--finra-container-foreground);
+}
+
+.label,
+.volume,
+.status {
+  grid-column: 1 / -1;
 }
 
 .label {
@@ -14,10 +35,12 @@
 }
 
 .icon {
+  grid-column: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   inline-size: var(--finra-density-icon-size);
+  margin-inline-end: var(--finra-spacing-2);
   color: var(--finra-container-foreground-muted);
 }
 
@@ -27,6 +50,7 @@
 }
 
 .mute {
+  grid-column: 2;
   display: flex;
 }
 

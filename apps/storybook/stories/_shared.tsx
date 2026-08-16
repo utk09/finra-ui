@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { FINRA_UI_ATTR } from "@utk09/finra-ui";
 import type { CSSProperties, ReactNode } from "react";
 
 /**
@@ -8,6 +9,32 @@ import type { CSSProperties, ReactNode } from "react";
  * way. Import from `./_shared`; this file is not matched by the story glob, so
  * it never appears in the sidebar.
  */
+
+//  Finding a rendered part
+
+/**
+ * A rendered part, by its `data-finra-ui` id, or `null`.
+ *
+ * @remarks
+ * Use this in a play function rather than Testing Library's `getByTestId`.
+ * `testIdAttribute` is remapped to `data-finra-ui` in
+ * `.storybook/vitest.setup.ts`, which the `stories` Vitest project loads and
+ * `preview.tsx` never does. A `getByTestId` therefore means the id under
+ * `test:stories` and the default `data-testid` in the live `pnpm dev` preview,
+ * where it throws; a `queryByTestId` is worse, because it quietly returns
+ * `null` there and the assertion passes having checked nothing.
+ *
+ * Reading the attribute is also what a consumer's own CSS does, so a story that
+ * measures through it is measuring the published override surface.
+ */
+export function part(scope: ParentNode, id: string): HTMLElement | null {
+  return scope.querySelector<HTMLElement>(`[${FINRA_UI_ATTR}="${id}"]`);
+}
+
+/** Every rendered part carrying `id`, in document order. See {@link part}. */
+export function parts(scope: ParentNode, id: string): HTMLElement[] {
+  return [...scope.querySelectorAll<HTMLElement>(`[${FINRA_UI_ATTR}="${id}"]`)];
+}
 
 //  Dark mode coverage
 

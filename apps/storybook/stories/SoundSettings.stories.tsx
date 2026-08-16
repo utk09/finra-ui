@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   type AudioContextLike,
   Button,
+  componentIds,
   createSoundEngine,
   type SoundCue,
   type SoundEngine,
@@ -11,7 +12,7 @@ import { SoundSettingsBase } from "@utk09/finra-ui/unstyled";
 import { useEffect, useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
 
-import { forwardsTo, inDark, LabelledRow, Row, Stack, TokenScope } from "./_shared";
+import { forwardsTo, inDark, LabelledRow, part, Row, Stack, TokenScope } from "./_shared";
 
 const meta: Meta<typeof SoundSettings> = {
   title: "Components/SoundSettings",
@@ -314,11 +315,102 @@ export const NoGroupLabel: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.queryByTestId("sound-settings-label")).not.toBeInTheDocument();
+    await expect(part(canvasElement, componentIds.soundSettingsLabel)).toBeNull();
     await expect(canvas.getByRole("group", { name: "Sound settings" })).toBeInTheDocument();
     // The per-control names are a different prop and are unaffected.
     await expect(canvas.getByRole("switch", { name: "Sound" })).toBeInTheDocument();
     await expect(canvas.getByRole("slider", { name: "Volume" })).toBeInTheDocument();
+  },
+};
+
+/**
+ * The speaker glyph sits on the switch's line, so it reads as the state of the
+ * control beside it rather than as a heading of its own.
+ *
+ * The layout is a two-column grid on the root: the icon owns column one, the
+ * mute switch owns column two, and the label, the slider and the status region
+ * each span both. Nothing is placed by row number, because the label and the
+ * icon are independently optional, so all four combinations below fall out of
+ * auto-placement with no special case. The column gap is zero and the icon
+ * carries its own trailing margin, which is what keeps the switch flush with
+ * everything else when no icon renders.
+ *
+ * To restyle it, redeclare the grid against `[data-finra-ui="sound-settings"]`
+ * and place the part ids yourself; consumer CSS wins over the library's layer.
+ */
+export const IconAlignment: Story = {
+  parameters: { layout: "padded" },
+  render: function Render() {
+    // Stubs, not real engines: this story is about geometry, and it should
+    // build no audio context at all.
+    const withBoth = useStubEngine("running", { unmute: true });
+    const noLabel = useStubEngine("running", { unmute: true });
+    const noIcon = useStubEngine("running", { unmute: true });
+    const neither = useStubEngine("running", { unmute: true });
+    return (
+      <Stack gap="2rem">
+        <LabelledRow label="Label and icon">
+          <SoundSettings engine={withBoth} />
+        </LabelledRow>
+        <LabelledRow label="No label">
+          <SoundSettings engine={noLabel} label={null} aria-label="No label" />
+        </LabelledRow>
+        <LabelledRow label="No icon">
+          <SoundSettings engine={noIcon} renderIcon={() => null} aria-label="No icon" />
+        </LabelledRow>
+        <LabelledRow label="Neither">
+          <SoundSettings
+            engine={neither}
+            label={null}
+            renderIcon={() => null}
+            aria-label="Neither"
+          />
+        </LabelledRow>
+      </Stack>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const [withBoth, noLabel, noIcon, neither] = canvas.getAllByRole("group");
+
+    // The grid places the mute slot, so that is what gets measured, not the
+    // switch's own track. The status region is always rendered and always spans
+    // both columns, which makes it the reference for where a full-width row
+    // starts.
+    const edges = (group: HTMLElement) => {
+      const mute = part(group, componentIds.soundSettingsMute);
+      const row = part(group, componentIds.soundSettingsStatus);
+      const icon = part(group, componentIds.soundSettingsIcon);
+      if (!mute || !row) throw new Error("the mute slot and the status region always render");
+      return {
+        mute: mute.getBoundingClientRect(),
+        rowLeft: row.getBoundingClientRect().left,
+        icon: icon?.getBoundingClientRect(),
+      };
+    };
+
+    for (const group of [withBoth, noLabel]) {
+      const { mute, rowLeft, icon } = edges(group);
+      if (!icon) throw new Error("expected an icon in this variant");
+
+      // Same line: the two boxes overlap vertically.
+      await expect(icon.top).toBeLessThan(mute.bottom);
+      await expect(icon.bottom).toBeGreaterThan(mute.top);
+      // Icon first, switch after it, and the switch is therefore indented past
+      // where a full-width row begins.
+      await expect(mute.left).toBeGreaterThanOrEqual(icon.right);
+      await expect(mute.left).toBeGreaterThan(rowLeft);
+      // The icon itself starts the row, so nothing is indented by a phantom column.
+      await expect(Math.abs(icon.left - rowLeft)).toBeLessThan(1);
+    }
+
+    // The other state, without which the checks above pass on a layout that
+    // always indents: with no icon the column collapses and the switch is flush.
+    for (const group of [noIcon, neither]) {
+      const { mute, rowLeft, icon } = edges(group);
+      await expect(icon).toBeUndefined();
+      await expect(Math.abs(mute.left - rowLeft)).toBeLessThan(1);
+    }
   },
 };
 

@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { createSoundEngine, type SoundEngine } from "@utk09/finra-ui";
+import { componentIds, createSoundEngine, type SoundEngine } from "@utk09/finra-ui";
 import { SoundSettingsBase } from "@utk09/finra-ui/unstyled";
 import { useEffect, useState } from "react";
 import { expect, within } from "storybook/test";
 
-import { forwardsTo } from "../_shared";
+import { forwardsTo, part } from "../_shared";
 
 const meta: Meta<typeof SoundSettingsBase> = {
   title: "Unstyled/SoundSettingsBase",
@@ -69,6 +69,6 @@ export const Default: Story = {
     await expect(canvas.getByRole("switch")).toBeChecked();
     await expect(canvas.getByRole("slider")).toHaveValue("40");
     // No icon: the unstyled layer ships none until renderIcon returns one.
-    await expect(canvas.queryByTestId("sound-settings-icon")).not.toBeInTheDocument();
+    await expect(part(canvasElement, componentIds.soundSettingsIcon)).toBeNull();
   },
 };
