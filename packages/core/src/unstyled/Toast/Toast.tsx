@@ -3,7 +3,12 @@ import { Fragment, forwardRef, type HTMLAttributes, type ReactNode } from "react
 import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
 import { useStore } from "../../hooks/useStore";
 import { liveRegionAttributes } from "../../logic/liveRegion";
-import { type ToastControls, type ToastData, toastController } from "../../logic/toast";
+import {
+  toastController as sharedToastController,
+  type ToastController,
+  type ToastControls,
+  type ToastData,
+} from "../../logic/toast";
 import { Portal } from "../Portal/Portal";
 
 /**
@@ -108,8 +113,9 @@ ToastItem.displayName = "ToastItem";
  *
  * @remarks
  * Mount exactly one `Toaster` near the root of the app. It subscribes to the
- * shared {@link toastController}, so anything calling `toast()` anywhere reaches
- * it without prop-drilling. Two mounted at once means every toast renders twice.
+ * shared toast controller, so anything calling `toast()` anywhere reaches it
+ * without prop-drilling. Two mounted against the same controller means every
+ * toast renders twice.
  *
  * @example
  * ```tsx
@@ -119,6 +125,22 @@ ToastItem.displayName = "ToastItem";
  * ```
  */
 export interface ToasterProps {
+  /**
+   * Queue this region renders.
+   *
+   * @remarks
+   * Defaults to the shared controller the module-level `toast()` writes to,
+   * which is what makes the no-prop-drilling example above work. Pass one from
+   * `createToastStore` to render a queue that the global `toast()` does not
+   * reach: an isolated engine for sound, a region scoped to one workspace pane,
+   * or a test that must not bleed into the shared queue.
+   *
+   * Changing it after mount switches which queue is displayed. The controller
+   * owns the toasts, so nothing is carried across.
+   *
+   * @defaultValue the shared `toastController`
+   */
+  controller?: ToastController;
   /**
    * Where the toast region is portalled. Defaults to `document.body`.
    *
@@ -161,6 +183,7 @@ export interface ToasterProps {
  * body. Mount one `<Toaster>` near the app root; call `toast()` from anywhere.
  */
 export function Toaster({
+  controller = sharedToastController,
   position = "bottom-right",
   label = "Notifications",
   className,
@@ -169,7 +192,7 @@ export function Toaster({
   renderCloseIcon,
   container,
 }: ToasterProps): ReactNode {
-  const toasts = useStore(toastController.store, (state) => state.toasts);
+  const toasts = useStore(controller.store, (state) => state.toasts);
 
   return (
     <Portal container={container}>
@@ -181,9 +204,9 @@ export function Toaster({
         className={className}>
         {toasts.map((toast) => {
           const controls: ToastControls = {
-            dismiss: () => toastController.toast.dismiss(toast.id),
-            pause: () => toastController.pause(toast.id),
-            resume: () => toastController.resume(toast.id, toast.duration),
+            dismiss: () => controller.toast.dismiss(toast.id),
+            pause: () => controller.pause(toast.id),
+            resume: () => controller.resume(toast.id, toast.duration),
           };
           // A Fragment, not a wrapper element: what `renderToast` returns is the
           // toast, and it has to be a direct child of the region for the

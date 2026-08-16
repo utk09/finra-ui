@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import { type ChangeEvent, forwardRef, useState } from "react";
 
 import { componentIds, FINRA_UI_ATTR } from "../../componentIds";
-import { sliderMidpoint } from "../../logic/slider";
+import { sliderBoundNumber, sliderMidpoint, sliderValueNumber } from "../../logic/slider";
 import { SliderBase, type SliderBaseProps } from "../../unstyled/Slider/Slider";
 import styles from "./Slider.module.scss";
 
@@ -27,6 +27,28 @@ export interface SliderProps extends Omit<SliderBaseProps, "className"> {
    * regardless, so hiding it costs screen-reader users nothing.
    */
   showValue?: boolean;
+  /**
+   * Format the value for display and for assistive technology.
+   *
+   * @remarks
+   * A raw range value is a bare number, which is right for a count and wrong
+   * for a percentage, a currency, or anything carrying a unit. Formatting is
+   * locale-dependent, so it is a prop rather than a built-in.
+   *
+   * Sets `aria-valuetext` as well as the readout, so the announced value and
+   * the visible one cannot disagree. It applies even with `showValue` off,
+   * because the format says what the number means rather than whether it is on
+   * screen. `aria-valuenow` is untouched and always present, since some
+   * assistive technology ignores `aria-valuetext` and reports the raw number.
+   * Passing `aria-valuetext` yourself overrides this.
+   *
+   * @example
+   * ```tsx
+   * <Slider label="Volume" showValue formatValue={(v) => `${v}%`} />
+   * <Slider label="Weight" formatValue={(v, min, max) => `${v} of ${max - min}`} />
+   * ```
+   */
+  formatValue?: (value: number, min: number, max: number) => string;
   /** Additional CSS class for the root wrapper. */
   className?: string;
 }
@@ -38,7 +60,19 @@ export interface SliderProps extends Omit<SliderBaseProps, "className"> {
  */
 export const Slider = forwardRef<HTMLInputElement, SliderProps>(
   (
-    { className, label, showValue, disabled, value, defaultValue, onChange, min, max, ...props },
+    {
+      className,
+      label,
+      showValue,
+      formatValue,
+      disabled,
+      value,
+      defaultValue,
+      onChange,
+      min,
+      max,
+      ...props
+    },
     ref,
   ) => {
     const isControlled = value !== undefined;
@@ -49,6 +83,12 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
       defaultValue === undefined ? sliderMidpoint(min, max) : String(defaultValue),
     );
     const displayValue = isControlled ? value : uncontrolledValue;
+
+    const numericValue = sliderValueNumber(displayValue);
+    const formatted =
+      formatValue && numericValue !== null
+        ? formatValue(numericValue, sliderBoundNumber(min, 0), sliderBoundNumber(max, 100))
+        : null;
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
       onChange?.(event);
@@ -70,7 +110,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
             ) : null}
             {showValue ? (
               <span className={styles.value} {...{ [FINRA_UI_ATTR]: componentIds.sliderValue }}>
-                {displayValue}
+                {formatted ?? displayValue}
               </span>
             ) : null}
           </span>
@@ -85,6 +125,9 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
           max={max}
           onChange={handleChange}
           {...props}
+          // After the spread, but falling back to it, so a consumer's own
+          // `aria-valuetext` still wins over the formatter.
+          aria-valuetext={props["aria-valuetext"] ?? formatted ?? undefined}
         />
       </label>
     );

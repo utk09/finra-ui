@@ -30,6 +30,7 @@ const meta: Meta<typeof Slider> = {
     showValue: {
       control: "boolean",
     },
+    formatValue: { control: { disable: true } },
     onChange: {
       description:
         "Fires on every movement of the thumb, not on release, so a controlled slider tracks the drag. Read `event.target.value`, which is always a string.",
@@ -124,6 +125,34 @@ export const CustomRange: Story = {
     max: 100,
     step: 5,
     defaultValue: 50,
+  },
+};
+
+/**
+ * `formatValue` gives the raw number a unit. It sets `aria-valuetext` as well
+ * as the readout, so what is announced and what is on screen cannot disagree,
+ * and it applies with `showValue` off too: the format says what the number
+ * means, not whether it is visible. `aria-valuenow` is left alone for
+ * assistive technology that ignores `aria-valuetext`.
+ *
+ * The callback receives the resolved bounds, so a percentage of a range that
+ * does not start at zero needs no bookkeeping at the call site.
+ */
+export const FormattedValue: Story = {
+  args: {
+    label: "Volume",
+    showValue: true,
+    defaultValue: 45,
+    formatValue: (value: number) => `${value}%`,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const slider = canvas.getByRole("slider");
+
+    await expect(canvas.getByText("45%")).toBeVisible();
+    await expect(slider).toHaveAttribute("aria-valuetext", "45%");
+    // The raw value survives beside the formatted one.
+    await expect(slider).toHaveValue("45");
   },
 };
 

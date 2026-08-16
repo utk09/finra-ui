@@ -1,9 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, SoundSettings, soundEngine, Toaster, toast } from "@utk09/finra-ui";
+import {
+  Button,
+  createToastStore,
+  SoundSettings,
+  soundEngine,
+  Toaster,
+  toast,
+} from "@utk09/finra-ui";
 import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
-import { darkModeOpen, Stack } from "./_shared";
+import { darkModeOpen, Row, Stack } from "./_shared";
 
 const POSITIONS = [
   "top-left",
@@ -299,6 +306,50 @@ export const WithSound: Story = {
     const region = within(document.body).getByRole("region", { name: "Notifications" });
     const toastEl = await within(region).findByRole("status");
     await expect(toastEl).toHaveTextContent("Filled");
+  },
+};
+
+/**
+ * `controller` points a region at a queue the global `toast()` does not reach.
+ *
+ * The default is the shared controller, which is what lets `toast()` be called
+ * from anywhere with no prop-drilling. Pass one from `createToastStore` when a
+ * region needs its own queue: an isolated sound engine, a region scoped to one
+ * workspace pane, or a test that must not bleed into the shared queue. The
+ * buttons on the left write to a private controller and the one on the right to
+ * the shared one, and neither appears in the other's region.
+ */
+export const OwnController: Story = {
+  parameters: { layout: "padded" },
+  render: function Render() {
+    const own = useState(() => createToastStore())[0];
+    return (
+      <Stack gap="1rem">
+        <Row gap="0.5rem">
+          <Button variant="secondary" onClick={() => own.toast({ description: "Private queue" })}>
+            Raise on my controller
+          </Button>
+          <Button variant="secondary" onClick={() => toast({ description: "Shared queue" })}>
+            Raise on the shared one
+          </Button>
+        </Row>
+        <Toaster controller={own} position="top-left" label="Pane notifications" />
+        <Toaster position="bottom-right" label="Notifications" />
+      </Stack>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    toast.clear();
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+
+    await userEvent.click(canvas.getByRole("button", { name: "Raise on my controller" }));
+
+    const pane = body.getByRole("region", { name: "Pane notifications" });
+    const shared = body.getByRole("region", { name: "Notifications" });
+    await expect(within(pane).getByText("Private queue")).toBeInTheDocument();
+    // The other half: it did not also land in the shared region.
+    await expect(within(shared).queryByText("Private queue")).toBeNull();
   },
 };
 

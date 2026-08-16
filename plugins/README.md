@@ -17,6 +17,8 @@ Catches both forms:
 
 Query again instead, with `within(...)` or `getByTestId` (the test setup maps `testIdAttribute` to `data-finra-ui`, so component roots are addressable without adding a `data-testid`).
 
+Scoped to `*.test.*` and `*.spec.*` in `biome.jsonc`, so it does not reach story files, and deliberately: a `.stories.tsx` play function reads `data-finra-ui` directly through `part()` in `stories/_shared.tsx`, because the `testIdAttribute` remap is loaded by the `stories` Vitest project and not by the live `pnpm dev` preview. Same attribute, different mechanism, because the two run in different environments.
+
 ## Suppressing a plugin diagnostic
 
 Use the plugin-specific form, so the suppression cannot silently swallow a different plugin added later:

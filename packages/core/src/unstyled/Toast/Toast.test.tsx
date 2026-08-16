@@ -4,7 +4,7 @@ import { StrictMode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { soundEngine } from "../../logic/sound";
-import { toast } from "../../logic/toast";
+import { createToastStore, toast } from "../../logic/toast";
 import { Toaster } from "./Toast";
 
 afterEach(() => {
@@ -204,5 +204,82 @@ describe("Toaster", () => {
 
     await user.click(screen.getByRole("button", { name: "Cerrar notificación" }));
     expect(screen.queryByText("hi")).not.toBeInTheDocument();
+  });
+});
+
+describe("Toaster with its own controller", () => {
+  it("renders that queue and not the shared one", () => {
+    const own = createToastStore();
+    render(<Toaster controller={own} />);
+
+    act(() => {
+      own.toast("mine");
+    });
+    expect(screen.getByText("mine")).toBeInTheDocument();
+
+    // The other half: the global `toast()` does not reach this region.
+    act(() => {
+      toast("shared");
+    });
+    expect(screen.queryByText("shared")).not.toBeInTheDocument();
+  });
+
+  it("dismisses against its own controller", async () => {
+    const user = userEvent.setup();
+    const own = createToastStore();
+    render(<Toaster controller={own} />);
+    act(() => {
+      own.toast("mine");
+    });
+
+    await user.click(screen.getByRole("button", { name: "Dismiss notification" }));
+
+    expect(screen.queryByText("mine")).not.toBeInTheDocument();
+    expect(own.store.getState().toasts).toHaveLength(0);
+  });
+
+  it("routes an injected sound engine's cues, which is what the prop unlocks", () => {
+    const play = vi.fn();
+    const stub = { ...soundEngine, play };
+    const own = createToastStore({ soundEngine: stub });
+    const sharedPlay = vi.spyOn(soundEngine, "play");
+    render(<Toaster controller={own} />);
+
+    act(() => {
+      own.toast({ description: "Filled", sound: "chime" });
+    });
+
+    expect(screen.getByText("Filled")).toBeInTheDocument();
+    expect(play).toHaveBeenCalledTimes(1);
+    // Before this prop existed, such a controller could be driven but never
+    // rendered, so the injected engine was only half reachable.
+    expect(sharedPlay).not.toHaveBeenCalled();
+  });
+
+  it("switches queues when the prop changes", () => {
+    const first = createToastStore();
+    const second = createToastStore();
+    const { rerender } = render(<Toaster controller={first} />);
+    act(() => {
+      first.toast("first queue");
+    });
+    expect(screen.getByText("first queue")).toBeInTheDocument();
+
+    rerender(<Toaster controller={second} />);
+
+    // The controller owns the toasts, so nothing carries across.
+    expect(screen.queryByText("first queue")).not.toBeInTheDocument();
+    act(() => {
+      second.toast("second queue");
+    });
+    expect(screen.getByText("second queue")).toBeInTheDocument();
+  });
+
+  it("defaults to the shared controller when the prop is absent", () => {
+    render(<Toaster />);
+    act(() => {
+      toast("shared");
+    });
+    expect(screen.getByText("shared")).toBeInTheDocument();
   });
 });

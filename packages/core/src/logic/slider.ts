@@ -36,3 +36,43 @@ export function sliderMidpoint(min: SliderBound, max: SliderBound): string {
   if (!Number.isFinite(lo) || !Number.isFinite(hi)) return "";
   return String(hi < lo ? lo : lo + (hi - lo) / 2);
 }
+
+/**
+ * A range bound as a number, falling back to the DOM's own default.
+ *
+ * @remarks
+ * Exists so a formatter is handed real numbers rather than the
+ * `string | number | undefined` the DOM accepts, and so the 0-and-100 defaults
+ * are stated once rather than at each call site.
+ *
+ * @param bound - The bound as given.
+ * @param fallback - Used when the bound is absent or not a finite number.
+ */
+export function sliderBoundNumber(bound: SliderBound, fallback: number): number {
+  const value = Number(bound ?? fallback);
+  return Number.isFinite(value) ? value : fallback;
+}
+
+/**
+ * A range input's current value as a number, or `null` when there is none.
+ *
+ * @remarks
+ * `null` rather than `NaN` so a caller has one thing to check and cannot pass a
+ * `NaN` into a formatter that would render "NaN%" on screen. An array is what
+ * the DOM's `value` type permits rather than anything a range input produces;
+ * its first entry is read so the type is honoured without inventing behaviour.
+ *
+ * @example
+ * ```ts
+ * sliderValueNumber("45"); // 45
+ * sliderValueNumber(undefined); // null
+ * ```
+ */
+export function sliderValueNumber(
+  value: string | number | readonly string[] | undefined,
+): number | null {
+  const scalar = Array.isArray(value) ? value[0] : value;
+  if (scalar === undefined || scalar === "") return null;
+  const parsed = Number(scalar);
+  return Number.isFinite(parsed) ? parsed : null;
+}
